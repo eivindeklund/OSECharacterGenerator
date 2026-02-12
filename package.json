@@ -35,7 +35,7 @@
     "eslint-plugin-n": "^15.2.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-react": "^7.29.4",
-    "vite": "^2.9.5",
+    "vite": "^2.9.18",
     "vite-plugin-fonts": "^0.3.0"
   }
 }
