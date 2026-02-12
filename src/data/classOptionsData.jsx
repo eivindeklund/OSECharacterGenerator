@@ -1,1347 +1,1337 @@
 const classOptionsData = [
   {
-    name: 'Fighter',
-    category: 'basic',
+    name: "Fighter",
+    category: "basic",
     requirements: null,
-    primeReqs: ['strength'],
+    primeReqs: ["strength"],
     multiplePrimeReqs: false,
     hd: 8,
     maxLevel: 14,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any',
-    languages: '',
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any",
+    languages: "",
     description:
-      'Fighters are adventurers dedicated to mastering the arts of combat and war. In a group of adventurers, the role of fighters is to battle monsters and to defend other characters.',
+      "Fighters are adventurers dedicated to mastering the arts of combat and war. In a group of adventurers, the role of fighters is to battle monsters and to defend other characters.",
     savingThrows: [12, 13, 14, 15, 16],
     nextLevel: 2000,
-    abilities: ['Stronghold'],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/index.php/Fighter',
+    abilities: ["Stronghold"],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Fighter",
     arcane: false,
-    divine: false
+    divine: false,
   },
   {
-    name: 'Cleric',
-    category: 'basic',
+    name: "Cleric",
+    category: "basic",
     requirements: null,
-    primeReqs: ['wisdom'],
+    primeReqs: ["wisdom"],
     multiplePrimeReqs: false,
     hd: 6,
     maxLevel: 14,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'only blunt weapons',
-    languages: '',
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "only blunt weapons",
+    languages: "",
     description:
-      'Clerics are adventurers who have sworn to serve a deity. They are trained for battle and channel the power of their deity.',
+      "Clerics are adventurers who have sworn to serve a deity. They are trained for battle and channel the power of their deity.",
     savingThrows: [11, 12, 14, 16, 15],
     nextLevel: 1500,
-    abilities: ['Divine Magic', 'Turning the Undead'],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/index.php/Cleric',
+    abilities: ["Divine Magic", "Turning the Undead"],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Cleric",
     arcane: false,
-    divine: true
+    divine: true,
   },
   {
-    name: 'Magic-User',
-    category: 'basic',
+    name: "Magic-User",
+    category: "basic",
     requirements: null,
-    primeReqs: ['intelligence'],
+    primeReqs: ["intelligence"],
     hd: 4,
     maxLevel: 14,
-    armour: 'none',
-    weapons: 'dagger, staff',
-    languages: '',
+    armour: "none",
+    weapons: "dagger, staff",
+    languages: "",
     description:
-      'Magic-users are adventurers whose study of arcane secrets has taught them how to cast spells. Magic-users are able to cast a greater number of increasingly powerful spells as they advance in level.',
+      "Magic-users are adventurers whose study of arcane secrets has taught them how to cast spells. Magic-users are able to cast a greater number of increasingly powerful spells as they advance in level.",
     savingThrows: [13, 14, 13, 16, 15],
     nextLevel: 2500,
-    abilities: ['Arcane Magic'],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/index.php/Magic-User',
+    abilities: ["Arcane Magic"],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Magic-User",
     arcane: true,
     arcaneSpells: true,
-    divine: false
+    divine: false,
   },
   {
-    name: 'Thief',
-    category: 'basic',
+    name: "Thief",
+    category: "basic",
     requirements: null,
-    primeReqs: ['dexterity'],
+    primeReqs: ["dexterity"],
     hd: 4,
     maxLevel: 0,
-    armour: 'leather',
-    weapons: 'any',
-    languages: '',
+    armour: "leather",
+    weapons: "any",
+    languages: "",
     description:
-      'Thieves are adventurers who live by their skills of deception and stealth. Their range of unique skills makes them very handy companions in adventures. However, thieves are not always to be trusted.',
+      "Thieves are adventurers who live by their skills of deception and stealth. Their range of unique skills makes them very handy companions in adventures. However, thieves are not always to be trusted.",
     savingThrows: [13, 14, 13, 16, 15],
     nextLevel: 1200,
     abilities: [
-      'Backstab',
-      'Thief Skills (climb sheer surfaces, find or remove treasure traps, hear noise, hide in shadows, move silently, open locks, pick pockets)',
-      'Read Lanuages (level 4)',
-      'Scroll Use (level 10)'
+      "Backstab",
+      "Thief Skills (climb sheer surfaces, find or remove treasure traps, hear noise, hide in shadows, move silently, open locks, pick pockets)",
+      "Read Lanuages (level 4)",
+      "Scroll Use (level 10)",
     ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/index.php/Thief',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Thief",
     arcane: false,
-    divine: false
+    divine: false,
   },
   {
-    name: 'Dwarf',
-    category: 'basic',
-    requirements: 'Minimum 9 constitution ',
-    primeReqs: ['strength'],
+    name: "Dwarf",
+    category: "basic",
+    requirements: "Minimum 9 constitution ",
+    primeReqs: ["strength"],
     hd: 8,
     maxLevel: 12,
-    armour: 'any leather, chainmail, plate, shields',
+    armour: "any leather, chainmail, plate, shields",
     weapons:
-      'any small or normal sized, but cannot use longbows or two-handed swords',
-    languages: 'Dwarvish, Gnomish, Goblin, Kobold',
+      "any small or normal sized, but cannot use longbows or two-handed swords",
+    languages: "Dwarvish, Gnomish, Goblin, Kobold",
     description:
-      'Dwarves are stout, bearded demihumans, about 4’ tall and weighing about 150 pounds. Dwarves typically live underground and love fine craftsmanship, gold, hearty food, and strong drink. They have skin, hair, and eye colours in earth tones. Dwarves are known for their stubbornness and practicality. They are a hardy people and have a strong resistance to magic, as reflected in their saving throws.',
+      "Dwarves are stout, bearded demihumans, about 4’ tall and weighing about 150 pounds. Dwarves typically live underground and love fine craftsmanship, gold, hearty food, and strong drink. They have skin, hair, and eye colours in earth tones. Dwarves are known for their stubbornness and practicality. They are a hardy people and have a strong resistance to magic, as reflected in their saving throws.",
     savingThrows: [8, 9, 10, 13, 12],
     nextLevel: 2200,
     abilities: [
-      'Detect Construction Tricks',
-      'Detect Room Traps',
-      'Infravision',
-      'Listening at Doors'
+      "Detect Construction Tricks",
+      "Detect Room Traps",
+      "Infravision",
+      "Listening at Doors",
     ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/index.php/Dwarf',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Dwarf",
     arcane: false,
-    divine: false
+    divine: false,
   },
   {
-    name: 'Elf',
-    category: 'basic',
-    requirements: 'Minimum 9 intelligence',
-    primeReqs: ['intelligence', 'strength'],
+    name: "Elf",
+    category: "basic",
+    requirements: "Minimum 9 intelligence",
+    primeReqs: ["intelligence", "strength"],
     checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
       if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10
+        return 10;
       }
 
       if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
+        return 5;
       }
 
-      return 0
+      return 0;
     },
     hd: 6,
     maxLevel: 10,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any',
-    languages: 'Elvish, Gnoll, Hobgoblin, Orcish',
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any",
+    languages: "Elvish, Gnoll, Hobgoblin, Orcish",
     description:
-      'Elves are slender, fey demihumans with pointed ears. They typically weigh about 120 pounds and are between 5 and 5½ feet tall. Elves are seldom met in human settlements, preferring to feast and make merry in the woods. If crossed, they are dangerous enemies, as they are masters of both sword and spell. Elves are fascinated by spells and beautifully constructed magic items and love to collect both.',
+      "Elves are slender, fey demihumans with pointed ears. They typically weigh about 120 pounds and are between 5 and 5½ feet tall. Elves are seldom met in human settlements, preferring to feast and make merry in the woods. If crossed, they are dangerous enemies, as they are masters of both sword and spell. Elves are fascinated by spells and beautifully constructed magic items and love to collect both.",
     savingThrows: [12, 13, 13, 15, 15],
     nextLevel: 4000,
     abilities: [
-      'Arcane Magic',
-      'Detect Secret Doors',
-      'Infravision',
-      'Listening at Doors',
-      'Immunity to Ghoul Paralysis'
+      "Arcane Magic",
+      "Detect Secret Doors",
+      "Infravision",
+      "Listening at Doors",
+      "Immunity to Ghoul Paralysis",
     ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/index.php/Elf',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Elf",
     arcane: true,
     arcaneSpells: true,
-    divine: false
+    divine: false,
   },
   {
-    name: 'Halfling',
-    category: 'basic',
-    requirements: 'Minimum 9 constitution, minimum 9 dexterity',
-    primeReqs: ['dexterity', 'strength'],
+    name: "Halfling",
+    category: "basic",
+    requirements: "Minimum 9 constitution, minimum 9 dexterity",
+    primeReqs: ["dexterity", "strength"],
     checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
       if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 10
+        return 10;
       }
 
       if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
+        return 5;
       }
 
-      return 0
+      return 0;
     },
     hd: 6,
     maxLevel: 8,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any appropriate to size',
-    languages: 'Halfling',
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any appropriate to size",
+    languages: "Halfling",
     description:
-      'Halflings are small, rotund demihumans with furry feet and curly hair. They weigh about 60 pounds and are around 3’ tall. Halflings are a friendly and welcoming folk. Above all, they love the comforts of home and are not known for their bravery. Halflings who gain treasure through adventuring will often use their wealth in pursuit of a quiet, comfortable life.',
+      "Halflings are small, rotund demihumans with furry feet and curly hair. They weigh about 60 pounds and are around 3’ tall. Halflings are a friendly and welcoming folk. Above all, they love the comforts of home and are not known for their bravery. Halflings who gain treasure through adventuring will often use their wealth in pursuit of a quiet, comfortable life.",
     savingThrows: [8, 9, 10, 13, 12],
     nextLevel: 2000,
     abilities: [
-      'Defensive Bonus',
-      'Hiding',
-      'Listening at Doors',
-      'Missile Attack Bonus',
-      'Initiative Bonus (optional)',
-      'Stronghold'
+      "Defensive Bonus",
+      "Hiding",
+      "Listening at Doors",
+      "Missile Attack Bonus",
+      "Initiative Bonus (optional)",
+      "Stronghold",
     ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/index.php/Halfling',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Halfling",
     arcane: false,
-    divine: false
+    divine: false,
   },
   {
-    name: 'Acrobat',
-    category: 'advanced',
+    name: "Acrobat",
+    category: "advanced",
     requirements: null,
-    primeReqs: ['dexterity'],
+    primeReqs: ["dexterity"],
     hd: 4,
     maxLevel: 14,
-    armour: 'leather',
+    armour: "leather",
     weapons:
-      'missile weapons, dagger, sword, short sword, polearm, spear, staff',
-    languages: '',
+      "missile weapons, dagger, sword, short sword, polearm, spear, staff",
+    languages: "",
     description:
-      'Acrobats are trained in skills of balance, gymnastics, and stealth. They often work in conjunction with thieves and may belong to a Thieves’ Guild.',
+      "Acrobats are trained in skills of balance, gymnastics, and stealth. They often work in conjunction with thieves and may belong to a Thieves’ Guild.",
     savingThrows: [13, 14, 13, 16, 15],
     nextLevel: 1200,
     abilities: [
-      'Acrobat Skills (climb sheer surfaces, falling, hide in shadows, move silently, tightrope walking)',
-      'Evasion',
-      'Jumping',
-      'Tumbling Attack'
+      "Acrobat Skills (climb sheer surfaces, falling, hide in shadows, move silently, tightrope walking)",
+      "Evasion",
+      "Jumping",
+      "Tumbling Attack",
     ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
     arcane: false,
     divine: false,
-    classEquivalent: 'Thief'
+    classEquivalent: "Thief",
   },
   {
-    name: 'Assassin',
-    category: 'advanced',
+    name: "Assassin",
+    category: "advanced",
     requirements: null,
-    primeReqs: ['dexterity'],
+    primeReqs: ["dexterity"],
     hd: 4,
     maxLevel: 14,
-    armour: 'leather, shields',
-    weapons: 'any',
-    languages: '',
+    armour: "leather, shields",
+    weapons: "any",
+    languages: "",
     description:
-      'Assassins are adventurers who specialise in the arts of infiltration and killing by stealth. They sometimes form guilds whereby their illicit services may be hired.',
+      "Assassins are adventurers who specialise in the arts of infiltration and killing by stealth. They sometimes form guilds whereby their illicit services may be hired.",
     savingThrows: [13, 14, 13, 16, 15],
     nextLevel: 1500,
     abilities: [
-      'Assassin Skills (assassination, climb sheer suraces, hear noise, hide in shadows, move silently)',
-      'Disguise',
-      'Poison',
-      'Assassin Hirelings (level 4)'
+      "Assassin Skills (assassination, climb sheer suraces, hear noise, hide in shadows, move silently)",
+      "Disguise",
+      "Poison",
+      "Assassin Hirelings (level 4)",
     ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
     arcane: false,
     divine: false,
-    classEquivalent: 'Thief'
+    classEquivalent: "Thief",
   },
   {
-    name: 'Barbarian',
-    category: 'advanced',
-    requirements: 'Minimum 9 dexterity',
-    primeReqs: ['constitution', 'strength'],
+    name: "Barbarian",
+    category: "advanced",
+    requirements: "Minimum 9 dexterity",
+    primeReqs: ["constitution", "strength"],
     checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
       if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10
+        return 10;
       }
 
       if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
+        return 5;
       }
 
-      return 0
+      return 0;
     },
     hd: 8,
     maxLevel: 14,
-    armour: 'leather, chainmail, shields',
-    weapons: 'any',
-    languages: '',
+    armour: "leather, chainmail, shields",
+    weapons: "any",
+    languages: "",
     description:
-      'Barbarians are tribal warriors from wild lands. They are formidable fighters with many useful survival skills but have a deep mistrust of the arcane',
+      "Barbarians are tribal warriors from wild lands. They are formidable fighters with many useful survival skills but have a deep mistrust of the arcane",
     savingThrows: [10, 13, 12, 15, 16],
     nextLevel: 2500,
     abilities: [
-      'Barbarian Skills (climb sheer surfaces, hiding in undergrowth, move silently)',
-      'Cure Poison',
-      'Foraging',
-      'Hunting',
-      'Fear of Magic',
-      'Agile Fighting (level 4)',
-      'Strike Invulnerable Monsters (level 4)'
+      "Barbarian Skills (climb sheer surfaces, hiding in undergrowth, move silently)",
+      "Cure Poison",
+      "Foraging",
+      "Hunting",
+      "Fear of Magic",
+      "Agile Fighting (level 4)",
+      "Strike Invulnerable Monsters (level 4)",
     ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
     arcane: false,
-    divine: false
+    divine: false,
   },
   {
-    name: 'Bard',
-    category: 'advanced',
-    requirements: 'Minimum 9 dexterity, minimum 9 intelligence',
-    primeReqs: ['charisma'],
+    name: "Bard",
+    category: "advanced",
+    requirements: "Minimum 9 dexterity, minimum 9 intelligence",
+    primeReqs: ["charisma"],
     hd: 6,
     maxLevel: 14,
-    armour: 'leather, chainmail',
-    weapons: 'missile weapons, one-handed melee weapons',
-    languages: '',
+    armour: "leather, chainmail",
+    weapons: "missile weapons, one-handed melee weapons",
+    languages: "",
     description:
-      'Bards are members of a sect of minstrels and warrior poets associated with the druids. Like druids, bards worship the force of nature and the myriad deities that personify it. Their strengths lie in their deep knowledge of myth and legend, the magic that they wield on behalf of their gods, and the enchanting power of their music.',
+      "Bards are members of a sect of minstrels and warrior poets associated with the druids. Like druids, bards worship the force of nature and the myriad deities that personify it. Their strengths lie in their deep knowledge of myth and legend, the magic that they wield on behalf of their gods, and the enchanting power of their music.",
     savingThrows: [13, 14, 13, 16, 15],
     nextLevel: 2000,
     abilities: [
-      'Anti-Charm',
-      'Divine Magic',
-      'Enchantment',
-      'Languages (level 4)',
-      'Lore (level 2)'
+      "Anti-Charm",
+      "Divine Magic",
+      "Enchantment",
+      "Languages (level 4)",
+      "Lore (level 2)",
     ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
     arcane: false,
-    divine: true
+    divine: true,
   },
   {
-    name: 'Drow',
-    category: 'advanced',
-    requirements: 'Minimum 9 intelligence',
-    primeReqs: ['wisdom', 'strength'],
+    name: "Drow",
+    category: "advanced",
+    requirements: "Minimum 9 intelligence",
+    primeReqs: ["wisdom", "strength"],
     checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
       if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10
+        return 10;
       }
 
       if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
+        return 5;
       }
 
-      return 0
+      return 0;
     },
     hd: 6,
     maxLevel: 14,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any',
-    languages:
-      'Deepcommon, Elvish, Gnomish, the secret language of spiders',
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any",
+    languages: "Deepcommon, Elvish, Gnomish, the secret language of spiders",
     description:
-      'Drow are slender, fey demihumans with pointed ears, skin as black as the night sky, and hair of silver or white. They have extremely long lifespans, being nigh immortal. Drow dwell exclusively underground, carving great cities of stone and crystal. They are related to the elves of the surface world and share their love of nature and magic. Drow typically weigh about 120 pounds and are from 5 to 5½ feet tall. They are talented fighters and gain powerful magic through the worship of their strange subterranean deities. They have a strong resistance to magic, as reflected in their saving throws.',
+      "Drow are slender, fey demihumans with pointed ears, skin as black as the night sky, and hair of silver or white. They have extremely long lifespans, being nigh immortal. Drow dwell exclusively underground, carving great cities of stone and crystal. They are related to the elves of the surface world and share their love of nature and magic. Drow typically weigh about 120 pounds and are from 5 to 5½ feet tall. They are talented fighters and gain powerful magic through the worship of their strange subterranean deities. They have a strong resistance to magic, as reflected in their saving throws.",
     savingThrows: [12, 13, 13, 15, 12],
     nextLevel: 4000,
     abilities: [
-      'Detect Secret Doors',
-      'Listening at Doors',
-      'Divine Magic',
-      'Infravision',
-      'Light Sensitivity',
-      'Spider Affinity',
-      'Immunity to Ghoul Paralysis',
-      'Spell: Light (Darkness)'
+      "Detect Secret Doors",
+      "Listening at Doors",
+      "Divine Magic",
+      "Infravision",
+      "Light Sensitivity",
+      "Spider Affinity",
+      "Immunity to Ghoul Paralysis",
+      "Spell: Light (Darkness)",
     ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: false,
-    divine: true
-  },
-  {
-    name: 'Druid',
-    category: 'advanced',
-    requirements: null,
-    primeReqs: ['wisdom'],
-    hd: 6,
-    maxLevel: 14,
-    armour: 'leather, wooden shields',
-    weapons: 'Club, dagger, sling, spear, staff',
-    languages: 'the secret druidic tongue',
-    description:
-      'Druids are priests of nature, protecting wild lands from the encroachment of “civilised” Law and the corrupting touch of Chaos. They worship the force of nature itself, personified in the form of various nature deities.',
-    savingThrows: [11, 12, 14, 16, 15],
-    nextLevel: 2000,
-    abilities: [
-      'Divine Magic',
-      'Energy Resistance',
-      'Identification',
-      'Path-Finding',
-      'Sylvan Languages (level 3)',
-      'Shape Change (level 7)',
-      'Charm Immunity (level 7)'
-    ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
     arcane: false,
     divine: true,
-    druidSpells: true
   },
   {
-    name: 'Duergar',
-    category: 'advanced',
-    requirements: 'Minimum 9 constitution, minimum 9 intelligence',
-    primeReqs: ['strength'],
-    hd: 6,
-    maxLevel: 10,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'small or normal sized',
-    languages:
-      'Deepcommon, Dwarvish, Gnomish, Goblin, Kobold',
-    description:
-      'Duergars (also known as grey dwarves) are short, scrawny, bearded demihumans with grey skin and hair and ugly visages. They are around 4’ tall, weigh about 120 pounds, and have life spans of up to 500 years. Duergars dwell in strongholds and cities deep underground. They are renowned for their greed and for metals and stones and for their xenophobia toward other races. Duergars have a naturally strong constitution and are highly resistant to magic.',
-    savingThrows: [8, 9, 10, 13, 12],
-    nextLevel: 2800,
-    abilities: [
-      'Detect Construction Tricks',
-      'Detect Room Traps',
-      'Infravision',
-      'Light-Sensitivity',
-      'Mental Powers (enlargment, invisibility, shrinking, heat)',
-      'Stealth'
-    ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: false,
-    divine: false
-  },
-  {
-    name: 'Gnome',
-    category: 'advanced',
-    requirements: 'Minimum 9 constitution',
-    primeReqs: ['intelligence', 'dexterity'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 4,
-    maxLevel: 8,
-    armour: 'leather, shields',
-    weapons: 'any appropriate to size',
-    languages:
-      'Deepcommon, Dwarvish, Gnomish, Goblin, Kobold',
-    description:
-      'Gnomes are a race of short demihumans with long noses and beards. They are cousins of the dwarves and the two races are on friendly terms. Gnomes prefer to dwell in underground complexes in forests or foothills. They love mining, precious stones, and machinery—from miniature marvels of clockwork to great construction 3½’ tall and weigh around 100 pounds.',
-    savingThrows: [8, 9, 10, 14, 11],
-    nextLevel: 3000,
-    abilities: [
-      'Arcane Magic',
-      'Defensive Bonus',
-      'Detect Construction Tricks',
-      'Hiding',
-      'Infravision',
-      'Listening at Doors',
-      'Speak with Burrowing Mammals'
-    ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: true,
-    arcaneSpells: true,
-    divine: false
-  },
-  {
-    name: 'Half-Elf',
-    category: 'advanced',
-    requirements: 'Minimum 9 charisma, minimum 9 constitution',
-    primeReqs: ['intelligence', 'strength'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (
-        (abilityScore1 >= 16 && abilityScore2 >= 13) ||
-        (abilityScore2 >= 16 && abilityScore1 >= 13)
-      ) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 12,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any',
-    languages: 'Elvish',
-    description:
-      'Half-elves are the rare offspring of elves and humans. Physically, they tend to combine the best features of the robust physique of humans. They are human-like in stature but always have a feature that marks their elven heritage (e.g. pointed ears or unusually bright eyes). Half-elves are skilled fighters and dabble with magic, though they lack their elvish parents’ mastery of the arcane.',
-    savingThrows: [12, 13, 13, 15, 15],
-    nextLevel: 2500,
-    abilities: ['Arcane Magic', 'Detect Secret Doors', 'Infravision'],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: true,
-    divine: false
-  },
-  {
-    name: 'Half-Orc',
-    category: 'advanced',
+    name: "Druid",
+    category: "advanced",
     requirements: null,
-    primeReqs: ['dexterity', 'strength'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 8,
-    armour: 'leather, chainmail, shields',
-    weapons: 'any',
-    languages: 'Orcish',
-    description:
-      'Half-orcs are the rare offspring of orcs and humans. They are human-like in stature and appearance, but usually have at least one feature that marks their orcish heritage (e.g. fangs or a pig-like snout). Due to the common animosity between orcs and humans, half-orcs are typically outcasts from both their parent cultures, living on the fringes of society and making a living by whatever means they can. Half-orc adventurers are capable combatants and have some skill as thieves.',
-    savingThrows: [13, 14, 13, 16, 15],
-    nextLevel: 1800,
-    abilities: [
-      'Backstab',
-      'Infravision',
-      'Thieving Skills (hide in shadows, move silently, pick pockets)'
-    ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: false,
-    divine: false
-  },
-  {
-    name: 'Illusionist',
-    category: 'advanced',
-    requirements: 'Minimum 9 dexterity',
-    primeReqs: ['intelligence'],
-    hd: 4,
-    maxLevel: 14,
-    armour: 'none',
-    weapons: 'dagger, staff',
-    languages: '',
-    description:
-      'Illusionists are adventurers who study the arcane arts of illusion and deception. Through this study, they have learned to cast magic spells.',
-    savingThrows: [13, 14, 13, 16, 15],
-    nextLevel: 2500,
-    abilities: ['Arcane Magic'],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: true,
-    divine: false,
-    illusionistSpells: true
-  },
-  {
-    name: 'Knight',
-    category: 'advanced',
-    requirements: 'Minimum 9 constitution, minimum 9 dexterity',
-    primeReqs: ['strength'],
-    hd: 8,
-    maxLevel: 14,
-    armour: 'any chainmail, plate mail, shields',
-    weapons: 'melee weapons',
-    languages: '',
-    description:
-      'Knights are warriors who serve a noble house or knightly order, carrying out their liege’s command and combat, preferring the lance above all other weapons. Knights are often members of the noble classes, but a person of lowlier origin may be initiated as a knight as a reward for noble deeds.',
-    savingThrows: [12, 13, 14, 15, 16],
-    nextLevel: 2500,
-    abilities: [
-      'Chivalic Code',
-      'Horsemanship',
-      'Mounted Combat',
-      'Strength of Will',
-      'Hospitality (level 3)',
-      'Stronghold (level 3)',
-      'Flying Mounts (level 5)'
-    ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: false,
-    divine: false
-  },
-  {
-    name: 'Necromancer',
-    category: 'advanced',
-    requirements: 'Minimum 9 wisdom',
-    primeReqs: ['intelligence'],
-    hd: 4,
-    maxLevel: 14,
-    armour: 'none',
-    weapons: 'dagger, staff (optional)',
-    languages:
-      '',
-    description:
-      'Necromancers are adventurers who study the arcane arts of death and the undead. Through this study, they have learned to cast magic spells.',
-    savingThrows: [13, 14, 13, 16, 15],
-    nextLevel: 2500,
-    abilities: [
-      'Arcane Magic',
-    ],
-    link: 'https://www.drivethrurpg.com/product/414657/OldSchool-Essentials-The-Necromancer',
-    arcane: true,
-    necromancerSpells: true,
-    divine: false
-  },
-  {
-    name: 'Paladin',
-    category: 'advanced',
-    requirements: 'Minimum 9 charisma',
-    primeReqs: ['strength', 'wisdom'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 8,
-    maxLevel: 14,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any',
-    languages: '',
-    description:
-      'Paladins are warriors sworn by sacred oath to the service of a Lawful holy order.',
-    savingThrows: [10, 11, 12, 13, 14],
-    nextLevel: 2750,
-    abilities: [
-      'Divine Magic',
-      'Holy Resistance',
-      'Laying on Hands',
-      'Turning the Undead',
-      'Vow of Humility',
-      'War Horse (level 4)'
-    ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: false,
-    divine: true
-  },
-  {
-    name: 'Ranger',
-    category: 'advanced',
-    requirements: 'Minimum 9 constitution, minimum 9 wisdom',
-    primeReqs: ['strength'],
-    hd: 8,
-    maxLevel: 14,
-    armour: 'leather, chainmail, shields',
-    weapons: 'any',
-    languages: '',
-    description:
-      'Rangers are members of a secret society which protects their native lands from invasion and the influence of Chaos. They are skilled warriors who are adapted to life in the wilds. At higher levels, their connection with nature grants them the ability to cast spells.',
-    savingThrows: [12, 13, 14, 15, 16],
-    nextLevel: 2250,
-    abilities: [
-      'Awareness',
-      'Divine Magic',
-      'Foraging and Hunting',
-      'Limited Possessions',
-      'Pursuit',
-      'Surprise Attack',
-      'Tracking'
-    ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: true,
-    divine: false
-  },
-  {
-    name: 'Svirfneblin',
-    category: 'advanced',
-    requirements: 'Minimum 9 constitution',
-    primeReqs: ['strength'],
-    hd: 6,
-    maxLevel: 8,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any',
-    languages:
-      'Deepcommon, Gnomish, Dwarvish, Kobold, the language of earth elementals',
-    description:
-      'Short, thickset demihumans with long noses and gnarled, hairless, grey skin. Svirfneblins (also known as deep gnomes) are subterranean cousins of the gnomes who live close to the surface. Svirfneblins are skilled tunnellers and makers of mechanical contraptions and cunning secret doors. They love gems above all else and excavate their communities around veins of precious stones. Svirfneblins are typically around 3½’ tall and weigh around 120 pounds.',
-    savingThrows: [8, 9, 10, 14, 11],
-    nextLevel: 2400,
-    abilities: [
-      'Blend into Stone',
-      'Defensive Bonus',
-      'Detect Construction Tricks',
-      'Illusion Resistance',
-      'Infravision',
-      'Light Sensitivity',
-      'Speak with Earth Elementals',
-      'Stone Murmurs',
-      'Using Magic Items'
-    ],
-    link: 'https://oldschoolessentials.necroticgnome.com/srd/',
-    arcane: false,
-    divine: false
-  },
-  {
-    name: 'Acolyte',
-    category: 'carcass',
-    requirements: null,
-    primeReqs: ['wisdom'],
+    primeReqs: ["wisdom"],
     hd: 6,
     maxLevel: 14,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'only blunt weapons',
-    languages:
-      '',
+    armour: "leather, wooden shields",
+    weapons: "Club, dagger, sling, spear, staff",
+    languages: "the secret druidic tongue",
     description:
-      'Acolytes are adventurers who have sworn to serve a deity. They are trained for battle and can channel the power of their deity.',
+      "Druids are priests of nature, protecting wild lands from the encroachment of “civilised” Law and the corrupting touch of Chaos. They worship the force of nature itself, personified in the form of various nature deities.",
     savingThrows: [11, 12, 14, 16, 15],
-    nextLevel: 1500,
-    abilities: [
-      'Bless',
-      'Detect Magic',
-      'Divine Magic',
-      'Know Alignment',
-      'Purify',
-      'Rally',
-      'Turn Undead'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-1',
-    arcane: false,
-    divine: true
-  },
-  {
-    name: 'Gargantua',
-    category: 'carcass',
-    requirements: 'Minimum 9 constitution, minimum 9 strength',
-    primeReqs: ['constitution', 'strength'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 13 && abilityScore2 >= 16) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 10,
-    maxLevel: 10,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any, can wield two-handed melee weapon with one hand',
-    languages:
-      '',
-    description:
-      'Known as the “Big Siblings of Human-kind,” gargantuas are demihumans who stand about 7½’ tall and weigh 550 pounds. Gargantuas typically live among or near humans, though some prefer to establish their own communities in the wilderness. They are known as powerful warriors with a strong resistance to every kind of hardship. Gargantuas also have a reputation for being slow-witted and literal-minded that is not entirely deserved, though it is true that they lack subtlety when compared to their smaller kin. They can be steadfast allies or unyielding foes.',
-    savingThrows: [8, 9, 10, 13, 12],
-    nextLevel: 2500,
-    abilities: [
-      'Open Doors',
-      'Rock Throwing'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-1',
-    arcane: false,
-    divine: false
-  },
-  {
-    name: 'Goblin',
-    category: 'carcass',
-    requirements: 'Minimum 9 dexterity',
-    primeReqs: ['dexterity', 'strength'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 8,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any appropriate to size',
-    languages:
-      'Goblin, the language of wolves',
-    description:
-      'Goblins are short demihumans standing between 3’ and 3½’ tall. They possess skin ranging in colour from yellow to orange to red (and everything in between), while their eyes are usually reddish in hue and are visible even in the dark. Though many goblins live underground, not all do so, especially those most likely to interact with humans and join adventuring parties. Goblins can be somewhat surly and resentful when interacting with other beings, or even their own kin, like bugbears and hobgoblins. These attitudes are only heightened by the fact that many goblins—though not all—are aligned with Chaos.',
-    savingThrows: [8, 9, 10, 13, 12],
     nextLevel: 2000,
     abilities: [
-      'Defensive Bonus',
-      'Detect Construction Tricks',
-      'Infravision',
-      'Stealth',
-      'Wolf Affinity'
+      "Divine Magic",
+      "Energy Resistance",
+      "Identification",
+      "Path-Finding",
+      "Sylvan Languages (level 3)",
+      "Shape Change (level 7)",
+      "Charm Immunity (level 7)",
     ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-1',
-    arcane: false,
-    divine: false
-  },
-  {
-    name: 'Hephaestan',
-    category: 'carcass',
-    requirements: 'Minimum 9 charisma, minimum 9 constitution',
-    primeReqs: ['intelligence', 'wisdom'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 10,
-    armour: 'leather, chainmail, shields',
-    weapons: 'any',
-    languages:
-      'Hephaestan',
-    description:
-      'Hephaestans are a race of tall (6’), thin demihumans with angular features and pointed ears. Some sages claim they are relatives of elves, hailing from a distant land or even another world. For their part, hephaestans are tight lipped on the subject of their origins. Coldly rational and seemingly without emotion, the hephaestans are highly skilled in the use of mental powers, which they employ instead of magic. Despite their aloofness, hephaestans get along well with most intelligent races.',
-    savingThrows: [12, 13, 13, 15, 15],
-    nextLevel: 3000,
-    abilities: [
-      'Listening at Doors',
-      'Mental Powers (ESP, gestalt, healing trance, mind control, mind shield, telepathy)',
-      'Neuropressure'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-1',
-    arcane: false,
-    divine: false
-  },
-  {
-    name: 'Kineticist',
-    category: 'carcass',
-    requirements: null,
-    primeReqs: ['dexterity', 'wisdom'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 14,
-    armour: 'none',
-    weapons: 'any',
-    languages:
-      '',
-    description:
-      'Kineticists are masters of mind over matter, their rigorous physical and mental training focusing on the manipulation of internal kinetic force. This force can be harnessed to accelerate motion and hone reactions or can be projected outward to affect distant objects.\nThe ability to manipulate kinetic force may be awakened spontaneously or may be learned from a master. Either way, it is often the case that this power runs in families.',
-    savingThrows: [13, 14, 13, 16, 15],
-    nextLevel: 2000,
-    abilities: [
-      'Mental Defense',
-      'Mental Powers (accelerated motion, control density, crush life, kinetic fist, kinetic leap, kinetic shield, kinetic wave, telekinetic attack, throw weapon)',
-      'Neuropressure'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-1',
-    arcane: false,
-    divine: false
-  },
-  {
-    name: 'Mage',
-    category: 'carcass',
-    requirements: null,
-    primeReqs: ['intelligence', 'wisdom'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 14,
-    armour: 'none',
-    weapons: 'dagger, short sword, staff, sword',
-    languages:
-      '',
-    description:
-      'Mages are adventurers who study the secrets of deep magic, making them powerful allies.',
-    savingThrows: [12, 13, 12, 15, 14],
-    nextLevel: 2800,
-    abilities: [
-      'Arcane Magic',
-      'Detect Magic',
-      'Healing',
-      'Mage Armour',
-      'Mage’s Staff',
-      'Open/Close',
-      'Rally/Fear',
-      'Read Magic',
-      'Scribing Scrolls',
-      'Suggestion'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-1',
-    arcane: true,
-    divine: false
-  },
-  {
-    name: 'Phase Elf',
-    category: 'carcass',
-    requirements: 'Minimum 9 intelligence',
-    primeReqs: ['intelligence', 'strength'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 10,
-    armour: 'any leather, chainmail, plate, shields / none',
-    weapons: 'any / dagger',
-    languages:
-      'Elvish, Doppelgänger, Dragon, Pixie',
-    description:
-      'Phase elves are slender, fey demihumans with pointed ears. They typically weigh about 120 pounds and are between 5½ and 6 feet tall. Their hair tends to be violet or silver and their eyes are either pure black or pure white—without an iris or pupil (see Dual Persona). Phase elves originate from an alternate dimension which is inaccessible to other races, and about which they never speak.',
-    savingThrows: [12, 13, 13, 15, 15],
-    nextLevel: 2800,
-    abilities: [
-      'Arcane Magic',
-      'Detect Secret Doors',
-      'Dual Persona',
-      'Immunity to Ghoul Paralysis',
-      'Infravision',
-      'Listening at Doors'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-2',
-    arcane: true,
-    arcaneSpells: true,
-    divine: false
-  },
-  {
-    name: 'Wood Elf',
-    category: 'carcass',
-    requirements: 'Minimum 9 dexterity, minimum 9 intelligence',
-    primeReqs: ['dexterity', 'wisdom'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 10,
-    armour: 'leather, shields',
-    weapons: 'any',
-    languages:
-      'Elvish, Bugbear, Dryad, Gnoll',
-    description:
-      'Wood elves are slender, fey demihumans with pointed ears. They typically weigh about 110 pounds and are between 5 and 5½ feet tall. Wood elves dwell in hidden, treetop settlements in deep forests, and are seldom seen by humans. They are reclusive and defend their homelands against trespassers. Like druids, wood elves worship the force of nature and the myriad deities that personify it.',
-    savingThrows: [12, 13, 13, 15, 15],
-    nextLevel: 3000,
-    abilities: [
-      'Awareness',
-      'Detect Secret Doors',
-      'Divine Magic',
-      'Foraging and Hunting',
-      'Hiding',
-      'Immunity to Ghoul Paralysis',
-      'Infravision',
-      'Listening at Doors',
-      'Missile Attack Bonus'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-2',
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
     arcane: false,
     divine: true,
     druidSpells: true,
   },
   {
-    name: 'Beast Master',
-    category: 'carcass',
-    requirements: null,
-    primeReqs: ['strength', 'wisdom'],
+    name: "Duergar",
+    category: "advanced",
+    requirements: "Minimum 9 constitution, minimum 9 intelligence",
+    primeReqs: ["strength"],
+    hd: 6,
+    maxLevel: 10,
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "small or normal sized",
+    languages: "Deepcommon, Dwarvish, Gnomish, Goblin, Kobold",
+    description:
+      "Duergars (also known as grey dwarves) are short, scrawny, bearded demihumans with grey skin and hair and ugly visages. They are around 4’ tall, weigh about 120 pounds, and have life spans of up to 500 years. Duergars dwell in strongholds and cities deep underground. They are renowned for their greed and for metals and stones and for their xenophobia toward other races. Duergars have a naturally strong constitution and are highly resistant to magic.",
+    savingThrows: [8, 9, 10, 13, 12],
+    nextLevel: 2800,
+    abilities: [
+      "Detect Construction Tricks",
+      "Detect Room Traps",
+      "Infravision",
+      "Light-Sensitivity",
+      "Mental Powers (enlargment, invisibility, shrinking, heat)",
+      "Stealth",
+    ],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Gnome",
+    category: "advanced",
+    requirements: "Minimum 9 constitution",
+    primeReqs: ["intelligence", "dexterity"],
     checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
       if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10
+        return 10;
       }
 
       if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
+        return 5;
       }
 
-      return 0
+      return 0;
     },
-    hd: 6,
-    maxLevel: 14,
-    armour: 'leather, chainmail, shields',
-    weapons: 'any',
-    languages: '',
+    hd: 4,
+    maxLevel: 8,
+    armour: "leather, shields",
+    weapons: "any appropriate to size",
+    languages: "Deepcommon, Dwarvish, Gnomish, Goblin, Kobold",
     description:
-      'Beast masters are adventurers with a special connection to animals. They are often accompanied by one or more loyal beasts.',
-    savingThrows: [11, 12, 12, 15, 16],
-    nextLevel: 1800,
-    abilities: [
-      'Animal Companions',
-      'Clairvoyance (level 5)',
-      'Identify Tracks',
-      'Reaction Modifier',
-      'Speak with Animals'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-3',
-    arcane: false,
-    divine: false,
-  },
-  {
-    name: 'Dragonborn',
-    category: 'carcass',
-    requirements: 'Minimum 9 constitution, minimum 9 intelligence',
-    primeReqs: ['strength'],
-    hd: 8,
-    maxLevel: 10,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'any',
-    languages: 'Dragon',
-    description:
-      'Dragonborn are tall, powerful demihumans with scaled skin and dragon-like heads. They typically weigh about 250 pounds and stand around 6’ tall. As reptiles, they reproduce by laying eggs. Unlike true dragons, dragonborn do not have wings or tails. Dragonborn live in clans based on the colour of their scales (see Draconic Bloodline) and are known for their fierce loyalty and their love of hoarding gold. It is believed that dragonborn were created by the dragon gods.',
-    savingThrows: [12, 13, 14, 13, 16],
+      "Gnomes are a race of short demihumans with long noses and beards. They are cousins of the dwarves and the two races are on friendly terms. Gnomes prefer to dwell in underground complexes in forests or foothills. They love mining, precious stones, and machinery—from miniature marvels of clockwork to great construction 3½’ tall and weigh around 100 pounds.",
+    savingThrows: [8, 9, 10, 14, 11],
     nextLevel: 3000,
     abilities: [
-      'Breath Weapon',
-      'Draconic Bloodline (roll d10 on table)',
-      'Draconic Resistance',
-      'Dragon-Affecting Magic',
-      'Dragon Affinity',
-      'Scales'
+      "Arcane Magic",
+      "Defensive Bonus",
+      "Detect Construction Tricks",
+      "Hiding",
+      "Infravision",
+      "Listening at Doors",
+      "Speak with Burrowing Mammals",
     ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-3',
-    arcane: false,
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    arcane: true,
+    arcaneSpells: true,
     divine: false,
   },
   {
-    name: 'Mutoid',
-    category: 'carcass',
-    requirements: null,
-    primeReqs: ['dexterity'],
-    hd: 6,
-    maxLevel: 8,
-    armour: 'leather, shields',
-    weapons: 'one-handed melee weapons, all missile weapons',
-    languages: '',
-    description:
-      'Demihumans with mismatched body parts of many different creatures (e.g. reptiles, crustaceans, birds, mammals, etc.). Each individual has a unique appearance. Mutoids are often shunned by other species and live in ruins or in hidden lairs within large settlements.',
-    savingThrows: [10, 11, 12, 13, 14],
-    nextLevel: 1750,
-    abilities: [
-      'Back-Stab',
-      'Mutations',
-      'Mutoid Skills (Hide in shadows, mimicry, move silently, pick pockets)',
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-3',
-    arcane: false,
-    divine: false,
-  },
-  {
-    name: 'Mycelian',
-    category: 'carcass',
-    requirements: 'Minimum 9 constitution',
-    primeReqs: ['strength'],
-    hd: 8,
-    maxLevel: 6,
-    armour: 'shields',
-    weapons: 'any',
-    languages: 'Deepcommon',
-    description:
-      'Mycelians are humanoid mushrooms, with tall stems, wide, flat caps, and beady eyes amid their gills. They have no mouths, but communicate telepathically. They dwell in lightless caverns deep underground.',
-    savingThrows: [9, 11, 9, 13, 12],
-    nextLevel: 3000,
-    abilities: [
-      'Fungal Spores (Pacifying, hallucinogenic)',
-      'Growth',
-      'Unarmed Attacks',
-      'Natural Armour Class',
-      'Infravision',
-      'Light Sensitivity',
-      'Rest and Sustenence',
-      'Telepathic Communication',
-      'Fungal Reanimation (level 6)'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-3',
-    arcane: false,
-    divine: false,
-  },
-  {
-    name: 'Tiefling',
-    category: 'carcass',
-    requirements: 'Minimum 9 intelligence',
-    primeReqs: ['charisma', 'dexterity'],
+    name: "Half-Elf",
+    category: "advanced",
+    requirements: "Minimum 9 charisma, minimum 9 constitution",
+    primeReqs: ["intelligence", "strength"],
     checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10
+      if (
+        (abilityScore1 >= 16 && abilityScore2 >= 13) ||
+        (abilityScore2 >= 16 && abilityScore1 >= 13)
+      ) {
+        return 10;
       }
 
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 10,
-    armour: 'leather, chainmail, shields',
-    weapons: 'any',
-    languages: '',
-    description:
-      'Tieflings are humans with a mysterious fiendish ancestor. They tend to be outcasts living on the fringes of society, shunned by those who fear their heritage.',
-    savingThrows: [11, 12, 12, 15, 14],
-    nextLevel: 2500,
-    abilities: [
-      'Fiendish Heritage (roll on tables)',
-      'Holy Water Vulnerability',
-      'Infravision',
-      'Tiefling Skills (Beguile, hear noise, hide in shadows, move silently',
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-3',
-    arcane: false,
-    divine: false,
-  },
-  {
-    name: 'Halfling Hearthsinger',
-    category: 'carcass',
-    requirements: 'Minimum 9 charisma, minimum 9 constitution, minimum 9 dexterity',
-    primeReqs: ['charisma', 'constitution'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
       if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 10
+        return 5;
       }
 
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
+      return 0;
     },
     hd: 6,
-    maxLevel: 8,
-    armour: 'leather, shields',
-    weapons: 'any appropriate to size',
-    languages: 'Halfling',
-    description: 'Hearthsingers are halflings who specialise in memorising and recalling legends, lore, and local folktales. The desire to learn the truth behind lost legends and forgotten myths often drives them to adventure and they value tomes, journals, and written histories over other treasure.',
-    savingThrows: [8, 9, 10, 13, 12],
-    nextLevel: 2000,
-    abilities: [
-      'Defensive Bonus',
-      'Halfling Hearthsinger Skills',
-      'Listening at Doors (2-in-6)',
-      'Rumour Monger',
-      'Tavern',
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-4',
-    arcane: false,
-    divine: false,
-  },
-  {
-    name: 'Halfling Reeve',
-    category: 'carcass',
-    requirements: 'minimum 9 constitution, minimum 9 dexterity, minimum 9 wisdom',
-    primeReqs: ['constitution', 'wisdom'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 8,
-    armour: 'leather, shields',
-    weapons: 'any appropriate to size',
-    languages: 'Halfling',
-    description: 'Reeves are the sworn protectors of rural halfling communities. They patrol the wilderness surrounding these idyllic villages, forgoing home comforts to ensure that predators and enemies do not endanger their kinsfolk or threaten the simple peace of the little folk.',
-    savingThrows: [8, 9, 10, 13, 12],
-    nextLevel: 2500,
-    abilities: [
-      'Defensive Bonus',
-      'Divine Magic (4th Level)',
-      'Goblin Slayer',
-      'Limited Possessions',
-      'Stealth',
-      'Wolf Hunter',
-      'Hunting Lodge'
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-4',
-    arcane: false,
-    divine: true,
-  },
-  {
-    name: 'Arcane Bard',
-    category: 'carcass',
-    requirements: 'Minimum 9 dexterity, minimum 9 intelligence',
-    primeReqs: ['charisma', 'dexterity'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if ((abilityScore1 >= 16 && abilityScore2 >= 13) || (abilityScore1 >= 13 && abilityScore2 >= 16)) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 14,
-    armour: 'leather, chainmail',
-    weapons: 'missile weapons, one-handed melee weapons',
-    languages: '',
+    maxLevel: 12,
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any",
+    languages: "Elvish",
     description:
-      'Arcane bards are musicians and poets drawn to a life of wandering and adventure. They pick up a wide range of abilities in their travels, becoming jacks-of-all-trades.',
-    savingThrows: [13, 14, 13, 16, 15],
-    nextLevel: 2000,
-    abilities: [
-      'Anti-Charm',
-      'Arcane Bard Skills',
-      'Arcane Magic',
-      'Lore (level 2)',
-      'Manor',
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-4',
+      "Half-elves are the rare offspring of elves and humans. Physically, they tend to combine the best features of the robust physique of humans. They are human-like in stature but always have a feature that marks their elven heritage (e.g. pointed ears or unusually bright eyes). Half-elves are skilled fighters and dabble with magic, though they lack their elvish parents’ mastery of the arcane.",
+    savingThrows: [12, 13, 13, 15, 15],
+    nextLevel: 2500,
+    abilities: ["Arcane Magic", "Detect Secret Doors", "Infravision"],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
     arcane: true,
     divine: false,
   },
   {
-    name: 'Ratling',
-    category: 'carcass',
-    requirements: 'Minimum 9 constitution',
-    primeReqs: ['dexterity'],
-    hd: 6,
-    maxLevel: 8,
-    armour: 'leather, shields',
-    weapons: 'any',
-    languages: 'the secret language of rats',
-    description: 'Ratlings are fur-covered, rat-like, bipedal humanoids. They stand 4′ to 5′ tall and have 3′-long prehensile tails, large ears, and sensitive noses. Though industrious and adaptable, their association with ver- min tends to place them in the fringes of human settlements. Ratlings are born in broods of 3–5, reach maturity around age 7 or 8, and rarely live past 40. Naturally gregarious, their relatively short lifespans lend the species a certain devil-may-care outlook that other races find amusive',
-    savingThrows: [8, 9, 10, 13, 12],
-    nextLevel: 2000,
-    abilities: [
-      'Awareness',
-      'Infravision',
-      'Prehensile Tail',
-      'Rat Affinity',
-      'Ratling Skills (climb sheer surfaces, detect poison, hear noise, hide in shadows, move silently)',
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-5',
-    arcane: false,
-    divine: false,
-  },
-  {
-    name: 'Changeling',
-    category: 'carcass',
-    requirements: 'Minimum 9 intelligence',
-    primeReqs: ['charisma', 'dexterity'],
+    name: "Half-Orc",
+    category: "advanced",
+    requirements: null,
+    primeReqs: ["dexterity", "strength"],
     checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
       if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 6,
-    maxLevel: 10,
-    armour: 'leather, shields',
-    weapons: 'any',
-    languages: 'Doppelgänger',
-    description:
-      'Changelings are magical demihumans with powers of deception and shape-steal- ing. In their natural form, a changeling appears to be a normal human.',
-    savingThrows: [11, 12, 12, 15, 12],
-    nextLevel: 2500,
-    abilities: [
-      'Back-Stab',
-      'Changeling Skills (beguile, hear noise, hide in shadows, move silently)',
-      'Shape-Stealing',
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-5',
-    arcane: false,
-    divine: false,
-  },
-  {
-    name: 'Dwarf Brewmaster',
-    category: 'carcass',
-    requirements: 'Minimum 9 constitution',
-    primeReqs: ['constitution', 'strength'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5
-      }
-
-      return 0
-    },
-    hd: 8,
-    maxLevel: 10,
-    armour: 'leather, chainmail, shields',
-    weapons: 'battle axe, dagger, hand axe, mace, short sword, warhammer',
-    languages: 'Dwarvish, Gnomish, Goblin, Kobold',
-    description:
-      'Brewmasters are dwarves who dedicate their lives to the craft of brewing alcohol. In combat, they are unpredictable brawl- ers who fight with drunken fury. Dwarf brewmasters are driven to adventure in search of rare ingredients, secret recipes, and ever-stronger drinks.',
-    savingThrows: [8, 9, 10, 13, 12],
-    nextLevel: 2500,
-    abilities: [
-      'Brewing',
-      'Drunken Fighting',
-      'Infravision',
-      'Ingested Poison Resistance',
-      'Listening at Doors',
-
-    ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-6',
-    arcane: false,
-    divine: false,
-  },
-  {
-    name: 'Dwarf Runesmith',
-    category: 'carcass',
-    requirements: 'Minimum 9 constitution, minimum 9 intelligence',
-    primeReqs: ['intelligence', 'strength'],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 13 && abilityScore2 >= 16) {
-        return 10
+        return 10;
       }
 
       if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5
+        return 5;
       }
 
-      return 0
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 8,
+    armour: "leather, chainmail, shields",
+    weapons: "any",
+    languages: "Orcish",
+    description:
+      "Half-orcs are the rare offspring of orcs and humans. They are human-like in stature and appearance, but usually have at least one feature that marks their orcish heritage (e.g. fangs or a pig-like snout). Due to the common animosity between orcs and humans, half-orcs are typically outcasts from both their parent cultures, living on the fringes of society and making a living by whatever means they can. Half-orc adventurers are capable combatants and have some skill as thieves.",
+    savingThrows: [13, 14, 13, 16, 15],
+    nextLevel: 1800,
+    abilities: [
+      "Backstab",
+      "Infravision",
+      "Thieving Skills (hide in shadows, move silently, pick pockets)",
+    ],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Illusionist",
+    category: "advanced",
+    requirements: "Minimum 9 dexterity",
+    primeReqs: ["intelligence"],
+    hd: 4,
+    maxLevel: 14,
+    armour: "none",
+    weapons: "dagger, staff",
+    languages: "",
+    description:
+      "Illusionists are adventurers who study the arcane arts of illusion and deception. Through this study, they have learned to cast magic spells.",
+    savingThrows: [13, 14, 13, 16, 15],
+    nextLevel: 2500,
+    abilities: ["Arcane Magic"],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    arcane: true,
+    divine: false,
+    illusionistSpells: true,
+  },
+  {
+    name: "Knight",
+    category: "advanced",
+    requirements: "Minimum 9 constitution, minimum 9 dexterity",
+    primeReqs: ["strength"],
+    hd: 8,
+    maxLevel: 14,
+    armour: "any chainmail, plate mail, shields",
+    weapons: "melee weapons",
+    languages: "",
+    description:
+      "Knights are warriors who serve a noble house or knightly order, carrying out their liege’s command and combat, preferring the lance above all other weapons. Knights are often members of the noble classes, but a person of lowlier origin may be initiated as a knight as a reward for noble deeds.",
+    savingThrows: [12, 13, 14, 15, 16],
+    nextLevel: 2500,
+    abilities: [
+      "Chivalic Code",
+      "Horsemanship",
+      "Mounted Combat",
+      "Strength of Will",
+      "Hospitality (level 3)",
+      "Stronghold (level 3)",
+      "Flying Mounts (level 5)",
+    ],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Necromancer",
+    category: "advanced",
+    requirements: "Minimum 9 wisdom",
+    primeReqs: ["intelligence"],
+    hd: 4,
+    maxLevel: 14,
+    armour: "none",
+    weapons: "dagger, staff (optional)",
+    languages: "",
+    description:
+      "Necromancers are adventurers who study the arcane arts of death and the undead. Through this study, they have learned to cast magic spells.",
+    savingThrows: [13, 14, 13, 16, 15],
+    nextLevel: 2500,
+    abilities: ["Arcane Magic"],
+    link: "https://www.drivethrurpg.com/product/414657/OldSchool-Essentials-The-Necromancer",
+    arcane: true,
+    necromancerSpells: true,
+    divine: false,
+  },
+  {
+    name: "Paladin",
+    category: "advanced",
+    requirements: "Minimum 9 charisma",
+    primeReqs: ["strength", "wisdom"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 8,
+    maxLevel: 14,
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any",
+    languages: "",
+    description:
+      "Paladins are warriors sworn by sacred oath to the service of a Lawful holy order.",
+    savingThrows: [10, 11, 12, 13, 14],
+    nextLevel: 2750,
+    abilities: [
+      "Divine Magic",
+      "Holy Resistance",
+      "Laying on Hands",
+      "Turning the Undead",
+      "Vow of Humility",
+      "War Horse (level 4)",
+    ],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    arcane: false,
+    divine: true,
+  },
+  {
+    name: "Ranger",
+    category: "advanced",
+    requirements: "Minimum 9 constitution, minimum 9 wisdom",
+    primeReqs: ["strength"],
+    hd: 8,
+    maxLevel: 14,
+    armour: "leather, chainmail, shields",
+    weapons: "any",
+    languages: "",
+    description:
+      "Rangers are members of a secret society which protects their native lands from invasion and the influence of Chaos. They are skilled warriors who are adapted to life in the wilds. At higher levels, their connection with nature grants them the ability to cast spells.",
+    savingThrows: [12, 13, 14, 15, 16],
+    nextLevel: 2250,
+    abilities: [
+      "Awareness",
+      "Divine Magic",
+      "Foraging and Hunting",
+      "Limited Possessions",
+      "Pursuit",
+      "Surprise Attack",
+      "Tracking",
+    ],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    arcane: true,
+    divine: false,
+  },
+  {
+    name: "Svirfneblin",
+    category: "advanced",
+    requirements: "Minimum 9 constitution",
+    primeReqs: ["strength"],
+    hd: 6,
+    maxLevel: 8,
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any",
+    languages:
+      "Deepcommon, Gnomish, Dwarvish, Kobold, the language of earth elementals",
+    description:
+      "Short, thickset demihumans with long noses and gnarled, hairless, grey skin. Svirfneblins (also known as deep gnomes) are subterranean cousins of the gnomes who live close to the surface. Svirfneblins are skilled tunnellers and makers of mechanical contraptions and cunning secret doors. They love gems above all else and excavate their communities around veins of precious stones. Svirfneblins are typically around 3½’ tall and weigh around 120 pounds.",
+    savingThrows: [8, 9, 10, 14, 11],
+    nextLevel: 2400,
+    abilities: [
+      "Blend into Stone",
+      "Defensive Bonus",
+      "Detect Construction Tricks",
+      "Illusion Resistance",
+      "Infravision",
+      "Light Sensitivity",
+      "Speak with Earth Elementals",
+      "Stone Murmurs",
+      "Using Magic Items",
+    ],
+    link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Acolyte",
+    category: "carcass",
+    requirements: null,
+    primeReqs: ["wisdom"],
+    hd: 6,
+    maxLevel: 14,
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "only blunt weapons",
+    languages: "",
+    description:
+      "Acolytes are adventurers who have sworn to serve a deity. They are trained for battle and can channel the power of their deity.",
+    savingThrows: [11, 12, 14, 16, 15],
+    nextLevel: 1500,
+    abilities: [
+      "Bless",
+      "Detect Magic",
+      "Divine Magic",
+      "Know Alignment",
+      "Purify",
+      "Rally",
+      "Turn Undead",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    arcane: false,
+    divine: true,
+  },
+  {
+    name: "Gargantua",
+    category: "carcass",
+    requirements: "Minimum 9 constitution, minimum 9 strength",
+    primeReqs: ["constitution", "strength"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 13 && abilityScore2 >= 16) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 10,
+    maxLevel: 10,
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any, can wield two-handed melee weapon with one hand",
+    languages: "",
+    description:
+      "Known as the “Big Siblings of Human-kind,” gargantuas are demihumans who stand about 7½’ tall and weigh 550 pounds. Gargantuas typically live among or near humans, though some prefer to establish their own communities in the wilderness. They are known as powerful warriors with a strong resistance to every kind of hardship. Gargantuas also have a reputation for being slow-witted and literal-minded that is not entirely deserved, though it is true that they lack subtlety when compared to their smaller kin. They can be steadfast allies or unyielding foes.",
+    savingThrows: [8, 9, 10, 13, 12],
+    nextLevel: 2500,
+    abilities: ["Open Doors", "Rock Throwing"],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Goblin",
+    category: "carcass",
+    requirements: "Minimum 9 dexterity",
+    primeReqs: ["dexterity", "strength"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 8,
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any appropriate to size",
+    languages: "Goblin, the language of wolves",
+    description:
+      "Goblins are short demihumans standing between 3’ and 3½’ tall. They possess skin ranging in colour from yellow to orange to red (and everything in between), while their eyes are usually reddish in hue and are visible even in the dark. Though many goblins live underground, not all do so, especially those most likely to interact with humans and join adventuring parties. Goblins can be somewhat surly and resentful when interacting with other beings, or even their own kin, like bugbears and hobgoblins. These attitudes are only heightened by the fact that many goblins—though not all—are aligned with Chaos.",
+    savingThrows: [8, 9, 10, 13, 12],
+    nextLevel: 2000,
+    abilities: [
+      "Defensive Bonus",
+      "Detect Construction Tricks",
+      "Infravision",
+      "Stealth",
+      "Wolf Affinity",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Hephaestan",
+    category: "carcass",
+    requirements: "Minimum 9 charisma, minimum 9 constitution",
+    primeReqs: ["intelligence", "wisdom"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 10,
+    armour: "leather, chainmail, shields",
+    weapons: "any",
+    languages: "Hephaestan",
+    description:
+      "Hephaestans are a race of tall (6’), thin demihumans with angular features and pointed ears. Some sages claim they are relatives of elves, hailing from a distant land or even another world. For their part, hephaestans are tight lipped on the subject of their origins. Coldly rational and seemingly without emotion, the hephaestans are highly skilled in the use of mental powers, which they employ instead of magic. Despite their aloofness, hephaestans get along well with most intelligent races.",
+    savingThrows: [12, 13, 13, 15, 15],
+    nextLevel: 3000,
+    abilities: [
+      "Listening at Doors",
+      "Mental Powers (ESP, gestalt, healing trance, mind control, mind shield, telepathy)",
+      "Neuropressure",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Kineticist",
+    category: "carcass",
+    requirements: null,
+    primeReqs: ["dexterity", "wisdom"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 14,
+    armour: "none",
+    weapons: "any",
+    languages: "",
+    description:
+      "Kineticists are masters of mind over matter, their rigorous physical and mental training focusing on the manipulation of internal kinetic force. This force can be harnessed to accelerate motion and hone reactions or can be projected outward to affect distant objects.\nThe ability to manipulate kinetic force may be awakened spontaneously or may be learned from a master. Either way, it is often the case that this power runs in families.",
+    savingThrows: [13, 14, 13, 16, 15],
+    nextLevel: 2000,
+    abilities: [
+      "Mental Defense",
+      "Mental Powers (accelerated motion, control density, crush life, kinetic fist, kinetic leap, kinetic shield, kinetic wave, telekinetic attack, throw weapon)",
+      "Neuropressure",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Mage",
+    category: "carcass",
+    requirements: null,
+    primeReqs: ["intelligence", "wisdom"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 14,
+    armour: "none",
+    weapons: "dagger, short sword, staff, sword",
+    languages: "",
+    description:
+      "Mages are adventurers who study the secrets of deep magic, making them powerful allies.",
+    savingThrows: [12, 13, 12, 15, 14],
+    nextLevel: 2800,
+    abilities: [
+      "Arcane Magic",
+      "Detect Magic",
+      "Healing",
+      "Mage Armour",
+      "Mage’s Staff",
+      "Open/Close",
+      "Rally/Fear",
+      "Read Magic",
+      "Scribing Scrolls",
+      "Suggestion",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    arcane: true,
+    divine: false,
+  },
+  {
+    name: "Phase Elf",
+    category: "carcass",
+    requirements: "Minimum 9 intelligence",
+    primeReqs: ["intelligence", "strength"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 10,
+    armour: "any leather, chainmail, plate, shields / none",
+    weapons: "any / dagger",
+    languages: "Elvish, Doppelgänger, Dragon, Pixie",
+    description:
+      "Phase elves are slender, fey demihumans with pointed ears. They typically weigh about 120 pounds and are between 5½ and 6 feet tall. Their hair tends to be violet or silver and their eyes are either pure black or pure white—without an iris or pupil (see Dual Persona). Phase elves originate from an alternate dimension which is inaccessible to other races, and about which they never speak.",
+    savingThrows: [12, 13, 13, 15, 15],
+    nextLevel: 2800,
+    abilities: [
+      "Arcane Magic",
+      "Detect Secret Doors",
+      "Dual Persona",
+      "Immunity to Ghoul Paralysis",
+      "Infravision",
+      "Listening at Doors",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-2",
+    arcane: true,
+    arcaneSpells: true,
+    divine: false,
+  },
+  {
+    name: "Wood Elf",
+    category: "carcass",
+    requirements: "Minimum 9 dexterity, minimum 9 intelligence",
+    primeReqs: ["dexterity", "wisdom"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 10,
+    armour: "leather, shields",
+    weapons: "any",
+    languages: "Elvish, Bugbear, Dryad, Gnoll",
+    description:
+      "Wood elves are slender, fey demihumans with pointed ears. They typically weigh about 110 pounds and are between 5 and 5½ feet tall. Wood elves dwell in hidden, treetop settlements in deep forests, and are seldom seen by humans. They are reclusive and defend their homelands against trespassers. Like druids, wood elves worship the force of nature and the myriad deities that personify it.",
+    savingThrows: [12, 13, 13, 15, 15],
+    nextLevel: 3000,
+    abilities: [
+      "Awareness",
+      "Detect Secret Doors",
+      "Divine Magic",
+      "Foraging and Hunting",
+      "Hiding",
+      "Immunity to Ghoul Paralysis",
+      "Infravision",
+      "Listening at Doors",
+      "Missile Attack Bonus",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-2",
+    arcane: false,
+    divine: true,
+    druidSpells: true,
+  },
+  {
+    name: "Beast Master",
+    category: "carcass",
+    requirements: null,
+    primeReqs: ["strength", "wisdom"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 14,
+    armour: "leather, chainmail, shields",
+    weapons: "any",
+    languages: "",
+    description:
+      "Beast masters are adventurers with a special connection to animals. They are often accompanied by one or more loyal beasts.",
+    savingThrows: [11, 12, 12, 15, 16],
+    nextLevel: 1800,
+    abilities: [
+      "Animal Companions",
+      "Clairvoyance (level 5)",
+      "Identify Tracks",
+      "Reaction Modifier",
+      "Speak with Animals",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Dragonborn",
+    category: "carcass",
+    requirements: "Minimum 9 constitution, minimum 9 intelligence",
+    primeReqs: ["strength"],
+    hd: 8,
+    maxLevel: 10,
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "any",
+    languages: "Dragon",
+    description:
+      "Dragonborn are tall, powerful demihumans with scaled skin and dragon-like heads. They typically weigh about 250 pounds and stand around 6’ tall. As reptiles, they reproduce by laying eggs. Unlike true dragons, dragonborn do not have wings or tails. Dragonborn live in clans based on the colour of their scales (see Draconic Bloodline) and are known for their fierce loyalty and their love of hoarding gold. It is believed that dragonborn were created by the dragon gods.",
+    savingThrows: [12, 13, 14, 13, 16],
+    nextLevel: 3000,
+    abilities: [
+      "Breath Weapon",
+      "Draconic Bloodline (roll d10 on table)",
+      "Draconic Resistance",
+      "Dragon-Affecting Magic",
+      "Dragon Affinity",
+      "Scales",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Mutoid",
+    category: "carcass",
+    requirements: null,
+    primeReqs: ["dexterity"],
+    hd: 6,
+    maxLevel: 8,
+    armour: "leather, shields",
+    weapons: "one-handed melee weapons, all missile weapons",
+    languages: "",
+    description:
+      "Demihumans with mismatched body parts of many different creatures (e.g. reptiles, crustaceans, birds, mammals, etc.). Each individual has a unique appearance. Mutoids are often shunned by other species and live in ruins or in hidden lairs within large settlements.",
+    savingThrows: [10, 11, 12, 13, 14],
+    nextLevel: 1750,
+    abilities: [
+      "Back-Stab",
+      "Mutations",
+      "Mutoid Skills (Hide in shadows, mimicry, move silently, pick pockets)",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Mycelian",
+    category: "carcass",
+    requirements: "Minimum 9 constitution",
+    primeReqs: ["strength"],
+    hd: 8,
+    maxLevel: 6,
+    armour: "shields",
+    weapons: "any",
+    languages: "Deepcommon",
+    description:
+      "Mycelians are humanoid mushrooms, with tall stems, wide, flat caps, and beady eyes amid their gills. They have no mouths, but communicate telepathically. They dwell in lightless caverns deep underground.",
+    savingThrows: [9, 11, 9, 13, 12],
+    nextLevel: 3000,
+    abilities: [
+      "Fungal Spores (Pacifying, hallucinogenic)",
+      "Growth",
+      "Unarmed Attacks",
+      "Natural Armour Class",
+      "Infravision",
+      "Light Sensitivity",
+      "Rest and Sustenence",
+      "Telepathic Communication",
+      "Fungal Reanimation (level 6)",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Tiefling",
+    category: "carcass",
+    requirements: "Minimum 9 intelligence",
+    primeReqs: ["charisma", "dexterity"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 10,
+    armour: "leather, chainmail, shields",
+    weapons: "any",
+    languages: "",
+    description:
+      "Tieflings are humans with a mysterious fiendish ancestor. They tend to be outcasts living on the fringes of society, shunned by those who fear their heritage.",
+    savingThrows: [11, 12, 12, 15, 14],
+    nextLevel: 2500,
+    abilities: [
+      "Fiendish Heritage (roll on tables)",
+      "Holy Water Vulnerability",
+      "Infravision",
+      "Tiefling Skills (Beguile, hear noise, hide in shadows, move silently",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Halfling Hearthsinger",
+    category: "carcass",
+    requirements:
+      "Minimum 9 charisma, minimum 9 constitution, minimum 9 dexterity",
+    primeReqs: ["charisma", "constitution"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 8,
+    armour: "leather, shields",
+    weapons: "any appropriate to size",
+    languages: "Halfling",
+    description:
+      "Hearthsingers are halflings who specialise in memorising and recalling legends, lore, and local folktales. The desire to learn the truth behind lost legends and forgotten myths often drives them to adventure and they value tomes, journals, and written histories over other treasure.",
+    savingThrows: [8, 9, 10, 13, 12],
+    nextLevel: 2000,
+    abilities: [
+      "Defensive Bonus",
+      "Halfling Hearthsinger Skills",
+      "Listening at Doors (2-in-6)",
+      "Rumour Monger",
+      "Tavern",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-4",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Halfling Reeve",
+    category: "carcass",
+    requirements:
+      "minimum 9 constitution, minimum 9 dexterity, minimum 9 wisdom",
+    primeReqs: ["constitution", "wisdom"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 8,
+    armour: "leather, shields",
+    weapons: "any appropriate to size",
+    languages: "Halfling",
+    description:
+      "Reeves are the sworn protectors of rural halfling communities. They patrol the wilderness surrounding these idyllic villages, forgoing home comforts to ensure that predators and enemies do not endanger their kinsfolk or threaten the simple peace of the little folk.",
+    savingThrows: [8, 9, 10, 13, 12],
+    nextLevel: 2500,
+    abilities: [
+      "Defensive Bonus",
+      "Divine Magic (4th Level)",
+      "Goblin Slayer",
+      "Limited Possessions",
+      "Stealth",
+      "Wolf Hunter",
+      "Hunting Lodge",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-4",
+    arcane: false,
+    divine: true,
+  },
+  {
+    name: "Arcane Bard",
+    category: "carcass",
+    requirements: "Minimum 9 dexterity, minimum 9 intelligence",
+    primeReqs: ["charisma", "dexterity"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (
+        (abilityScore1 >= 16 && abilityScore2 >= 13) ||
+        (abilityScore1 >= 13 && abilityScore2 >= 16)
+      ) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 14,
+    armour: "leather, chainmail",
+    weapons: "missile weapons, one-handed melee weapons",
+    languages: "",
+    description:
+      "Arcane bards are musicians and poets drawn to a life of wandering and adventure. They pick up a wide range of abilities in their travels, becoming jacks-of-all-trades.",
+    savingThrows: [13, 14, 13, 16, 15],
+    nextLevel: 2000,
+    abilities: [
+      "Anti-Charm",
+      "Arcane Bard Skills",
+      "Arcane Magic",
+      "Lore (level 2)",
+      "Manor",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-4",
+    arcane: true,
+    divine: false,
+  },
+  {
+    name: "Ratling",
+    category: "carcass",
+    requirements: "Minimum 9 constitution",
+    primeReqs: ["dexterity"],
+    hd: 6,
+    maxLevel: 8,
+    armour: "leather, shields",
+    weapons: "any",
+    languages: "the secret language of rats",
+    description:
+      "Ratlings are fur-covered, rat-like, bipedal humanoids. They stand 4′ to 5′ tall and have 3′-long prehensile tails, large ears, and sensitive noses. Though industrious and adaptable, their association with ver- min tends to place them in the fringes of human settlements. Ratlings are born in broods of 3–5, reach maturity around age 7 or 8, and rarely live past 40. Naturally gregarious, their relatively short lifespans lend the species a certain devil-may-care outlook that other races find amusive",
+    savingThrows: [8, 9, 10, 13, 12],
+    nextLevel: 2000,
+    abilities: [
+      "Awareness",
+      "Infravision",
+      "Prehensile Tail",
+      "Rat Affinity",
+      "Ratling Skills (climb sheer surfaces, detect poison, hear noise, hide in shadows, move silently)",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-5",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Changeling",
+    category: "carcass",
+    requirements: "Minimum 9 intelligence",
+    primeReqs: ["charisma", "dexterity"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 6,
+    maxLevel: 10,
+    armour: "leather, shields",
+    weapons: "any",
+    languages: "Doppelgänger",
+    description:
+      "Changelings are magical demihumans with powers of deception and shape-steal- ing. In their natural form, a changeling appears to be a normal human.",
+    savingThrows: [11, 12, 12, 15, 12],
+    nextLevel: 2500,
+    abilities: [
+      "Back-Stab",
+      "Changeling Skills (beguile, hear noise, hide in shadows, move silently)",
+      "Shape-Stealing",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-5",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Dwarf Brewmaster",
+    category: "carcass",
+    requirements: "Minimum 9 constitution",
+    primeReqs: ["constitution", "strength"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
     },
     hd: 8,
     maxLevel: 10,
-    armour: 'any leather, chainmail, plate, shields',
-    weapons: 'small or normal-sized',
-    languages: 'Dwarvish, Gnomish, Goblin, Kobold',
+    armour: "leather, chainmail, shields",
+    weapons: "battle axe, dagger, hand axe, mace, short sword, warhammer",
+    languages: "Dwarvish, Gnomish, Goblin, Kobold",
     description:
-      'While dwarves typically have no skill as magic-users, the wondrous magical armaments of their smiths are legendary. Masters of an ancient secret tradition, dwarf runesmiths wield magic by binding it into runes of power.',
+      "Brewmasters are dwarves who dedicate their lives to the craft of brewing alcohol. In combat, they are unpredictable brawl- ers who fight with drunken fury. Dwarf brewmasters are driven to adventure in search of rare ingredients, secret recipes, and ever-stronger drinks.",
+    savingThrows: [8, 9, 10, 13, 12],
+    nextLevel: 2500,
+    abilities: [
+      "Brewing",
+      "Drunken Fighting",
+      "Infravision",
+      "Ingested Poison Resistance",
+      "Listening at Doors",
+    ],
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-6",
+    arcane: false,
+    divine: false,
+  },
+  {
+    name: "Dwarf Runesmith",
+    category: "carcass",
+    requirements: "Minimum 9 constitution, minimum 9 intelligence",
+    primeReqs: ["intelligence", "strength"],
+    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
+      if (abilityScore1 >= 13 && abilityScore2 >= 16) {
+        return 10;
+      }
+
+      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+        return 5;
+      }
+
+      return 0;
+    },
+    hd: 8,
+    maxLevel: 10,
+    armour: "any leather, chainmail, plate, shields",
+    weapons: "small or normal-sized",
+    languages: "Dwarvish, Gnomish, Goblin, Kobold",
+    description:
+      "While dwarves typically have no skill as magic-users, the wondrous magical armaments of their smiths are legendary. Masters of an ancient secret tradition, dwarf runesmiths wield magic by binding it into runes of power.",
     savingThrows: [8, 9, 10, 13, 12],
     nextLevel: 2800,
     abilities: [
-      'Forge-Craft',
-      'Infravision',
-      'Listening at Doors',
-      'Rune Magic',
+      "Forge-Craft",
+      "Infravision",
+      "Listening at Doors",
+      "Rune Magic",
     ],
-    link: 'https://necroticgnome.com/products/carcass-crawler-issue-6',
+    link: "https://necroticgnome.com/products/carcass-crawler-issue-6",
     arcane: false,
     runesmithSpells: true,
     divine: false,
   },
-]
+];
 
-export default classOptionsData
+export default classOptionsData;
