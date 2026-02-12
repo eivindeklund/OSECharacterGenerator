@@ -1,5 +1,6 @@
 const weaponsData = [
   {
+    id: 'battle_axe',
     name: "Battle axe",
     price: 7,
     weight: 50,
@@ -7,6 +8,7 @@ const weaponsData = [
     qualities: ["Melee", "Slow", "Two-handed"]
   },
   {
+    id: 'club',
     name: "Club",
     price: 3,
     weight: 50,
@@ -14,6 +16,7 @@ const weaponsData = [
     qualities: ["Blunt", "Melee"]
   },
   {
+    id: 'crossbow',
     name: "Crossbow",
     price: 30,
     weight: 50,
@@ -26,6 +29,7 @@ const weaponsData = [
     ]
   },
   {
+    id: 'dagger',
     name: "Dagger",
     price: 3,
     weight: 10,
@@ -33,6 +37,7 @@ const weaponsData = [
     qualities: ["Melee", "Missile (5’–10’ / 11’–20’ / 21’–30’)"]
   },
   {
+    id: 'hand_axe',
     name: "Hand axe",
     price: 4,
     weight: 30,
@@ -40,6 +45,7 @@ const weaponsData = [
     qualities: ["Melee", "Missile (5’–10’ / 11’–20’ / 21’–30’)"]
   },
   {
+    id: 'holy_water_vial',
     name: "Holy water vial",
     price: 25,
     weight: 0,
@@ -47,6 +53,7 @@ const weaponsData = [
     qualities: ["Missile (5’–10’ / 11’–30’ / 31’–50’)", "Splash weapon"]
   },
   {
+    id: 'lance',
     name: "Lance",
     price: 5,
     weight: 120,
@@ -54,6 +61,7 @@ const weaponsData = [
     qualities: ["Charge", "Melee"]
   },
   {
+    id: 'long_bow',
     name: "Long bow",
     price: 40,
     weight: 30,
@@ -61,6 +69,7 @@ const weaponsData = [
     qualities: ["Missile (5’–70’ / 71’–140’ / 141’–210’)", "Two-handed"]
   },
   {
+    id: 'mace',
     name: "Mace",
     price: 5,
     weight: 30,
@@ -68,6 +77,7 @@ const weaponsData = [
     qualities: ["Blunt", "Melee"]
   },
   {
+    id: 'oil_flask_burning',
     name: "Oil flask, burning",
     price: 2,
     weight: 0,
@@ -75,6 +85,7 @@ const weaponsData = [
     qualities: ["Missile (5’–10’ / 11’–30’ / 31’–50’)", "Splash weapon"]
   },
   {
+    id: 'polearm',
     name: "Polearm",
     price: 7,
     weight: 150,
@@ -82,6 +93,7 @@ const weaponsData = [
     qualities: ["Brace", "Melee", "Slow", "Two-handed"]
   },
   {
+    id: 'short_bow',
     name: "Short bow",
     price: 25,
     weight: 30,
@@ -89,6 +101,7 @@ const weaponsData = [
     qualities: ["Missile (5’–50’ / 51’–100’ / 101’–150’)", "Two-handed"]
   },
   {
+    id: 'short_sword',
     name: "Short sword",
     price: 7,
     weight: 30,
@@ -96,6 +109,7 @@ const weaponsData = [
     qualities: ["Melee"]
   },
   {
+    id: 'silver_dagger',
     name: "Silver dagger",
     price: 30,
     weight: 10,
@@ -103,6 +117,7 @@ const weaponsData = [
     qualities: ["Melee", "Missile (5’–10’ / 11’–20’ / 21’–30’)"]
   },
   {
+    id: 'sling',
     name: "Sling",
     price: 2,
     weight: 20,
@@ -110,6 +125,7 @@ const weaponsData = [
     qualities: ["Blunt", "Missile (5’–40’ / 41’–80’ / 81’–160’)"]
   },
   {
+    id: 'spear',
     name: "Spear",
     price: 4,
     weight: 30,
@@ -117,6 +133,7 @@ const weaponsData = [
     qualities: ["Brace", "Melee", "Missile (5’–20’ / 21’–40’ / 41’–60’)"]
   },
   {
+    id: 'staff',
     name: "Staff",
     price: 2,
     weight: 40,
@@ -124,30 +141,31 @@ const weaponsData = [
     qualities: ["Blunt", "Melee", "Slow", "Two-handed"]
   },
   {
+    id: 'sword',
     name: "Sword",
     price: 10,
     weight: 60,
     damage: "1d8",
     qualities: ["Melee"]
   },
-
   {
+    id: 'torch_6',
     name: "Torch (6)",
     price: 1,
     weight: 0,
     damage: "1d4",
     qualities: ["Melee"]
   },
-
   {
+    id: 'two_handed_sword',
     name: "Two-handed sword",
     price: 15,
     weight: 150,
     damage: "1d10",
     qualities: ["Melee", "Slow", "Two-handed"]
   },
-
   {
+    id: 'warhammer',
     name: "Warhammer",
     price: 5,
     weight: 30,
@@ -155,6 +173,7 @@ const weaponsData = [
     qualities: ["Blunt", "Melee"]
   },
   {
+    id: 'arrows_20',
     name: "Arrows (20)",
     price: 5,
     weight: 0,
@@ -162,6 +181,7 @@ const weaponsData = [
     qualities: ["Ammunition"]
   },
   {
+    id: 'crossbow_bolts_30',
     name: "Crossbow Bolts (30)",
     price: 10,
     weight: 0,
@@ -169,6 +189,7 @@ const weaponsData = [
     qualities: ["Ammunition"]
   },
   {
+    id: 'silver_tipped_arrow_1',
     name: "Silver tipped arrow (1)",
     price: 5,
     weight: 0,

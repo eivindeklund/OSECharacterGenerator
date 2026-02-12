@@ -1,0 +1,59 @@
+.pack-options-container {
+  margin-top: 2rem;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.pack-tabs {
+  display: flex;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.pack-tab-button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #666;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.pack-tab-button:hover {
+  color: #333;
+}
+
+.pack-tab-button.active {
+  color: #d99e30; /* Using gold theme color found in store */
+  border-bottom: 2px solid #d99e30;
+  font-weight: bold;
+}
+
+.pack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed #eee;
+}
+
+.pack-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.pack-price {
+  font-weight: bold;
+  color: #d99e30;
+}
+
+.pack-contents-list {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 0;
+  text-align: left;
+}

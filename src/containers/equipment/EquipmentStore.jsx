@@ -1,26 +1,28 @@
-import React, { useState, useEffect } from 'react'
-import equipmentData from '../../data/equipmentData'
-import weaponsData from '../../data/weaponsData'
-import armourData from '../../data/armourData'
+import PropTypes from 'prop-types'
+import { useEffect, useState } from 'react'
+import { isMobile } from 'react-device-detect'
+import Inventory from '../../components/equipment/Inventory'
 import {
   Cleric,
+  Dwarf,
   Elf,
   Fighter,
-  Dwarf,
   Halfling
 } from '../../constants/constants'
+import ArmourOptionsContainer from '../../containers/equipment/ArmourOptionsContainer'
+import GearOptionsContainer from '../../containers/equipment/GearOptionsContainer'
+import PackOptionsContainer from '../../containers/equipment/PackOptionsContainer'
+import WeaponOptionsContainer from '../../containers/equipment/WeaponOptionsContainer'
+import armourData from '../../data/armourData'
+import equipmentData from '../../data/equipmentData'
+import weaponsData from '../../data/weaponsData'
+import { Dice } from '../../utilities/DiceBox'
+import { calculatePackPrice, resolvePackItems } from '../../utilities/PackUtils'
 import {
-  chooseRandomItem,
   calculateArmourClass,
+  chooseRandomItem,
   d
 } from '../../utilities/utilities'
-import ArmourOptionsContainer from '../../containers/equipment/ArmourOptionsContainer'
-import WeaponOptionsContainer from '../../containers/equipment/WeaponOptionsContainer'
-import GearOptionsContainer from '../../containers/equipment/GearOptionsContainer'
-import Inventory from '../../components/equipment/Inventory'
-import PropTypes from 'prop-types'
-import { Dice } from '../../utilities/DiceBox'
-import { isMobile } from 'react-device-detect'
 
 export default function EquipmentStore(props) {
   const {
@@ -157,7 +159,7 @@ export default function EquipmentStore(props) {
   }
 
   const storeHandler = (selectedItem, action, type) => {
-    if (selectedItem.includes(' (x')) {
+    if (type !== 'pack' && typeof selectedItem === 'string' && selectedItem.includes(' (x')) {
       const itemNameNonConsolidated = selectedItem.split(' (x')
       selectedItem = itemNameNonConsolidated[0]
     }
@@ -174,6 +176,46 @@ export default function EquipmentStore(props) {
       case 'gear':
         storeCollection = equipmentData
         break
+      case 'pack':
+        // No consolidation collection needed for packs as they are handled differently
+        break
+    }
+
+    if (type === 'pack') {
+      const pack = selectedItem
+      const price = calculatePackPrice(pack.items, characterClass.name)
+
+      if (action === 'buy') {
+        if (price > gold) {
+          return
+        }
+
+        const resolvedItems = resolvePackItems(pack.items, characterClass.name)
+
+        let newGold = gold - price
+        let newWeapons = [...weapons]
+        let newArmour = [...armour]
+        let newGear = [...adventuringGear]
+
+        resolvedItems.forEach(item => {
+          // Add item multiple times based on quantity
+          for (let i = 0; i < item.quantity; i++) {
+            if (item.category === 'weapon') {
+              newWeapons.push(item.name)
+            } else if (item.category === 'armour') {
+              newArmour.push(item.name)
+            } else {
+              newGear.push(item.name)
+            }
+          }
+        })
+
+        setGold(newGold)
+        setWeapons(newWeapons)
+        setArmour(newArmour)
+        setAdventuringGear(newGear)
+      }
+      return
     }
 
     const findItem = (object) => {
@@ -317,6 +359,13 @@ export default function EquipmentStore(props) {
                 storeHandler={storeHandler}
                 selectRandomGear={selectRandomGear}
               ></GearOptionsContainer>
+            )}
+
+            {armour.length > 0 && (
+              <PackOptionsContainer
+                characterClass={characterClass}
+                storeHandler={storeHandler}
+              />
             )}
           </div>
 
