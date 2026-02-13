@@ -1,0 +1,83 @@
+
+/**
+ * Custom assert that logs in the browser but throws in Vitest.
+ */
+export function assert(condition, message) {
+  if (!condition) {
+    // Check if we are running in Vitest (typically MODE === 'test')
+    if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+      throw new Error(`Assertion failed: ${message}`);
+    } else {
+      // In browser, just log the error without crashing the app
+      console.error(`Assertion failed: ${message}`);
+    }
+  }
+}
+
+const validQualities = new Set([
+  'Melee',
+  'Slow',
+  'Two-handed',
+  'Blunt',
+  'Brace',
+  'Charge',
+  'Ammunition',
+  'Splash weapon',
+  'Reload'
+]);
+
+const specialCheckers = {
+  'Missile': (quality) => /^Missile \(.*\)$/.test(quality)
+};
+
+/* TODO: Replace this with ids, and possibly make these just import from the equipment list instead of being separately listed as weapons */
+const universalWeapons = [
+  'Holy water vial',
+  'Oil flask, burning',
+  'Torch (6)'
+];
+
+/**
+ * Checks if a weapon is a universal item that anyone can use (e.g. equipment-weapons).
+ */
+export const isUniversalWeapon = (weapon) => universalWeapons.includes(weapon.name);
+
+/**
+ * Checks if a weapon has a specific quality.
+ * @param {object} weapon - The weapon object from weaponsData.
+ * @param {string} wantedQuality - The quality to check for (e.g. 'Blunt', 'Missile').
+ * @returns {boolean}
+ */
+export function checkWeaponQuality(weapon, wantedQuality) {
+  // Assert wantedQuality is valid logic
+  const isSpecial = Object.keys(specialCheckers).includes(wantedQuality);
+  assert(
+    validQualities.has(wantedQuality) || isSpecial,
+    `Invalid wanted quality: ${wantedQuality}`
+  );
+
+  let checker;
+  if (isSpecial) {
+    checker = specialCheckers[wantedQuality];
+  } else {
+    checker = (quality) => quality === wantedQuality;
+  }
+
+  return weapon.qualities.some(q => checker(q));
+}
+
+/**
+ * Validates that a specific quality string from a weapon is valid according to schema.
+ * Used for testing.
+ */
+export function validateQualitySchema(qualityString) {
+  // Check if it matches any plain quality
+  if (validQualities.has(qualityString)) return true;
+
+  // Check if it matches any special checker
+  for (const checker of Object.values(specialCheckers)) {
+    if (checker(qualityString)) return true;
+  }
+
+  return false;
+}

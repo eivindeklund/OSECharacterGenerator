@@ -46,7 +46,7 @@ const weaponsData = [
   },
   {
     id: "holy_water_vial",
-    name: "Holy water vial",
+    name: "Holy water (vial)",
     price: 25,
     weight: 0,
     damage: "1d8",
@@ -149,8 +149,8 @@ const weaponsData = [
     qualities: ["Melee"],
   },
   {
-    id: "torch_6",
-    name: "Torch (6)",
+    id: "torches",
+    name: "Torches (6)",
     price: 1,
     weight: 0,
     damage: "1d4",

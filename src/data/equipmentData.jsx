@@ -144,7 +144,7 @@ const equipmentData = [
     category: "Religious & Occult",
   },
   {
-    id: "holy_water",
+    id: "holy_water_vial",
     name: "Holy water (vial)",
     price: 25,
     category: "Religious & Occult",
@@ -419,7 +419,7 @@ export const equipmentPacks = [
         options: [
           { class: "Cleric", id: "holy_symbol_wooden" },
           { class: "Thief", id: "thieves_tools" },
-          { default: true, id: "holy_water" },
+          { default: true, id: "holy_water_vial" },
         ],
       },
       { id: "iron_spikes", quantity: 1 },

@@ -1,8 +1,16 @@
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import weaponsData from "../../data/weaponsData";
+import { isUniversalWeapon } from "../../utilities/WeaponUtils";
 
-const WeaponItemRow = ({ item, qty, handleUpdateLedger, onSelect }) => (
+const WeaponItemRow = ({
+  item,
+  qty,
+  handleUpdateLedger,
+  onSelect,
+  isUsable,
+  isStandard,
+}) => (
   <li
     style={{
       display: "flex",
@@ -12,6 +20,7 @@ const WeaponItemRow = ({ item, qty, handleUpdateLedger, onSelect }) => (
       borderBottom: "1px solid #eee",
       cursor: qty === 0 ? "pointer" : "default",
       backgroundColor: qty > 0 ? "#f0f8ff" : "transparent",
+      opacity: isUsable ? 1 : 0.6,
     }}
     onClick={() => {
       if (qty === 0) {
@@ -30,7 +39,14 @@ const WeaponItemRow = ({ item, qty, handleUpdateLedger, onSelect }) => (
       }}
     >
       <div>
-        <div>{item.name}</div>
+        <div
+          style={{
+            fontWeight: isStandard ? "bold" : "normal",
+            textDecoration: isUsable ? "none" : "line-through",
+          }}
+        >
+          {item.name}
+        </div>
         <div style={{ fontSize: "0.8em", color: "#666" }}>{item.damage}</div>
       </div>
       <div>{item.price} gp</div>
@@ -66,6 +82,8 @@ WeaponItemRow.propTypes = {
   qty: PropTypes.number.isRequired,
   handleUpdateLedger: PropTypes.func.isRequired,
   onSelect: PropTypes.func,
+  isUsable: PropTypes.bool,
+  isStandard: PropTypes.bool,
 };
 
 export default function WeaponOptionsContainer(props) {
@@ -112,15 +130,24 @@ export default function WeaponOptionsContainer(props) {
 
       <div className="weapons-container" style={{ display: "block" }}>
         <ul className="weapons-list" style={{ listStyle: "none", padding: 0 }}>
-          {itemsToRender.map((item) => (
-            <WeaponItemRow
-              key={item.id}
-              item={item}
-              qty={purchaseLedger[item.name] || 0}
-              handleUpdateLedger={handleUpdateLedger}
-              onSelect={handleWeaponSelect}
-            />
-          ))}
+          {itemsToRender.map((item) => {
+            const isStandard = characterClass.isStandardWeapon
+              ? characterClass.isStandardWeapon(item)
+              : true;
+            const isUsable = isStandard || isUniversalWeapon(item);
+
+            return (
+              <WeaponItemRow
+                key={item.id}
+                item={item}
+                qty={purchaseLedger[item.name] || 0}
+                handleUpdateLedger={handleUpdateLedger}
+                onSelect={handleWeaponSelect}
+                isUsable={isUsable}
+                isStandard={isStandard}
+              />
+            );
+          })}
           {!isOpen && itemsToRender.length === 0 && (
             <li style={{ fontStyle: "italic", color: "#888", padding: "5px" }}>
               No weapons selected. Click header to expand.
