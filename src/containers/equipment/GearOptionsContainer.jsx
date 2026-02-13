@@ -17,8 +17,8 @@ const GearItemRow = ({ item, qty, handleUpdateLedger }) => (
       if (qty === 0) handleUpdateLedger(item.name, 1);
     }}
   >
-    <span style={{ flex: 1 }}>{item.name}</span>
-    <span style={{ width: "60px", textAlign: "right", marginRight: "10px" }}>
+    <span style={{ flex: 1, textAlign: "left" }}>{item.name}</span>
+    <span style={{ width: "4em", textAlign: "right", marginRight: "0.7em" }}>
       {item.price} gp
     </span>
 
@@ -29,7 +29,7 @@ const GearItemRow = ({ item, qty, handleUpdateLedger }) => (
     >
       <button
         className="button button-small"
-        style={{ padding: "0 5px", width: "25px" }}
+        style={{ padding: "0 5px", width: "1.5em" }}
         onClick={() => handleUpdateLedger(item.name, qty - 1)}
         disabled={qty === 0}
       >
@@ -38,7 +38,7 @@ const GearItemRow = ({ item, qty, handleUpdateLedger }) => (
       <span style={{ width: "20px", textAlign: "center" }}>{qty}</span>
       <button
         className="button button-small"
-        style={{ padding: "0 5px", width: "25px" }}
+        style={{ padding: "0 5px", width: "1.5em" }}
         onClick={() => handleUpdateLedger(item.name, qty + 1)}
       >
         +
