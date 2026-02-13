@@ -38,7 +38,7 @@ const WeaponItemRow = ({
         marginRight: "10px",
       }}
     >
-      <div>
+      <div style={{ textAlign: "left" }}>
         <div
           style={{
             fontWeight: isStandard ? "bold" : "normal",
@@ -49,7 +49,9 @@ const WeaponItemRow = ({
         </div>
         <div style={{ fontSize: "0.8em", color: "#666" }}>{item.damage}</div>
       </div>
-      <div>{item.price} gp</div>
+      <div style={{ textAlign: "right", minWidth: "3.5em" }}>
+        {item.price} gp
+      </div>
     </div>
 
     <div
