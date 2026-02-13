@@ -7,7 +7,7 @@ import {
   resolvePackItems,
 } from "../../utilities/PackUtils";
 
-const PackOptionsContainer = ({ characterClass, storeHandler }) => {
+const PackOptionsContainer = ({ characterClass, handleAddToLedger }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   // Assuming characterClass prop is an object with a name property, based on EquipmentStore usage
@@ -40,9 +40,9 @@ const PackOptionsContainer = ({ characterClass, storeHandler }) => {
           <span className="pack-price">{price} gp</span>
           <button
             className="button button-small"
-            onClick={() => storeHandler(activePack, "buy", "pack")}
+            onClick={() => handleAddToLedger(contents)}
           >
-            Buy
+            Add to Ledger
           </button>
         </div>
         <ul className="pack-contents-list">
@@ -60,7 +60,7 @@ const PackOptionsContainer = ({ characterClass, storeHandler }) => {
 
 PackOptionsContainer.propTypes = {
   characterClass: PropTypes.object,
-  storeHandler: PropTypes.func,
+  handleAddToLedger: PropTypes.func,
 };
 
 export default PackOptionsContainer;

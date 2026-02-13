@@ -9,6 +9,7 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "any leather, chainmail, plate, shields",
     weapons: "any",
+    weapon_qualities: [],
     languages: "",
     description:
       "Fighters are adventurers dedicated to mastering the arts of combat and war. In a group of adventurers, the role of fighters is to battle monsters and to defend other characters.",
@@ -29,6 +30,7 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "any leather, chainmail, plate, shields",
     weapons: "only blunt weapons",
+    weapon_qualities: ["Blunt"],
     languages: "",
     description:
       "Clerics are adventurers who have sworn to serve a deity. They are trained for battle and channel the power of their deity.",
@@ -48,6 +50,7 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "none",
     weapons: "dagger, staff",
+    weapon_qualities: ["=dagger", "=staff"],
     languages: "",
     description:
       "Magic-users are adventurers whose study of arcane secrets has taught them how to cast spells. Magic-users are able to cast a greater number of increasingly powerful spells as they advance in level.",
@@ -68,6 +71,7 @@ const classOptionsData = [
     maxLevel: 0,
     armour: "leather",
     weapons: "any",
+    weapon_qualities: [],
     languages: "",
     description:
       "Thieves are adventurers who live by their skills of deception and stealth. Their range of unique skills makes them very handy companions in adventures. However, thieves are not always to be trusted.",
@@ -93,6 +97,7 @@ const classOptionsData = [
     armour: "any leather, chainmail, plate, shields",
     weapons:
       "any small or normal sized, but cannot use longbows or two-handed swords",
+    weapon_qualities: ["!Two-handed"],
     languages: "Dwarvish, Gnomish, Goblin, Kobold",
     description:
       "Dwarves are stout, bearded demihumans, about 4’ tall and weighing about 150 pounds. Dwarves typically live underground and love fine craftsmanship, gold, hearty food, and strong drink. They have skin, hair, and eye colours in earth tones. Dwarves are known for their stubbornness and practicality. They are a hardy people and have a strong resistance to magic, as reflected in their saving throws.",
@@ -128,6 +133,7 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "any leather, chainmail, plate, shields",
     weapons: "any",
+    weapon_qualities: [],
     languages: "Elvish, Gnoll, Hobgoblin, Orcish",
     description:
       "Elves are slender, fey demihumans with pointed ears. They typically weigh about 120 pounds and are between 5 and 5½ feet tall. Elves are seldom met in human settlements, preferring to feast and make merry in the woods. If crossed, they are dangerous enemies, as they are masters of both sword and spell. Elves are fascinated by spells and beautifully constructed magic items and love to collect both.",
@@ -165,6 +171,7 @@ const classOptionsData = [
     maxLevel: 8,
     armour: "any leather, chainmail, plate, shields",
     weapons: "any appropriate to size",
+    weapon_qualities: [],
     languages: "Halfling",
     description:
       "Halflings are small, rotund demihumans with furry feet and curly hair. They weigh about 60 pounds and are around 3’ tall. Halflings are a friendly and welcoming folk. Above all, they love the comforts of home and are not known for their bravery. Halflings who gain treasure through adventuring will often use their wealth in pursuit of a quiet, comfortable life.",
@@ -192,6 +199,15 @@ const classOptionsData = [
     armour: "leather",
     weapons:
       "missile weapons, dagger, sword, short sword, polearm, spear, staff",
+    weapon_qualities: [
+      "Missile*",
+      "=dagger",
+      "=sword",
+      "=short_sword",
+      "=polearm",
+      "=spear",
+      "=staff",
+    ],
     languages: "",
     description:
       "Acrobats are trained in skills of balance, gymnastics, and stealth. They often work in conjunction with thieves and may belong to a Thieves’ Guild.",
