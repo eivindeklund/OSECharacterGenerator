@@ -104,9 +104,11 @@ export default function WeaponOptionsContainer(props) {
         <span>{isOpen ? "▼" : "▶"}</span>
       </div>
 
-      <div className="equipment-restrictions">
-        Allowed Weapons: {characterClass.weapons}
-      </div>
+      {isOpen && (
+        <div className="equipment-restrictions">
+          Allowed Weapons: {characterClass.weapons}
+        </div>
+      )}
 
       <div className="weapons-container" style={{ display: "block" }}>
         <ul className="weapons-list" style={{ listStyle: "none", padding: 0 }}>

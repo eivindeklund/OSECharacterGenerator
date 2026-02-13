@@ -334,27 +334,26 @@ export default function EquipmentStore(props) {
   };
 
   const handleUpdateLedger = (itemName, quantity) => {
-    const newLedger = { ...purchaseLedger };
-    if (quantity <= 0) {
-      delete newLedger[itemName];
-    } else {
-      newLedger[itemName] = quantity;
-    }
-    setPurchaseLedger(newLedger);
+    setPurchaseLedger((prevLedger) => {
+      const newLedger = { ...prevLedger };
+      if (quantity <= 0) {
+        delete newLedger[itemName];
+      } else {
+        newLedger[itemName] = quantity;
+      }
+      return newLedger;
+    });
   };
 
   const handleAddToLedger = (items) => {
-    const newLedger = { ...purchaseLedger };
-    items.forEach((item) => {
-      // Handle pack item structure { id, quantity } vs direct name
-      // We need to resolve ID to Item Name if it is an ID
-      // But PackUtils resolvePackItems returns objects with { name, category, quantity }
-      // So we assume we receive resolved items with 'name' and 'quantity'
-
-      const currentQty = newLedger[item.name] || 0;
-      newLedger[item.name] = currentQty + (item.quantity || 1);
+    setPurchaseLedger((prevLedger) => {
+      const newLedger = { ...prevLedger };
+      items.forEach((item) => {
+        const currentQty = newLedger[item.name] || 0;
+        newLedger[item.name] = currentQty + (item.quantity || 1);
+      });
+      return newLedger;
     });
-    setPurchaseLedger(newLedger);
   };
 
   const handleClearLedger = () => {
@@ -404,38 +403,34 @@ export default function EquipmentStore(props) {
           </button>
         )}
       </div>
-
       {goldRolled && (
         <div className="equipment-purchase-container">
           <div className="equipment-options">
             {
               <ArmourOptionsContainer
                 characterClass={characterClass}
-                handleOptionChange={handleOptionChange}
-                armourSelected={armourSelected}
-                shieldSelected={shieldSelected}
-                handleShieldChange={handleShieldChange}
-                storeHandler={storeHandler}
+                purchaseLedger={purchaseLedger}
+                handleUpdateLedger={handleUpdateLedger}
               ></ArmourOptionsContainer>
             }
 
-            {armour.length > 0 && (
+            {
               <WeaponOptionsContainer
                 characterClass={characterClass}
                 purchaseLedger={purchaseLedger}
                 handleUpdateLedger={handleUpdateLedger}
               ></WeaponOptionsContainer>
-            )}
+            }
 
-            {armour.length > 0 && (
+            {
               <PackOptionsContainer
                 characterClass={characterClass}
                 storeHandler={storeHandler}
                 handleAddToLedger={handleAddToLedger}
               />
-            )}
+            }
 
-            {armour.length > 0 && (
+            {
               <GearOptionsContainer
                 characterClass={characterClass}
                 adventuringGearSelected={adventuringGearSelected}
@@ -446,10 +441,10 @@ export default function EquipmentStore(props) {
                 purchaseLedger={purchaseLedger}
                 handleUpdateLedger={handleUpdateLedger}
               ></GearOptionsContainer>
-            )}
+            }
 
             {/* Purchase Ledger Summary */}
-            {armour.length > 0 && Object.keys(purchaseLedger).length > 0 && (
+            {Object.keys(purchaseLedger).length > 0 && (
               <div
                 className="purchase-ledger-summary"
                 style={{
@@ -505,8 +500,18 @@ export default function EquipmentStore(props) {
         </div>
       )}
 
+      {/* This should be part of the button conditional, but I don't know how
+      that works syntactically. */}
+      {/* TODO: Make this part of the button conditional */}
+      {/* TODO: Do not show this for the Magic user class, and remove "unarmoured" as a purchase option */}
+      {/* TODO: Add a warning for not buying a weapon */}
+      {/* TODO: Add a warning for not having purchased your ledger. Maybe make clearing or purchasing mandatory? */}
+      {goldRolled && armour.length == 0 && (
+        <div style={{ color: "red", marginTop: "5px" }}>
+          Warning: You have no armour!
+        </div>
+      )}
       {/* updates parent state with all new values when moving on to next page */}
-
       {goldRolled && (
         <button
           className="button button--character-details"
