@@ -457,7 +457,7 @@ export default function EquipmentStore(props) {
                 <h4>Purchase Ledger</h4>
                 <ul>
                   {Object.entries(purchaseLedger).map(([name, qty]) => (
-                    <li key={name}>
+                    <li key={name} style={{ textAlign: "left" }}>
                       {name} x{qty} ({getItemPrice(name) * qty} gp)
                     </li>
                   ))}
