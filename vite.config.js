@@ -1,15 +1,23 @@
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
 import ViteFonts from 'vite-plugin-fonts'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
-    react(),
+    react({
+      fastRefresh: mode !== 'test'
+    }),
     ViteFonts({
       google: {
         families: ['Crimson Text']
       }
     })
-  ]
-})
+  ],
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.js'],
+    globals: true,
+    exclude: ['e2e/**', 'node_modules/**']
+  }
+}))
