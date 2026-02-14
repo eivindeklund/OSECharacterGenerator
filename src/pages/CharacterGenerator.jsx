@@ -1,18 +1,6 @@
-import { useEffect, useState } from "react";
-import { isMobile } from "react-device-detect";
-import { v4 as uuidv4 } from "uuid";
-import { getRandomNumbers } from "../API/getRandomNumbers";
-import {
-  abilityScoreNames,
-  defaultAbilityScoresState,
-} from "../constants/constants";
-import classOptionsData from "../data/classOptionsData";
+import { useState } from "react";
+import { useCharacterManager } from "../hooks/useCharacterManager";
 import { Dice } from "../utilities/DiceBox";
-import {
-  d6,
-  getPrimeReqMod,
-  updateAbilityModifiers,
-} from "../utilities/utilities";
 import AbilityScreen from "./AbilityScreen";
 import CharacterSheetScreen from "./CharacterSheetScreen";
 import CharacterStorageScreen from "./CharacterStorageScreen";
@@ -22,192 +10,38 @@ import EquipmentScreen from "./EquipmentScreen";
 import LandingScreen from "./LandingScreen";
 
 export default function CharacterGenerator() {
-  const [character, setCharacter] = useState({
-    id: null,
-    name: null,
-    languages: [],
-    hasLanguages: null,
-    personality: null,
-    misfortune: null,
-    appearance: null,
-    backgroundSkill: null,
-    alignment: null,
-  });
+  const {
+    character,
+    setCharacter,
+    abilityScores,
+    setAbilityScores,
+    characterModifiers,
+    setCharacterModifiers,
+    characterStatistics,
+    setCharacterStatistics,
+    pointBuy,
+    setPointBuy,
+    characterClass,
+    setCharacterClass,
+    screen,
+    setScreen,
+    characterEquipment,
+    setCharacterEquipment,
+    diceEnabled,
+    setDiceEnabled,
+    loadingRandomNumbers,
+    setLoadingRandomNumbers,
+    randomNumbers,
+    characterRolled,
+    setCharacterRolled,
+    rollAttribute,
+    rollCharacter,
+    changeCharacterClass,
+    rollHP,
+    rollGold,
+  } = useCharacterManager(Dice);
 
-  const [abilityScores, setAbilityScores] = useState(defaultAbilityScoresState);
-
-  const [characterModifiers, setCharacterModifiers] = useState({
-    primeReq: "0",
-    strengthModMelee: "0",
-    strengthModDoors: "0",
-    intelligenceModLanguages: "0",
-    intelligenceModLiteracy: "",
-    intelligenceModExtraLanguageCount: "0",
-    wisdomMod: "0",
-    dexterityModAC: "0",
-    dexterityModMissiles: "0",
-    dexterityModInitiative: "0",
-    constitutionMod: "0",
-    charismaModNPCReactions: "0",
-    charismaModRetainersMax: "0",
-    charismaModLoyalty: "0",
-  });
-
-  const [characterStatistics, setCharacterStatistics] = useState({
-    hitPoints: null,
-    hpRolls: 0,
-    hpResult: null,
-    armourClass: null,
-    spell: null,
-    hasSpells: false,
-    unarmouredAC: null,
-  });
-
-  const [pointBuy, setPointBuy] = useState(0);
-
-  const [characterClass, setCharacterClass] = useState({
-    name: null,
-    primeReqs: [],
-  });
-
-  const [screen, setScreen] = useState({
-    equipmentScreen: false,
-    abilityScreen: true,
-    classScreen: false,
-    detailsScreen: false,
-    characterSheetScreen: false,
-    characterStorageScreen: false,
-  });
-
-  const [characterEquipment, setCharacterEquipment] = useState({
-    armour: [],
-    weapons: [],
-    adventuringGear: [],
-    gold: null,
-  });
-
-  const [diceEnabled, setDiceEnabled] = useState(false);
-
-  const [loadingRandomNumbers, setLoadingRandomNumbers] = useState(true);
-  const [randomNumbers, setRandomNumbers] = useState([]);
-
-  const [characterRolled, setCharacterRolled] = useState(false);
   const [rollButtonHover, setRollButtonHover] = useState(false);
-
-  const [pendingRoll, setPendingRoll] = useState("");
-
-  const loadRandomNumbers = async () => {
-    const randomNumbers = await getRandomNumbers();
-    if (randomNumbers) {
-      setRandomNumbers(randomNumbers);
-    }
-    setLoadingRandomNumbers(false);
-  };
-
-  useEffect(() => {
-    loadRandomNumbers();
-  }, []);
-
-  useEffect(() => {
-    if (characterRolled) {
-      const newCharacterModifiers = updateAbilityModifiers(abilityScores);
-      const primeReqValue = getPrimeReqMod(abilityScores, characterClass);
-      newCharacterModifiers.primeReq = primeReqValue;
-      setCharacterModifiers(newCharacterModifiers);
-    }
-  }, [abilityScores, characterClass]);
-
-  const rollAttribute = (e, input) => {
-    const attribute = e?.target?.value || input;
-
-    console.log(e?.target?.value, input, attribute);
-
-    const diceThemes = {
-      strength: "#8d1a10",
-      intelligence: "#30049d",
-      dexterity: "#3E6E1B",
-      wisdom: "#0A5159",
-      constitution: "#0c0828",
-      charisma: "#E795A6",
-    };
-
-    const newCharacterAbilityScores = { ...abilityScores };
-
-    const animateDice = !isMobile && diceEnabled;
-
-    if (!animateDice && attribute === "all") {
-      abilityScoreNames.forEach((score) => {
-        const dieResult = d6(3, randomNumbers);
-        newCharacterAbilityScores[score] = dieResult;
-        newCharacterAbilityScores[`${score}Original`] = dieResult;
-      });
-
-      setAbilityScores(newCharacterAbilityScores);
-      setPointBuy(0);
-      return;
-    }
-
-    if (!animateDice) {
-      const dieResult = d6(3, randomNumbers);
-      newCharacterAbilityScores[attribute] = dieResult;
-      newCharacterAbilityScores[`${attribute}Original`] = dieResult;
-      setAbilityScores(newCharacterAbilityScores);
-      setPointBuy(0);
-      return;
-    }
-
-    if (attribute === "all") {
-      setPendingRoll("all");
-      Dice.show().roll("3d6", { themeColor: diceThemes.strength });
-      Dice.roll("3d6", { themeColor: diceThemes.intelligence });
-      Dice.roll("3d6", { themeColor: diceThemes.dexterity });
-      Dice.roll("3d6", { themeColor: diceThemes.wisdom });
-      Dice.roll("3d6", { themeColor: diceThemes.constitution });
-      Dice.roll("3d6", { themeColor: diceThemes.charisma });
-    } else {
-      setPendingRoll(attribute);
-      const diceColor = diceThemes[attribute];
-      Dice.show().roll("3d6", { themeColor: diceColor });
-    }
-  };
-
-  Dice.onRollComplete = (rollResults) => {
-    setPendingRoll(null);
-    const newAbilityScores = { ...abilityScores };
-    if (pendingRoll === "all") {
-      abilityScoreNames.forEach((attr, i) => {
-        newAbilityScores[attr] = rollResults[i]?.value;
-        newAbilityScores[`${attr}Original`] = rollResults[i]?.value;
-      });
-    } else {
-      newAbilityScores[pendingRoll] = rollResults[0].value;
-      newAbilityScores[`${pendingRoll}Original`] = rollResults[0].value;
-    }
-
-    setPointBuy(0);
-    setAbilityScores(newAbilityScores);
-  };
-
-  const rollCharacter = () => {
-    const newID = uuidv4();
-
-    setCharacter({ ...character, id: newID });
-    setRollButtonHover(false);
-    setCharacterClass({ name: null, primeReqs: [] });
-    setCharacterRolled(true);
-
-    setAbilityScores(defaultAbilityScoresState);
-    setScreen({ ...screen, AbilityScreen: true });
-    setPointBuy(0);
-  };
-
-  const changeCharacterClass = (event) => {
-    const characterClass = classOptionsData.find(
-      (obj) => obj.name === event.target.value,
-    );
-
-    setCharacterClass(characterClass);
-  };
 
   let characterMenuStyle = characterRolled ? {} : { display: "none" };
 
@@ -261,6 +95,7 @@ export default function CharacterGenerator() {
                 characterStatistics={characterStatistics}
                 setCharacterStatistics={setCharacterStatistics}
                 diceEnabled={diceEnabled}
+                rollHP={rollHP}
               ></ClassScreen>
             )}
 
@@ -276,6 +111,7 @@ export default function CharacterGenerator() {
                 setCharacterEquipment={setCharacterEquipment}
                 randomNumbers={randomNumbers}
                 diceEnabled={diceEnabled}
+                rollGold={rollGold}
               />
             )}
 
@@ -288,6 +124,7 @@ export default function CharacterGenerator() {
                 characterClass={characterClass}
                 characterModifiers={characterModifiers}
                 diceEnabled={diceEnabled}
+                diceService={Dice}
               ></DetailsScreen>
             )}
 

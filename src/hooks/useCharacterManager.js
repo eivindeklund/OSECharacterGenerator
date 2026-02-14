@@ -1,0 +1,340 @@
+import { useCallback, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { getRandomNumbers } from "../API/getRandomNumbers";
+import {
+    abilityScoreNames,
+    defaultAbilityScoresState,
+} from "../constants/constants";
+import classOptionsData from "../data/classOptionsData";
+import {
+    d6,
+    getPrimeReqMod,
+    updateAbilityModifiers,
+} from "../utilities/utilities";
+
+export const useCharacterManager = (diceService) => {
+  const [character, setCharacter] = useState({
+    id: null,
+    name: null,
+    languages: [],
+    hasLanguages: null,
+    personality: null,
+    misfortune: null,
+    appearance: null,
+    backgroundSkill: null,
+    alignment: null,
+  });
+
+  const [abilityScores, setAbilityScores] = useState(defaultAbilityScoresState);
+
+  const [characterModifiers, setCharacterModifiers] = useState({
+    primeReq: "0",
+    strengthModMelee: "0",
+    strengthModDoors: "0",
+    intelligenceModLanguages: "0",
+    intelligenceModLiteracy: "",
+    intelligenceModExtraLanguageCount: "0",
+    wisdomMod: "0",
+    dexterityModAC: "0",
+    dexterityModMissiles: "0",
+    dexterityModInitiative: "0",
+    constitutionMod: "0",
+    charismaModNPCReactions: "0",
+    charismaModRetainersMax: "0",
+    charismaModLoyalty: "0",
+  });
+
+  const [characterStatistics, setCharacterStatistics] = useState({
+    hitPoints: null,
+    hpRolls: 0,
+    hpResult: null,
+    armourClass: null,
+    spell: null,
+    hasSpells: false,
+    unarmouredAC: null,
+  });
+
+  const [pointBuy, setPointBuy] = useState(0);
+
+  const [characterClass, setCharacterClass] = useState({
+    name: null,
+    primeReqs: [],
+  });
+
+  const [screen, setScreen] = useState({
+    equipmentScreen: false,
+    abilityScreen: true,
+    classScreen: false,
+    detailsScreen: false,
+    characterSheetScreen: false,
+    characterStorageScreen: false,
+  });
+
+  const [characterEquipment, setCharacterEquipment] = useState({
+    armour: [],
+    weapons: [],
+    adventuringGear: [],
+    gold: null,
+  });
+
+  const [diceEnabled, setDiceEnabled] = useState(false);
+  const [loadingRandomNumbers, setLoadingRandomNumbers] = useState(true);
+  const [randomNumbers, setRandomNumbers] = useState([]);
+  const [characterRolled, setCharacterRolled] = useState(false);
+  const [pendingRoll, setPendingRoll] = useState(null);
+
+  const loadRandomNumbers = useCallback(async () => {
+    const numbers = await getRandomNumbers();
+    if (numbers) {
+      setRandomNumbers(numbers);
+    }
+    setLoadingRandomNumbers(false);
+  }, []);
+
+  useEffect(() => {
+    loadRandomNumbers();
+  }, [loadRandomNumbers]);
+
+  useEffect(() => {
+    if (characterRolled) {
+      const newCharacterModifiers = updateAbilityModifiers(abilityScores);
+      const primeReqValue = getPrimeReqMod(abilityScores, characterClass);
+      newCharacterModifiers.primeReq = primeReqValue;
+      setCharacterModifiers(newCharacterModifiers);
+    }
+  }, [abilityScores, characterClass, characterRolled]);
+
+  const rollAttribute = (attributeOrEvent, optionalInput) => {
+    const attribute =
+      typeof attributeOrEvent === "string"
+        ? attributeOrEvent
+        : attributeOrEvent?.target?.value || optionalInput;
+
+    const diceThemes = {
+      strength: "#8d1a10",
+      intelligence: "#30049d",
+      dexterity: "#3E6E1B",
+      wisdom: "#0A5159",
+      constitution: "#0c0828",
+      charisma: "#E795A6",
+    };
+
+    const animateDice = diceEnabled && diceService;
+
+    if (!animateDice) {
+      const newCharacterAbilityScores = { ...abilityScores };
+      if (attribute === "all") {
+        abilityScoreNames.forEach((score) => {
+          const dieResult = d6(3, randomNumbers);
+          newCharacterAbilityScores[score] = dieResult;
+          newCharacterAbilityScores[`${score}Original`] = dieResult;
+        });
+      } else {
+        const dieResult = d6(3, randomNumbers);
+        newCharacterAbilityScores[attribute] = dieResult;
+        newCharacterAbilityScores[`${attribute}Original`] = dieResult;
+      }
+      setAbilityScores(newCharacterAbilityScores);
+      setPointBuy(0);
+      return;
+    }
+    if (attribute === "all") {
+      setPendingRoll("all");
+      diceService.show().roll("3d6", { themeColor: diceThemes.strength });
+      diceService.roll("3d6", { themeColor: diceThemes.intelligence });
+      diceService.roll("3d6", { themeColor: diceThemes.dexterity });
+      diceService.roll("3d6", { themeColor: diceThemes.wisdom });
+      diceService.roll("3d6", { themeColor: diceThemes.constitution });
+      diceService.roll("3d6", { themeColor: diceThemes.charisma });
+    } else {
+      setPendingRoll(attribute);
+      const diceColor = diceThemes[attribute];
+      diceService.show().roll("3d6", { themeColor: diceColor });
+    }
+  };
+
+  const rollHP = () => {
+    const die = characterClass.hd;
+    const animateDice = diceEnabled && diceService;
+
+    if (!animateDice) {
+      const HPResult = d6(1, randomNumbers, die);
+      const totalHP = Math.max(
+        1,
+        HPResult + parseInt(characterModifiers.constitutionMod)
+      );
+      const HPRollsNew = characterStatistics.hpRolls + 1;
+
+      setCharacterStatistics((prev) => ({
+        ...prev,
+        hitPoints: totalHP,
+        hpRolls: HPRollsNew,
+        hpResult: HPResult,
+      }));
+      return;
+    }
+
+    setPendingRoll("hp");
+    diceService
+      .hide()
+      .show()
+      .roll(`1d${die}`, { themeColor: "#FF2800" });
+  };
+
+  const rollGold = () => {
+    const animateDice = diceEnabled && diceService;
+
+    if (!animateDice) {
+      const goldResult = d6(3, randomNumbers);
+      const totalGold = goldResult * 10;
+      setCharacterEquipment((prev) => ({
+        ...prev,
+        gold: totalGold,
+      }));
+      return;
+    }
+
+    setPendingRoll("gold");
+    diceService.show().roll("3d6", { themeColor: "#D99E30" });
+  };
+
+  const handleRollComplete = useCallback(
+    (rollResults) => {
+      if (pendingRoll === "all") {
+        setAbilityScores((prev) => {
+          const newAbilityScores = { ...prev };
+          abilityScoreNames.forEach((attr, i) => {
+            newAbilityScores[attr] = rollResults[i]?.value;
+            newAbilityScores[`${attr}Original`] = rollResults[i]?.value;
+          });
+          return newAbilityScores;
+        });
+        setPointBuy(0);
+      } else if (pendingRoll === "hp") {
+        const HPResult = rollResults[0].value;
+        const totalHP = Math.max(
+          1,
+          HPResult + parseInt(characterModifiers.constitutionMod)
+        );
+        const HPRollsNew = characterStatistics.hpRolls + 1;
+        setCharacterStatistics((prev) => ({
+          ...prev,
+          hitPoints: totalHP,
+          hpRolls: HPRollsNew,
+          hpResult: HPResult,
+        }));
+      } else if (pendingRoll === "gold") {
+        let goldResult = 0;
+        rollResults.forEach((dieResult) => {
+          goldResult += dieResult.value;
+        });
+        const totalGold = goldResult * 10;
+        setCharacterEquipment((prev) => ({
+          ...prev,
+          gold: totalGold,
+        }));
+      } else if (pendingRoll) {
+        setAbilityScores((prev) => ({
+          ...prev,
+          [pendingRoll]: rollResults[0].value,
+          [`${pendingRoll}Original`]: rollResults[0].value,
+        }));
+        setPointBuy(0);
+      }
+
+      setPendingRoll(null);
+    },
+    [
+      pendingRoll,
+      characterModifiers.constitutionMod,
+      characterStatistics.hpRolls,
+    ]
+  );
+
+  useEffect(() => {
+    if (diceService) {
+      diceService.onRollComplete = handleRollComplete;
+    }
+  }, [diceService, handleRollComplete]);
+
+  const rollCharacter = () => {
+    const newID = uuidv4();
+    setCharacter({
+      id: newID,
+      name: null,
+      languages: [],
+      hasLanguages: null,
+      personality: null,
+      misfortune: null,
+      appearance: null,
+      backgroundSkill: null,
+      alignment: null,
+    });
+    setCharacterClass({ name: null, primeReqs: [] });
+    setCharacterRolled(true);
+    setAbilityScores(defaultAbilityScoresState);
+    setScreen({
+      equipmentScreen: false,
+      abilityScreen: true,
+      classScreen: false,
+      detailsScreen: false,
+      characterSheetScreen: false,
+      characterStorageScreen: false,
+    });
+    setPointBuy(0);
+    setCharacterStatistics({
+      hitPoints: null,
+      hpRolls: 0,
+      hpResult: null,
+      armourClass: null,
+      spell: null,
+      hasSpells: false,
+      unarmouredAC: null,
+    });
+    setCharacterEquipment({
+      armour: [],
+      weapons: [],
+      adventuringGear: [],
+      gold: null,
+    });
+  };
+
+  const changeCharacterClass = (event) => {
+    const newClass = classOptionsData.find(
+      (obj) => obj.name === event.target.value
+    );
+    setCharacterClass(newClass);
+  };
+
+  return {
+    character,
+    setCharacter,
+    abilityScores,
+    setAbilityScores,
+    characterModifiers,
+    setCharacterModifiers,
+    characterStatistics,
+    setCharacterStatistics,
+    pointBuy,
+    setPointBuy,
+    characterClass,
+    setCharacterClass,
+    screen,
+    setScreen,
+    characterEquipment,
+    setCharacterEquipment,
+    diceEnabled,
+    setDiceEnabled,
+    loadingRandomNumbers,
+    setLoadingRandomNumbers,
+    randomNumbers,
+    setRandomNumbers,
+    characterRolled,
+    setCharacterRolled,
+    rollAttribute,
+    rollCharacter,
+    changeCharacterClass,
+    rollHP,
+    rollGold,
+  };
+};

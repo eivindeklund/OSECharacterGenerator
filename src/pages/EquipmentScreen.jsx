@@ -13,6 +13,7 @@ export default function EquipmentScreen(props) {
     characterEquipment,
     setCharacterEquipment,
     diceEnabled,
+    rollGold,
   } = props;
 
   return (
@@ -29,6 +30,7 @@ export default function EquipmentScreen(props) {
         screen={screen}
         setScreen={setScreen}
         diceEnabled={diceEnabled}
+        rollGold={rollGold}
       ></EquipmentStore>
     </div>
   );
@@ -57,4 +59,5 @@ EquipmentScreen.propTypes = {
   }),
   randomNumbers: PropTypes.array,
   setCharacterEquipment: PropTypes.func,
+  rollGold: PropTypes.func,
 };

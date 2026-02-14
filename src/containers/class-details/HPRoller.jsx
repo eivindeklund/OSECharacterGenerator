@@ -1,94 +1,21 @@
 import PropTypes from "prop-types";
-import React, { useState } from "react";
-import { isMobile } from "react-device-detect";
-import { Dice } from "../../utilities/DiceBox";
-import { d } from "../../utilities/utilities";
+import React from "react";
 
 export default function HPRoller(props) {
   const {
     characterClass,
     characterStatistics,
-    setCharacterStatistics,
     characterModifiers,
-    diceEnabled,
+    rollHP,
   } = props;
 
-  const [hitPoints, setHitPoints] = useState(characterStatistics.hitPoints);
-  const [HPResult, setHPResult] = useState(characterStatistics.hpResult);
-  // DO NOT SUBMIT This is different logic from the one below.
-  const [canReroll, setCanReroll] = useState(
-    characterStatistics.hpRolls < 2 &&
-      (characterStatistics.hpResult === null ||
-        characterStatistics.hpResult <= 2),
-  );
-  const [HPRolls, setHPRolls] = useState(characterStatistics.hpRolls || 0);
+  const hitPoints = characterStatistics.hitPoints;
+  const HPResult = characterStatistics.hpResult;
+  const HPRolls = characterStatistics.hpRolls || 0;
 
-  const getHitPoints = () => {
-    const die = characterClass.hd;
+  const canReroll =
+    HPRolls < 2 && (HPResult === null || HPResult <= 2);
 
-    console.log("ROLLING HP", die);
-
-    let HPResult;
-
-    if (isMobile || !diceEnabled) {
-      HPResult = d(1, die);
-
-      let totalHP = HPResult + parseInt(characterModifiers.constitutionMod);
-      const HPRollsNew = HPRolls + 1;
-
-      if (totalHP < 1) {
-        totalHP = 1;
-      }
-      if (HPResult > 2 || HPRollsNew === 2) {
-        setCanReroll(false);
-      }
-
-      setHitPoints(totalHP);
-      setCharacterStatistics({
-        ...characterStatistics,
-        hitPoints: totalHP,
-        hpRolls: HPRollsNew,
-        hpResult: HPResult,
-      });
-      setHPResult(HPResult);
-      setHPRolls(HPRollsNew);
-
-      return;
-    }
-
-    const HPDiceColor = "#FF2800";
-
-    Dice.hide()
-      .show()
-      .roll(`1d${die}`, { themeColor: HPDiceColor })
-      .then((results) => {
-        const HPResult = results[0].value;
-
-        if (isNaN(HPResult)) {
-          throw new Error("Dice result was not a number");
-        }
-
-        let totalHP = HPResult + parseInt(characterModifiers.constitutionMod);
-        const HPRollsNew = HPRolls + 1;
-
-        if (totalHP < 1) {
-          totalHP = 1;
-        }
-        if (HPResult > 2 || HPRollsNew === 2) {
-          setCanReroll(false);
-        }
-
-        setCharacterStatistics({
-          ...characterStatistics,
-          hitPoints: totalHP,
-          hpRolls: HPRollsNew,
-          hpResult: HPResult,
-        });
-        setHitPoints(totalHP);
-        setHPResult(HPResult);
-        setHPRolls(HPRollsNew);
-      });
-  };
 
   return (
     <React.Fragment>
@@ -96,7 +23,7 @@ export default function HPRoller(props) {
         className={`button button-primary button--hp ${
           canReroll ? "" : "opacity-0"
         }`}
-        onClick={() => setTimeout(() => getHitPoints(), 200)}
+        onClick={() => setTimeout(() => rollHP(), 200)}
         disabled={!canReroll}
         style={{
           fontSize: canReroll ? "" : "4rem",
@@ -153,4 +80,5 @@ HPRoller.propTypes = {
   }),
   setCharacterStatistics: PropTypes.func,
   characterModifiers: PropTypes.object,
+  rollHP: PropTypes.func,
 };

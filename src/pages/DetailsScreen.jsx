@@ -11,6 +11,7 @@ export default function DetailsScreen(props) {
     characterClass,
     characterModifiers,
     diceEnabled,
+    diceService,
   } = props;
 
   return (
@@ -26,6 +27,7 @@ export default function DetailsScreen(props) {
           characterClass={characterClass}
           characterModifiers={characterModifiers}
           diceEnabled={diceEnabled}
+          diceService={diceService}
         ></CharacterDetails>
       </div>
     </div>
@@ -34,6 +36,7 @@ export default function DetailsScreen(props) {
 
 DetailsScreen.propTypes = {
   diceEnabled: PropTypes.bool,
+  diceService: PropTypes.object,
   screen: PropTypes.objectOf(PropTypes.bool),
   setScreen: PropTypes.func,
   character: PropTypes.object,

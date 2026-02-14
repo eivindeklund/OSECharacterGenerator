@@ -1,0 +1,133 @@
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { getRandomNumbers } from "../API/getRandomNumbers";
+import { useCharacterManager } from "./useCharacterManager";
+
+// Mock dependencies
+vi.mock("../API/getRandomNumbers", () => ({
+  getRandomNumbers: vi.fn(),
+}));
+
+vi.mock("../data/classOptionsData", () => ({
+  default: [
+    { name: "Fighter", primeReqs: ["strength"], hd: 8 },
+    { name: "Cleric", primeReqs: ["wisdom"], hd: 6 },
+  ],
+}));
+
+describe("useCharacterManager", () => {
+  const mockDiceService = {
+    show: vi.fn().mockReturnThis(),
+    hide: vi.fn().mockReturnThis(),
+    roll: vi.fn().mockReturnThis(),
+    onRollComplete: null,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    getRandomNumbers.mockResolvedValue([1, 2, 3, 4, 5, 6]);
+  });
+
+  it("should initialize with default state", async () => {
+    const { result } = renderHook(() => useCharacterManager(mockDiceService));
+
+    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
+
+    expect(result.current.character.id).toBeNull();
+    expect(result.current.characterRolled).toBe(false);
+    expect(result.current.abilityScores.strength).toBeNull();
+  });
+
+  it("should roll character and reset state", async () => {
+    const { result } = renderHook(() => useCharacterManager(mockDiceService));
+    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
+
+    act(() => {
+      result.current.rollCharacter();
+    });
+
+    expect(result.current.character.id).not.toBeNull();
+    expect(result.current.characterRolled).toBe(true);
+    expect(result.current.screen.abilityScreen).toBe(true);
+  });
+
+  it("should roll attributes without animation when dice are disabled", async () => {
+    const { result } = renderHook(() => useCharacterManager(mockDiceService));
+    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
+
+    act(() => {
+      result.current.rollCharacter();
+      result.current.rollAttribute("strength");
+    });
+
+    expect(result.current.abilityScores.strength).not.toBeNull();
+    expect(mockDiceService.roll).not.toHaveBeenCalled();
+  });
+
+  it("should trigger dice animation when dice are enabled", async () => {
+    const { result } = renderHook(() => useCharacterManager(mockDiceService));
+    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
+
+    act(() => {
+      result.current.setDiceEnabled(true);
+    });
+
+    act(() => {
+      result.current.rollAttribute("strength");
+    });
+
+    expect(mockDiceService.show).toHaveBeenCalled();
+    expect(mockDiceService.roll).toHaveBeenCalledWith("3d6", expect.anything());
+  });
+
+  it("should update state when dice roll is complete", async () => {
+    const { result } = renderHook(() => useCharacterManager(mockDiceService));
+    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
+
+    act(() => {
+      result.current.setDiceEnabled(true);
+    });
+
+    act(() => {
+      result.current.rollAttribute("strength");
+    });
+
+    // Simulate dice roll completion
+    act(() => {
+      mockDiceService.onRollComplete([{ value: 15 }]);
+    });
+
+    expect(result.current.abilityScores.strength).toBe(15);
+  });
+
+  it("should roll HP correctly", async () => {
+    const { result } = renderHook(() => useCharacterManager(mockDiceService));
+    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
+
+    act(() => {
+      result.current.rollCharacter();
+      // Select Fighter
+      const event = { target: { value: "Fighter" } };
+      result.current.changeCharacterClass(event);
+    });
+
+    act(() => {
+      result.current.rollHP();
+    });
+
+    expect(result.current.characterStatistics.hitPoints).not.toBeNull();
+    expect(result.current.characterStatistics.hpRolls).toBe(1);
+  });
+
+  it("should roll gold correctly", async () => {
+    const { result } = renderHook(() => useCharacterManager(mockDiceService));
+    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
+
+    act(() => {
+      result.current.rollGold();
+    });
+
+    expect(result.current.characterEquipment.gold).not.toBeNull();
+    expect(result.current.characterEquipment.gold % 10).toBe(0);
+  });
+});

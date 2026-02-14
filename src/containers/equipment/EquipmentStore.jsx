@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { isMobile } from "react-device-detect";
 import Inventory from "../../components/equipment/Inventory";
 import ScreenNavigation from "../../components/general/ScreenNavigation";
 import {
@@ -17,15 +16,13 @@ import WeaponOptionsContainer from "../../containers/equipment/WeaponOptionsCont
 import armourData from "../../data/armourData";
 import equipmentData from "../../data/equipmentData";
 import weaponsData from "../../data/weaponsData";
-import { Dice } from "../../utilities/DiceBox";
 import {
   calculatePackPrice,
   resolvePackItems,
 } from "../../utilities/PackUtils";
 import {
   calculateArmourClass,
-  chooseRandomItem,
-  d,
+  chooseRandomItem
 } from "../../utilities/utilities";
 
 export default function EquipmentStore(props) {
@@ -39,6 +36,7 @@ export default function EquipmentStore(props) {
     screen,
     setScreen,
     diceEnabled,
+    rollGold,
   } = props;
 
   const [gold, setGold] = useState(characterEquipment.gold);
@@ -93,36 +91,6 @@ export default function EquipmentStore(props) {
     calculateAC();
   }, [armour]);
 
-  const getGold = () => {
-    if (isMobile || !diceEnabled) {
-      const gold = d(3, 6);
-      const totalGold = gold * 10;
-      setGold(totalGold);
-      setGoldRolled(true);
-      setShowGoldInfo(true);
-      return;
-    }
-
-    const goldColor = `#D99E30`;
-
-    Dice.show()
-      .roll("3d6", { themeColor: goldColor })
-      .then((results) => {
-        let goldResult = 0;
-        results.forEach((dieResult) => {
-          goldResult += dieResult.value;
-        });
-        const totalGold = goldResult * 10;
-
-        if (isNaN(totalGold)) {
-          throw new Error("Dice result was not a number");
-        }
-
-        setGold(totalGold);
-        setGoldRolled(true);
-        setShowGoldInfo(true);
-      });
-  };
 
   const adventuringGearList = () => {
     return equipmentData.map((item) => (
@@ -398,6 +366,14 @@ export default function EquipmentStore(props) {
     setPurchaseLedger({});
   };
 
+  useEffect(() => {
+    if (characterEquipment.gold !== null && gold === null) {
+      setGold(characterEquipment.gold);
+      setGoldRolled(true);
+      setShowGoldInfo(true);
+    }
+  }, [characterEquipment.gold]);
+
   return (
     <>
       <div className="gold-container">
@@ -405,7 +381,7 @@ export default function EquipmentStore(props) {
         {gold === null && (
           <button
             className="button button-primary button--gold"
-            onClick={() => setTimeout(getGold(), 200)}
+            onClick={() => setTimeout(() => rollGold(), 200)}
           >
             Roll Gold
           </button>
@@ -582,4 +558,5 @@ EquipmentStore.propTypes = {
   setCharacterEquipment: PropTypes.func,
   screen: PropTypes.objectOf(PropTypes.bool),
   setScreen: PropTypes.func,
+  rollGold: PropTypes.func,
 };

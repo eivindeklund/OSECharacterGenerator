@@ -13,7 +13,6 @@ import {
   traits,
 } from "../../constants/constants";
 import { characterBackgrounds } from "../../data/backgrounds";
-import { Dice } from "../../utilities/DiceBox";
 import {
   chooseRandomItem,
   d,
@@ -29,6 +28,7 @@ export default function CharacterDetails(props) {
     characterClass,
     characterModifiers,
     diceEnabled,
+    diceService,
   } = props;
 
   const [characterName, setCharacterName] = useState(character.name || "");
@@ -98,7 +98,7 @@ export default function CharacterDetails(props) {
   const getBackground = () => {
     const listLength = 100;
 
-    if (isMobile || !diceEnabled) {
+    if (isMobile || !diceEnabled || !diceService) {
       let diceResult = d(1, 100);
       let diceResult2 = d(1, 100);
       let background = getWeightedValue(characterBackgrounds, diceResult, 100);
@@ -119,7 +119,8 @@ export default function CharacterDetails(props) {
     }
 
     if (!background.includes("Roll for two skills")) {
-      Dice.show()
+      diceService
+        .show()
         .roll("1d100")
         .then((result) => {
           const value = result[0].value;
@@ -138,7 +139,8 @@ export default function CharacterDetails(props) {
     }
 
     if (background.includes("Roll for two skills")) {
-      Dice.show()
+      diceService
+        .show()
         .roll(["1d100", "1d100"])
         .then((result) => {
           const newBackground1 = getWeightedValue(
@@ -418,6 +420,7 @@ export default function CharacterDetails(props) {
 
 CharacterDetails.propTypes = {
   diceEnabled: PropTypes.bool,
+  diceService: PropTypes.object,
   screen: PropTypes.objectOf(PropTypes.bool),
   setScreen: PropTypes.func,
   character: PropTypes.object,
