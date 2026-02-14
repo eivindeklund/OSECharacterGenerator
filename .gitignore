@@ -28,3 +28,5 @@ dist-ssr
 .netlify
 .env
 
+# For hacking
+tmp
