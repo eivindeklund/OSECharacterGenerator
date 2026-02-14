@@ -1,7 +1,6 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import Header from '../components/general/Header'
-import EquipmentStore from '../containers/equipment/EquipmentStore'
+import PropTypes from "prop-types";
+import Header from "../components/general/Header";
+import EquipmentStore from "../containers/equipment/EquipmentStore";
 
 export default function EquipmentScreen(props) {
   const {
@@ -12,12 +11,12 @@ export default function EquipmentScreen(props) {
     characterStatistics,
     setCharacterStatistics,
     setCharacterEquipment,
-    diceEnabled
-  } = props
+    diceEnabled,
+  } = props;
 
   return (
-    <div className='equipment-screen'>
-      <Header translation='equipment'></Header>
+    <div className="equipment-screen">
+      <Header translation="equipment"></Header>
 
       <EquipmentStore
         characterClass={characterClass}
@@ -30,7 +29,7 @@ export default function EquipmentScreen(props) {
         diceEnabled={diceEnabled}
       ></EquipmentStore>
     </div>
-  )
+  );
 }
 
 EquipmentScreen.propTypes = {
@@ -44,7 +43,7 @@ EquipmentScreen.propTypes = {
     armourClass: PropTypes.number,
     spell: PropTypes.string,
     hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number
+    unarmouredAC: PropTypes.number,
   }),
   setCharacterStatistics: PropTypes.func,
   pointBuy: PropTypes.number,
@@ -52,8 +51,8 @@ EquipmentScreen.propTypes = {
     armour: PropTypes.array,
     weapons: PropTypes.array,
     adventuringGear: PropTypes.array,
-    gold: PropTypes.number
+    gold: PropTypes.number,
   }),
   randomNumbers: PropTypes.array,
-  setCharacterEquipment: PropTypes.func
-}
+  setCharacterEquipment: PropTypes.func,
+};

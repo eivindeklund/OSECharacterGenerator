@@ -1,7 +1,6 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import Header from '../components/general/Header'
-import CharacterDetails from '../containers/character-details/CharacterDetails'
+import PropTypes from "prop-types";
+import Header from "../components/general/Header";
+import CharacterDetails from "../containers/character-details/CharacterDetails";
 
 export default function DetailsScreen(props) {
   const {
@@ -11,13 +10,13 @@ export default function DetailsScreen(props) {
     setCharacter,
     characterClass,
     characterModifiers,
-    diceEnabled
-  } = props
+    diceEnabled,
+  } = props;
 
   return (
-    <div className='details-screen-container'>
-      <div id='print-wrapper'>
-        <Header translation='characterDetails'></Header>
+    <div className="details-screen-container">
+      <div id="print-wrapper">
+        <Header translation="characterDetails"></Header>
 
         <CharacterDetails
           screen={screen}
@@ -30,7 +29,7 @@ export default function DetailsScreen(props) {
         ></CharacterDetails>
       </div>
     </div>
-  )
+  );
 }
 
 DetailsScreen.propTypes = {
@@ -40,5 +39,5 @@ DetailsScreen.propTypes = {
   character: PropTypes.object,
   setCharacter: PropTypes.func,
   characterClass: PropTypes.object,
-  characterModifiers: PropTypes.objectOf(PropTypes.string)
-}
+  characterModifiers: PropTypes.objectOf(PropTypes.string),
+};

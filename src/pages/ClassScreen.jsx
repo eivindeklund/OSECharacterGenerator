@@ -1,11 +1,10 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import HPRoller from '../containers/class-details/HPRoller'
-import SavingThrows from '../components/class/SavingThrows'
-import ClassAbilitiesList from '../components/class/ClassAbilitiesList'
-import SpellSelection from '../containers/class-details/SpellSelection'
-import Button from '../components/general/Button'
-import Header from '../components/general/Header'
+import PropTypes from "prop-types";
+import ClassAbilitiesList from "../components/class/ClassAbilitiesList";
+import SavingThrows from "../components/class/SavingThrows";
+import Button from "../components/general/Button";
+import Header from "../components/general/Header";
+import HPRoller from "../containers/class-details/HPRoller";
+import SpellSelection from "../containers/class-details/SpellSelection";
 
 export default function ClassScreen(props) {
   const {
@@ -15,12 +14,12 @@ export default function ClassScreen(props) {
     characterStatistics,
     setCharacterStatistics,
     characterModifiers,
-    diceEnabled
-  } = props
+    diceEnabled,
+  } = props;
 
   return (
-    <div className='class-options-screen'>
-      <Header name={'class-options'} translation={'classOptions'}></Header>
+    <div className="class-options-screen">
+      <Header name={"class-options"} translation={"classOptions"}></Header>
 
       <HPRoller
         characterClass={characterClass}
@@ -30,16 +29,16 @@ export default function ClassScreen(props) {
         diceEnabled={diceEnabled}
       ></HPRoller>
 
-      <div className='saving-throws-menu'>
-        <h5 className='saving-throws-menu--header'>
+      <div className="saving-throws-menu">
+        <h5 className="saving-throws-menu--header">
           {characterClass.name} Saving Throws
         </h5>
 
         <SavingThrows characterClass={characterClass}></SavingThrows>
       </div>
 
-      <div className='class-ability-menu'>
-        <h5 className='class-ability-menu--header'>
+      <div className="class-ability-menu">
+        <h5 className="class-ability-menu--header">
           {characterClass.name} Abilities
         </h5>
 
@@ -54,14 +53,14 @@ export default function ClassScreen(props) {
       ></SpellSelection>
 
       <Button
-        name={'equipment-options'}
-        text={'Go to Equipment'}
+        name={"equipment-options"}
+        text={"Go to Equipment"}
         callback={() => {
-          setScreen({ ...screen, equipmentScreen: true, classScreen: false })
+          setScreen({ ...screen, equipmentScreen: true, classScreen: false });
         }}
       ></Button>
     </div>
-  )
+  );
 }
 
 ClassScreen.propTypes = {
@@ -76,8 +75,8 @@ ClassScreen.propTypes = {
     armourClass: PropTypes.number,
     spell: PropTypes.string,
     hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number
+    unarmouredAC: PropTypes.number,
   }),
   setCharacterStatistics: PropTypes.func,
-  characterModifiers: PropTypes.object
-}
+  characterModifiers: PropTypes.object,
+};

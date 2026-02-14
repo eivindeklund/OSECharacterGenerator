@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
-import LandingScreen from "./LandingScreen";
+import { useEffect, useState } from "react";
+import { isMobile } from "react-device-detect";
+import { v4 as uuidv4 } from "uuid";
+import { getRandomNumbers } from "../API/getRandomNumbers";
 import {
   abilityScoreNames,
   defaultAbilityScoresState,
 } from "../constants/constants";
+import classOptionsData from "../data/classOptionsData";
+import { Dice } from "../utilities/DiceBox";
 import {
+  d6,
   getPrimeReqMod,
   updateAbilityModifiers,
-  d6,
 } from "../utilities/utilities";
 import AbilityScreen from "./AbilityScreen";
-import classOptionsData from "../data/classOptionsData";
-import ClassScreen from "./ClassScreen";
-import EquipmentScreen from "./EquipmentScreen";
-import DetailsScreen from "./DetailsScreen";
 import CharacterSheetScreen from "./CharacterSheetScreen";
-import { getRandomNumbers } from "../API/getRandomNumbers";
 import CharacterStorageScreen from "./CharacterStorageScreen";
-import { v4 as uuidv4 } from "uuid";
-import { Dice } from "../utilities/DiceBox";
-import { isMobile } from "react-device-detect";
+import ClassScreen from "./ClassScreen";
+import DetailsScreen from "./DetailsScreen";
+import EquipmentScreen from "./EquipmentScreen";
+import LandingScreen from "./LandingScreen";
 
 export default function CharacterGenerator() {
   const [character, setCharacter] = useState({

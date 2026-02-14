@@ -1,11 +1,10 @@
-import React from 'react'
-import Classes from '../containers/classes/Classes'
-import AbilityScores from '../containers/abilties/AbilityScores'
-import NavigationOptions from '../containers/abilties/NavigationOptions'
-import PropTypes from 'prop-types'
-import Header from '../components/general/Header'
+import PropTypes from "prop-types";
+import Header from "../components/general/Header";
+import AbilityScores from "../containers/abilties/AbilityScores";
+import NavigationOptions from "../containers/abilties/NavigationOptions";
+import Classes from "../containers/classes/Classes";
 
-import { useEffect } from 'react'
+import { useEffect } from "react";
 
 export default function AbilityScreen(props) {
   const {
@@ -20,20 +19,20 @@ export default function AbilityScreen(props) {
     rollAttribute,
     screen,
     setScreen,
-    diceEnabled
-  } = props
+    diceEnabled,
+  } = props;
 
   useEffect(() => {
-    console.log('Loaded')
+    console.log("Loaded");
 
     if (!diceEnabled) {
-      rollAttribute('e', 'all')
+      rollAttribute("e", "all");
     }
-  }, [])
+  }, []);
 
   return (
-    <div className='ability-screen container'>
-      <Header translation={'characterClass'} name={'character-class'}></Header>
+    <div className="ability-screen container">
+      <Header translation={"characterClass"} name={"character-class"}></Header>
 
       <Classes
         characterClass={characterClass}
@@ -41,7 +40,7 @@ export default function AbilityScreen(props) {
         changeCharacterClass={changeCharacterClass}
       ></Classes>
 
-      <Header translation={'abilityScores'} name={'character-class'}></Header>
+      <Header translation={"abilityScores"} name={"character-class"}></Header>
 
       <AbilityScores
         abilityScores={abilityScores}
@@ -62,7 +61,7 @@ export default function AbilityScreen(props) {
         abilityScores={abilityScores}
       ></NavigationOptions>
     </div>
-  )
+  );
 }
 
 AbilityScreen.propTypes = {
@@ -80,7 +79,7 @@ AbilityScreen.propTypes = {
     constitution: PropTypes.number,
     constitutionOriginal: PropTypes.number,
     charisma: PropTypes.number,
-    charismaOriginal: PropTypes.number
+    charismaOriginal: PropTypes.number,
   }),
   changeCharacterClass: PropTypes.func,
   setAbilityScores: PropTypes.func,
@@ -91,5 +90,5 @@ AbilityScreen.propTypes = {
   screen: PropTypes.objectOf(PropTypes.bool),
   setScreen: PropTypes.func,
   rollAttribute: PropTypes.func,
-  diceEnabled: PropTypes.bool
-}
+  diceEnabled: PropTypes.bool,
+};

@@ -1,8 +1,8 @@
-import React, { useRef } from 'react'
-import CharacterSheet from '../containers/character/CharacterSheet'
-import { Trans } from 'react-i18next'
-import PropTypes from 'prop-types'
-import PDFExport from '../containers/character/PDFExport'
+import PropTypes from "prop-types";
+import { useRef } from "react";
+import { Trans } from "react-i18next";
+import CharacterSheet from "../containers/character/CharacterSheet";
+import PDFExport from "../containers/character/PDFExport";
 
 export default function CharacterSheetScreen(props) {
   const {
@@ -14,13 +14,13 @@ export default function CharacterSheetScreen(props) {
     characterEquipment,
     characterModifiers,
     abilityScores,
-    setCharacterRolled
-  } = props
+    setCharacterRolled,
+  } = props;
 
-  const componentRef = useRef()
+  const componentRef = useRef();
 
   return (
-    <div className='character-sheet-container container'>
+    <div className="character-sheet-container container">
       <CharacterSheet
         character={character}
         characterStatistics={characterStatistics}
@@ -31,8 +31,8 @@ export default function CharacterSheetScreen(props) {
         ref={componentRef}
       ></CharacterSheet>
 
-      <div className='button-container'>
-        <h3 className='header-default header-pdf'>Export to PDF</h3>
+      <div className="button-container">
+        <h3 className="header-default header-pdf">Export to PDF</h3>
 
         <PDFExport
           character={character}
@@ -43,19 +43,19 @@ export default function CharacterSheetScreen(props) {
           abilityScores={abilityScores}
         ></PDFExport>
 
-        <h3 className='header-default header-pdf'>Navigation</h3>
+        <h3 className="header-default header-pdf">Navigation</h3>
 
-        <div className='navigation'>
+        <div className="navigation">
           <button
             onClick={() => {
               setScreen({
                 ...screen,
                 characterStorageScreen: true,
-                characterSheetScreen: false
-              })
+                characterSheetScreen: false,
+              });
             }}
           >
-            <Trans i18nKey={'Tavern'}>Tavern</Trans>
+            <Trans i18nKey={"Tavern"}>Tavern</Trans>
           </button>
 
           <button
@@ -63,17 +63,17 @@ export default function CharacterSheetScreen(props) {
               setScreen({
                 ...screen,
                 abilityScreen: true,
-                characterSheetScreen: false
-              })
-              setCharacterRolled(false)
+                characterSheetScreen: false,
+              });
+              setCharacterRolled(false);
             }}
           >
-            <Trans i18nKey={'mainPage'}>Main Page</Trans>
+            <Trans i18nKey={"mainPage"}>Main Page</Trans>
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 CharacterSheetScreen.propTypes = {
@@ -86,14 +86,14 @@ CharacterSheetScreen.propTypes = {
     armourClass: PropTypes.number,
     spell: PropTypes.string,
     hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number
+    unarmouredAC: PropTypes.number,
   }),
   characterClass: PropTypes.object,
   characterEquipment: PropTypes.shape({
     armour: PropTypes.array,
     weapons: PropTypes.array,
     adventuringGear: PropTypes.array,
-    gold: PropTypes.number
+    gold: PropTypes.number,
   }),
   characterModifiers: PropTypes.objectOf(PropTypes.string),
   abilityScores: PropTypes.shape({
@@ -108,7 +108,7 @@ CharacterSheetScreen.propTypes = {
     constitution: PropTypes.number,
     constitutionOriginal: PropTypes.number,
     charisma: PropTypes.number,
-    charismaOriginal: PropTypes.number
+    charismaOriginal: PropTypes.number,
   }),
-  setCharacterRolled: PropTypes.func
-}
+  setCharacterRolled: PropTypes.func,
+};
