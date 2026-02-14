@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
 import ClassAbilitiesList from "../components/class/ClassAbilitiesList";
 import SavingThrows from "../components/class/SavingThrows";
-import Button from "../components/general/Button";
 import Header from "../components/general/Header";
+import ScreenNavigation from "../components/general/ScreenNavigation";
 import HPRoller from "../containers/class-details/HPRoller";
 import SpellSelection from "../containers/class-details/SpellSelection";
 
@@ -50,15 +50,32 @@ export default function ClassScreen(props) {
       <SpellSelection
         setCharacterStatistics={setCharacterStatistics}
         characterClass={characterClass}
+        characterStatistics={characterStatistics}
       ></SpellSelection>
 
-      <Button
-        name={"equipment-options"}
-        text={"Go to Equipment"}
-        callback={() => {
+      <ScreenNavigation
+        onPrev={() => {
+          setScreen({ ...screen, abilityScreen: true, classScreen: false });
+        }}
+        prevLabel="Character Class"
+        onNext={() => {
           setScreen({ ...screen, equipmentScreen: true, classScreen: false });
         }}
-      ></Button>
+        nextLabel="Equipment"
+        requirements={[
+          !characterStatistics.hitPoints && "Roll Hit Points",
+          !!(
+            characterClass.arcaneSpells ||
+            characterClass.divineSpells ||
+            characterClass.illusionistSpells ||
+            characterClass.druidSpells ||
+            characterClass.necromancerSpells ||
+            characterClass.runesmithSpells
+          ) &&
+            !characterStatistics.spell &&
+            "Select a Spell",
+        ].filter(Boolean)}
+      />
     </div>
   );
 }

@@ -55,6 +55,8 @@ export default function CharacterGenerator() {
 
   const [characterStatistics, setCharacterStatistics] = useState({
     hitPoints: null,
+    hpRolls: 0,
+    hpResult: null,
     armourClass: null,
     spell: null,
     hasSpells: false,

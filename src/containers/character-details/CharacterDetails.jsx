@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import DetailsResult from "../../components/details/DetailsResult";
 import Button from "../../components/general/Button";
+import ScreenNavigation from "../../components/general/ScreenNavigation";
 import {
   appearances,
   firstNames,
@@ -30,13 +31,13 @@ export default function CharacterDetails(props) {
     diceEnabled,
   } = props;
 
-  const [characterName, setCharacterName] = useState("");
-  const [alignment, setAlignment] = useState("");
-  const [appearance, setAppearance] = useState("");
-  const [personality, setPersonality] = useState("");
-  const [background, setBackground] = useState("");
-  const [misfortune, setMisfortune] = useState("");
-  const [languages, setLanguages] = useState([]);
+  const [characterName, setCharacterName] = useState(character.name || "");
+  const [alignment, setAlignment] = useState(character.alignment || "");
+  const [appearance, setAppearance] = useState(character.appearance || "");
+  const [personality, setPersonality] = useState(character.personality || "");
+  const [background, setBackground] = useState(character.background || "");
+  const [misfortune, setMisfortune] = useState(character.misfortune || "");
+  const [languages, setLanguages] = useState(character.languages || []);
   const [languageSelected, setLanguageSelected] = useState("");
   const [languageCount, setLanguageCount] = useState();
   const [classLanguageCount, setClassLanguageCount] = useState(0);
@@ -376,10 +377,23 @@ export default function CharacterDetails(props) {
         </div>
       </div>
 
-      <Button
-        name={"character-sheet"}
-        text={"Go to Character Sheet"}
-        callback={() => {
+      <ScreenNavigation
+        onPrev={() => {
+          setScreen({
+            ...screen,
+            detailsScreen: false,
+            equipmentScreen: true,
+          });
+        }}
+        prevLabel="Equipment"
+        onNext={() => {
+          setScreen({
+            ...screen,
+            detailsScreen: false,
+            characterSheetScreen: true,
+          });
+        }}
+        onNavigation={() => {
           setCharacter({
             ...character,
             name: characterName,
@@ -391,14 +405,13 @@ export default function CharacterDetails(props) {
             languages,
             hasLanguages,
           });
-
-          setScreen({
-            ...screen,
-            detailsScreen: false,
-            characterSheetScreen: true,
-          });
         }}
-      ></Button>
+        nextLabel="Character Sheet"
+        requirements={[
+          !characterName && "Choose a name",
+          !alignment && "Select an alignment",
+        ].filter(Boolean)}
+      />
     </React.Fragment>
   );
 }

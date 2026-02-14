@@ -1586,3 +1586,54 @@ div > .button-class-option {
 .main-page--subheader {
   height: 100%;
 }
+
+.screen-navigation-container {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.requirement-messages {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.requirement-message {
+  color: #b10909;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.navigation-buttons {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navigation-prev-container,
+.navigation-next-container {
+  flex: 1;
+}
+
+.navigation-prev-container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.navigation-next-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.navigation-buttons .button {
+  min-width: 150px;
+  margin: 0;
+}

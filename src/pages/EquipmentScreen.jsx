@@ -10,6 +10,7 @@ export default function EquipmentScreen(props) {
     characterModifiers,
     characterStatistics,
     setCharacterStatistics,
+    characterEquipment,
     setCharacterEquipment,
     diceEnabled,
   } = props;
@@ -23,6 +24,7 @@ export default function EquipmentScreen(props) {
         characterModifiers={characterModifiers}
         characterStatistics={characterStatistics}
         setCharacterStatistics={setCharacterStatistics}
+        characterEquipment={characterEquipment}
         setCharacterEquipment={setCharacterEquipment}
         screen={screen}
         setScreen={setScreen}

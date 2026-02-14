@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useRef } from "react";
 import { Trans } from "react-i18next";
+import ScreenNavigation from "../components/general/ScreenNavigation";
 import CharacterSheet from "../containers/character/CharacterSheet";
 import PDFExport from "../containers/character/PDFExport";
 
@@ -45,7 +46,18 @@ export default function CharacterSheetScreen(props) {
 
         <h3 className="header-default header-pdf">Navigation</h3>
 
-        <div className="navigation">
+        <ScreenNavigation
+          onPrev={() => {
+            setScreen({
+              ...screen,
+              detailsScreen: true,
+              characterSheetScreen: false,
+            });
+          }}
+          prevLabel="Character Details"
+        />
+
+        <div className="navigation-footer">
           <button
             onClick={() => {
               setScreen({

@@ -13,10 +13,15 @@ export default function HPRoller(props) {
     diceEnabled,
   } = props;
 
-  const [hitPoints, setHitPoints] = useState(null);
-  const [HPResult, setHPResult] = useState(null);
-  const [canReroll, setCanReroll] = useState(true);
-  const [HPRolls, setHPRolls] = useState(0);
+  const [hitPoints, setHitPoints] = useState(characterStatistics.hitPoints);
+  const [HPResult, setHPResult] = useState(characterStatistics.hpResult);
+  // DO NOT SUBMIT This is different logic from the one below.
+  const [canReroll, setCanReroll] = useState(
+    characterStatistics.hpRolls < 2 &&
+      (characterStatistics.hpResult === null ||
+        characterStatistics.hpResult <= 2),
+  );
+  const [HPRolls, setHPRolls] = useState(characterStatistics.hpRolls || 0);
 
   const getHitPoints = () => {
     const die = characterClass.hd;
@@ -39,7 +44,12 @@ export default function HPRoller(props) {
       }
 
       setHitPoints(totalHP);
-      setCharacterStatistics({ ...characterStatistics, hitPoints: totalHP });
+      setCharacterStatistics({
+        ...characterStatistics,
+        hitPoints: totalHP,
+        hpRolls: HPRollsNew,
+        hpResult: HPResult,
+      });
       setHPResult(HPResult);
       setHPRolls(HPRollsNew);
 
@@ -71,6 +81,8 @@ export default function HPRoller(props) {
         setCharacterStatistics({
           ...characterStatistics,
           hitPoints: totalHP,
+          hpRolls: HPRollsNew,
+          hpResult: HPResult,
         });
         setHitPoints(totalHP);
         setHPResult(HPResult);
@@ -84,7 +96,7 @@ export default function HPRoller(props) {
         className={`button button-primary button--hp ${
           canReroll ? "" : "opacity-0"
         }`}
-        onClick={() => setTimeout(getHitPoints(), 200)}
+        onClick={() => setTimeout(() => getHitPoints(), 200)}
         disabled={!canReroll}
         style={{
           fontSize: canReroll ? "" : "4rem",

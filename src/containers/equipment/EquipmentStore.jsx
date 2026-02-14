@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Inventory from "../../components/equipment/Inventory";
+import ScreenNavigation from "../../components/general/ScreenNavigation";
 import {
   Cleric,
   Dwarf,
@@ -33,22 +34,29 @@ export default function EquipmentStore(props) {
     characterModifiers,
     characterStatistics,
     setCharacterStatistics,
+    characterEquipment,
     setCharacterEquipment,
     screen,
     setScreen,
     diceEnabled,
   } = props;
 
-  const [gold, setGold] = useState(null);
-  const [goldRolled, setGoldRolled] = useState(false);
-  const [showGoldInfo, setShowGoldInfo] = useState(false);
-  const [adventuringGear, setAdventuringGear] = useState([]);
+  const [gold, setGold] = useState(characterEquipment.gold);
+  const [goldRolled, setGoldRolled] = useState(
+    characterEquipment.gold !== null,
+  );
+  const [showGoldInfo, setShowGoldInfo] = useState(
+    characterEquipment.gold !== null,
+  );
+  const [adventuringGear, setAdventuringGear] = useState(
+    characterEquipment.adventuringGear || [],
+  );
   const [adventuringGearSelected, setAdventuringGearSelected] =
     useState("Backpack");
-  const [armour, setArmour] = useState([]);
+  const [armour, setArmour] = useState(characterEquipment.armour || []);
   const [armourSelected, setArmourSelected] = useState(null);
   const [shieldSelected, setShieldSelected] = useState(false);
-  const [weapons, setWeapons] = useState([]);
+  const [weapons, setWeapons] = useState(characterEquipment.weapons || []);
   const [weaponSelected, setWeaponSelected] = useState("Dagger");
   const [armourClass, setArmourClass] = useState();
   const [unarmouredAC, setUnarmouredAC] = useState();
@@ -512,35 +520,41 @@ export default function EquipmentStore(props) {
         </div>
       )}
       {/* updates parent state with all new values when moving on to next page */}
-      {goldRolled && (
-        <button
-          className="button button--character-details"
-          onClick={() => {
-            const newCharacterEquipment = {
-              armour,
-              weapons,
-              adventuringGear,
-              gold,
-
-              AC: armourClass,
-              unarmouredAC,
-            };
-            setCharacterEquipment(newCharacterEquipment);
-            setCharacterStatistics({
-              ...characterStatistics,
-              armourClass,
-              unarmouredAC,
-            });
-            setScreen({
-              ...screen,
-              equipmentScreen: false,
-              detailsScreen: true,
-            });
-          }}
-        >
-          Go to Character Details
-        </button>
-      )}
+      <ScreenNavigation
+        onPrev={() => {
+          setScreen({
+            ...screen,
+            equipmentScreen: false,
+            classScreen: true,
+          });
+        }}
+        prevLabel="Class Options"
+        onNext={() => {
+          setScreen({
+            ...screen,
+            equipmentScreen: false,
+            detailsScreen: true,
+          });
+        }}
+        onNavigation={() => {
+          const newCharacterEquipment = {
+            armour,
+            weapons,
+            adventuringGear,
+            gold,
+            AC: armourClass,
+            unarmouredAC,
+          };
+          setCharacterEquipment(newCharacterEquipment);
+          setCharacterStatistics({
+            ...characterStatistics,
+            armourClass,
+            unarmouredAC,
+          });
+        }}
+        nextLabel="Character Details"
+        requirements={[!goldRolled && "Roll starting gold"].filter(Boolean)}
+      />
     </>
   );
 }

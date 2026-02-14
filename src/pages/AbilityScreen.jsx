@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import Header from "../components/general/Header";
+import ScreenNavigation from "../components/general/ScreenNavigation";
 import AbilityScores from "../containers/abilties/AbilityScores";
-import NavigationOptions from "../containers/abilties/NavigationOptions";
 import Classes from "../containers/classes/Classes";
 
 import { useEffect } from "react";
@@ -25,7 +25,7 @@ export default function AbilityScreen(props) {
   useEffect(() => {
     console.log("Loaded");
 
-    if (!diceEnabled) {
+    if (!diceEnabled && abilityScores.strength === null) {
       rollAttribute("e", "all");
     }
   }, []);
@@ -52,14 +52,22 @@ export default function AbilityScreen(props) {
         rollAttribute={rollAttribute}
       ></AbilityScores>
 
-      <NavigationOptions
-        rollAttribute={rollAttribute}
-        rollCharacter={rollCharacter}
-        screen={screen}
-        setScreen={setScreen}
-        characterClass={characterClass}
-        abilityScores={abilityScores}
-      ></NavigationOptions>
+      <ScreenNavigation
+        onNext={() =>
+          setScreen({
+            ...screen,
+            equipmentScreen: false,
+            abilityScreen: false,
+            classScreen: true,
+          })
+        }
+        nextLabel="Class Options"
+        requirements={[
+          !characterClass.name && "Choose a character class",
+          Object.values(abilityScores).some((v) => v === null) &&
+            "Roll all ability scores",
+        ].filter(Boolean)}
+      />
     </div>
   );
 }

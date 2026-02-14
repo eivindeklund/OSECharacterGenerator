@@ -12,9 +12,12 @@ import { chooseRandomItem } from "../../utilities/utilities";
 
 export default function SpellSelection({
   characterClass,
+  characterStatistics,
   setCharacterStatistics,
 }) {
-  const [spellSelected, setSpellSelected] = useState("");
+  const [spellSelected, setSpellSelected] = useState(
+    characterStatistics.spell || "",
+  );
 
   const chooseSpells = () => {
     let randomSpell;
@@ -78,7 +81,7 @@ export default function SpellSelection({
   const handleSpellChange = (event) => {
     setSpellSelected(event.target.value);
     setCharacterStatistics({
-      ...setCharacterStatistics,
+      ...characterStatistics,
       spell: event.target.value,
       hasSpells: true,
     });

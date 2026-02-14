@@ -33,7 +33,7 @@ export default function DetailsScreen(props) {
 }
 
 DetailsScreen.propTypes = {
-  diceEnabled: PropTypes.func,
+  diceEnabled: PropTypes.bool,
   screen: PropTypes.objectOf(PropTypes.bool),
   setScreen: PropTypes.func,
   character: PropTypes.object,
