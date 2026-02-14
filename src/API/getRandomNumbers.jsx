@@ -1,5 +1,5 @@
-import { RANDOM_NUMBERS_API_URL } from '../constants/constants'
 import axios from 'axios'
+import { RANDOM_NUMBERS_API_URL } from '../constants/constants'
 
 export async function getRandomNumbers() {
   const data = JSON.stringify({
@@ -25,9 +25,13 @@ export async function getRandomNumbers() {
   }
 
   try {
-    const response = await axios(config)
-    return response.data.result.random.data
+    const response = await axios(config);
+    if (response.data && response.data.result && response.data.result.random) {
+      return response.data.result.random.data;
+    }
+    return [];
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return [];
   }
 }
