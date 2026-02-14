@@ -1,18 +1,18 @@
-import React from 'react'
-import { Thief, abilityScoreNames } from '../../constants/constants'
-import AbilityScoresRow from '../../components/abilities/AbilityScoresRow'
 import PropTypes from 'prop-types'
+import AbilityScoresRow from '../../components/abilities/AbilityScoresRow'
 import Button from '../../components/general/Button'
+import { abilityScoreNames } from '../../constants/constants'
 
 export default function AbilityScores(props) {
   const {
     abilityScores,
     characterClass,
-    setAbilityScores,
     pointBuy,
-    setPointBuy,
     characterModifiers,
-    rollAttribute
+    rollAttribute,
+    scoreIncrease,
+    scoreDecrease,
+    abilityScoresCanDecrease
   } = props
 
   const {
@@ -30,45 +30,6 @@ export default function AbilityScores(props) {
     charismaModRetainersMax,
     charismaModLoyalty
   } = characterModifiers
-
-  const scoreIncrease = (key) => {
-    const keyOriginal = key + 'Original'
-    const value = abilityScores[key]
-
-    // check if score has already been decreased
-
-    const increment = value < abilityScores[keyOriginal] ? 2 : 1
-
-    if (pointBuy < 1) {
-      return
-    }
-
-    const maximumAbilityScore = 18
-
-    if (value === maximumAbilityScore) {
-      return
-    }
-
-    const newValue = value + increment
-
-    setAbilityScores({ ...abilityScores, [key]: newValue })
-    setPointBuy(pointBuy - 1)
-  }
-
-  const scoreDecrease = (key) => {
-    const keyOriginal = key + 'Original'
-    const value = abilityScores[key]
-    const decrement = value > abilityScores[keyOriginal] ? -1 : -2
-
-    if (abilityScores[key] <= 10) {
-      return
-    }
-
-    const newValue = value + decrement
-
-    setPointBuy(pointBuy + 1)
-    setAbilityScores({ ...abilityScores, [key]: newValue })
-  }
 
   const abilityScoreModDescriptions = {
     strength: [
@@ -91,15 +52,6 @@ export default function AbilityScores(props) {
       { text: 'Max Retainers', value: charismaModRetainersMax },
       { text: 'Loyalty', value: charismaModLoyalty }
     ]
-  }
-
-  const abilityScoresCanDecrease = {
-    strength: characterClass.name !== Thief,
-    intelligence: true,
-    wisdom: true,
-    dexterity: false,
-    constitution: false,
-    charisma: false
   }
 
   return (
@@ -136,23 +88,11 @@ export default function AbilityScores(props) {
 
 AbilityScores.propTypes = {
   characterClass: PropTypes.object,
-  abilityScores: PropTypes.shape({
-    strength: PropTypes.number,
-    strengthOriginal: PropTypes.number,
-    intelligence: PropTypes.number,
-    intelligenceOriginal: PropTypes.number,
-    wisdom: PropTypes.number,
-    wisdomOriginal: PropTypes.number,
-    dexterity: PropTypes.number,
-    dexterityOriginal: PropTypes.number,
-    constitution: PropTypes.number,
-    constitutionOriginal: PropTypes.number,
-    charisma: PropTypes.number,
-    charismaOriginal: PropTypes.number
-  }),
-  setAbilityScores: PropTypes.func,
+  abilityScores: PropTypes.object,
   pointBuy: PropTypes.number,
-  setPointBuy: PropTypes.func,
   characterModifiers: PropTypes.objectOf(PropTypes.string),
-  rollAttribute: PropTypes.func
+  rollAttribute: PropTypes.func,
+  scoreIncrease: PropTypes.func,
+  scoreDecrease: PropTypes.func,
+  abilityScoresCanDecrease: PropTypes.objectOf(PropTypes.bool)
 }

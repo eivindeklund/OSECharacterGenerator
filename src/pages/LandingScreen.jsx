@@ -1,12 +1,10 @@
-import React from "react";
-import { useTranslation, Trans } from "react-i18next";
-import { LinkText } from "../utilities/utilities";
-import { lngs } from "../constants/constants";
 import PropTypes from "prop-types";
-import CheckBox from "../components/general/Checkbox";
-import { isMobile } from "react-device-detect";
+import { Trans, useTranslation } from "react-i18next";
 import { CircleLoader } from "react-spinners";
+import CheckBox from "../components/general/Checkbox";
+import { lngs } from "../constants/constants";
 import designed from "../img/designed.png";
+import { LinkText } from "../utilities/utilities";
 
 export default function LandingScreen(props) {
   const { t, i18n } = useTranslation();
@@ -22,6 +20,8 @@ export default function LandingScreen(props) {
     screen,
     setScreen,
     rollCharacter,
+    isMobile,
+    storedCharacters,
   } = props;
 
   const override = {
@@ -30,9 +30,7 @@ export default function LandingScreen(props) {
     borderColor: "red",
   };
 
-  const myCharacters = JSON.parse(
-    window.localStorage.getItem("characterStorage"),
-  );
+  const myCharacters = storedCharacters;
 
   return (
     <header

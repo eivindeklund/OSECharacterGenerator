@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
-import { isMobile } from "react-device-detect";
 import DetailsResult from "../../components/details/DetailsResult";
 import Button from "../../components/general/Button";
 import ScreenNavigation from "../../components/general/ScreenNavigation";
@@ -29,6 +28,7 @@ export default function CharacterDetails(props) {
     characterModifiers,
     diceEnabled,
     diceService,
+    isMobile,
   } = props;
 
   const [characterName, setCharacterName] = useState(character.name || "");

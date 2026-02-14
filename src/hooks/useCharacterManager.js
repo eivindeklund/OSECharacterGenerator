@@ -2,17 +2,24 @@ import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { getRandomNumbers } from "../API/getRandomNumbers";
 import {
-    abilityScoreNames,
-    defaultAbilityScoresState,
+        abilityScoreNames,
+        defaultAbilityScoresState,
+        Thief,
 } from "../constants/constants";
 import classOptionsData from "../data/classOptionsData";
+import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
+import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
-    d6,
-    getPrimeReqMod,
-    updateAbilityModifiers,
+        d6,
+        getPrimeReqMod,
+        updateAbilityModifiers,
 } from "../utilities/utilities";
 
-export const useCharacterManager = (diceService) => {
+export const useCharacterManager = (
+  diceService,
+  storageService = DefaultStorageService,
+  deviceService = DefaultDeviceService
+) => {
   const [character, setCharacter] = useState({
     id: null,
     name: null,
@@ -82,6 +89,13 @@ export const useCharacterManager = (diceService) => {
   const [randomNumbers, setRandomNumbers] = useState([]);
   const [characterRolled, setCharacterRolled] = useState(false);
   const [pendingRoll, setPendingRoll] = useState(null);
+  const [storedCharacters, setStoredCharacters] = useState([]);
+
+  useEffect(() => {
+    setStoredCharacters(storageService.loadCharacters());
+  }, [storageService]);
+
+  const isMobile = deviceService.getIsMobile();
 
   const loadRandomNumbers = useCallback(async () => {
     const numbers = await getRandomNumbers();
@@ -306,6 +320,59 @@ export const useCharacterManager = (diceService) => {
     setCharacterClass(newClass);
   };
 
+  const scoreIncrease = (key) => {
+    const keyOriginal = key + "Original";
+    const value = abilityScores[key];
+    const increment = value < abilityScores[keyOriginal] ? 2 : 1;
+
+    if (pointBuy < 1 || value >= 18) {
+      return;
+    }
+
+    setAbilityScores((prev) => ({ ...prev, [key]: value + increment }));
+    setPointBuy((prev) => prev - 1);
+  };
+
+  const scoreDecrease = (key) => {
+    const keyOriginal = key + "Original";
+    const value = abilityScores[key];
+    const decrement = value > abilityScores[keyOriginal] ? -1 : -2;
+
+    if (value <= 10) {
+      return;
+    }
+
+    setAbilityScores((prev) => ({ ...prev, [key]: value + decrement }));
+    setPointBuy((prev) => prev + 1);
+  };
+
+  const saveCharacter = () => {
+    const characterData = {
+      character,
+      characterStatistics,
+      characterClass,
+      characterEquipment,
+      characterModifiers,
+      abilityScores,
+    };
+    const updated = storageService.saveCharacter(characterData);
+    setStoredCharacters(updated);
+  };
+
+  const deleteStoredCharacter = (id) => {
+    const updated = storageService.deleteCharacter(id);
+    setStoredCharacters(updated);
+  };
+
+  const abilityScoresCanDecrease = {
+    strength: characterClass.name !== Thief,
+    intelligence: true,
+    wisdom: true,
+    dexterity: false,
+    constitution: false,
+    charisma: false,
+  };
+
   return {
     character,
     setCharacter,
@@ -336,5 +403,12 @@ export const useCharacterManager = (diceService) => {
     changeCharacterClass,
     rollHP,
     rollGold,
+    scoreIncrease,
+    scoreDecrease,
+    saveCharacter,
+    deleteStoredCharacter,
+    storedCharacters,
+    isMobile,
+    abilityScoresCanDecrease,
   };
 };

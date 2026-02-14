@@ -34,11 +34,15 @@ export default function CharacterGenerator() {
     randomNumbers,
     characterRolled,
     setCharacterRolled,
-    rollAttribute,
-    rollCharacter,
-    changeCharacterClass,
     rollHP,
     rollGold,
+    scoreIncrease,
+    scoreDecrease,
+    saveCharacter,
+    deleteStoredCharacter,
+    storedCharacters,
+    isMobile,
+    abilityScoresCanDecrease,
   } = useCharacterManager(Dice);
 
   const [rollButtonHover, setRollButtonHover] = useState(false);
@@ -61,6 +65,8 @@ export default function CharacterGenerator() {
             rollCharacter={rollCharacter}
             screen={screen}
             setScreen={setScreen}
+            isMobile={isMobile}
+            storedCharacters={storedCharacters}
           ></LandingScreen>
           <div
             className={"character-menu container"}
@@ -81,6 +87,9 @@ export default function CharacterGenerator() {
                 rollAttribute={rollAttribute}
                 screen={screen}
                 setScreen={setScreen}
+                scoreIncrease={scoreIncrease}
+                scoreDecrease={scoreDecrease}
+                abilityScoresCanDecrease={abilityScoresCanDecrease}
               ></AbilityScreen>
             )}
 
@@ -125,6 +134,7 @@ export default function CharacterGenerator() {
                 characterModifiers={characterModifiers}
                 diceEnabled={diceEnabled}
                 diceService={Dice}
+                isMobile={isMobile}
               ></DetailsScreen>
             )}
 
@@ -139,6 +149,7 @@ export default function CharacterGenerator() {
                 characterModifiers={characterModifiers}
                 abilityScores={abilityScores}
                 setCharacterRolled={setCharacterRolled}
+                saveCharacter={saveCharacter}
               ></CharacterSheetScreen>
             )}
 
@@ -159,6 +170,8 @@ export default function CharacterGenerator() {
                 abilityScores={abilityScores}
                 setAbilityScores={setAbilityScores}
                 setCharacterRolled={setCharacterRolled}
+                storedCharacters={storedCharacters}
+                deleteStoredCharacter={deleteStoredCharacter}
               ></CharacterStorageScreen>
             )}
           </div>

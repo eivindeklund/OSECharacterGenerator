@@ -1,14 +1,12 @@
-import React, { useEffect } from 'react'
-import { PDFDocument } from 'pdf-lib'
-import { joinDuplicates } from '../../utilities/utilities'
 import download from 'downloadjs'
-import {
-  CHARACTER_SHEET_PURIST_URL,
-  CHARACTER_SHEET_PURIST_DAC_URL,
-  CHARACTER_SHEET_UNDERGROUND_URL,
-  CHARACTER_STORAGE
-} from '../../constants/constants'
+import { PDFDocument } from 'pdf-lib'
 import PropTypes from 'prop-types'
+import {
+    CHARACTER_SHEET_PURIST_DAC_URL,
+    CHARACTER_SHEET_PURIST_URL,
+    CHARACTER_SHEET_UNDERGROUND_URL
+} from '../../constants/constants'
+import { joinDuplicates } from '../../utilities/utilities'
 
 export default function PDFExport(props) {
   const {
@@ -19,48 +17,6 @@ export default function PDFExport(props) {
     characterModifiers,
     abilityScores
   } = props
-
-  const characterDataObject = {
-    character,
-    characterStatistics,
-    characterClass,
-    characterEquipment,
-    characterModifiers,
-    abilityScores
-  }
-
-  useEffect(() => {
-    updateLocalStorage()
-  }, [])
-
-  const updateLocalStorage = () => {
-    const myCharacters = JSON.parse(
-      window.localStorage.getItem(CHARACTER_STORAGE)
-    )
-
-    const id = character.id || 0
-
-    if (myCharacters) {
-      const alreadyExists = myCharacters.find((obj) => {
-        return obj.character.id === id
-      })
-      if (alreadyExists) {
-        return
-      }
-    }
-
-    if (localStorage.getItem(CHARACTER_STORAGE) === null) {
-      const arr = []
-      arr.push(characterDataObject)
-      window.localStorage.setItem(CHARACTER_STORAGE, JSON.stringify(arr))
-    } else {
-      myCharacters.push(characterDataObject)
-      window.localStorage.setItem(
-        CHARACTER_STORAGE,
-        JSON.stringify(myCharacters)
-      )
-    }
-  }
 
   const alignmentCapitalized = character.alignment
     ? character.alignment.charAt(0).toUpperCase() + character.alignment.slice(1)

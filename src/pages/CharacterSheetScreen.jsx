@@ -16,9 +16,14 @@ export default function CharacterSheetScreen(props) {
     characterModifiers,
     abilityScores,
     setCharacterRolled,
+    saveCharacter,
   } = props;
 
   const componentRef = useRef();
+
+  useEffect(() => {
+    saveCharacter();
+  }, [saveCharacter]);
 
   return (
     <div className="character-sheet-container container">

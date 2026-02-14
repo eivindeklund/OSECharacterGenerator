@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import CharacterDetails from './CharacterDetails';
 
@@ -52,7 +52,10 @@ describe('CharacterDetails', () => {
   test('should trigger background roll via diceService', async () => {
     render(<CharacterDetails {...defaultProps} />);
     const backgroundButton = screen.getByRole('button', { name: /Background \(d100\)/i });
-    fireEvent.click(backgroundButton);
+    
+    await act(async () => {
+      fireEvent.click(backgroundButton);
+    });
 
     expect(mockDiceService.show).toHaveBeenCalled();
     expect(mockDiceService.roll).toHaveBeenCalledWith('1d100');
