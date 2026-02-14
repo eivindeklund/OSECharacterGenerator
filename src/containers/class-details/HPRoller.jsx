@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { d } from '../../utilities/utilities'
-import PropTypes from 'prop-types'
-import { Dice } from '../../utilities/DiceBox'
-import { isMobile } from 'react-device-detect'
+import PropTypes from "prop-types";
+import React, { useState } from "react";
+import { isMobile } from "react-device-detect";
+import { Dice } from "../../utilities/DiceBox";
+import { d } from "../../utilities/utilities";
 
 export default function HPRoller(props) {
   const {
@@ -10,119 +10,119 @@ export default function HPRoller(props) {
     characterStatistics,
     setCharacterStatistics,
     characterModifiers,
-    diceEnabled
-  } = props
+    diceEnabled,
+  } = props;
 
-  const [hitPoints, setHitPoints] = useState(null)
-  const [HPResult, setHPResult] = useState(null)
-  const [canReroll, setCanReroll] = useState(true)
-  const [HPRolls, setHPRolls] = useState(0)
+  const [hitPoints, setHitPoints] = useState(null);
+  const [HPResult, setHPResult] = useState(null);
+  const [canReroll, setCanReroll] = useState(true);
+  const [HPRolls, setHPRolls] = useState(0);
 
   const getHitPoints = () => {
-    const die = characterClass.hd
+    const die = characterClass.hd;
 
-    console.log('ROLLING HP', die)
+    console.log("ROLLING HP", die);
 
-    let HPResult
+    let HPResult;
 
     if (isMobile || !diceEnabled) {
-      HPResult = d(1, die)
+      HPResult = d(1, die);
 
-      let totalHP = HPResult + parseInt(characterModifiers.constitutionMod)
-      const HPRollsNew = HPRolls + 1
+      let totalHP = HPResult + parseInt(characterModifiers.constitutionMod);
+      const HPRollsNew = HPRolls + 1;
 
       if (totalHP < 1) {
-        totalHP = 1
+        totalHP = 1;
       }
       if (HPResult > 2 || HPRollsNew === 2) {
-        setCanReroll(false)
+        setCanReroll(false);
       }
 
-      setHitPoints(totalHP)
-      setCharacterStatistics({ ...characterStatistics, hitPoints: totalHP })
-      setHPResult(HPResult)
-      setHPRolls(HPRollsNew)
+      setHitPoints(totalHP);
+      setCharacterStatistics({ ...characterStatistics, hitPoints: totalHP });
+      setHPResult(HPResult);
+      setHPRolls(HPRollsNew);
 
-      return
+      return;
     }
 
-    const HPDiceColor = '#FF2800'
+    const HPDiceColor = "#FF2800";
 
     Dice.hide()
       .show()
       .roll(`1d${die}`, { themeColor: HPDiceColor })
       .then((results) => {
-        const HPResult = results[0].value
+        const HPResult = results[0].value;
 
         if (isNaN(HPResult)) {
-          throw new Error('Dice result was not a number')
+          throw new Error("Dice result was not a number");
         }
 
-        let totalHP = HPResult + parseInt(characterModifiers.constitutionMod)
-        const HPRollsNew = HPRolls + 1
+        let totalHP = HPResult + parseInt(characterModifiers.constitutionMod);
+        const HPRollsNew = HPRolls + 1;
 
         if (totalHP < 1) {
-          totalHP = 1
+          totalHP = 1;
         }
         if (HPResult > 2 || HPRollsNew === 2) {
-          setCanReroll(false)
+          setCanReroll(false);
         }
 
         setCharacterStatistics({
           ...characterStatistics,
-          hitPoints: totalHP
-        })
-        setHitPoints(totalHP)
-        setHPResult(HPResult)
-        setHPRolls(HPRollsNew)
-      })
-  }
+          hitPoints: totalHP,
+        });
+        setHitPoints(totalHP);
+        setHPResult(HPResult);
+        setHPRolls(HPRollsNew);
+      });
+  };
 
   return (
     <React.Fragment>
       <button
         className={`button button-primary button--hp ${
-          canReroll ? '' : 'opacity-0'
+          canReroll ? "" : "opacity-0"
         }`}
         onClick={() => setTimeout(getHitPoints(), 200)}
         disabled={!canReroll}
         style={{
-          fontSize: canReroll ? '' : '4rem'
+          fontSize: canReroll ? "" : "4rem",
         }}
       >
-        {canReroll && `${HPRolls === 0 ? 'Roll HP' : 'Reroll?'}`}
+        {canReroll && `${HPRolls === 0 ? "Roll HP" : "Reroll?"}`}
         {!canReroll && hitPoints}
       </button>
 
-      <div className='hp-container container'>
-        <div className='hp-container--hit-die'>
+      <div className="hp-container container">
+        <div className="hp-container--hit-die">
           {hitPoints && <span>{HPResult}</span>}
           {!hitPoints && <span>d{characterClass.hd}</span>}
 
           {!hitPoints && (
-            <div className='hp-container--hit-die-name'>Hit Die</div>
+            <div className="hp-container--hit-die-name">Hit Die</div>
           )}
           {hitPoints && (
-            <div className='hp-container--hit-die-name'>Rolled</div>
+            <div className="hp-container--hit-die-name">Rolled</div>
           )}
         </div>
 
-        <div className='hp-container--math'>+</div>
+        <div className="hp-container--math">+</div>
 
-        <div className='hp-container--con-mod'>
+        <div className="hp-container--con-mod">
           {characterModifiers.constitutionMod}
-          <div className='hp-container--con-mod-name'>Con Mod</div>
+          <div className="hp-container--con-mod-name">Con Mod</div>
         </div>
 
-        <div className='hp-container--math'>=</div>
+        <div className="hp-container--math">=</div>
 
-        <div className='hp-container--hit-points'>
+        <div className="hp-container--hit-points">
           {hitPoints}
-          <div className='hp-container--hit-points-name'>Hit Points</div>
+          <div className="hp-container--hit-points-name">Hit Points</div>
         </div>
       </div>
     </React.Fragment>
-  )
+  );
 }
 
 HPRoller.propTypes = {
@@ -137,8 +137,8 @@ HPRoller.propTypes = {
     armourClass: PropTypes.number,
     spell: PropTypes.string,
     hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number
+    unarmouredAC: PropTypes.number,
   }),
   setCharacterStatistics: PropTypes.func,
-  characterModifiers: PropTypes.object
-}
+  characterModifiers: PropTypes.object,
+};
