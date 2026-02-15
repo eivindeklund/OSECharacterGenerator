@@ -48,30 +48,30 @@ export default function CharacterStorage(props) {
     const characterStorageName = char.character.name
 
     return (
-      <button
-        className='character-button'
-        key={index}
-        onClick={(e) => handleCharacter(e, index, 'setActiveCharacter')}
-        value={index}
-        name='setActiveCharacter'
-      >
-        <div className='character-button--name' value={index}>
-          {characterStorageName}
-        </div>
-        <div className='character-button--level' value={index}>
-          {char.characterClass.name}
-        </div>
+      <div className='character-row' key={index}>
+        <button
+          className='character-button'
+          onClick={(e) => handleCharacter(e, index, 'setActiveCharacter')}
+          value={index}
+          name='setActiveCharacter'
+        >
+          <div className='character-button--name' value={index}>
+            {characterStorageName}
+          </div>
+          <div className='character-button--level' value={index}>
+            {char.characterClass.name}
+          </div>
+        </button>
 
         <div
           onClick={(e) => handleCharacter(e, index, 'deleteCharacter')}
           className='character-button--delete'
-          key={index}
           value={index}
           name='deleteCharacter'
         >
           x
         </div>
-      </button>
+      </div>
     )
   }
 
