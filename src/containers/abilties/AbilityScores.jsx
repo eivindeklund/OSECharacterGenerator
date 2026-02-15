@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types'
-import AbilityScoresRow from '../../components/abilities/AbilityScoresRow'
-import Button from '../../components/general/Button'
-import { abilityScoreNames } from '../../constants/constants'
+import PropTypes from 'prop-types';
+import AbilityScoresRow from '../../components/abilities/AbilityScoresRow';
+import Button from '../../components/general/Button';
+import { abilityScoreNames } from '../../constants/constants';
 
 export default function AbilityScores(props) {
   const {
@@ -13,8 +13,7 @@ export default function AbilityScores(props) {
     scoreIncrease,
     scoreDecrease,
     abilityScoresCanDecrease
-  } = props
-
+  } = props;
   const {
     primeReq,
     strengthModMelee,

@@ -2,17 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { getRandomNumbers } from "../API/getRandomNumbers";
 import {
-        abilityScoreNames,
-        defaultAbilityScoresState,
-        Thief,
+  abilityScoreNames,
+  defaultAbilityScoresState,
+  Thief,
 } from "../constants/constants";
 import classOptionsData from "../data/classOptionsData";
 import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
-        d6,
-        getPrimeReqMod,
-        updateAbilityModifiers,
+  d6,
+  getPrimeReqMod,
+  updateAbilityModifiers,
 } from "../utilities/utilities";
 
 export const useCharacterManager = (
