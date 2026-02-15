@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import "../../css/PackOptions.css";
 import { equipmentPacks } from "../../data/equipmentData";
@@ -7,17 +6,63 @@ import {
   resolvePackItems,
 } from "../../utilities/PackUtils";
 
-const PackOptionsContainer = ({ characterClass, handleAddToLedger }) => {
-  const [activeTab, setActiveTab] = useState(0);
+// Type definitions
+interface CharacterClass {
+  name: string;
+  category?: string;
+  requirements?: string | null;
+  primeReqs?: string[];
+  hd?: number;
+  maxLevel?: number;
+  armour?: string;
+  weapons?: string;
+  isStandardWeapon?: (weapon: any) => boolean;
+  languages?: string;
+  description?: string;
+  savingThrows?: number[];
+  nextLevel?: number;
+  abilities?: string[];
+  link?: string;
+  arcane?: boolean;
+  divine?: boolean;
+}
 
-  // Assuming characterClass prop is an object with a name property, based on EquipmentStore usage
+interface EquipmentItem {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+  category?: string;
+}
+
+interface PackItem {
+  id: string;
+  quantity: number;
+  options?: Array<{
+    class?: string;
+    default?: boolean;
+    id: string;
+  }>;
+}
+
+interface PackOptionsContainerProps {
+  characterClass: CharacterClass | null;
+  handleAddToLedger: (items: EquipmentItem[]) => void;
+}
+
+const PackOptionsContainer: React.FC<PackOptionsContainerProps> = ({ 
+  characterClass, 
+  handleAddToLedger 
+}) => {
+  const [activeTab, setActiveTab] = useState<number>(0);
+
   const className = characterClass ? characterClass.name : "";
   const activePack = equipmentPacks[activeTab];
 
   if (!activePack) return null;
 
-  const price = calculatePackPrice(activePack.items, className);
-  const contents = resolvePackItems(activePack.items, className);
+  const price: number = calculatePackPrice(activePack.items, className);
+  const contents: EquipmentItem[] = resolvePackItems(activePack.items, className);
 
   return (
     <div className="pack-options-container">
@@ -56,11 +101,6 @@ const PackOptionsContainer = ({ characterClass, handleAddToLedger }) => {
       </div>
     </div>
   );
-};
-
-PackOptionsContainer.propTypes = {
-  characterClass: PropTypes.object,
-  handleAddToLedger: PropTypes.func,
 };
 
 export default PackOptionsContainer;
