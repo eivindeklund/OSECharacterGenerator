@@ -1,17 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import ListItem from '../../components/general/ListItem'
+import PropTypes from 'prop-types';
+import ListItem from '../../components/general/ListItem';
 
 export default function ClassDescription(props) {
   const { characterClass } = props
-
-  if (!characterClass.name) {
-    return (
-      <div className='class-details-indicator' style={{ border: 'none' }}>
-        Select Your Class
-      </div>
-    )
-  }
 
   const primeReqString = characterClass.primeReqs.join(', ')
   const langString = ['Alignment', 'Common'].concat(characterClass.languages).join(', ');
@@ -30,18 +21,9 @@ export default function ClassDescription(props) {
   }
 
   return (
-    <details className='class-details'>
-      <summary className='class-summary'>
-        {characterClass.name} Details{' '}
-      </summary>
-
+    <div className='class-description-container'>
       <ul className='class-description-list'>
-        <li>
-          <h4 className='class-description-list--header'>
-            {characterClass.name}
-          </h4>
-        </li>
-        <li>
+        <li className='class-description-list-item'>
           <b>Description:</b>
           <p className='class-description--summary'>
             {characterClass.description}
@@ -56,7 +38,7 @@ export default function ClassDescription(props) {
             ></ListItem>
           )
         })}
-        <li>
+        <li className='class-description-list-item'>
           <b>
             <a
               href={characterClass.link}
@@ -68,7 +50,7 @@ export default function ClassDescription(props) {
           </b>
         </li>
       </ul>
-    </details>
+    </div>
   )
 }
 

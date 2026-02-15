@@ -897,78 +897,108 @@ a {
   padding-left: 40px;
 }
 
-.class-details {
-  font-size: 1.7rem;
-  display: inline-flex;
-  position: absolute;
-  border-radius: 4px;
-  z-index: 2;
-  right: 0;
+.modal-overlay {
+  position: fixed;
+  top: 0;
   left: 0;
-  top: -44px;
-  margin: auto;
-  width: 80%;
-  min-width: 300px;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
 }
 
-.class-details-indicator {
-  position: absolute;
-  top: -44px;
-  width: 100%;
-  font-size: 1.8rem;
-  font-weight: 600;
-}
-
-.class-details > .class-summary {
-  user-select: none;
-  border-radius: 4px;
-  background-color: var(--light-bg-color);
-  margin: auto;
-  font-weight: bold;
-  font-size: 1.8rem;
-  min-width: 160px;
-  padding: 0.2rem 2rem;
-  width: fit-content;
-}
-
-.class-details > .class-summary:hover {
-  cursor: pointer;
-}
-
-.class-details > .class-description-list {
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+.modal-content {
   background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
 }
 
-.class-details > .class-details--arrow {
-  width: 0;
-  height: 0;
-  margin: 0.8rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  border-left: 0.6rem solid transparent;
-  border-right: 0.6rem solid transparent;
-  border-top: 1rem solid #e50000;
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.modal-title {
+  font-size: 2.2rem;
+  margin: 0;
+  color: var(--main-text-color);
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  font-size: 3rem;
+  cursor: pointer;
+  line-height: 1;
+  color: #666;
+  padding: 0 0.5rem;
+}
+
+.modal-close-button:hover {
+  color: #000;
+}
+
+.modal-body {
+  font-size: 1.6rem;
+  text-align: left;
+}
+
+.class-option-wrapper {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  margin: 0.2rem;
+}
+
+div > .button--info-icon {
+  white-space: normal;
+  max-height: 40px;
+  height: 32px; /* Fixed height to match button roughly */
+  line-height: 20px;
+  width: 32px; /* Square proportions */
+  padding: 0;
+  margin: 0 4px;
+  border: none;
+  font-weight: bold;
+  font-style: italic;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+}
+
+.button--info-icon:hover {
+  background-color: var(--primary-bg-hover);
+  color: white;
+}
+
+.selected-class-details-trigger {
+  margin-bottom: 2rem;
 }
 
 .class-description-list {
-  font-size: 1.6rem;
-  text-align: left;
-  padding: 2rem;
+  padding: 0;
 }
 
-.class-description--summary {
-  margin-left: 10px;
-  white-space: pre-wrap;
-}
-
-.class-description--prime-reqs {
-  text-transform: capitalize;
-}
-
-.class-description-list--header {
-  text-align: center;
+.class-description-list-item {
+  margin-bottom: 1rem;
+  list-style: none;
 }
 
 .dice-enabled-container {
@@ -1046,9 +1076,12 @@ div > .button-class-option {
 
 @media screen and (min-width: 450px) {
   .class-container {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
-    width: 90% !important;
-    max-width: 1000px !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 95% !important;
+    max-width: 1200px !important;
   }
 
   .button-class-option {
@@ -1076,12 +1109,14 @@ div > .button-class-option {
   background-color: rgba(0, 0, 0, 0.025) !important;
 }
 
-.class-options-container > .button-class-option:focus {
+.class-options-container > .button-class-option:focus,
+.class-options-container > .button-class-option.button--selected {
   height: auto;
   width: auto;
   padding: 0;
   margin: 0;
   color: #ff0000;
+  background-color: rgba(0, 0, 0, 0.025) !important;
 }
 
 .ability-screen > .class-options-container {
@@ -1092,15 +1127,36 @@ div > .button-class-option {
 }
 
 .class-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
   width: 100%;
   position: relative;
-  max-width: 400px;
+  max-width: 800px;
 }
 
-.class-container > .button:disabled {
-  color: rgba(0, 0, 0, 0.2);
+.class-option-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  padding-right: 4px;
+  margin: 0.2rem;
+}
+
+.class-container > .button:disabled,
+.class-option-wrapper > .button:disabled {
+  color: rgba(0, 0, 0, 0.4);
+  cursor: not-allowed;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 0, 0, 0.05),
+    rgba(255, 0, 0, 0.05) 10px,
+    rgba(255, 255, 255, 0.05) 10px,
+    rgba(255, 255, 255, 0.05) 20px
+  );
+  border: 1px solid rgba(255, 0, 0, 0.1);
 }
 
 .advanced-class-container {

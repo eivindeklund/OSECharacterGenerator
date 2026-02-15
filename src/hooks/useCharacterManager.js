@@ -317,6 +317,22 @@ export const useCharacterManager = (
     const newClass = classOptionsData.find(
       (obj) => obj.name === event.target.value
     );
+
+    // Prevent selecting a class that doesn't meet requirements
+    if (newClass.requirements) {
+      const minimumAbilityScore = 9;
+      const meetsRequirements = abilityScoreNames.every((ability) => {
+        if (newClass.requirements.includes(ability)) {
+          return abilityScores[ability] >= minimumAbilityScore;
+        }
+        return true;
+      });
+
+      if (!meetsRequirements) {
+        return;
+      }
+    }
+
     setCharacterClass(newClass);
   };
 

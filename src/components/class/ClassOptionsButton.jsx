@@ -1,9 +1,8 @@
-import React from 'react'
-import { abilityScoreNames } from '../../constants/constants'
 import PropTypes from 'prop-types'
+import { abilityScoreNames } from '../../constants/constants'
 
 export default function ClassOptionsButton(props) {
-  const { characterClass, abilityScores, changeCharacterClass } = props
+  const { characterClass, abilityScores, changeCharacterClass, selected } = props
 
   const checkAbilityScoreRequirements = (abilityScores, characterClass) => {
     let meetsAbilityScoreRequirements = true
@@ -28,7 +27,7 @@ export default function ClassOptionsButton(props) {
 
   return (
     <button
-      className='button button-class-option'
+      className={`button button-class-option ${selected ? 'button--selected' : ''}`}
       value={characterClass.name}
       key={characterClass.name}
       onClick={changeCharacterClass}

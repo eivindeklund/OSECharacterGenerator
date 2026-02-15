@@ -36,14 +36,6 @@ export default function AbilityScreen(props) {
 
   return (
     <div className="ability-screen container">
-      <Header translation={"characterClass"} name={"character-class"}></Header>
-
-      <Classes
-        characterClass={characterClass}
-        abilityScores={abilityScores}
-        changeCharacterClass={changeCharacterClass}
-      ></Classes>
-
       <Header translation={"abilityScores"} name={"character-class"}></Header>
 
       <div className="ability-score-roll-all-container">
@@ -51,6 +43,7 @@ export default function AbilityScreen(props) {
           Roll All
         </Button>
       </div>
+
 
       <AbilityScores
         abilityScores={abilityScores}
@@ -64,6 +57,15 @@ export default function AbilityScreen(props) {
         scoreDecrease={scoreDecrease}
         abilityScoresCanDecrease={abilityScoresCanDecrease}
       ></AbilityScores>
+
+      <Header translation={"characterClass"} name={"character-class"}></Header>
+
+      <Classes
+        characterClass={characterClass}
+        abilityScores={abilityScores}
+        changeCharacterClass={changeCharacterClass}
+      ></Classes>
+
 
       <ScreenNavigation
         onNext={() =>
