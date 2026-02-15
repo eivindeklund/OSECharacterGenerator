@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Trans } from "react-i18next";
 import ScreenNavigation from "../components/general/ScreenNavigation";
 import CharacterSheet from "../containers/character/CharacterSheet";

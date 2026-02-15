@@ -20,6 +20,9 @@ export default function AbilityScreen(props) {
     screen,
     setScreen,
     diceEnabled,
+    scoreIncrease,
+    scoreDecrease,
+    abilityScoresCanDecrease
   } = props;
 
   useEffect(() => {
@@ -50,6 +53,9 @@ export default function AbilityScreen(props) {
         characterClass={characterClass}
         characterModifiers={characterModifiers}
         rollAttribute={rollAttribute}
+        scoreIncrease={scoreIncrease}
+        scoreDecrease={scoreDecrease}
+        abilityScoresCanDecrease={abilityScoresCanDecrease}
       ></AbilityScores>
 
       <ScreenNavigation
