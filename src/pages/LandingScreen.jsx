@@ -69,7 +69,7 @@ export default function LandingScreen(props) {
         </button>
       )}
 
-      {screen.abilityScreen && !characterRolled && myCharacters && (
+      {screen.abilityScreen && !characterRolled && myCharacters && myCharacters.length > 0 && (
         <button
           className={`button button--storage button-primary ${
             rollButtonHover ? "fade" : ""
