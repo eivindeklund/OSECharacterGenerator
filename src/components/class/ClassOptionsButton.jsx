@@ -1,29 +1,7 @@
-import PropTypes from 'prop-types'
-import { abilityScoreNames } from '../../constants/constants'
+import PropTypes from 'prop-types';
 
 export default function ClassOptionsButton(props) {
   const { characterClass, abilityScores, changeCharacterClass, selected } = props
-
-  const checkAbilityScoreRequirements = (abilityScores, characterClass) => {
-    let meetsAbilityScoreRequirements = true
-
-    if (!characterClass.requirements) {
-      return meetsAbilityScoreRequirements
-    }
-
-    const minimumAbilityScore = 9
-
-    abilityScoreNames.forEach((ability) => {
-      if (
-        characterClass.requirements.includes(ability) &&
-        abilityScores[ability] < minimumAbilityScore
-      ) {
-        meetsAbilityScoreRequirements = false
-      }
-    })
-
-    return meetsAbilityScoreRequirements
-  }
 
   return (
     <button
@@ -31,7 +9,7 @@ export default function ClassOptionsButton(props) {
       value={characterClass.name}
       key={characterClass.name}
       onClick={changeCharacterClass}
-      disabled={!checkAbilityScoreRequirements(abilityScores, characterClass)}
+      disabled={!characterClass.checkAbilityScoreRequirements(abilityScores)}
     >
       {characterClass.name}
     </button>

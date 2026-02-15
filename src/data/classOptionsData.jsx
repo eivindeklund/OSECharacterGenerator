@@ -3,6 +3,58 @@ import { checkWeaponQuality } from "../utilities/WeaponUtils";
 const large_weapons = ["long_bow", "two_handed_sword", "polearm"];
 const magic_user_weapons = ["dagger", "staff", "silver_dagger"];
 
+class ClassOptions {
+    constructor(data) {
+      Object.assign(this, data);
+    }
+
+  /* Parse ability score requirements string.
+     The format is:
+     "Minimum 9 constitution"
+     "Minimum 9 constitution, minimum 9 dexterity"
+     etc
+
+     It can also be null.
+
+     Returns an array of requirement objects:
+     [{ ability: "constitution", minimum: 9 }]
+  */
+  static parseAbilityRequirements(requirementsString) {
+    if (!requirementsString) {
+      return [];
+    }
+
+    const requirements = [];
+    const parts = requirementsString.split(',').map(s => s.trim());
+
+    for (const part of parts) {
+      // Match "Minimum <number> <ability>" or "minimum <number> <ability>"
+      const match = part.match(/^[Mm]inimum\s+(\d+)\s+(\w+)$/);
+      if (match) {
+        const minimum = parseInt(match[1], 10);
+        const ability = match[2].toLowerCase();
+        requirements.push({ ability, minimum });
+      }
+    }
+
+    return requirements;
+  }
+
+  /* Check if ability scores meet the requirements for this class. */
+  checkAbilityScoreRequirements(abilityScores) {
+    const requirements = ClassOptions.parseAbilityRequirements(this.requirements);
+
+    for (const req of requirements) {
+      if (abilityScores[req.ability] < req.minimum) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+}
+
+
 const classOptionsData = [
   {
     name: "Fighter",
@@ -95,7 +147,7 @@ const classOptionsData = [
   {
     name: "Dwarf",
     category: "basic",
-    requirements: "Minimum 9 constitution ",
+    requirements: "Minimum 9 constitution",
     primeReqs: ["strength"],
     hd: 8,
     maxLevel: 12,
@@ -1413,6 +1465,6 @@ const classOptionsData = [
     runesmithSpells: true,
     divine: false,
   },
-];
+].map((x) => new ClassOptions(x));
 
 export default classOptionsData;
