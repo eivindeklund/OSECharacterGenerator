@@ -1,7 +1,6 @@
-import React from 'react'
-import { redFail, greenSuccess } from '../../constants/constants'
 import PropTypes from 'prop-types'
 import Arrow from '../../components/abilities/Arrow'
+import { greenSuccess, redFail } from '../../constants/constants'
 export default function ScoreBox(props) {
   const {
     abilityScoreValue,
@@ -50,15 +49,20 @@ export default function ScoreBox(props) {
   const scoreFontSize = abilityScoreValue > 0 ? '30px' : '20px'
 
   return (
-    <button
+    <div
       className={`ability-score ${
         abilityScoreValue > highScore ? 'ability-score--high' : ''
       }`}
       style={{ color: buttonColor, fontSize: scoreFontSize }}
-      value={`${abilityScoreName}`}
-      onClick={rollAttribute}
     >
-      {abilityScoreValue > 1 ? abilityScoreValue : '?'}
+      <button
+        className="ability-score--value-button"
+        value={`${abilityScoreName}`}
+        onClick={rollAttribute}
+        style={{ color: buttonColor, fontSize: scoreFontSize }}
+      >
+        {abilityScoreValue > 1 ? abilityScoreValue : '?'}
+      </button>
 
       {showDecreaseButton && (
         <Arrow
@@ -75,7 +79,7 @@ export default function ScoreBox(props) {
           callBack={scoreIncrease}
         ></Arrow>
       )}
-    </button>
+    </div>
   )
 }
 

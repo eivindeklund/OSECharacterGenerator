@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import AbilityScoresRow from '../../components/abilities/AbilityScoresRow';
-import Button from '../../components/general/Button';
 import { abilityScoreNames } from '../../constants/constants';
 
 export default function AbilityScores(props) {
@@ -56,6 +55,7 @@ export default function AbilityScores(props) {
   return (
     <div className='container ability-score-container'>
       {pointBuy > 0 && <div className='point-buy'>Point Buy: {pointBuy}</div>}
+      
 
       {abilityScoreNames.map((abilityScoreName, index) => {
         const originalScore = `${abilityScoreName}Original`
@@ -78,9 +78,6 @@ export default function AbilityScores(props) {
         )
       })}
 
-      <Button name='reroll' value={'all'} callback={rollAttribute}>
-        Roll All
-      </Button>
     </div>
   )
 }

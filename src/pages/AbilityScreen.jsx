@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import Button from "../components/general/Button";
 import Header from "../components/general/Header";
 import ScreenNavigation from "../components/general/ScreenNavigation";
 import AbilityScores from "../containers/abilties/AbilityScores";
@@ -44,6 +45,12 @@ export default function AbilityScreen(props) {
       ></Classes>
 
       <Header translation={"abilityScores"} name={"character-class"}></Header>
+
+      <div className="ability-score-roll-all-container">
+        <Button name="reroll" value={"all"} callback={rollAttribute}>
+          Roll All
+        </Button>
+      </div>
 
       <AbilityScores
         abilityScores={abilityScores}
