@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import AbilityScoresRow from '../../components/abilities/AbilityScoresRow';
+import Button from "../../components/general/Button";
 import { abilityScoreNames } from '../../constants/constants';
 
 export default function AbilityScores(props) {
@@ -53,32 +54,35 @@ export default function AbilityScores(props) {
   }
 
   return (
-    <div className='container ability-score-container'>
-      {pointBuy > 0 && <div className='point-buy'>Point Buy: {pointBuy}</div>}
-      
+    <><div className="ability-score-roll-all-container">
+      <Button name="reroll" value={"all"} callback={rollAttribute}>
+        Roll All
+      </Button>
+    </div><div className='container ability-score-container'>
+        {pointBuy > 0 && <div className='point-buy'>Point Buy: {pointBuy}</div>}
 
-      {abilityScoreNames.map((abilityScoreName, index) => {
-        const originalScore = `${abilityScoreName}Original`
+        {abilityScoreNames.map((abilityScoreName, index) => {
+          const originalScore = `${abilityScoreName}Original`;
 
-        return (
-          <AbilityScoresRow
-            key={index}
-            abilityScoreName={abilityScoreName}
-            primeReq={primeReq}
-            abilityScoreValue={abilityScores[abilityScoreName]}
-            abilityScoreValueOriginal={abilityScores[originalScore]}
-            scoreIncrease={scoreIncrease}
-            scoreDecrease={scoreDecrease}
-            canDecrease={abilityScoresCanDecrease[abilityScoreName]}
-            characterClass={characterClass}
-            pointBuy={pointBuy}
-            modArray={abilityScoreModDescriptions[abilityScoreName]}
-            rollAttribute={rollAttribute}
-          ></AbilityScoresRow>
-        )
-      })}
+          return (
+            <AbilityScoresRow
+              key={index}
+              abilityScoreName={abilityScoreName}
+              primeReq={primeReq}
+              abilityScoreValue={abilityScores[abilityScoreName]}
+              abilityScoreValueOriginal={abilityScores[originalScore]}
+              scoreIncrease={scoreIncrease}
+              scoreDecrease={scoreDecrease}
+              canDecrease={abilityScoresCanDecrease[abilityScoreName]}
+              characterClass={characterClass}
+              pointBuy={pointBuy}
+              modArray={abilityScoreModDescriptions[abilityScoreName]}
+              rollAttribute={rollAttribute}
+            ></AbilityScoresRow>
+          );
+        })}
 
-    </div>
+      </div></>
   )
 }
 
