@@ -1,7 +1,6 @@
-import React from 'react'
 import PropTypes from 'prop-types'
-import CharacterStorage from '../containers/storage/CharacterStorage'
 import Header from '../components/general/Header'
+import CharacterStorage from '../containers/storage/CharacterStorage'
 
 export default function CharacterStorageScreen (props) {
   const {
@@ -13,7 +12,9 @@ export default function CharacterStorageScreen (props) {
     setCharacterClass,
     setCharacterEquipment,
     setCharacterModifiers,
-    setCharacterRolled
+    setCharacterRolled,
+    storedCharacters,
+    deleteStoredCharacter
   } = props
 
 
@@ -30,6 +31,8 @@ export default function CharacterStorageScreen (props) {
         setCharacterEquipment={setCharacterEquipment}
         setCharacterModifiers={setCharacterModifiers}
         setCharacterRolled={setCharacterRolled}
+        storedCharacters={storedCharacters}
+        deleteStoredCharacter={deleteStoredCharacter}
       ></CharacterStorage>
 
       <button
@@ -88,5 +91,7 @@ CharacterStorageScreen.propTypes = {
     charismaOriginal: PropTypes.number
   }),
   setAbilityScores: PropTypes.func,
-  setCharacterRolled: PropTypes.func
+  setCharacterRolled: PropTypes.func,
+  storedCharacters: PropTypes.arrayOf(PropTypes.object),
+  deleteStoredCharacter: PropTypes.func
 }
