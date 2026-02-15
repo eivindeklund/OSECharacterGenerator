@@ -1,38 +1,16 @@
-import axios from 'axios';
-import { RANDOM_NUMBERS_API_URL } from '../constants/constants';
+/**
+ * Generates an array of random numbers between 1 and 6 (inclusive)
+ * Used for dice rolling in character generation
+ */
+export function getRandomNumbers() {
+  const numbers = [];
+  const min = 1;
+  const max = 6;
+  const count = 50;
 
-export async function getRandomNumbers() {
-  const data = JSON.stringify({
-    jsonrpc: '2.0',
-    method: 'generateIntegers',
-    params: {
-      apiKey: import.meta.env.VITE_APP_API_KEY,
-      n: 50,
-      min: 1,
-      max: 6,
-      replacement: true
-    },
-    id: 42
-  })
-
-  const config = {
-    method: 'post',
-    url: RANDOM_NUMBERS_API_URL,
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    data
+  for (let i = 0; i < count; i++) {
+    numbers.push(Math.floor(Math.random() * (max - min + 1)) + min);
   }
 
-  try {
-    const response = await axios(config);
-    if (response.data && response.data.result && response.data.result.random) {
-      return response.data.result.random.data;
-    }
-    return [];
-  } catch (error) {
-    // TODO: Raise if running under a test framework
-    console.log(error);
-    return [];
-  }
+  return numbers;
 }

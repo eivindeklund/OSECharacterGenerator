@@ -10,8 +10,18 @@ vi.mock("../API/getRandomNumbers", () => ({
 
 vi.mock("../data/classOptionsData", () => ({
   default: [
-    { name: "Fighter", primeReqs: ["strength"], hd: 8 },
-    { name: "Cleric", primeReqs: ["wisdom"], hd: 6 },
+    { 
+      name: "Fighter", 
+      primeReqs: ["strength"], 
+      hd: 8,
+      checkAbilityScoreRequirements: () => true
+    },
+    { 
+      name: "Cleric", 
+      primeReqs: ["wisdom"], 
+      hd: 6,
+      checkAbilityScoreRequirements: () => true
+    },
   ],
 }));
 
@@ -35,7 +45,7 @@ describe("useCharacterManager", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    getRandomNumbers.mockResolvedValue([1, 2, 3, 4, 5, 6]);
+    getRandomNumbers.mockReturnValue([1, 2, 3, 4, 5, 6]);
   });
 
   it("should initialize with default state", async () => {

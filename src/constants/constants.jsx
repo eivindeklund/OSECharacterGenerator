@@ -13,9 +13,6 @@ export const CHARACTER_SHEET_PURIST_DAC_URL = "/DAC.pdf";
 export const CHARACTER_SHEET_UNDERGROUND_URL =
   "https://matthewfee.github.io/OSECharacterServer/public/Underground10.pdf";
 
-export const RANDOM_NUMBERS_API_URL =
-  "https://api.random.org/json-rpc/4/invoke";
-
 // default states
 
 export const defaultAbilityScoresState = {

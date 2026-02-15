@@ -97,8 +97,8 @@ export const useCharacterManager = (
 
   const isMobile = deviceService.getIsMobile();
 
-  const loadRandomNumbers = useCallback(async () => {
-    const numbers = await getRandomNumbers();
+  const loadRandomNumbers = useCallback(() => {
+    const numbers = getRandomNumbers();
     if (numbers) {
       setRandomNumbers(numbers);
     }
