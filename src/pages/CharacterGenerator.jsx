@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCharacterManager } from "../hooks/useCharacterManager";
 import { Dice } from "../utilities/DiceBox";
+import ShareService from "../utilities/ShareService";
 import AbilityScreen from "./AbilityScreen";
 import CharacterSheetScreen from "./CharacterSheetScreen";
 import CharacterStorageScreen from "./CharacterStorageScreen";
 import ClassScreen from "./ClassScreen";
 import DetailsScreen from "./DetailsScreen";
 import EquipmentScreen from "./EquipmentScreen";
+import ImportCharacterScreen from "./ImportCharacterScreen";
 import LandingScreen from "./LandingScreen";
 
 export default function CharacterGenerator() {
@@ -43,12 +45,52 @@ export default function CharacterGenerator() {
     scoreDecrease,
     saveCharacter,
     deleteStoredCharacter,
+    importCharacter,
     storedCharacters,
     isMobile,
     abilityScoresCanDecrease,
   } = useCharacterManager(Dice);
 
   const [rollButtonHover, setRollButtonHover] = useState(false);
+  const [pendingImport, setPendingImport] = useState(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const data = params.get('data');
+    if (data) {
+      const characterData = ShareService.decompressCharacter(data);
+      if (characterData) {
+        setPendingImport(characterData);
+      }
+    }
+  }, []);
+
+  const handleConfirmImport = () => {
+    importCharacter(pendingImport);
+    setPendingImport(null);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  };
+
+  const handleCancelImport = () => {
+    setPendingImport(null);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  };
+
+  if (pendingImport) {
+    return (
+      <div className={"layout"}>
+        <div className={`wrapper-container`}>
+          <div className={`wrapper`}>
+            <ImportCharacterScreen 
+              characterData={pendingImport} 
+              onConfirm={handleConfirmImport} 
+              onCancel={handleCancelImport} 
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   let characterMenuStyle = characterRolled ? {} : { display: "none" };
 

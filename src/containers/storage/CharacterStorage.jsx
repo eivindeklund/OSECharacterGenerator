@@ -1,4 +1,6 @@
 import PropTypes from 'prop-types'
+import share_icon from '../../img/share.svg'
+import ShareService from '../../utilities/ShareService'
 
 export default function CharacterStorage(props) {
   const {
@@ -40,6 +42,19 @@ export default function CharacterStorage(props) {
       case 'deleteCharacter':
         deleteStoredCharacter(characterObject.character.id)
         break
+
+      case 'shareCharacter':
+        const url = ShareService.generateShareUrl(characterObject)
+        if (url) {
+          navigator.clipboard.writeText(url).then(() => {
+            alert('Character URL copied to clipboard!')
+          }, (err) => {
+            console.error('Could not copy text: ', err)
+            alert('Failed to copy URL to clipboard.')
+          })
+        }
+        break
+
       default:
     }
   }
@@ -48,12 +63,12 @@ export default function CharacterStorage(props) {
     const characterStorageName = char.character.name
 
     return (
-      <div className='character-row' key={index}>
-        <button
-          className='character-button'
+        <div
+          className='character-button button'
           onClick={(e) => handleCharacter(e, index, 'setActiveCharacter')}
           value={index}
           name='setActiveCharacter'
+          style={{ cursor: 'pointer' }}
         >
           <div className='character-button--name' value={index}>
             {characterStorageName}
@@ -61,17 +76,23 @@ export default function CharacterStorage(props) {
           <div className='character-button--level' value={index}>
             {char.characterClass.name}
           </div>
+        <button
+          onClick={(e) => handleCharacter(e, index, 'shareCharacter')}
+          className='character-button--share'
+          style={{ right: '25px', color:'black', borderColor: 'transparent', padding: '4px', margin: '0px', background: 'transparent' }}
+          title="Share"
+        >
+          <img src={share_icon} width="15px" alt="Share Character" className="share-icon" />
         </button>
-
-        <div
+        <button
           onClick={(e) => handleCharacter(e, index, 'deleteCharacter')}
           className='character-button--delete'
           value={index}
           name='deleteCharacter'
         >
           x
+        </button>
         </div>
-      </div>
     )
   }
 

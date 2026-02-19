@@ -369,6 +369,35 @@ export const useCharacterManager = (
     setStoredCharacters(updated);
   };
 
+  const importCharacter = (data) => {
+    if (!data) return;
+
+    setCharacter(data.character);
+    setAbilityScores(data.abilityScores);
+    
+    if (data.characterModifiers) {
+      setCharacterModifiers(data.characterModifiers);
+    }
+    
+    setCharacterStatistics(data.characterStatistics);
+    
+    const matchedClass = classOptionsData.find(c => c.name === data.characterClass.name) || data.characterClass;
+    setCharacterClass(matchedClass);
+
+    setCharacterEquipment(data.characterEquipment);
+    setPointBuy(0); 
+    setCharacterRolled(true);
+
+    setScreen({
+      equipmentScreen: false,
+      abilityScreen: false,
+      classScreen: false,
+      detailsScreen: false,
+      characterSheetScreen: true,
+      characterStorageScreen: false,
+    });
+  };
+
   const abilityScoresCanDecrease = {
     strength: characterClass.name !== Thief,
     intelligence: true,
@@ -412,6 +441,7 @@ export const useCharacterManager = (
     scoreDecrease,
     saveCharacter,
     deleteStoredCharacter,
+    importCharacter,
     storedCharacters,
     isMobile,
     abilityScoresCanDecrease,

@@ -230,4 +230,34 @@ describe("useCharacterManager", () => {
 
     expect(mockStorageService.deleteCharacter).toHaveBeenCalledWith("123");
   });
+
+  it("should import character correctly", async () => {
+    const { result } = renderHook(() =>
+      useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+    );
+    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
+
+    const mockData = {
+      character: { name: "Test Import", id: "000" },
+      abilityScores: { strength: 18 },
+      characterModifiers: { strengthModMelee: "+3" },
+      characterStatistics: { hitPoints: 10 },
+      characterClass: { name: "Fighter" },
+      characterEquipment: { gold: 100 },
+    };
+
+    act(() => {
+      result.current.importCharacter(mockData);
+    });
+
+    expect(result.current.character.name).toBe("Test Import");
+    expect(result.current.abilityScores.strength).toBe(18);
+    expect(result.current.characterModifiers.strengthModMelee).toBe("+3");
+    expect(result.current.characterStatistics.hitPoints).toBe(10);
+    expect(result.current.characterClass.name).toBe("Fighter");
+    expect(result.current.characterEquipment.gold).toBe(100);
+    expect(result.current.characterRolled).toBe(true);
+    expect(result.current.pointBuy).toBe(0);
+    expect(result.current.screen.characterSheetScreen).toBe(true);
+  });
 });

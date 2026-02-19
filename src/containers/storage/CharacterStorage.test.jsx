@@ -1,7 +1,15 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import ShareService from '../../utilities/ShareService';
 import CharacterStorage from './CharacterStorage';
+
+// Mock ShareService
+vi.mock('../../utilities/ShareService', () => ({
+  default: {
+    generateShareUrl: vi.fn(),
+  }
+}));
 
 describe('CharacterStorage', () => {
   const mockCharacters = [
@@ -41,6 +49,10 @@ describe('CharacterStorage', () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should render all stored characters', () => {
     render(<CharacterStorage {...defaultProps} />);
     expect(screen.getByText('Aragorn')).toBeInTheDocument();
@@ -70,5 +82,32 @@ describe('CharacterStorage', () => {
     fireEvent.click(deleteButtons[0]);
     
     expect(defaultProps.setCharacter).not.toHaveBeenCalled();
+  });
+
+  it('should copy share URL to clipboard when share button is clicked', async () => {
+    const mockUrl = 'http://share.url?data=123';
+    ShareService.generateShareUrl.mockReturnValue(mockUrl);
+    
+    const writeTextMock = vi.fn().mockResolvedValue();
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: writeTextMock,
+      },
+    });
+
+    const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
+
+    render(<CharacterStorage {...defaultProps} />);
+    
+    const shareButtons = screen.getAllByTitle('Share');
+    expect(shareButtons.length).toBeGreaterThan(0);
+    fireEvent.click(shareButtons[0]);
+    
+    expect(ShareService.generateShareUrl).toHaveBeenCalled();
+    expect(writeTextMock).toHaveBeenCalledWith(mockUrl);
+    
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith('Character URL copied to clipboard!');
+    });
   });
 });
