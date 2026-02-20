@@ -1,13 +1,12 @@
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import Inventory from "../../components/equipment/Inventory";
 import ScreenNavigation from "../../components/general/ScreenNavigation";
 import {
-  Cleric,
-  Dwarf,
-  Elf,
-  Fighter,
-  Halfling,
+    Cleric,
+    Dwarf,
+    Elf,
+    Fighter,
+    Halfling,
 } from "../../constants/constants";
 import ArmourOptionsContainer from "../../containers/equipment/ArmourOptionsContainer";
 import GearOptionsContainer from "../../containers/equipment/GearOptionsContainer";
@@ -16,16 +15,36 @@ import WeaponOptionsContainer from "../../containers/equipment/WeaponOptionsCont
 import armourData from "../../data/armourData";
 import equipmentData from "../../data/equipmentData";
 import weaponsData from "../../data/weaponsData";
+import type {
+    CharacterEquipment,
+    CharacterModifiers,
+    CharacterStatistics,
+    ClassOptionsData,
+    ScreenState,
+} from "../../types";
 import {
-  calculatePackPrice,
-  resolvePackItems,
+    calculatePackPrice,
+    resolvePackItems,
 } from "../../utilities/PackUtils";
 import {
-  calculateArmourClass,
-  chooseRandomItem
+    calculateArmourClass,
+    chooseRandomItem
 } from "../../utilities/utilities";
 
-export default function EquipmentStore(props) {
+interface EquipmentStoreProps {
+  characterClass: ClassOptionsData;
+  characterModifiers: CharacterModifiers;
+  characterStatistics: CharacterStatistics;
+  setCharacterStatistics: React.Dispatch<React.SetStateAction<CharacterStatistics>>;
+  characterEquipment: CharacterEquipment;
+  setCharacterEquipment: React.Dispatch<React.SetStateAction<CharacterEquipment>>;
+  screen: ScreenState;
+  setScreen: (screen: ScreenState) => void;
+  diceEnabled: boolean;
+  rollGold: () => void;
+}
+
+export default function EquipmentStore(props: EquipmentStoreProps) {
   const {
     characterClass,
     characterModifiers,
@@ -39,7 +58,7 @@ export default function EquipmentStore(props) {
     rollGold,
   } = props;
 
-  const [gold, setGold] = useState(characterEquipment.gold);
+  const [gold, setGold] = useState<number | null>(characterEquipment.gold);
   const [goldRolled, setGoldRolled] = useState(
     characterEquipment.gold !== null,
   );
@@ -56,8 +75,8 @@ export default function EquipmentStore(props) {
   const [shieldSelected, setShieldSelected] = useState(false);
   const [weapons, setWeapons] = useState(characterEquipment.weapons || []);
   const [weaponSelected, setWeaponSelected] = useState("Dagger");
-  const [armourClass, setArmourClass] = useState();
-  const [unarmouredAC, setUnarmouredAC] = useState();
+  const [armourClass, setArmourClass] = useState<number | null>(null);
+  const [unarmouredAC, setUnarmouredAC] = useState<number | null>(null);
 
   useEffect(() => {
     // calculate base armour class
@@ -169,13 +188,13 @@ export default function EquipmentStore(props) {
       const price = calculatePackPrice(pack.items, characterClass.name);
 
       if (action === "buy") {
-        if (price > gold) {
+        if (price > (gold ?? 0)) {
           return;
         }
 
         const resolvedItems = resolvePackItems(pack.items, characterClass.name);
 
-        let newGold = gold - price;
+        let newGold = (gold ?? 0) - price;
         let newWeapons = [...weapons];
         let newArmour = [...armour];
         let newGear = [...adventuringGear];
@@ -214,16 +233,16 @@ export default function EquipmentStore(props) {
       const newWeaponsArray = [...weapons];
       switch (action) {
         case "buy":
-          if (item.price > gold) {
+          if (item.price > (gold ?? 0)) {
             return;
           }
-          setGold(gold - item.price);
+          setGold((gold ?? 0) - item.price);
           setWeapons((oldItems) => [...oldItems, item.name]);
           break;
         case "sell":
           newWeaponsArray.splice(index, 1);
           setWeapons(newWeaponsArray);
-          setGold(gold + item.price);
+          setGold((gold ?? 0) + item.price);
       }
     }
 
@@ -235,21 +254,21 @@ export default function EquipmentStore(props) {
       const newArmourArray = [...armour];
       switch (action) {
         case "buy":
-          if (item.price + shieldCost > gold) {
+          if (item.price + shieldCost > (gold ?? 0)) {
             return;
           }
           if (shieldSelected) {
-            setGold(gold - item.price - shieldCost);
+            setGold((gold ?? 0) - item.price - shieldCost);
             setArmour((oldArmour) => [...oldArmour, item.name, "Shield"]);
           } else {
-            setGold(gold - item.price);
+            setGold((gold ?? 0) - item.price);
             setArmour((oldArmour) => [...oldArmour, item.name]);
           }
           break;
         case "sell":
           newArmourArray.splice(index, 1);
           setArmour(newArmourArray);
-          setGold(gold + item.price);
+          setGold((gold ?? 0) + item.price);
       }
     }
 
@@ -261,16 +280,16 @@ export default function EquipmentStore(props) {
 
       switch (action) {
         case "buy":
-          if (item.price > gold) {
+          if (item.price > (gold ?? 0)) {
             return;
           }
-          setGold(gold - item.price);
+          setGold((gold ?? 0) - item.price);
           setAdventuringGear((oldGear) => [...oldGear, item.name]);
           break;
         case "sell":
           newGearArray.splice(index, 1);
           setAdventuringGear(newGearArray);
-          setGold(gold + item.price);
+          setGold((gold ?? 0) + item.price);
       }
     }
   };
@@ -295,7 +314,7 @@ export default function EquipmentStore(props) {
   };
 
   /* Purchase Ledger Logic */
-  const [purchaseLedger, setPurchaseLedger] = useState({});
+  const [purchaseLedger, setPurchaseLedger] = useState<Record<string, number>>({});
 
   const getItemPrice = (itemName) => {
     const allItems = [...equipmentData, ...weaponsData, ...armourData];
@@ -344,7 +363,7 @@ export default function EquipmentStore(props) {
 
   const handleBuyLedger = () => {
     const totalCost = getLedgerTotal();
-    if (totalCost > gold) return;
+    if (totalCost > (gold ?? 0)) return;
 
     const newWeapons = [...weapons];
     const newArmour = [...armour];
@@ -362,7 +381,7 @@ export default function EquipmentStore(props) {
     setWeapons(newWeapons);
     setArmour(newArmour);
     setAdventuringGear(newGear);
-    setGold(gold - totalCost);
+    setGold((gold ?? 0) - totalCost);
     setPurchaseLedger({});
   };
 
@@ -409,19 +428,12 @@ export default function EquipmentStore(props) {
             {
               <PackOptionsContainer
                 characterClass={characterClass}
-                storeHandler={storeHandler}
                 handleAddToLedger={handleAddToLedger}
               />
             }
 
             {
               <GearOptionsContainer
-                characterClass={characterClass}
-                adventuringGearSelected={adventuringGearSelected}
-                updateSelectedAdventuringGear={updateSelectedAdventuringGear}
-                adventuringGearList={adventuringGearList}
-                storeHandler={storeHandler}
-                selectRandomGear={selectRandomGear}
                 purchaseLedger={purchaseLedger}
                 handleUpdateLedger={handleUpdateLedger}
               ></GearOptionsContainer>
@@ -442,7 +454,7 @@ export default function EquipmentStore(props) {
                 <ul>
                   {Object.entries(purchaseLedger).map(([name, qty]) => (
                     <li key={name} style={{ textAlign: "left" }}>
-                      {name} x{qty} ({getItemPrice(name) * qty} gp)
+                      {name} x{qty} ({getItemPrice(name) * (qty as number)} gp)
                     </li>
                   ))}
                 </ul>
@@ -455,7 +467,7 @@ export default function EquipmentStore(props) {
                   <button
                     className="button button-primary"
                     onClick={handleBuyLedger}
-                    disabled={getLedgerTotal() > gold}
+                    disabled={getLedgerTotal() > (gold ?? 0)}
                   >
                     Buy Ledger
                   </button>
@@ -466,7 +478,7 @@ export default function EquipmentStore(props) {
                     Clear Ledger
                   </button>
                 </div>
-                {getLedgerTotal() > gold && (
+                {getLedgerTotal() > (gold ?? 0) && (
                   <div style={{ color: "red", marginTop: "5px" }}>
                     Not enough gold!
                   </div>
@@ -535,28 +547,3 @@ export default function EquipmentStore(props) {
   );
 }
 
-EquipmentStore.propTypes = {
-  diceEnabled: PropTypes.bool,
-  characterClass: PropTypes.object,
-  characterModifiers: PropTypes.objectOf(PropTypes.string),
-  characterStatistics: PropTypes.shape({
-    hitPoints: PropTypes.number,
-    armourClass: PropTypes.number,
-    spell: PropTypes.string,
-    hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number,
-  }),
-  setCharacterStatistics: PropTypes.func,
-  pointBuy: PropTypes.number,
-  characterEquipment: PropTypes.shape({
-    armour: PropTypes.array,
-    weapons: PropTypes.array,
-    adventuringGear: PropTypes.array,
-    gold: PropTypes.number,
-  }),
-  randomNumbers: PropTypes.array,
-  setCharacterEquipment: PropTypes.func,
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  rollGold: PropTypes.func,
-};

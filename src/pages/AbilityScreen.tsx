@@ -1,12 +1,36 @@
-import PropTypes from "prop-types";
 import Header from "../components/general/Header";
 import ScreenNavigation from "../components/general/ScreenNavigation";
 import AbilityScores from "../containers/abilties/AbilityScores";
 import Classes from "../containers/classes/Classes";
+import type {
+    AbilityScoresCanDecrease,
+    AbilityScores as AbilityScoresType,
+    CharacterModifiers,
+    ClassOptionsData,
+    ScoreActions,
+    ScreenState,
+} from "../types";
 
-import { useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
-export default function AbilityScreen(props) {
+interface AbilityScreenProps {
+  characterRolled?: boolean;
+  characterClass: Pick<ClassOptionsData, 'name' | 'primeReqs'>;
+  abilityScores: AbilityScoresType;
+  changeCharacterClass: React.MouseEventHandler<HTMLButtonElement>;
+  setAbilityScores: Dispatch<SetStateAction<AbilityScoresType>>;
+  pointBuy: number;
+  setPointBuy: Dispatch<SetStateAction<number>>;
+  characterModifiers: CharacterModifiers;
+  rollCharacter: () => void;
+  scoreActions: ScoreActions;
+  screen: ScreenState;
+  setScreen: (screen: ScreenState) => void;
+  diceEnabled: boolean;
+  abilityScoresCanDecrease: AbilityScoresCanDecrease;
+}
+
+export default function AbilityScreen(props: AbilityScreenProps) {
   const {
     characterClass,
     abilityScores,
@@ -78,31 +102,3 @@ export default function AbilityScreen(props) {
   );
 }
 
-AbilityScreen.propTypes = {
-  characterRolled: PropTypes.bool,
-  characterClass: PropTypes.object,
-  abilityScores: PropTypes.shape({
-    strength: PropTypes.number,
-    strengthOriginal: PropTypes.number,
-    intelligence: PropTypes.number,
-    intelligenceOriginal: PropTypes.number,
-    wisdom: PropTypes.number,
-    wisdomOriginal: PropTypes.number,
-    dexterity: PropTypes.number,
-    dexterityOriginal: PropTypes.number,
-    constitution: PropTypes.number,
-    constitutionOriginal: PropTypes.number,
-    charisma: PropTypes.number,
-    charismaOriginal: PropTypes.number,
-  }),
-  changeCharacterClass: PropTypes.func,
-  setAbilityScores: PropTypes.func,
-  pointBuy: PropTypes.number,
-  setPointBuy: PropTypes.func,
-  characterModifiers: PropTypes.objectOf(PropTypes.string),
-  rollCharacter: PropTypes.func,
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  rollAttribute: PropTypes.func,
-  diceEnabled: PropTypes.bool,
-};

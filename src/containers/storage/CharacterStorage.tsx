@@ -1,8 +1,16 @@
-import PropTypes from 'prop-types'
-import share_icon from '../../img/share.svg'
-import ShareService from '../../utilities/ShareService'
+import share_icon from '../../img/share.svg';
+import type { CharacterSetters, ScreenState, StoredCharacterData } from '../../types';
+import ShareService from '../../utilities/ShareService';
 
-export default function CharacterStorage(props) {
+interface CharacterStorageProps {
+  screen: ScreenState;
+  setScreen: (screen: ScreenState) => void;
+  characterSetters: CharacterSetters;
+  storedCharacters: StoredCharacterData[];
+  deleteStoredCharacter: (id: string | null) => void;
+}
+
+export default function CharacterStorage(props: CharacterStorageProps) {
   const {
     screen,
     setScreen,
@@ -107,20 +115,4 @@ export default function CharacterStorage(props) {
         : ''}
     </div>
   )
-}
-
-CharacterStorage.propTypes = {
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  characterSetters: PropTypes.shape({
-    setCharacter: PropTypes.func,
-    setAbilityScores: PropTypes.func,
-    setCharacterStatistics: PropTypes.func,
-    setCharacterClass: PropTypes.func,
-    setCharacterEquipment: PropTypes.func,
-    setCharacterModifiers: PropTypes.func,
-    setCharacterRolled: PropTypes.func,
-  }),
-  storedCharacters: PropTypes.array,
-  deleteStoredCharacter: PropTypes.func
 }

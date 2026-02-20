@@ -32,7 +32,7 @@ describe('CharacterStorage', () => {
   ];
 
   const defaultProps = {
-    screen: { characterStorageScreen: true },
+    screen: { characterStorageScreen: true } as any,
     setScreen: vi.fn(),
     characterSetters: {
       setCharacter: vi.fn(),
@@ -43,7 +43,7 @@ describe('CharacterStorage', () => {
       setCharacterModifiers: vi.fn(),
       setCharacterRolled: vi.fn(),
     },
-    storedCharacters: mockCharacters,
+    storedCharacters: mockCharacters as any[],
     deleteStoredCharacter: vi.fn()
   };
 
@@ -88,9 +88,9 @@ describe('CharacterStorage', () => {
 
   it('should copy share URL to clipboard when share button is clicked', async () => {
     const mockUrl = 'http://share.url?data=123';
-    ShareService.generateShareUrl.mockReturnValue(mockUrl);
+    vi.mocked(ShareService.generateShareUrl).mockReturnValue(mockUrl);
     
-    const writeTextMock = vi.fn().mockResolvedValue();
+    const writeTextMock = vi.fn().mockResolvedValue(undefined);
     Object.assign(navigator, {
       clipboard: {
         writeText: writeTextMock,

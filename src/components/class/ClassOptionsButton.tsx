@@ -1,6 +1,13 @@
-import PropTypes from 'prop-types';
+import type { AbilityScores, ClassOptionsData } from '../../types';
 
-export default function ClassOptionsButton(props) {
+interface ClassOptionsButtonProps {
+  characterClass: ClassOptionsData;
+  abilityScores: AbilityScores;
+  changeCharacterClass: React.MouseEventHandler<HTMLButtonElement>;
+  selected?: boolean;
+}
+
+export default function ClassOptionsButton(props: ClassOptionsButtonProps) {
   const { characterClass, abilityScores, changeCharacterClass, selected } = props
 
   return (
@@ -14,23 +21,4 @@ export default function ClassOptionsButton(props) {
       {characterClass.name}
     </button>
   )
-}
-
-ClassOptionsButton.propTypes = {
-  characterClass: PropTypes.object,
-  abilityScores: PropTypes.shape({
-    strength: PropTypes.number,
-    strengthOriginal: PropTypes.number,
-    intelligence: PropTypes.number,
-    intelligenceOriginal: PropTypes.number,
-    wisdom: PropTypes.number,
-    wisdomOriginal: PropTypes.number,
-    dexterity: PropTypes.number,
-    dexterityOriginal: PropTypes.number,
-    constitution: PropTypes.number,
-    constitutionOriginal: PropTypes.number,
-    charisma: PropTypes.number,
-    charismaOriginal: PropTypes.number
-  }),
-  changeCharacterClass: PropTypes.func
 }

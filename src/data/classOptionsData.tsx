@@ -1,12 +1,40 @@
+import type { AbilityRequirement, AbilityScores, ClassOptionsData } from "../types";
 import { checkWeaponQuality } from "../utilities/WeaponUtils";
 
 const large_weapons = ["long_bow", "two_handed_sword", "polearm"];
 const magic_user_weapons = ["dagger", "staff", "silver_dagger"];
 
-class ClassOptions {
-    constructor(data) {
-      Object.assign(this, data);
-    }
+type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements'>;
+
+class ClassOptions implements ClassOptionsData {
+  name!: string;
+  category!: string;
+  requirements!: string | null;
+  primeReqs!: string[];
+  multiplePrimeReqs?: boolean;
+  hd!: number;
+  maxLevel!: number;
+  armour!: string;
+  weapons!: string;
+  isStandardWeapon!: (w?: any) => boolean;
+  languages!: string;
+  description!: string;
+  savingThrows!: number[];
+  nextLevel!: number;
+  abilities!: string[];
+  link!: string;
+  arcane!: boolean;
+  divine!: boolean;
+  arcaneSpells?: boolean;
+  druidSpells?: boolean;
+  illusionistSpells?: boolean;
+  necromancerSpells?: boolean;
+  runesmithSpells?: boolean;
+  checkPrimeReqRequirements?: (a: number, b: number) => number;
+
+  constructor(data: ClassOptionsInput) {
+    Object.assign(this, data);
+  }
 
   /* Parse ability score requirements string.
      The format is:
@@ -19,7 +47,7 @@ class ClassOptions {
      Returns an array of requirement objects:
      [{ ability: "constitution", minimum: 9 }]
   */
-  static parseAbilityRequirements(requirementsString) {
+  static parseAbilityRequirements(requirementsString: string | null): AbilityRequirement[] {
     if (!requirementsString) {
       return [];
     }
@@ -41,7 +69,7 @@ class ClassOptions {
   }
 
   /* Check if ability scores meet the requirements for this class. */
-  checkAbilityScoreRequirements(abilityScores) {
+  checkAbilityScoreRequirements(abilityScores: AbilityScores): boolean {
     const requirements = ClassOptions.parseAbilityRequirements(this.requirements);
 
     for (const req of requirements) {

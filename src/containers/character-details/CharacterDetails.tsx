@@ -1,24 +1,41 @@
-import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import DetailsResult from "../../components/details/DetailsResult";
 import Button from "../../components/general/Button";
 import ScreenNavigation from "../../components/general/ScreenNavigation";
 import {
-  appearances,
-  firstNames,
-  languageOptions,
-  lastNames,
-  misfortunes,
-  traits,
+    appearances,
+    firstNames,
+    languageOptions,
+    lastNames,
+    misfortunes,
+    traits,
 } from "../../constants/constants";
 import { characterBackgrounds } from "../../data/backgrounds";
+import type {
+    Character,
+    CharacterModifiers,
+    ClassOptionsData,
+    DiceState,
+    ScreenState,
+} from "../../types";
 import {
-  chooseRandomItem,
-  d,
-  getWeightedValue,
+    chooseRandomItem,
+    d,
+    getWeightedValue,
 } from "../../utilities/utilities";
 
-export default function CharacterDetails(props) {
+interface CharacterDetailsProps {
+  screen: ScreenState;
+  setScreen: (screen: ScreenState) => void;
+  character: Character;
+  setCharacter: (character: Character) => void;
+  characterClass: Pick<ClassOptionsData, 'name' | 'languages'>;
+  characterModifiers: Partial<CharacterModifiers>;
+  dice?: DiceState;
+  isMobile?: boolean;
+}
+
+export default function CharacterDetails(props: CharacterDetailsProps) {
   const {
     screen,
     setScreen,
@@ -39,7 +56,7 @@ export default function CharacterDetails(props) {
   const [misfortune, setMisfortune] = useState(character.misfortune || "");
   const [languages, setLanguages] = useState(character.languages || []);
   const [languageSelected, setLanguageSelected] = useState("");
-  const [languageCount, setLanguageCount] = useState();
+  const [languageCount, setLanguageCount] = useState<number>(0);
   const [classLanguageCount, setClassLanguageCount] = useState(0);
   const [hasLanguages, setHasLanguages] = useState(true);
 
@@ -47,7 +64,7 @@ export default function CharacterDetails(props) {
     const languagesArr = characterClass.languages.split(",");
 
     if (languagesArr.length <= 2) {
-      if (characterModifiers.intelligenceModExtraLanguageCount < 1) {
+      if (parseInt(characterModifiers.intelligenceModExtraLanguageCount ?? '0') < 1) {
         setHasLanguages(false);
       }
     } else {
@@ -60,7 +77,7 @@ export default function CharacterDetails(props) {
 
   useEffect(() => {
     setLanguageCount(
-      characterModifiers.extraLanguageCount +
+      parseInt(characterModifiers.extraLanguageCount ?? '0') +
         classLanguageCount -
         characterClass.languages.length,
     );
@@ -236,7 +253,7 @@ export default function CharacterDetails(props) {
                   ? "button button--alignment button--alignment--selected"
                   : "button button--alignment"
               }
-              onClick={(e) => handleAlignment(e, "value")}
+              onClick={(e) => handleAlignment(e)}
             >
               Lawful
             </button>
@@ -248,7 +265,7 @@ export default function CharacterDetails(props) {
                   ? "button button--alignment button--alignment--selected"
                   : "button button--alignment"
               }
-              onClick={(e) => handleAlignment(e, "value")}
+              onClick={(e) => handleAlignment(e)}
             >
               Neutral
             </button>
@@ -260,7 +277,7 @@ export default function CharacterDetails(props) {
                   ? "button button--alignment button--alignment--selected"
                   : "button button--alignment"
               }
-              onClick={(e) => handleAlignment(e, "value")}
+              onClick={(e) => handleAlignment(e)}
             >
               Chaotic
             </button>
@@ -417,16 +434,3 @@ export default function CharacterDetails(props) {
     </React.Fragment>
   );
 }
-
-CharacterDetails.propTypes = {
-  dice: PropTypes.shape({
-    diceEnabled: PropTypes.bool,
-    diceService: PropTypes.object,
-  }),
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  character: PropTypes.object,
-  setCharacter: PropTypes.func,
-  characterClass: PropTypes.object,
-  characterModifiers: PropTypes.objectOf(PropTypes.string),
-};

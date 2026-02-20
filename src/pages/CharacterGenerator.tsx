@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCharacterManager } from "../hooks/useCharacterManager";
+import type { ClassOptionsData } from "../types";
 import { Dice } from "../utilities/DiceBox";
 import ShareService from "../utilities/ShareService";
 import AbilityScreen from "./AbilityScreen";
@@ -11,6 +12,9 @@ import EquipmentScreen from "./EquipmentScreen";
 import ImportCharacterScreen from "./ImportCharacterScreen";
 import LandingScreen from "./LandingScreen";
 
+// TODO: Add typescript types to all props and state in this file, likely need
+// to refactor some of the state management to make it more manageable and type
+// safe. This is a large task and should be done in a separate branch.
 export default function CharacterGenerator() {
   const {
     character,
@@ -173,7 +177,7 @@ export default function CharacterGenerator() {
                 setScreen={setScreen}
                 character={character}
                 setCharacter={setCharacter}
-                characterClass={characterClass}
+                characterClass={characterClass as ClassOptionsData}
                 characterModifiers={characterModifiers}
                 dice={{ diceEnabled, diceService: Dice }}
                 isMobile={isMobile}
@@ -186,7 +190,7 @@ export default function CharacterGenerator() {
                 setScreen={setScreen}
                 character={character}
                 characterStatistics={characterStatistics}
-                characterClass={characterClass}
+                characterClass={characterClass as ClassOptionsData}
                 characterEquipment={characterEquipment}
                 characterModifiers={characterModifiers}
                 abilityScores={abilityScores}

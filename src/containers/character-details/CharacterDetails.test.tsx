@@ -10,7 +10,7 @@ describe('CharacterDetails', () => {
     roll: vi.fn().mockResolvedValue([{ value: 50 }]),
   };
 
-  const defaultProps = {
+  const defaultProps: any = {
     screen: { detailsScreen: true },
     setScreen: vi.fn(),
     character: {
@@ -38,7 +38,7 @@ describe('CharacterDetails', () => {
     render(<CharacterDetails {...defaultProps} />);
     const nameInput = screen.getByLabelText(/Choose Name:/i);
     fireEvent.change(nameInput, { target: { value: 'Aragorn' } });
-    expect(nameInput.value).toBe('Aragorn');
+    expect((nameInput as HTMLInputElement).value).toBe('Aragorn');
   });
 
   test('should select alignment', () => {

@@ -1,25 +1,25 @@
 // generates the appropriate modifier for an ability value
-import abilityScoreMods from '../data/abilityScoreMods'
-import {
-  abilityScoreNames,
-  primeRequisiteModifiers,
-  armourTypes
-} from '../constants/constants'
-import classOptionsData from '../data/classOptionsData'
 import React from 'react'
-import PropTypes from 'prop-types'
+import {
+    abilityScoreNames,
+    armourTypes,
+    primeRequisiteModifiers
+} from '../constants/constants'
+import abilityScoreMods from '../data/abilityScoreMods'
+import classOptionsData from '../data/classOptionsData'
+import type { AbilityScores, ClassOptionsData } from '../types'
 
-export const LinkText = ({ href, children }) => {
+interface LinkTextProps {
+  href?: string;
+  children?: React.ReactNode;
+}
+
+export const LinkText = ({ href, children }: LinkTextProps) => {
   return (
     <a href={href || ''} target="_blank" rel="noreferrer">
       {children}
     </a>
   )
-}
-
-LinkText.propTypes = {
-  href: PropTypes.string,
-  children: PropTypes.array
 }
 
 export const getModValue = (abilityScoreName, abilityScore) => {
@@ -70,9 +70,9 @@ export const getModValue = (abilityScoreName, abilityScore) => {
   return newAbilityModifiers
 }
 
-export const updateAbilityModifiers = (abilityScoreValues) => {
+export const updateAbilityModifiers = (abilityScoreValues: AbilityScores): Partial<Record<string, string>> => {
   // updates all ability modifiers and returns an object containing the updates
-  const abilityModifiers = {}
+  const abilityModifiers: Record<string, string> = {}
 
   abilityScoreNames.forEach((abilityScoreName) => {
     const value = abilityScoreValues[abilityScoreName]
@@ -86,26 +86,26 @@ export const updateAbilityModifiers = (abilityScoreValues) => {
   return abilityModifiers
 }
 
-export const getPrimeReqMod = (abilityScoreValues, characterClass) => {
+export const getPrimeReqMod = (abilityScoreValues: AbilityScores, characterClass: Pick<ClassOptionsData, 'primeReqs' | 'name'>): string => {
   // generates the correct prime req by matching a class to a prime requisite
 
   const firstAbilityName = characterClass.primeReqs[0]
-  const firstAbilityScoreValue = abilityScoreValues[firstAbilityName]
+  const firstAbilityScoreValue = abilityScoreValues[firstAbilityName] ?? 0
 
-  let primeReqPercentage = 0
+  let primeReqPercentage: number = 0
 
   // if class has only one prime requisite, we use the standard calculation
 
   if (characterClass.primeReqs.length === 1) {
     const primeReqValue = primeRequisiteModifiers[firstAbilityScoreValue]
-    primeReqPercentage = primeReqValue
+    primeReqPercentage = primeReqValue ?? 0
   }
 
   // if class has more than one prime requisite, then we need to check the specific class rules for calculating
 
   if (characterClass.primeReqs.length > 1) {
     const secondAbilityName = characterClass.primeReqs[1]
-    const secondAbilityScoreValue = abilityScoreValues[secondAbilityName]
+    const secondAbilityScoreValue = abilityScoreValues[secondAbilityName] ?? 0
 
     // find data object to match class
 
@@ -113,19 +113,13 @@ export const getPrimeReqMod = (abilityScoreValues, characterClass) => {
       return item.name === characterClass.name
     })
 
-    primeReqPercentage = characterClassData.checkPrimeReqRequirements(
+    primeReqPercentage = characterClassData?.checkPrimeReqRequirements?.(
       firstAbilityScoreValue,
       secondAbilityScoreValue
-    )
+    ) ?? 0
   }
 
-  if (!primeReqPercentage) {
-    primeReqPercentage = '0'
-  }
-
-  primeReqPercentage = primeReqPercentage + '%'
-
-  return primeReqPercentage
+  return (primeReqPercentage || 0) + '%'
 }
 
 export const getRndInteger = (min, max) => {

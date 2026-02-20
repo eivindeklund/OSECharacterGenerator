@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import CharacterClasses from "../../components/class/CharacterClasses";
 import ClassOptionsButton from "../../components/class/ClassOptionsButton";
@@ -6,15 +5,22 @@ import Button from "../../components/general/Button";
 import Checkbox from "../../components/general/Checkbox";
 import Modal from "../../components/general/Modal";
 import classOptionsData from "../../data/classOptionsData";
+import type { AbilityScores, ClassOptionsData } from "../../types";
 import ClassDescription from "./ClassDescription";
 
-export default function ClassOptions(props) {
+interface ClassOptionsProps {
+  characterClass: Pick<ClassOptionsData, 'name'>;
+  abilityScores: AbilityScores;
+  changeCharacterClass: React.MouseEventHandler<HTMLButtonElement>;
+}
+
+export default function ClassOptions(props: ClassOptionsProps) {
   const { characterClass, abilityScores, changeCharacterClass } = props;
 
   const [advancedClassesDisplay, setAdvancedClassesDisplay] = useState(false);
   const [carcassClassesDisplay, setCarcassClassesDisplay] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalClass, setModalClass] = useState(null);
+  const [modalClass, setModalClass] = useState<ClassOptionsData | null>(null);
 
   const openModal = (cls) => {
     setModalClass(cls);
@@ -113,21 +119,3 @@ export default function ClassOptions(props) {
   );
 }
 
-ClassOptions.propTypes = {
-  characterClass: PropTypes.object,
-  abilityScores: PropTypes.shape({
-    strength: PropTypes.number,
-    strengthOriginal: PropTypes.number,
-    intelligence: PropTypes.number,
-    intelligenceOriginal: PropTypes.number,
-    wisdom: PropTypes.number,
-    wisdomOriginal: PropTypes.number,
-    dexterity: PropTypes.number,
-    dexterityOriginal: PropTypes.number,
-    constitution: PropTypes.number,
-    constitutionOriginal: PropTypes.number,
-    charisma: PropTypes.number,
-    charismaOriginal: PropTypes.number,
-  }),
-  changeCharacterClass: PropTypes.func,
-};

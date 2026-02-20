@@ -1,8 +1,31 @@
-import PropTypes from "prop-types";
 import Header from "../components/general/Header";
 import CharacterDetails from "../containers/character-details/CharacterDetails";
+import type {
+  Character,
+  CharacterModifiers,
+  ClassOptionsData,
+  DiceState,
+  ScreenState,
+} from "../types";
 
-export default function DetailsScreen(props) {
+interface DetailsScreenProps {
+  dice: DiceState;
+  screen: ScreenState;
+  setScreen: (screen: ScreenState) => void;
+  character: Character;
+  setCharacter: (character: Character) => void;
+  characterClass: ClassOptionsData;
+  characterModifiers: CharacterModifiers;
+  // TODO: This isMobile prop is used to conditionally render the dice roller,
+  // but it would be better to handle this with CSS media queries to not give
+  // the user the ability to enable the dice roller if the screen is too small.
+  //
+  // Refactor this in a future update to remove the isMobile prop and handle it
+  // with CSS instead.
+  isMobile?: boolean;
+}
+
+export default function DetailsScreen(props: DetailsScreenProps) {
   const {
     screen,
     setScreen,
@@ -11,6 +34,7 @@ export default function DetailsScreen(props) {
     characterClass,
     characterModifiers,
     dice,
+    isMobile,
   } = props;
 
   return (
@@ -26,21 +50,10 @@ export default function DetailsScreen(props) {
           characterClass={characterClass}
           characterModifiers={characterModifiers}
           dice={dice}
+          isMobile={isMobile}
         ></CharacterDetails>
       </div>
     </div>
   );
 }
 
-DetailsScreen.propTypes = {
-  dice: PropTypes.shape({
-    diceEnabled: PropTypes.bool,
-    diceService: PropTypes.object,
-  }),
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  character: PropTypes.object,
-  setCharacter: PropTypes.func,
-  characterClass: PropTypes.object,
-  characterModifiers: PropTypes.objectOf(PropTypes.string),
-};

@@ -1,12 +1,29 @@
-import PropTypes from "prop-types";
+import { Dispatch, SetStateAction } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { CircleLoader } from "react-spinners";
 import CheckBox from "../components/general/Checkbox";
 import { lngs } from "../constants/constants";
 import designed from "../img/designed.png";
+import type { ScreenState, StoredCharacterData } from "../types";
 import { LinkText } from "../utilities/utilities";
 
-export default function LandingScreen(props) {
+interface LandingScreenProps {
+  diceEnabled: boolean;
+  setDiceEnabled: Dispatch<SetStateAction<boolean>>;
+  characterRolled: boolean;
+  setCharacterRolled: Dispatch<SetStateAction<boolean>>;
+  rollButtonHover: boolean;
+  setRollButtonHover: Dispatch<SetStateAction<boolean>>;
+  loadingRandomNumbers: boolean;
+  setLoadingRandomNumbers: Dispatch<SetStateAction<boolean>>;
+  screen: ScreenState;
+  setScreen: (screen: ScreenState) => void;
+  rollCharacter: () => void;
+  isMobile: boolean;
+  storedCharacters: StoredCharacterData[];
+}
+
+export default function LandingScreen(props: LandingScreenProps) {
   const { t, i18n } = useTranslation();
 
   const {
@@ -170,15 +187,3 @@ export default function LandingScreen(props) {
   );
 }
 
-LandingScreen.propTypes = {
-  diceEnabled: PropTypes.bool,
-  setDiceEnabled: PropTypes.func,
-  characterRolled: PropTypes.bool,
-  setCharacterRolled: PropTypes.func,
-  rollButtonHover: PropTypes.bool,
-  setRollButtonHover: PropTypes.func,
-  loadingRandomNumbers: PropTypes.bool,
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  rollCharacter: PropTypes.func,
-};

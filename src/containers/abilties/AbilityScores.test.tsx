@@ -21,6 +21,7 @@ describe('AbilityScores', () => {
       strengthModDoors: '0',
       intelligenceModLanguages: '0',
       intelligenceModLiteracy: '',
+      intelligenceModExtraLanguageCount: '0',
       wisdomMod: '0',
       dexterityModAC: '0',
       dexterityModMissiles: '0',
@@ -35,6 +36,8 @@ describe('AbilityScores', () => {
       scoreIncrease: vi.fn(),
       scoreDecrease: vi.fn(),
     },
+    setAbilityScores: vi.fn(),
+    setPointBuy: vi.fn(),
     abilityScoresCanDecrease: {
       strength: true,
       intelligence: true,

@@ -14,7 +14,8 @@ describe('LandingScreen', () => {
     rollButtonHover: false,
     setRollButtonHover: vi.fn(),
     loadingRandomNumbers: false,
-    screen: { abilityScreen: true },
+    setLoadingRandomNumbers: vi.fn(),
+    screen: { abilityScreen: true } as any,
     setScreen: vi.fn(),
     rollCharacter: vi.fn(),
     isMobile: false,
@@ -38,7 +39,7 @@ describe('LandingScreen', () => {
     const { rerender } = renderWithI18n(defaultProps);
     expect(screen.queryByRole('button', { name: /Tavern/i })).not.toBeInTheDocument();
 
-    const propsWithChars = { ...defaultProps, storedCharacters: [{ id: '1' }] };
+    const propsWithChars = { ...defaultProps, storedCharacters: [{ id: '1' }] as any };
     rerender(
       <I18nextProvider i18n={i18n}>
         <LandingScreen {...propsWithChars} />

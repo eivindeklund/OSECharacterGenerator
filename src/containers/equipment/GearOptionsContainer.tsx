@@ -1,8 +1,20 @@
-import PropTypes from "prop-types";
 import React, { useState } from "react";
 import equipmentData from "../../data/equipmentData";
 
-const GearItemRow = ({ item, qty, handleUpdateLedger }) => (
+interface EquipmentItem {
+  id: string;
+  name: string;
+  price: number;
+  category?: string;
+}
+
+interface GearItemRowProps {
+  item: EquipmentItem;
+  qty: number;
+  handleUpdateLedger: (name: string, qty: number) => void;
+}
+
+const GearItemRow = ({ item, qty, handleUpdateLedger }: GearItemRowProps) => (
   <li
     style={{
       display: "flex",
@@ -47,13 +59,12 @@ const GearItemRow = ({ item, qty, handleUpdateLedger }) => (
   </li>
 );
 
-GearItemRow.propTypes = {
-  item: PropTypes.object.isRequired,
-  qty: PropTypes.number.isRequired,
-  handleUpdateLedger: PropTypes.func.isRequired,
-};
+interface GearOptionsContainerProps {
+  purchaseLedger: Record<string, number>;
+  handleUpdateLedger: (name: string, qty: number) => void;
+}
 
-export default function GearOptionsContainer(props) {
+export default function GearOptionsContainer(props: GearOptionsContainerProps) {
   const { purchaseLedger, handleUpdateLedger } = props;
 
   // State to track open categories
@@ -70,7 +81,7 @@ export default function GearOptionsContainer(props) {
   };
 
   // group items by category
-  const categories = equipmentData.reduce((acc, item) => {
+  const categories = equipmentData.reduce<Record<string, EquipmentItem[]>>((acc, item) => {
     const cat = item.category || "Uncategorized";
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push(item);
@@ -160,7 +171,3 @@ export default function GearOptionsContainer(props) {
   );
 }
 
-GearOptionsContainer.propTypes = {
-  purchaseLedger: PropTypes.object,
-  handleUpdateLedger: PropTypes.func,
-};

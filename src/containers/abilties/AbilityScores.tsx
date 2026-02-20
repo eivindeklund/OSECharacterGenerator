@@ -1,9 +1,27 @@
-import PropTypes from 'prop-types';
+import { Dispatch, SetStateAction } from 'react';
 import AbilityScoresRow from '../../components/abilities/AbilityScoresRow';
 import Button from "../../components/general/Button";
 import { abilityScoreNames } from '../../constants/constants';
+import type {
+    AbilityScoresCanDecrease,
+    AbilityScores as AbilityScoresType,
+    CharacterModifiers,
+    ClassOptionsData,
+    ScoreActions,
+} from '../../types';
 
-export default function AbilityScores(props) {
+interface AbilityScoresProps {
+  abilityScores: AbilityScoresType;
+  setAbilityScores: Dispatch<SetStateAction<AbilityScoresType>>;
+  characterClass: Pick<ClassOptionsData, 'name' | 'primeReqs'>;
+  pointBuy: number;
+  setPointBuy: Dispatch<SetStateAction<number>>;
+  characterModifiers: CharacterModifiers;
+  scoreActions: ScoreActions;
+  abilityScoresCanDecrease: AbilityScoresCanDecrease;
+}
+
+export default function AbilityScores(props: AbilityScoresProps) {
   const {
     abilityScores,
     characterClass,
@@ -83,17 +101,4 @@ export default function AbilityScores(props) {
 
       </div></>
   )
-}
-
-AbilityScores.propTypes = {
-  characterClass: PropTypes.object,
-  abilityScores: PropTypes.object,
-  pointBuy: PropTypes.number,
-  characterModifiers: PropTypes.objectOf(PropTypes.string),
-  scoreActions: PropTypes.shape({
-    rollAttribute: PropTypes.func,
-    scoreIncrease: PropTypes.func,
-    scoreDecrease: PropTypes.func,
-  }),
-  abilityScoresCanDecrease: PropTypes.objectOf(PropTypes.bool)
 }

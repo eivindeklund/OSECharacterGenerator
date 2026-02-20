@@ -1,10 +1,27 @@
 import React from 'react'
+import ScoreBox from '../../containers/abilties/ScoreBox'
 import AbilityScoreMod from './AbilityScoreMod'
 import ScoreName from './ScoreName'
-import PropTypes from 'prop-types'
-import ScoreBox from '../../containers/abilties/ScoreBox'
 
-export default function AbilityScoresRow(props) {
+import type {
+  ClassOptionsData
+} from '../../types'
+
+export interface AbilityScoresRowProps {
+  abilityScoreName: string;
+  abilityScoreValue: number | null;
+  abilityScoreValueOriginal: number | null;
+  scoreIncrease: (key: string) => void;
+  scoreDecrease: (key: string) => void;
+  canDecrease: boolean;
+  characterClass: Pick<ClassOptionsData, 'name' | 'primeReqs'>; // TODO: See if we can get rid of name | primeReqs and just pass the whole class here
+  pointBuy: number;
+  primeReq: string;
+  modArray: { text: string; value: string }[];  // TODO: Maybe import type from character modifiers instead of defining here
+  rollAttribute: (attrOrEvent: string | React.ChangeEvent<HTMLInputElement>, optionalInput?: string) => void;
+}
+
+export default function AbilityScoresRow(props: AbilityScoresRowProps) {
   const {
     abilityScoreName,
     abilityScoreValue,
@@ -44,19 +61,4 @@ export default function AbilityScoresRow(props) {
       <AbilityScoreMod modArray={modArray}></AbilityScoreMod>
     </React.Fragment>
   )
-}
-
-AbilityScoresRow.propTypes = {
-  abilityScoreName: PropTypes.string,
-  abilityScoreValueOriginal: PropTypes.number,
-  primeReq: PropTypes.string,
-  characterClass: PropTypes.object,
-  abilityScoreValue: PropTypes.number,
-  AbilityScoreValueOriginal: PropTypes.number,
-  scoreIncrease: PropTypes.func,
-  scoreDecrease: PropTypes.func,
-  canDecrease: PropTypes.bool,
-  pointBuy: PropTypes.number,
-  modArray: PropTypes.arrayOf(PropTypes.object),
-  rollAttribute: PropTypes.func
 }

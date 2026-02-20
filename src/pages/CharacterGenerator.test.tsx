@@ -79,6 +79,8 @@ describe('CharacterGenerator', () => {
     scoreDecrease: vi.fn(),
     saveCharacter: vi.fn(),
     deleteStoredCharacter: vi.fn(),
+    importCharacter: vi.fn(),
+    setRandomNumbers: vi.fn(),
     storedCharacters: [],
     isMobile: false,
     abilityScoresCanDecrease: {},
@@ -88,7 +90,7 @@ describe('CharacterGenerator', () => {
     vi.mocked(useCharacterManager).mockReturnValue({
       ...mockManagerBase,
       characterRolled: false,
-    });
+    } as any);
 
     render(<CharacterGenerator />);
     expect(screen.getByTestId('landing-screen')).toBeInTheDocument();
@@ -99,7 +101,7 @@ describe('CharacterGenerator', () => {
       ...mockManagerBase,
       characterRolled: true,
       screen: { ...mockManagerBase.screen, abilityScreen: true }
-    });
+    } as any);
 
     render(<CharacterGenerator />);
     expect(screen.getByTestId('ability-screen')).toBeInTheDocument();
@@ -110,7 +112,7 @@ describe('CharacterGenerator', () => {
       ...mockManagerBase,
       characterRolled: true,
       screen: { ...mockManagerBase.screen, abilityScreen: false, classScreen: true }
-    });
+    } as any);
 
     render(<CharacterGenerator />);
     expect(screen.getByTestId('class-screen')).toBeInTheDocument();
@@ -121,7 +123,7 @@ describe('CharacterGenerator', () => {
       ...mockManagerBase,
       characterRolled: true,
       screen: { ...mockManagerBase.screen, abilityScreen: false, equipmentScreen: true }
-    });
+    } as any);
 
     render(<CharacterGenerator />);
     expect(screen.getByTestId('equipment-screen')).toBeInTheDocument();
@@ -132,7 +134,7 @@ describe('CharacterGenerator', () => {
       ...mockManagerBase,
       characterRolled: true,
       screen: { ...mockManagerBase.screen, abilityScreen: false, detailsScreen: true }
-    });
+    } as any);
 
     render(<CharacterGenerator />);
     expect(screen.getByTestId('details-screen')).toBeInTheDocument();
@@ -143,7 +145,7 @@ describe('CharacterGenerator', () => {
       ...mockManagerBase,
       characterRolled: true,
       screen: { ...mockManagerBase.screen, abilityScreen: false, characterSheetScreen: true }
-    });
+    } as any);
 
     render(<CharacterGenerator />);
     expect(screen.getByTestId('character-sheet-screen')).toBeInTheDocument();
@@ -154,7 +156,7 @@ describe('CharacterGenerator', () => {
       ...mockManagerBase,
       characterRolled: true,
       screen: { ...mockManagerBase.screen, abilityScreen: false, characterStorageScreen: true }
-    });
+    } as any);
 
     render(<CharacterGenerator />);
     expect(screen.getByTestId('character-storage-screen')).toBeInTheDocument();

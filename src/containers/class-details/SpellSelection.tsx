@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React, { useState } from "react";
 import Option from "../../components/general/Option";
 import {
@@ -8,19 +7,26 @@ import {
   necromancerSpells,
   runesmithSpells,
 } from "../../data/spells";
+import type { CharacterStatistics, ClassOptionsData } from "../../types";
 import { chooseRandomItem } from "../../utilities/utilities";
+
+interface SpellSelectionProps {
+  characterClass: ClassOptionsData;
+  characterStatistics: CharacterStatistics;
+  setCharacterStatistics: React.Dispatch<React.SetStateAction<CharacterStatistics>>;
+}
 
 export default function SpellSelection({
   characterClass,
   characterStatistics,
   setCharacterStatistics,
-}) {
+}: SpellSelectionProps) {
   const [spellSelected, setSpellSelected] = useState(
     characterStatistics.spell || "",
   );
 
   const chooseSpells = () => {
-    let randomSpell;
+    let randomSpell : string;
 
     if (characterClass.arcaneSpells) {
       randomSpell = chooseRandomItem(magicUserSpells);
@@ -51,7 +57,7 @@ export default function SpellSelection({
   };
 
   const spellsList = () => {
-    let spellList = "";
+    let spellList: string[] = [];
 
     if (characterClass.arcaneSpells) {
       spellList = magicUserSpells;
@@ -78,7 +84,7 @@ export default function SpellSelection({
     });
   };
 
-  const handleSpellChange = (event) => {
+  const handleSpellChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSpellSelected(event.target.value);
     setCharacterStatistics({
       ...characterStatistics,
@@ -127,7 +133,3 @@ export default function SpellSelection({
   );
 }
 
-SpellSelection.propTypes = {
-  characterClass: PropTypes.object,
-  setCharacterStatistics: PropTypes.func,
-};

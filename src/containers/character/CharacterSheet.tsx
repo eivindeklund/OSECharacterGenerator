@@ -1,9 +1,25 @@
-import React from 'react'
-import { joinDuplicates } from '../../utilities/utilities'
-import { Trans } from 'react-i18next'
-import PropTypes from 'prop-types'
+import React from 'react';
+import { Trans } from 'react-i18next';
+import type {
+    AbilityScores,
+    Character,
+    CharacterEquipment,
+    CharacterModifiers,
+    CharacterStatistics,
+    ClassOptionsData,
+} from '../../types';
+import { joinDuplicates } from '../../utilities/utilities';
 
-const CharacterSheet = React.forwardRef((props, ref) => {
+interface CharacterSheetProps {
+  abilityScores: AbilityScores;
+  character: Character;
+  characterStatistics: CharacterStatistics;
+  characterClass: ClassOptionsData;
+  characterEquipment: CharacterEquipment;
+  characterModifiers: CharacterModifiers;
+}
+
+const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((props, ref) => {
   const {
     abilityScores,
     character,
@@ -262,39 +278,5 @@ const CharacterSheet = React.forwardRef((props, ref) => {
 })
 
 CharacterSheet.displayName = 'Character Sheet'
-
-CharacterSheet.propTypes = {
-  character: PropTypes.object,
-  characterStatistics: PropTypes.shape({
-    hitPoints: PropTypes.number,
-    armourClass: PropTypes.number,
-    spell: PropTypes.string,
-    hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number
-  }),
-  characterClass: PropTypes.object,
-  characterEquipment: PropTypes.shape({
-    armour: PropTypes.array,
-    weapons: PropTypes.array,
-    adventuringGear: PropTypes.array,
-    gold: PropTypes.number
-  }),
-  characterModifiers: PropTypes.objectOf(PropTypes.string),
-  abilityScores: PropTypes.shape({
-    strength: PropTypes.number,
-    strengthOriginal: PropTypes.number,
-    intelligence: PropTypes.number,
-    intelligenceOriginal: PropTypes.number,
-    wisdom: PropTypes.number,
-    wisdomOriginal: PropTypes.number,
-    dexterity: PropTypes.number,
-    dexterityOriginal: PropTypes.number,
-    constitution: PropTypes.number,
-    constitutionOriginal: PropTypes.number,
-    charisma: PropTypes.number,
-    charismaOriginal: PropTypes.number
-  }),
-  setCharacterRolled: PropTypes.func
-}
 
 export default CharacterSheet
