@@ -18,8 +18,7 @@ describe('DetailsScreen', () => {
     setCharacter: vi.fn(),
     characterClass: { name: 'Fighter' },
     characterModifiers: { charismaModNPCReactions: '0' },
-    diceEnabled: false,
-    diceService: {},
+    dice: { diceEnabled: false, diceService: {} },
   };
 
   const renderWithI18n = (props) => {

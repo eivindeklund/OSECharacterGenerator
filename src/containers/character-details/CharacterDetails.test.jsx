@@ -27,8 +27,7 @@ describe('CharacterDetails', () => {
         intelligenceModExtraLanguageCount: "0",
         extraLanguageCount: "0",
     },
-    diceEnabled: true,
-    diceService: mockDiceService,
+    dice: { diceEnabled: true, diceService: mockDiceService },
   };
 
   beforeEach(() => {

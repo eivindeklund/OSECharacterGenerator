@@ -26,10 +26,10 @@ export default function CharacterDetails(props) {
     setCharacter,
     characterClass,
     characterModifiers,
-    diceEnabled,
-    diceService,
+    dice,
     isMobile,
   } = props;
+  const { diceEnabled, diceService } = dice ?? {};
 
   const [characterName, setCharacterName] = useState(character.name || "");
   const [alignment, setAlignment] = useState(character.alignment || "");
@@ -419,8 +419,10 @@ export default function CharacterDetails(props) {
 }
 
 CharacterDetails.propTypes = {
-  diceEnabled: PropTypes.bool,
-  diceService: PropTypes.object,
+  dice: PropTypes.shape({
+    diceEnabled: PropTypes.bool,
+    diceService: PropTypes.object,
+  }),
   screen: PropTypes.objectOf(PropTypes.bool),
   setScreen: PropTypes.func,
   character: PropTypes.object,

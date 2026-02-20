@@ -6,17 +6,12 @@ export default function CharacterStorageScreen (props) {
   const {
     screen,
     setScreen,
-    setCharacter,
-    setAbilityScores,
-    setCharacterStatistics,
-    setCharacterClass,
-    setCharacterEquipment,
-    setCharacterModifiers,
-    setCharacterRolled,
+    characterSetters,
     storedCharacters,
     deleteStoredCharacter
   } = props
 
+  const { setCharacterRolled } = characterSetters
 
   return (
     <div className='character-storage-screen'>
@@ -24,13 +19,7 @@ export default function CharacterStorageScreen (props) {
       <CharacterStorage
         screen={screen}
         setScreen={setScreen}
-        setCharacter={setCharacter}
-        setAbilityScores={setAbilityScores}
-        setCharacterStatistics={setCharacterStatistics}
-        setCharacterClass={setCharacterClass}
-        setCharacterEquipment={setCharacterEquipment}
-        setCharacterModifiers={setCharacterModifiers}
-        setCharacterRolled={setCharacterRolled}
+        characterSetters={characterSetters}
         storedCharacters={storedCharacters}
         deleteStoredCharacter={deleteStoredCharacter}
       ></CharacterStorage>
@@ -55,43 +44,15 @@ export default function CharacterStorageScreen (props) {
 CharacterStorageScreen.propTypes = {
   screen: PropTypes.objectOf(PropTypes.bool),
   setScreen: PropTypes.func,
-  character: PropTypes.object,
-  setCharacter: PropTypes.func,
-  characterStatistics: PropTypes.shape({
-    hitPoints: PropTypes.number,
-    armourClass: PropTypes.number,
-    spell: PropTypes.string,
-    hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number
+  characterSetters: PropTypes.shape({
+    setCharacter: PropTypes.func,
+    setAbilityScores: PropTypes.func,
+    setCharacterStatistics: PropTypes.func,
+    setCharacterClass: PropTypes.func,
+    setCharacterEquipment: PropTypes.func,
+    setCharacterModifiers: PropTypes.func,
+    setCharacterRolled: PropTypes.func,
   }),
-  setCharacterStatistics: PropTypes.func,
-  characterClass: PropTypes.object,
-  setCharacterClass: PropTypes.func,
-  characterEquipment: PropTypes.shape({
-    armour: PropTypes.array,
-    weapons: PropTypes.array,
-    adventuringGear: PropTypes.array,
-    gold: PropTypes.number
-  }),
-  setCharacterEquipment: PropTypes.func,
-  characterModifiers: PropTypes.objectOf(PropTypes.string),
-  setCharacterModifiers: PropTypes.func,
-  abilityScores: PropTypes.shape({
-    strength: PropTypes.number,
-    strengthOriginal: PropTypes.number,
-    intelligence: PropTypes.number,
-    intelligenceOriginal: PropTypes.number,
-    wisdom: PropTypes.number,
-    wisdomOriginal: PropTypes.number,
-    dexterity: PropTypes.number,
-    dexterityOriginal: PropTypes.number,
-    constitution: PropTypes.number,
-    constitutionOriginal: PropTypes.number,
-    charisma: PropTypes.number,
-    charismaOriginal: PropTypes.number
-  }),
-  setAbilityScores: PropTypes.func,
-  setCharacterRolled: PropTypes.func,
   storedCharacters: PropTypes.arrayOf(PropTypes.object),
   deleteStoredCharacter: PropTypes.func
 }

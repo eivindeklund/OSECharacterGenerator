@@ -9,11 +9,10 @@ export default function AbilityScores(props) {
     characterClass,
     pointBuy,
     characterModifiers,
-    rollAttribute,
-    scoreIncrease,
-    scoreDecrease,
+    scoreActions,
     abilityScoresCanDecrease
   } = props;
+  const { rollAttribute, scoreIncrease, scoreDecrease } = scoreActions;
   const {
     primeReq,
     strengthModMelee,
@@ -91,8 +90,10 @@ AbilityScores.propTypes = {
   abilityScores: PropTypes.object,
   pointBuy: PropTypes.number,
   characterModifiers: PropTypes.objectOf(PropTypes.string),
-  rollAttribute: PropTypes.func,
-  scoreIncrease: PropTypes.func,
-  scoreDecrease: PropTypes.func,
+  scoreActions: PropTypes.shape({
+    rollAttribute: PropTypes.func,
+    scoreIncrease: PropTypes.func,
+    scoreDecrease: PropTypes.func,
+  }),
   abilityScoresCanDecrease: PropTypes.objectOf(PropTypes.bool)
 }

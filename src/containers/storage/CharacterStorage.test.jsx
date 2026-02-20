@@ -34,13 +34,15 @@ describe('CharacterStorage', () => {
   const defaultProps = {
     screen: { characterStorageScreen: true },
     setScreen: vi.fn(),
-    setCharacter: vi.fn(),
-    setAbilityScores: vi.fn(),
-    setCharacterStatistics: vi.fn(),
-    setCharacterClass: vi.fn(),
-    setCharacterEquipment: vi.fn(),
-    setCharacterModifiers: vi.fn(),
-    setCharacterRolled: vi.fn(),
+    characterSetters: {
+      setCharacter: vi.fn(),
+      setAbilityScores: vi.fn(),
+      setCharacterStatistics: vi.fn(),
+      setCharacterClass: vi.fn(),
+      setCharacterEquipment: vi.fn(),
+      setCharacterModifiers: vi.fn(),
+      setCharacterRolled: vi.fn(),
+    },
     storedCharacters: mockCharacters,
     deleteStoredCharacter: vi.fn()
   };
@@ -63,8 +65,8 @@ describe('CharacterStorage', () => {
     render(<CharacterStorage {...defaultProps} />);
     fireEvent.click(screen.getByText('Aragorn'));
     
-    expect(defaultProps.setCharacter).toHaveBeenCalledWith(mockCharacters[0].character);
-    expect(defaultProps.setCharacterRolled).toHaveBeenCalledWith(true);
+    expect(defaultProps.characterSetters.setCharacter).toHaveBeenCalledWith(mockCharacters[0].character);
+    expect(defaultProps.characterSetters.setCharacterRolled).toHaveBeenCalledWith(true);
     expect(defaultProps.setScreen).toHaveBeenCalled();
   });
 
@@ -81,7 +83,7 @@ describe('CharacterStorage', () => {
     const deleteButtons = screen.getAllByText('x');
     fireEvent.click(deleteButtons[0]);
     
-    expect(defaultProps.setCharacter).not.toHaveBeenCalled();
+    expect(defaultProps.characterSetters.setCharacter).not.toHaveBeenCalled();
   });
 
   it('should copy share URL to clipboard when share button is clicked', async () => {

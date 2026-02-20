@@ -129,11 +129,9 @@ export default function CharacterGenerator() {
                 setPointBuy={setPointBuy}
                 characterModifiers={characterModifiers}
                 rollCharacter={rollCharacter}
-                rollAttribute={rollAttribute}
+                scoreActions={{ rollAttribute, scoreIncrease, scoreDecrease }}
                 screen={screen}
                 setScreen={setScreen}
-                scoreIncrease={scoreIncrease}
-                scoreDecrease={scoreDecrease}
                 abilityScoresCanDecrease={abilityScoresCanDecrease}
               ></AbilityScreen>
             )}
@@ -177,8 +175,7 @@ export default function CharacterGenerator() {
                 setCharacter={setCharacter}
                 characterClass={characterClass}
                 characterModifiers={characterModifiers}
-                diceEnabled={diceEnabled}
-                diceService={Dice}
+                dice={{ diceEnabled, diceService: Dice }}
                 isMobile={isMobile}
               ></DetailsScreen>
             )}
@@ -202,19 +199,15 @@ export default function CharacterGenerator() {
               <CharacterStorageScreen
                 screen={screen}
                 setScreen={setScreen}
-                character={character}
-                setCharacter={setCharacter}
-                characterStatistics={characterStatistics}
-                setCharacterStatistics={setCharacterStatistics}
-                characterClass={characterClass}
-                setCharacterClass={setCharacterClass}
-                characterEquipment={characterEquipment}
-                setCharacterEquipment={setCharacterEquipment}
-                characterModifiers={characterModifiers}
-                setCharacterModifiers={setCharacterModifiers}
-                abilityScores={abilityScores}
-                setAbilityScores={setAbilityScores}
-                setCharacterRolled={setCharacterRolled}
+                characterSetters={{
+                  setCharacter,
+                  setAbilityScores,
+                  setCharacterClass,
+                  setCharacterStatistics,
+                  setCharacterEquipment,
+                  setCharacterModifiers,
+                  setCharacterRolled,
+                }}
                 storedCharacters={storedCharacters}
                 deleteStoredCharacter={deleteStoredCharacter}
               ></CharacterStorageScreen>

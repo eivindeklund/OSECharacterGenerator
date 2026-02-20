@@ -6,6 +6,12 @@ export default function CharacterStorage(props) {
   const {
     screen,
     setScreen,
+    characterSetters,
+    storedCharacters,
+    deleteStoredCharacter
+  } = props
+
+  const {
     setCharacter,
     setAbilityScores,
     setCharacterStatistics,
@@ -13,9 +19,7 @@ export default function CharacterStorage(props) {
     setCharacterEquipment,
     setCharacterModifiers,
     setCharacterRolled,
-    storedCharacters,
-    deleteStoredCharacter
-  } = props
+  } = characterSetters
 
   const handleCharacter = (e, index, action) => {
     e.stopPropagation()
@@ -108,13 +112,15 @@ export default function CharacterStorage(props) {
 CharacterStorage.propTypes = {
   screen: PropTypes.objectOf(PropTypes.bool),
   setScreen: PropTypes.func,
-  setCharacter: PropTypes.func,
-  setAbilityScores: PropTypes.func,
-  setCharacterStatistics: PropTypes.func,
-  setCharacterClass: PropTypes.func,
-  setCharacterEquipment: PropTypes.func,
-  setCharacterModifiers: PropTypes.func,
-  setCharacterRolled: PropTypes.func,
+  characterSetters: PropTypes.shape({
+    setCharacter: PropTypes.func,
+    setAbilityScores: PropTypes.func,
+    setCharacterStatistics: PropTypes.func,
+    setCharacterClass: PropTypes.func,
+    setCharacterEquipment: PropTypes.func,
+    setCharacterModifiers: PropTypes.func,
+    setCharacterRolled: PropTypes.func,
+  }),
   storedCharacters: PropTypes.array,
   deleteStoredCharacter: PropTypes.func
 }

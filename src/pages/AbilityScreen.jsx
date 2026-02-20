@@ -16,14 +16,14 @@ export default function AbilityScreen(props) {
     setPointBuy,
     characterModifiers,
     rollCharacter,
-    rollAttribute,
+    scoreActions,
     screen,
     setScreen,
     diceEnabled,
-    scoreIncrease,
-    scoreDecrease,
     abilityScoresCanDecrease
   } = props;
+
+  const { rollAttribute, scoreIncrease, scoreDecrease } = scoreActions;
 
   useEffect(() => {
     console.log("Loaded");
@@ -45,9 +45,7 @@ export default function AbilityScreen(props) {
         setPointBuy={setPointBuy}
         characterClass={characterClass}
         characterModifiers={characterModifiers}
-        rollAttribute={rollAttribute}
-        scoreIncrease={scoreIncrease}
-        scoreDecrease={scoreDecrease}
+        scoreActions={scoreActions}
         abilityScoresCanDecrease={abilityScoresCanDecrease}
       ></AbilityScores>
 

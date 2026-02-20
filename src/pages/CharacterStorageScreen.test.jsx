@@ -29,13 +29,15 @@ describe('CharacterStorageScreen', () => {
   const mockProps = {
     screen: {},
     setScreen: vi.fn(),
-    setCharacter: vi.fn(),
-    setAbilityScores: vi.fn(),
-    setCharacterStatistics: vi.fn(),
-    setCharacterClass: vi.fn(),
-    setCharacterEquipment: vi.fn(),
-    setCharacterModifiers: vi.fn(),
-    setCharacterRolled: vi.fn(),
+    characterSetters: {
+      setCharacter: vi.fn(),
+      setAbilityScores: vi.fn(),
+      setCharacterStatistics: vi.fn(),
+      setCharacterClass: vi.fn(),
+      setCharacterEquipment: vi.fn(),
+      setCharacterModifiers: vi.fn(),
+      setCharacterRolled: vi.fn(),
+    },
     storedCharacters: [{ id: 1 }, { id: 2 }],
     deleteStoredCharacter: mockDeleteStoredCharacter
   };

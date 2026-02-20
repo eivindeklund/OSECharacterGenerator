@@ -23,12 +23,14 @@ describe('AbilityScreen', () => {
     setPointBuy: vi.fn(),
     characterModifiers: {},
     rollCharacter: vi.fn(),
-    rollAttribute: vi.fn(),
+    scoreActions: {
+      rollAttribute: vi.fn(),
+      scoreIncrease: vi.fn(),
+      scoreDecrease: vi.fn(),
+    },
     screen: { abilityScreen: true },
     setScreen: vi.fn(),
     diceEnabled: false,
-    scoreIncrease: vi.fn(),
-    scoreDecrease: vi.fn(),
     abilityScoresCanDecrease: { strength: true, intelligence: true, wisdom: true, dexterity: false, constitution: false, charisma: false }
   };
 

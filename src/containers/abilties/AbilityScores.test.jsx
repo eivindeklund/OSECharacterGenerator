@@ -30,9 +30,11 @@ describe('AbilityScores', () => {
       charismaModRetainersMax: '0',
       charismaModLoyalty: '0'
     },
-    rollAttribute: vi.fn(),
-    scoreIncrease: vi.fn(),
-    scoreDecrease: vi.fn(),
+    scoreActions: {
+      rollAttribute: vi.fn(),
+      scoreIncrease: vi.fn(),
+      scoreDecrease: vi.fn(),
+    },
     abilityScoresCanDecrease: {
       strength: true,
       intelligence: true,
@@ -61,20 +63,20 @@ describe('AbilityScores', () => {
     const { container } = render(<AbilityScores {...defaultProps} pointBuy={1} />);
     const increaseButtons = container.querySelectorAll('.button--ability--increase');
     fireEvent.click(increaseButtons[0]); // Strength
-    expect(defaultProps.scoreIncrease).toHaveBeenCalledWith('strength');
+    expect(defaultProps.scoreActions.scoreIncrease).toHaveBeenCalledWith('strength');
   });
 
   it('should call scoreDecrease when decrease button is clicked', () => {
     const { container } = render(<AbilityScores {...defaultProps} />);
     const decreaseButtons = container.querySelectorAll('.button--ability--decrease');
     fireEvent.click(decreaseButtons[0]); // Strength
-    expect(defaultProps.scoreDecrease).toHaveBeenCalledWith('strength');
+    expect(defaultProps.scoreActions.scoreDecrease).toHaveBeenCalledWith('strength');
   });
 
   it('should call rollAttribute for "all" when Roll All button is clicked', () => {
     render(<AbilityScores {...defaultProps} />);
     const rollAllButton = screen.getByRole('button', { name: /Roll All/i });
     fireEvent.click(rollAllButton);
-    expect(defaultProps.rollAttribute).toHaveBeenCalled();
+    expect(defaultProps.scoreActions.rollAttribute).toHaveBeenCalled();
   });
 });
