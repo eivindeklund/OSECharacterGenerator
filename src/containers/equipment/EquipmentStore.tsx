@@ -113,7 +113,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
 
   const adventuringGearList = () => {
     return equipmentData.map((item) => (
-      <option value={item.name} price={item.price} key={item.name}>
+      <option value={item.name} key={item.name}>
         {item.name} - {item.price} gp
       </option>
     ));
@@ -123,8 +123,6 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     return (
       <option
         value={item.name}
-        price={item.price}
-        damage={item.damage}
         key={item.name}
       >
         {item.name} ({item.damage}) - {item.price} gp

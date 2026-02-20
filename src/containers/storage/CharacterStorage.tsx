@@ -78,14 +78,12 @@ export default function CharacterStorage(props: CharacterStorageProps) {
         <div
           className='character-button button'
           onClick={(e) => handleCharacter(e, index, 'setActiveCharacter')}
-          value={index}
-          name='setActiveCharacter'
           style={{ cursor: 'pointer' }}
         >
-          <div className='character-button--name' value={index}>
+          <div className='character-button--name'>
             {characterStorageName}
           </div>
-          <div className='character-button--level' value={index}>
+          <div className='character-button--level'>
             {char.characterClass.name}
           </div>
         <button
@@ -99,8 +97,6 @@ export default function CharacterStorage(props: CharacterStorageProps) {
         <button
           onClick={(e) => handleCharacter(e, index, 'deleteCharacter')}
           className='character-button--delete'
-          value={index}
-          name='deleteCharacter'
         >
           x
         </button>

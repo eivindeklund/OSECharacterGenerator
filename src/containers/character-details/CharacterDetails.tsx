@@ -326,7 +326,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
         </div>
 
         <div className="form-label form-label--optional-details">
-          <div type="button" className="form-text">
+          <div className="form-text">
             Optional Details
           </div>
 

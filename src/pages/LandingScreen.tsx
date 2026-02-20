@@ -77,7 +77,6 @@ export default function LandingScreen(props: LandingScreenProps) {
 
           <div className="sweet-loading">
             <CircleLoader
-              css={override}
               size={50}
               color={"white"}
               loading={loadingRandomNumbers}
