@@ -11,6 +11,7 @@ import { ClassOptionsData } from "../types";
 import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
+  d,
   d6,
   getPrimeReqMod,
   updateAbilityModifiers,
@@ -166,11 +167,11 @@ export const useCharacterManager = (
   };
 
   const rollHP = () => {
-    const die = characterClass.hd;
+    const characterHitDie = characterClass.hd;
     const animateDice = diceEnabled && diceService;
 
     if (!animateDice) {
-      const HPResult = d6(1, randomNumbers, die);
+      const HPResult = d(1, characterHitDie);
       const totalHP = Math.max(
         1,
         HPResult + parseInt(characterModifiers.constitutionMod)
@@ -190,7 +191,7 @@ export const useCharacterManager = (
     diceService
       .hide()
       .show()
-      .roll(`1d${die}`, { themeColor: "#FF2800" });
+      .roll(`1d${characterHitDie}`, { themeColor: "#FF2800" });
   };
 
   const rollGold = () => {
