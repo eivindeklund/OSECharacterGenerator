@@ -1495,4 +1495,26 @@ const classOptionsData = [
   },
 ].map((x) => new ClassOptions(x));
 
+const emptyClassOptions = new ClassOptions({
+  name: "",
+  category: "",
+  requirements: null,
+  primeReqs: [],
+  hd: 0,
+  maxLevel: 0,
+  armour: "",
+  weapons: "",
+  isStandardWeapon: () => false,
+  languages: "",
+  description: "",
+  savingThrows: [0, 0, 0, 0, 0],
+  nextLevel: 0,
+  abilities: [],
+  link: "",
+  arcane: false,
+  divine: false,
+});
+
+export { classOptionsData, emptyClassOptions };
+
 export default classOptionsData;

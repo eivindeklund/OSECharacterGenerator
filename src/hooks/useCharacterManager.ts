@@ -6,7 +6,8 @@ import {
   defaultAbilityScoresState,
   Thief,
 } from "../constants/constants";
-import classOptionsData from "../data/classOptionsData";
+import classOptionsData, { emptyClassOptions } from "../data/classOptionsData";
+import { ClassOptionsData } from "../types";
 import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
@@ -63,10 +64,7 @@ export const useCharacterManager = (
 
   const [pointBuy, setPointBuy] = useState(0);
 
-  const [characterClass, setCharacterClass] = useState({
-    name: null,
-    primeReqs: [],
-  });
+  const [characterClass, setCharacterClass] = useState<ClassOptionsData>(emptyClassOptions);
 
   const [screen, setScreen] = useState({
     equipmentScreen: false,
@@ -284,7 +282,7 @@ export const useCharacterManager = (
       backgroundSkill: null,
       alignment: null,
     });
-    setCharacterClass({ name: null, primeReqs: [] });
+    setCharacterClass(emptyClassOptions);
     setCharacterRolled(true);
     setAbilityScores(defaultAbilityScoresState);
     setScreen({
