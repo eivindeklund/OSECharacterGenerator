@@ -3,27 +3,28 @@ import AbilityScoresRow from '../../components/abilities/AbilityScoresRow';
 import Button from "../../components/general/Button";
 import { abilityScoreNames } from '../../constants/constants';
 import type {
-  AbilityScoresCanDecrease,
   AbilityScores as AbilityScoresType,
   CharacterModifiers,
   ClassOptionsData,
-  ScoreActions,
+  ScoreActions
 } from '../../types';
 
 interface AbilityScoresProps {
   abilityScores: AbilityScoresType;
+  originalAbilityScores: AbilityScoresType;
   setAbilityScores: Dispatch<SetStateAction<AbilityScoresType>>;
   characterClass: Pick<ClassOptionsData, 'name' | 'primeReqs'>;
   pointBuy: number;
   setPointBuy: Dispatch<SetStateAction<number>>;
   characterModifiers: CharacterModifiers;
   scoreActions: ScoreActions;
-  abilityScoresCanDecrease: AbilityScoresCanDecrease;
+  abilityScoresCanDecrease: AbilityScoresType;
 }
 
 export default function AbilityScores(props: AbilityScoresProps) {
   const {
     abilityScores,
+    originalAbilityScores,
     characterClass,
     pointBuy,
     characterModifiers,
@@ -79,15 +80,13 @@ export default function AbilityScores(props: AbilityScoresProps) {
         {pointBuy > 0 && <div className='point-buy'>Point Buy: {pointBuy}</div>}
 
         {abilityScoreNames.map((abilityScoreName, index) => {
-          const originalScore = `${abilityScoreName}Original`;
-
           return (
             <AbilityScoresRow
               key={index}
               abilityScoreName={abilityScoreName}
               xpModifierPercentage={xpModifierPercentage}
               abilityScoreValue={abilityScores[abilityScoreName]}
-              abilityScoreValueOriginal={abilityScores[originalScore]}
+              abilityScoreValueOriginal={originalAbilityScores[abilityScoreName]}
               scoreIncrease={scoreIncrease}
               scoreDecrease={scoreDecrease}
               canDecrease={abilityScoresCanDecrease[abilityScoreName]}

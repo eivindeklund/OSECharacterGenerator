@@ -179,7 +179,8 @@ describe("useCharacterManager", () => {
 
     act(() => {
       result.current.rollCharacter();
-      result.current.setAbilityScores({ strength: 10, strengthOriginal: 10 });
+      result.current.setAbilityScores({ strength: 10 });
+      result.current.setOriginalAbilityScores({ strength: 10 });
       result.current.setPointBuy(1);
     });
 
@@ -198,7 +199,8 @@ describe("useCharacterManager", () => {
 
     act(() => {
       result.current.rollCharacter();
-      result.current.setAbilityScores({ strength: 12, strengthOriginal: 12 });
+      result.current.setAbilityScores({ strength: 12 });
+      result.current.setOriginalAbilityScores({ strength: 12 });
       result.current.setPointBuy(0);
     });
 

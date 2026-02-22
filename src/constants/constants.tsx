@@ -17,17 +17,11 @@ export const CHARACTER_SHEET_UNDERGROUND_URL =
 
 export const defaultAbilityScoresState = {
   strength: null,
-  strengthOriginal: null,
   intelligence: null,
-  intelligenceOriginal: null,
   wisdom: null,
-  wisdomOriginal: null,
   dexterity: null,
-  dexterityOriginal: null,
   constitution: null,
-  constitutionOriginal: null,
   charisma: null,
-  charismaOriginal: null,
 };
 
 // strings

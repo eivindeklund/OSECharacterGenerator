@@ -3,12 +3,12 @@ import ScreenNavigation from "../components/general/ScreenNavigation";
 import AbilityScores from "../containers/abilties/AbilityScores";
 import Classes from "../containers/classes/Classes";
 import type {
-    AbilityScoresCanDecrease,
-    AbilityScores as AbilityScoresType,
-    CharacterModifiers,
-    ClassOptionsData,
-    ScoreActions,
-    ScreenState,
+  AbilityScoresCanDecrease,
+  AbilityScores as AbilityScoresType,
+  CharacterModifiers,
+  ClassOptionsData,
+  ScoreActions,
+  ScreenState,
 } from "../types";
 
 import { Dispatch, SetStateAction, useEffect } from "react";
@@ -17,6 +17,7 @@ interface AbilityScreenProps {
   characterRolled?: boolean;
   characterClass: Pick<ClassOptionsData, 'name' | 'primeReqs'>;
   abilityScores: AbilityScoresType;
+  originalAbilityScores: AbilityScoresType;
   changeCharacterClass: React.MouseEventHandler<HTMLButtonElement>;
   setAbilityScores: Dispatch<SetStateAction<AbilityScoresType>>;
   pointBuy: number;
@@ -34,6 +35,7 @@ export default function AbilityScreen(props: AbilityScreenProps) {
   const {
     characterClass,
     abilityScores,
+    originalAbilityScores,
     changeCharacterClass,
     setAbilityScores,
     pointBuy,
@@ -64,6 +66,7 @@ export default function AbilityScreen(props: AbilityScreenProps) {
 
       <AbilityScores
         abilityScores={abilityScores}
+        originalAbilityScores={originalAbilityScores}
         setAbilityScores={setAbilityScores}
         pointBuy={pointBuy}
         setPointBuy={setPointBuy}

@@ -32,6 +32,7 @@ export const useCharacterManager = (
   });
 
   const [abilityScores, setAbilityScores] = useState(defaultAbilityScoresState);
+  const [originalAbilityScores, setOriginalAbilityScores] = useState(defaultAbilityScoresState);
 
   const [characterModifiers, setCharacterModifiers] = useState({
     xpModifierPercentage: "0",
@@ -118,13 +119,15 @@ export const useCharacterManager = (
 
     if (!animateDice) {
       const newCharacterAbilityScores = { ...abilityScores };
+      const newOriginalAbilityScores = { ...originalAbilityScores };
       const abilityScoresToUpdate = attribute === "all" ? abilityScoreNames : [attribute];
       abilityScoresToUpdate.forEach((score) => {
         const dieResult = d(3, 6);
         newCharacterAbilityScores[score] = dieResult;
-        newCharacterAbilityScores[`${score}Original`] = dieResult;
+        newOriginalAbilityScores[score] = dieResult;
       });
       setAbilityScores(newCharacterAbilityScores);
+      setOriginalAbilityScores(newOriginalAbilityScores);
       setPointBuy(0);
       return;
     }
@@ -193,9 +196,15 @@ export const useCharacterManager = (
           const newAbilityScores = { ...prev };
           abilityScoreNames.forEach((attr, i) => {
             newAbilityScores[attr] = rollResults[i]?.value;
-            newAbilityScores[`${attr}Original`] = rollResults[i]?.value;
           });
           return newAbilityScores;
+        });
+        setOriginalAbilityScores((prev) => {
+          const newOriginalAbilityScores = { ...prev };
+          abilityScoreNames.forEach((attr, i) => {
+            newOriginalAbilityScores[attr] = rollResults[i]?.value;
+          });
+          return newOriginalAbilityScores;
         });
         setPointBuy(0);
       } else if (pendingRoll === "hp") {
@@ -225,7 +234,10 @@ export const useCharacterManager = (
         setAbilityScores((prev) => ({
           ...prev,
           [pendingRoll]: rollResults[0].value,
-          [`${pendingRoll}Original`]: rollResults[0].value,
+        }));
+        setOriginalAbilityScores((prev) => ({
+          ...prev,
+          [pendingRoll]: rollResults[0].value,
         }));
         setPointBuy(0);
       }
@@ -261,6 +273,7 @@ export const useCharacterManager = (
     setCharacterClass(emptyClassOptions);
     setCharacterRolled(true);
     setAbilityScores(defaultAbilityScoresState);
+    setOriginalAbilityScores(defaultAbilityScoresState);
     setScreen({
       equipmentScreen: false,
       abilityScreen: true,
@@ -300,9 +313,8 @@ export const useCharacterManager = (
   };
 
   const scoreIncrease = (key) => {
-    const keyOriginal = key + "Original";
     const value = abilityScores[key];
-    const increment = value < abilityScores[keyOriginal] ? 2 : 1;
+    const increment = value < originalAbilityScores[key] ? 2 : 1;
 
     if (pointBuy < 1 || value >= 18) {
       return;
@@ -313,9 +325,8 @@ export const useCharacterManager = (
   };
 
   const scoreDecrease = (key) => {
-    const keyOriginal = key + "Original";
     const value = abilityScores[key];
-    const decrement = value > abilityScores[keyOriginal] ? -1 : -2;
+    const decrement = value > originalAbilityScores[key] ? -1 : -2;
 
     if (value <= 10) {
       return;
@@ -386,6 +397,8 @@ export const useCharacterManager = (
     setCharacter,
     abilityScores,
     setAbilityScores,
+    originalAbilityScores,
+    setOriginalAbilityScores,
     characterModifiers,
     setCharacterModifiers,
     characterStatistics,

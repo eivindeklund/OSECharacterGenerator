@@ -17,6 +17,7 @@ describe('AbilityScreen', () => {
   const defaultProps = {
     characterClass: { name: 'Fighter', primeReqs: ['strength'] },
     abilityScores: { strength: 10, intelligence: 10, wisdom: 10, dexterity: 10, constitution: 10, charisma: 10 },
+    originalAbilityScores: { strength: 10, intelligence: 10, wisdom: 10, dexterity: 10, constitution: 10, charisma: 10 },
     changeCharacterClass: vi.fn(),
     setAbilityScores: vi.fn(),
     pointBuy: 0,

@@ -6,12 +6,20 @@ import AbilityScores from './AbilityScores';
 describe('AbilityScores', () => {
   const defaultProps = {
     abilityScores: {
-      strength: 12, strengthOriginal: 12,
-      intelligence: 12, intelligenceOriginal: 12,
-      wisdom: 12, wisdomOriginal: 12,
-      dexterity: 12, dexterityOriginal: 12,
-      constitution: 12, constitutionOriginal: 12,
-      charisma: 12, charismaOriginal: 12
+      strength: 12,
+      intelligence: 12,
+      wisdom: 12,
+      dexterity: 12,
+      constitution: 12,
+      charisma: 12
+    },
+    originalAbilityScores: {
+      strength: 12,
+      intelligence: 12,
+      wisdom: 12,
+      dexterity: 12,
+      constitution: 12,
+      charisma: 12
     },
     characterClass: { name: 'Fighter', primeReqs: ['strength'] },
     pointBuy: 0,

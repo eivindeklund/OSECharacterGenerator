@@ -21,6 +21,7 @@ export default function CharacterGenerator() {
     setCharacter,
     abilityScores,
     setAbilityScores,
+    originalAbilityScores,
     characterModifiers,
     setCharacterModifiers,
     characterStatistics,
@@ -124,6 +125,7 @@ export default function CharacterGenerator() {
                 abilityScores={abilityScores}
                 changeCharacterClass={changeCharacterClass}
                 setAbilityScores={setAbilityScores}
+                originalAbilityScores={originalAbilityScores}
                 pointBuy={pointBuy}
                 setPointBuy={setPointBuy}
                 characterModifiers={characterModifiers}

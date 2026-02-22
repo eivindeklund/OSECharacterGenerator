@@ -4,34 +4,13 @@ import type { Dispatch, SetStateAction } from 'react';
 
 export interface AbilityScores {
   strength: number | null;
-  strengthOriginal: number | null;
   intelligence: number | null;
-  intelligenceOriginal: number | null;
   wisdom: number | null;
-  wisdomOriginal: number | null;
   dexterity: number | null;
-  dexterityOriginal: number | null;
   constitution: number | null;
-  constitutionOriginal: number | null;
   charisma: number | null;
-  charismaOriginal: number | null;
   [key: string]: number | null;
 }
-
-// ── Ability Scores that can decrease ────────────────────────────────────────────
-// TODO: Refactor together with AbilityScores, likely get rid of original scores
-// and track changes in a different way
-
-export interface AbilityScoresCanDecrease {
-  strength: boolean;
-  intelligence: boolean;
-  wisdom: boolean;
-  dexterity: boolean;
-  constitution: boolean;
-  charisma: boolean;
-  [key: string]: boolean;
-}
-
 
 // ── Character Modifiers ───────────────────────────────────────────────────────
 
