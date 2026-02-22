@@ -11,7 +11,6 @@ class ClassOptions implements ClassOptionsData {
   category!: string;
   requirements!: string | null;
   primeReqs!: string[];
-  multiplePrimeReqs?: boolean;
   hd!: number;
   maxLevel!: number;
   armour!: string;
@@ -89,7 +88,6 @@ const classOptionsData = [
     category: "basic",
     requirements: null,
     primeReqs: ["strength"],
-    multiplePrimeReqs: false,
     hd: 8,
     maxLevel: 14,
     armour: "any leather, chainmail, plate, shields",
@@ -110,7 +108,6 @@ const classOptionsData = [
     category: "basic",
     requirements: null,
     primeReqs: ["wisdom"],
-    multiplePrimeReqs: false,
     hd: 6,
     maxLevel: 14,
     armour: "any leather, chainmail, plate, shields",

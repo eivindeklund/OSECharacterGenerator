@@ -95,7 +95,6 @@ export interface ClassOptionsData {
   category: string;
   requirements: string | null;
   primeReqs: string[];
-  multiplePrimeReqs?: boolean;
   hd: number;
   maxLevel: number;
   armour: string;
