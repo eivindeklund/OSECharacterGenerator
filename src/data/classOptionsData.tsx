@@ -6,6 +6,105 @@ const magic_user_weapons = ["dagger", "staff", "silver_dagger"];
 
 type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements'>;
 
+function xpBonus_16_13_Or_Both_13(abilityScore1: number, abilityScore2: number): number {
+  // "16/13 or both 13" implementation
+  if (abilityScore1 >= 16 && abilityScore2 >= 13) {
+    return 10;
+  }
+
+  if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+    return 5;
+  }
+
+  return 0;
+}
+
+function xpBonus_16_13_Or_Either_13(abilityScore1: number, abilityScore2: number): number {
+  // "16/13 or either 13" implementation
+  if (abilityScore1 >= 16 && abilityScore2 >= 13) {
+    return 10;
+  }
+
+  if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+    return 5;
+  }
+
+  return 0;
+}
+
+
+function xpBonus_Any16_13_Or_Both13(abilityScore1: number, abilityScore2: number): number {
+  // "Any 16/13 or both 13" implementation
+  if (abilityScore1 >= 16 && abilityScore2 >= 13 || abilityScore1 >= 13 && abilityScore2 >= 16) {
+    return 10;
+  }
+
+  if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+    return 5;
+  }
+
+  return 0;
+}
+
+function xpBonus_Both16_Or_Both13(abilityScore1: number, abilityScore2: number): number {
+  // "Both 16 or both 13" implementation
+  if (abilityScore1 >= 16 && abilityScore2 >= 16) {
+    return 10;
+  }
+
+  if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+    return 5;
+  }
+
+  return 0;
+}
+
+function xpBonus_Both16_Or_Either13(abilityScore1: number, abilityScore2: number): number {
+  // "Both 16 or either 13" implementation
+  if (abilityScore1 >= 16 && abilityScore2 >= 16) {
+    return 10;
+  }
+
+  if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+    return 5;
+  }
+
+  return 0;
+}
+
+
+function xpBonus_Both13_Or_Either13(abilityScore1: number, abilityScore2: number): number {
+  // "Both 13 or either 13" implementation
+  if (abilityScore1 >= 13 && abilityScore2 >= 13) {
+    return 10;
+  }
+
+  if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+    return 5;
+  }
+
+  return 0;
+}
+
+function xpBonus_Any13_16_Or_Either13(abilityScore1: number, abilityScore2: number): number {
+  // "Any 16/13 or either 13" implementation
+  if (
+    (abilityScore1 >= 16 && abilityScore2 >= 13) ||
+    (abilityScore1 >= 13 && abilityScore2 >= 16)
+  ) {
+    return 10;
+  }
+
+  if (abilityScore1 >= 13 || abilityScore2 >= 13) {
+    return 5;
+  }
+
+  return 0;
+}
+
+
+
+
 class ClassOptions implements ClassOptionsData {
   name!: string;
   category!: string;
@@ -29,7 +128,7 @@ class ClassOptions implements ClassOptionsData {
   illusionistSpells?: boolean;
   necromancerSpells?: boolean;
   runesmithSpells?: boolean;
-  checkPrimeReqRequirements?: (a: number, b: number) => number;
+  xpBonusFromPrimeRequirements?: (a: number, b: number) => number;
 
   constructor(data: ClassOptionsInput) {
     Object.assign(this, data);
@@ -200,17 +299,7 @@ const classOptionsData = [
     category: "basic",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["intelligence", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 6,
     maxLevel: 10,
     armour: "any leather, chainmail, plate, shields",
@@ -238,17 +327,7 @@ const classOptionsData = [
     category: "basic",
     requirements: "Minimum 9 constitution, minimum 9 dexterity",
     primeReqs: ["dexterity", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both13_Or_Either13,
     hd: 6,
     maxLevel: 8,
     armour: "any leather, chainmail, plate, shields",
@@ -339,17 +418,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 dexterity",
     primeReqs: ["constitution", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Either_13,
     hd: 8,
     maxLevel: 14,
     armour: "leather, chainmail, shields",
@@ -406,17 +475,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["wisdom", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 6,
     maxLevel: 14,
     armour: "any leather, chainmail, plate, shields",
@@ -505,17 +564,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 constitution",
     primeReqs: ["intelligence", "dexterity"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 4,
     maxLevel: 8,
     armour: "leather, shields",
@@ -545,20 +594,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 charisma, minimum 9 constitution",
     primeReqs: ["intelligence", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (
-        (abilityScore1 >= 16 && abilityScore2 >= 13) ||
-        (abilityScore2 >= 16 && abilityScore1 >= 13)
-      ) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Any16_13_Or_Both13,
     hd: 6,
     maxLevel: 12,
     armour: "any leather, chainmail, plate, shields",
@@ -579,17 +615,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: null,
     primeReqs: ["dexterity", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Both13,
     hd: 6,
     maxLevel: 8,
     armour: "leather, chainmail, shields",
@@ -686,17 +712,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 charisma",
     primeReqs: ["strength", "wisdom"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
     hd: 8,
     maxLevel: 14,
     armour: "any leather, chainmail, plate, shields",
@@ -810,18 +826,8 @@ const classOptionsData = [
     name: "Gargantua",
     category: "carcass",
     requirements: "Minimum 9 constitution, minimum 9 strength",
-    primeReqs: ["constitution", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 13 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    primeReqs: ["strength", "constitution"],
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 10,
     maxLevel: 10,
     armour: "any leather, chainmail, plate, shields",
@@ -842,17 +848,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 dexterity",
     primeReqs: ["dexterity", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
     hd: 6,
     maxLevel: 8,
     armour: "any leather, chainmail, plate, shields",
@@ -879,17 +875,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 charisma, minimum 9 constitution",
     primeReqs: ["intelligence", "wisdom"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 6,
     maxLevel: 10,
     armour: "leather, chainmail, shields",
@@ -914,17 +900,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: null,
     primeReqs: ["dexterity", "wisdom"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Both13,
     hd: 6,
     maxLevel: 14,
     armour: "none",
@@ -949,17 +925,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: null,
     primeReqs: ["intelligence", "wisdom"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 6,
     maxLevel: 14,
     armour: "none",
@@ -992,17 +958,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["intelligence", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 6,
     maxLevel: 10,
     armour: "any leather, chainmail, plate, shields / none",
@@ -1031,17 +987,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 dexterity, minimum 9 intelligence",
     primeReqs: ["dexterity", "wisdom"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 6,
     maxLevel: 10,
     armour: "leather, shields",
@@ -1073,17 +1019,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: null,
     primeReqs: ["strength", "wisdom"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 6,
     maxLevel: 14,
     armour: "leather, chainmail, shields",
@@ -1194,17 +1130,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["charisma", "dexterity"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
     hd: 6,
     maxLevel: 10,
     armour: "leather, chainmail, shields",
@@ -1231,17 +1157,7 @@ const classOptionsData = [
     requirements:
       "Minimum 9 charisma, minimum 9 constitution, minimum 9 dexterity",
     primeReqs: ["charisma", "constitution"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both13_Or_Either13,
     hd: 6,
     maxLevel: 8,
     armour: "leather, shields",
@@ -1269,17 +1185,7 @@ const classOptionsData = [
     requirements:
       "minimum 9 constitution, minimum 9 dexterity, minimum 9 wisdom",
     primeReqs: ["constitution", "wisdom"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both13_Or_Either13,
     hd: 6,
     maxLevel: 8,
     armour: "leather, shields",
@@ -1308,20 +1214,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 dexterity, minimum 9 intelligence",
     primeReqs: ["charisma", "dexterity"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (
-        (abilityScore1 >= 16 && abilityScore2 >= 13) ||
-        (abilityScore1 >= 13 && abilityScore2 >= 16)
-      ) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Any13_16_Or_Either13,
     hd: 6,
     maxLevel: 14,
     armour: "leather, chainmail",
@@ -1376,17 +1269,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["charisma", "dexterity"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
     hd: 6,
     maxLevel: 10,
     armour: "leather, shields",
@@ -1412,17 +1295,7 @@ const classOptionsData = [
     // TODO: This does not look like it's coded anywhere, and the check is just for percentage.
     requirements: "Minimum 9 constitution",
     primeReqs: ["constitution", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
     hd: 8,
     maxLevel: 10,
     armour: "leather, chainmail, shields",
@@ -1457,18 +1330,8 @@ const classOptionsData = [
     name: "Dwarf Runesmith",
     category: "carcass",
     requirements: "Minimum 9 constitution, minimum 9 intelligence",
-    primeReqs: ["intelligence", "strength"],
-    checkPrimeReqRequirements: function (abilityScore1, abilityScore2) {
-      if (abilityScore1 >= 13 && abilityScore2 >= 16) {
-        return 10;
-      }
-
-      if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-        return 5;
-      }
-
-      return 0;
-    },
+    primeReqs: ["strength", "intelligence"],
+    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
     hd: 8,
     maxLevel: 10,
     armour: "any leather, chainmail, plate, shields",

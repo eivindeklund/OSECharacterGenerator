@@ -115,7 +115,7 @@ export interface ClassOptionsData {
   necromancerSpells?: boolean;
   runesmithSpells?: boolean;
   divineSpells?: boolean;
-  checkPrimeReqRequirements?: (a: number, b: number) => number;
+  xpBonusFromPrimeRequirements?: (a: number, b: number) => number;
   checkAbilityScoreRequirements: (abilityScores: AbilityScores) => boolean;
 }
 

@@ -91,8 +91,6 @@ export const getPrimeReqMod = (abilityScoreValues: AbilityScores, characterClass
   const firstAbilityName = characterClass.primeReqs[0]
   const firstAbilityScoreValue = abilityScoreValues[firstAbilityName] ?? 0
 
-  let primeReqPercentage: number = 0
-
   // if class has only one prime requisite, we use the standard calculation
 
   if (characterClass.primeReqs.length === 0) {
@@ -107,7 +105,7 @@ export const getPrimeReqMod = (abilityScoreValues: AbilityScores, characterClass
 
     // find data object to match class
 
-    const primeReqPercentage = characterClass.checkPrimeReqRequirements?.(
+    const primeReqPercentage = characterClass.xpBonusFromPrimeRequirements?.(
       firstAbilityScoreValue,
       secondAbilityScoreValue
     )
