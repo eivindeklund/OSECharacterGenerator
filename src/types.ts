@@ -116,6 +116,7 @@ export interface ClassOptionsData {
   runesmithSpells?: boolean;
   divineSpells?: boolean;
   xpBonusFromPrimeRequirements?: (a: number, b: number) => number;
+  xpBonusPercentage: (abilityScoreValues: AbilityScores) => string;
   checkAbilityScoreRequirements: (abilityScores: AbilityScores) => boolean;
 }
 

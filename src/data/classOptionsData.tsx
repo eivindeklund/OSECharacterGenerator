@@ -1,3 +1,4 @@
+import { primeRequisiteModifiers } from "../constants/constants";
 import type { AbilityRequirement, AbilityScores, ClassOptionsData } from "../types";
 import { checkWeaponQuality } from "../utilities/WeaponUtils";
 
@@ -164,6 +165,30 @@ class ClassOptions implements ClassOptionsData {
     }
 
     return requirements;
+  }
+
+  /* Calculate the XP bonus percentage from prime requisites for the given ability scores. */
+  xpBonusPercentage(abilityScoreValues: AbilityScores): string {
+    const firstAbilityName = this.primeReqs[0];
+    const firstAbilityScoreValue = abilityScoreValues[firstAbilityName] ?? 0;
+
+    if (this.primeReqs.length === 0) {
+      return '0%';
+    } else if (this.primeReqs.length === 1) {
+      const primeReqValue = primeRequisiteModifiers[firstAbilityScoreValue];
+      return `${primeReqValue ?? 0}%`;
+    } else if (this.primeReqs.length === 2) {
+      const secondAbilityName = this.primeReqs[1];
+      const secondAbilityScoreValue = abilityScoreValues[secondAbilityName] ?? 0;
+      const primeReqPercentage = this.xpBonusFromPrimeRequirements?.(
+        firstAbilityScoreValue,
+        secondAbilityScoreValue
+      );
+      return (primeReqPercentage || 0) + '%';
+    } else {
+      console.log(`Error: Class ${this.name} has more than 2 prime requisites, which is not currently supported.`);
+      return 'unknown%';
+    }
   }
 
   /* Check if ability scores meet the requirements for this class. */

@@ -11,7 +11,6 @@ import { DeviceService as DefaultDeviceService } from "../utilities/DeviceServic
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
   d,
-  getPrimeReqMod,
   updateAbilityModifiers
 } from "../utilities/utilities";
 
@@ -95,8 +94,9 @@ export const useCharacterManager = (
   useEffect(() => {
     if (characterRolled) {
       const newCharacterModifiers = updateAbilityModifiers(abilityScores);
-      const primeReqValue = getPrimeReqMod(abilityScores, characterClass);
-      newCharacterModifiers.primeReq = primeReqValue;
+      const xpBonusPercentage = characterClass.xpBonusPercentage(abilityScores);
+      // TODO: Rename primeReq to xpBonusPercentage
+      newCharacterModifiers.primeReq = xpBonusPercentage;
       setCharacterModifiers(newCharacterModifiers);
     }
   }, [abilityScores, characterClass, characterRolled]);

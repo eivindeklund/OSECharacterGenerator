@@ -3,10 +3,9 @@ import React from 'react';
 import {
   abilityScoreNames,
   armourTypes,
-  primeRequisiteModifiers
 } from '../constants/constants';
 import abilityScoreMods from '../data/abilityScoreMods';
-import type { AbilityScores, ClassOptionsData } from '../types';
+import type { AbilityScores } from '../types';
 
 interface LinkTextProps {
   href?: string;
@@ -83,37 +82,6 @@ export const updateAbilityModifiers = (abilityScoreValues: AbilityScores): Parti
   })
 
   return abilityModifiers
-}
-
-export const getPrimeReqMod = (abilityScoreValues: AbilityScores, characterClass: ClassOptionsData): string => {
-  // generates the correct prime req by matching a class to a prime requisite
-
-  const firstAbilityName = characterClass.primeReqs[0]
-  const firstAbilityScoreValue = abilityScoreValues[firstAbilityName] ?? 0
-
-  // if class has only one prime requisite, we use the standard calculation
-
-  if (characterClass.primeReqs.length === 0) {
-    return '0%'
-  } else if (characterClass.primeReqs.length === 1) {
-    const primeReqValue = primeRequisiteModifiers[firstAbilityScoreValue]
-    return `${primeReqValue ?? 0}%`
-  } else if (characterClass.primeReqs.length === 2) {
-     // if class has more than one prime requisite, then we need to check the specific class rules for calculating
-    const secondAbilityName = characterClass.primeReqs[1]
-    const secondAbilityScoreValue = abilityScoreValues[secondAbilityName] ?? 0
-
-    // find data object to match class
-
-    const primeReqPercentage = characterClass.xpBonusFromPrimeRequirements?.(
-      firstAbilityScoreValue,
-      secondAbilityScoreValue
-    )
-    return (primeReqPercentage || 0) + '%'
-  } else {
-    console.log(`Error: Class ${characterClass.name} has more than 2 prime requisites, which is not currently supported.`)
-    return "unknown%"
-  }
 }
 
 export const getRndInteger = (min, max) => {

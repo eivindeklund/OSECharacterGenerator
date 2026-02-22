@@ -1,10 +1,25 @@
 import { abilityScoreNames } from "../constants/constants";
+import type { AbilityScores } from "../types";
 import classOptionsData from "./classOptionsData";
 
 // Get the ClassOptions class from the first item in the array
 const ClassOptions = classOptionsData[0].constructor;
 
 describe("ClassOptions", () => {
+  describe("xpBonusPercentage", () => {
+    test("should return correct prime req mod for Fighter (Strength)", () => {
+      const scores = { strength: 15 } as AbilityScores;
+      const fighter = classOptionsData.find((c) => c.name === "Fighter");
+      expect(fighter.xpBonusPercentage(scores)).toBe("5%");
+    });
+
+    test("should return correct amount for low prime req", () => {
+      const scores = { strength: 8 } as AbilityScores;
+      const fighter = classOptionsData.find((c) => c.name === "Fighter");
+      expect(fighter.xpBonusPercentage(scores)).toBe("-10%");
+    });
+  });
+
   describe("parseAbilityRequirements", () => {
     test("should return empty array for null", () => {
       const result = ClassOptions.parseAbilityRequirements(null);
