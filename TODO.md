@@ -40,7 +40,7 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
   [X] All files migrated
   [ ] Clean up interfaces
 [ ] Get rid of dupe code
-  [ ] Merge checkBox / checkBoxStyled
+  [X] Merge checkBox / checkBoxStyled
   [ ] Merge different classOptionsData bonus calculations implementations
 [ ] Clean up classOptionsData
   [ ] Clean up the XP bonus calculations
