@@ -1,13 +1,12 @@
 // generates the appropriate modifier for an ability value
-import React from 'react'
+import React from 'react';
 import {
   abilityScoreNames,
   armourTypes,
   primeRequisiteModifiers
-} from '../constants/constants'
-import abilityScoreMods from '../data/abilityScoreMods'
-import classOptionsData from '../data/classOptionsData'
-import type { AbilityScores, ClassOptionsData } from '../types'
+} from '../constants/constants';
+import abilityScoreMods from '../data/abilityScoreMods';
+import type { AbilityScores, ClassOptionsData } from '../types';
 
 interface LinkTextProps {
   href?: string;
@@ -86,7 +85,7 @@ export const updateAbilityModifiers = (abilityScoreValues: AbilityScores): Parti
   return abilityModifiers
 }
 
-export const getPrimeReqMod = (abilityScoreValues: AbilityScores, characterClass: Pick<ClassOptionsData, 'primeReqs' | 'name'>): string => {
+export const getPrimeReqMod = (abilityScoreValues: AbilityScores, characterClass: ClassOptionsData): string => {
   // generates the correct prime req by matching a class to a prime requisite
 
   const firstAbilityName = characterClass.primeReqs[0]
@@ -96,30 +95,27 @@ export const getPrimeReqMod = (abilityScoreValues: AbilityScores, characterClass
 
   // if class has only one prime requisite, we use the standard calculation
 
-  if (characterClass.primeReqs.length === 1) {
+  if (characterClass.primeReqs.length === 0) {
+    return '0%'
+  } else if (characterClass.primeReqs.length === 1) {
     const primeReqValue = primeRequisiteModifiers[firstAbilityScoreValue]
-    primeReqPercentage = primeReqValue ?? 0
-  }
-
+    return `${primeReqValue ?? 0}%`
+  } else if (characterClass.primeReqs.length === 2) {
      // if class has more than one prime requisite, then we need to check the specific class rules for calculating
-
-  if (characterClass.primeReqs.length > 1) {
     const secondAbilityName = characterClass.primeReqs[1]
     const secondAbilityScoreValue = abilityScoreValues[secondAbilityName] ?? 0
 
     // find data object to match class
 
-    const characterClassData = classOptionsData.find((item) => {
-      return item.name === characterClass.name
-    })
-
-    primeReqPercentage = characterClassData?.checkPrimeReqRequirements?.(
+    const primeReqPercentage = characterClass.checkPrimeReqRequirements?.(
       firstAbilityScoreValue,
       secondAbilityScoreValue
-    ) ?? 0
-  }
-
+    )
     return (primeReqPercentage || 0) + '%'
+  } else {
+    console.log(`Error: Class ${characterClass.name} has more than 2 prime requisites, which is not currently supported.`)
+    return "unknown%"
+  }
 }
 
 export const getRndInteger = (min, max) => {
@@ -168,15 +164,16 @@ export const joinDuplicates = (array) => {
   return consolidated
 }
 
-export const calculateArmourClass = (dexMod, armour) => {
+// TODO: The types passed to this should be cleaned up.
+export const calculateArmourClass = (dexMod: string, armour: string | string[]) => {
   let baseArmour = 10
   let armourClass = baseArmour
 
+  /* TODO: Should this be startWith rather than includes? */
   if (dexMod.includes('+')) {
     dexMod = dexMod.substring(1)
   }
-  dexMod = parseInt(dexMod)
-  baseArmour += dexMod
+  baseArmour += parseInt(dexMod)
 
   if (!armour) {
     return [baseArmour, armourClass]

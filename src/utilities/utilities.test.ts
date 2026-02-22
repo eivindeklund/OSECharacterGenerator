@@ -1,11 +1,12 @@
 import { Fighter } from "../constants/constants";
+import { AbilityScores, ClassOptionsData } from "../types";
 import {
-    calculateArmourClass,
-    getModValue,
-    getPrimeReqMod,
-    getWeightedValue,
-    joinDuplicates,
-    updateAbilityModifiers,
+  calculateArmourClass,
+  getModValue,
+  getPrimeReqMod,
+  getWeightedValue,
+  joinDuplicates,
+  updateAbilityModifiers,
 } from "./utilities";
 
 describe("Utility Functions", () => {
@@ -50,13 +51,13 @@ describe("Utility Functions", () => {
     test("should return correct prime req mod for Fighter (Strength)", () => {
       const scores = { strength: 15 };
       const characterClass = { name: Fighter, primeReqs: ["strength"] };
-      expect(getPrimeReqMod(scores, characterClass)).toBe("5%");
+      expect(getPrimeReqMod(scores as AbilityScores, characterClass as ClassOptionsData)).toBe("5%");
     });
 
     test("should return correct amount for low prime req", () => {
       const scores = { strength: 8 };
       const characterClass = { name: Fighter, primeReqs: ["strength"] };
-      expect(getPrimeReqMod(scores, characterClass)).toBe("-10%");
+      expect(getPrimeReqMod(scores as AbilityScores, characterClass as ClassOptionsData)).toBe("-10%");
     });
   });
 
