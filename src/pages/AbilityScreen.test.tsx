@@ -32,7 +32,7 @@ describe('AbilityScreen', () => {
     screen: { abilityScreen: true },
     setScreen: vi.fn(),
     diceEnabled: false,
-    abilityScoresCanDecrease: { strength: true, intelligence: true, wisdom: true, dexterity: false, constitution: false, charisma: false }
+    abilityScoresThatCanDecrease: { strength: true, intelligence: true, wisdom: true, dexterity: false, constitution: false, charisma: false }
   };
 
   const renderWithI18n = (props) => {

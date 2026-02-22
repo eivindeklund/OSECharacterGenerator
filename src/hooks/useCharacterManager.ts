@@ -383,7 +383,7 @@ export const useCharacterManager = (
     });
   };
 
-  const abilityScoresCanDecrease = {
+  const abilityScoresThatCanDecrease = {
     strength: characterClass.name !== Thief,
     intelligence: true,
     wisdom: true,
@@ -427,6 +427,6 @@ export const useCharacterManager = (
     importCharacter,
     storedCharacters,
     isMobile,
-    abilityScoresCanDecrease,
+    abilityScoresThatCanDecrease,
   };
 };

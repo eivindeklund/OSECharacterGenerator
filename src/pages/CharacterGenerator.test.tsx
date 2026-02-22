@@ -79,7 +79,7 @@ describe('CharacterGenerator', () => {
     importCharacter: vi.fn(),
     storedCharacters: [],
     isMobile: false,
-    abilityScoresCanDecrease: {},
+    abilityScoresThatCanDecrease: {},
   };
 
   it('renders LandingScreen when character has not been rolled', () => {

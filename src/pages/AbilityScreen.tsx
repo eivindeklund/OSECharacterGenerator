@@ -3,12 +3,12 @@ import ScreenNavigation from "../components/general/ScreenNavigation";
 import AbilityScores from "../containers/abilties/AbilityScores";
 import Classes from "../containers/classes/Classes";
 import type {
-  AbilityScoresCanDecrease,
+  AbilityScoresThatCanDecrease,
   AbilityScores as AbilityScoresType,
   CharacterModifiers,
   ClassOptionsData,
   ScoreActions,
-  ScreenState,
+  ScreenState
 } from "../types";
 
 import { Dispatch, SetStateAction, useEffect } from "react";
@@ -28,7 +28,7 @@ interface AbilityScreenProps {
   screen: ScreenState;
   setScreen: (screen: ScreenState) => void;
   diceEnabled: boolean;
-  abilityScoresCanDecrease: AbilityScoresCanDecrease;
+  abilityScoresThatCanDecrease: AbilityScoresThatCanDecrease;
 }
 
 export default function AbilityScreen(props: AbilityScreenProps) {
@@ -46,7 +46,7 @@ export default function AbilityScreen(props: AbilityScreenProps) {
     screen,
     setScreen,
     diceEnabled,
-    abilityScoresCanDecrease
+    abilityScoresThatCanDecrease
   } = props;
 
   const { rollAttribute, scoreIncrease, scoreDecrease } = scoreActions;
@@ -73,7 +73,7 @@ export default function AbilityScreen(props: AbilityScreenProps) {
         characterClass={characterClass}
         characterModifiers={characterModifiers}
         scoreActions={scoreActions}
-        abilityScoresCanDecrease={abilityScoresCanDecrease}
+        abilityScoresThatCanDecrease={abilityScoresThatCanDecrease}
       ></AbilityScores>
 
       <Header translation={"characterClass"} name={"character-class"}></Header>

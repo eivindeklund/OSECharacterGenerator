@@ -3,6 +3,7 @@ import AbilityScoresRow from '../../components/abilities/AbilityScoresRow';
 import Button from "../../components/general/Button";
 import { abilityScoreNames } from '../../constants/constants';
 import type {
+  AbilityScoresThatCanDecrease,
   AbilityScores as AbilityScoresType,
   CharacterModifiers,
   ClassOptionsData,
@@ -18,7 +19,7 @@ interface AbilityScoresProps {
   setPointBuy: Dispatch<SetStateAction<number>>;
   characterModifiers: CharacterModifiers;
   scoreActions: ScoreActions;
-  abilityScoresCanDecrease: AbilityScoresType;
+  abilityScoresThatCanDecrease: AbilityScoresThatCanDecrease;
 }
 
 export default function AbilityScores(props: AbilityScoresProps) {
@@ -29,7 +30,7 @@ export default function AbilityScores(props: AbilityScoresProps) {
     pointBuy,
     characterModifiers,
     scoreActions,
-    abilityScoresCanDecrease
+    abilityScoresThatCanDecrease
   } = props;
   const { rollAttribute, scoreIncrease, scoreDecrease } = scoreActions;
   const {
@@ -89,7 +90,7 @@ export default function AbilityScores(props: AbilityScoresProps) {
               abilityScoreValueOriginal={originalAbilityScores[abilityScoreName]}
               scoreIncrease={scoreIncrease}
               scoreDecrease={scoreDecrease}
-              canDecrease={abilityScoresCanDecrease[abilityScoreName]}
+              canDecrease={abilityScoresThatCanDecrease[abilityScoreName]}
               characterClass={characterClass}
               pointBuy={pointBuy}
               modArray={abilityScoreModDescriptions[abilityScoreName]}

@@ -50,7 +50,7 @@ export default function CharacterGenerator() {
     importCharacter,
     storedCharacters,
     isMobile,
-    abilityScoresCanDecrease,
+    abilityScoresThatCanDecrease,
   } = useCharacterManager(Dice);
 
   const [rollButtonHover, setRollButtonHover] = useState(false);
@@ -133,7 +133,7 @@ export default function CharacterGenerator() {
                 scoreActions={{ rollAttribute, scoreIncrease, scoreDecrease }}
                 screen={screen}
                 setScreen={setScreen}
-                abilityScoresCanDecrease={abilityScoresCanDecrease}
+                abilityScoresThatCanDecrease={abilityScoresThatCanDecrease}
               ></AbilityScreen>
             )}
 

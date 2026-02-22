@@ -12,6 +12,18 @@ export interface AbilityScores {
   [key: string]: number | null;
 }
 
+// ── Ability Scores That Can Decrease ────────────────────────────────────────────
+
+export interface AbilityScoresThatCanDecrease {
+  strength: boolean;
+  intelligence: boolean;
+  wisdom: boolean;
+  dexterity: boolean;
+  constitution: boolean;
+  charisma: boolean;
+  [key: string]: boolean;
+}
+
 // ── Character Modifiers ───────────────────────────────────────────────────────
 
 export interface CharacterModifiers {

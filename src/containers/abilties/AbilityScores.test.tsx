@@ -46,7 +46,7 @@ describe('AbilityScores', () => {
     },
     setAbilityScores: vi.fn(),
     setPointBuy: vi.fn(),
-    abilityScoresCanDecrease: {
+    abilityScoresThatCanDecrease: {
       strength: true,
       intelligence: true,
       wisdom: true,
