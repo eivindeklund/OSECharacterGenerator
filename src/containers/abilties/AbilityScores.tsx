@@ -3,11 +3,11 @@ import AbilityScoresRow from '../../components/abilities/AbilityScoresRow';
 import Button from "../../components/general/Button";
 import { abilityScoreNames } from '../../constants/constants';
 import type {
-    AbilityScoresCanDecrease,
-    AbilityScores as AbilityScoresType,
-    CharacterModifiers,
-    ClassOptionsData,
-    ScoreActions,
+  AbilityScoresCanDecrease,
+  AbilityScores as AbilityScoresType,
+  CharacterModifiers,
+  ClassOptionsData,
+  ScoreActions,
 } from '../../types';
 
 interface AbilityScoresProps {
@@ -32,7 +32,7 @@ export default function AbilityScores(props: AbilityScoresProps) {
   } = props;
   const { rollAttribute, scoreIncrease, scoreDecrease } = scoreActions;
   const {
-    primeReq,
+    xpModifierPercentage,
     strengthModMelee,
     strengthModDoors,
     intelligenceModLanguages,
@@ -85,7 +85,7 @@ export default function AbilityScores(props: AbilityScoresProps) {
             <AbilityScoresRow
               key={index}
               abilityScoreName={abilityScoreName}
-              primeReq={primeReq}
+              xpModifierPercentage={xpModifierPercentage}
               abilityScoreValue={abilityScores[abilityScoreName]}
               abilityScoreValueOriginal={abilityScores[originalScore]}
               scoreIncrease={scoreIncrease}

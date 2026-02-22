@@ -16,7 +16,7 @@ describe('AbilityScores', () => {
     characterClass: { name: 'Fighter', primeReqs: ['strength'] },
     pointBuy: 0,
     characterModifiers: {
-      primeReq: '0',
+      xpModifierPercentage: '0',
       strengthModMelee: '0',
       strengthModDoors: '0',
       intelligenceModLanguages: '0',

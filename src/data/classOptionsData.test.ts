@@ -6,17 +6,17 @@ import classOptionsData from "./classOptionsData";
 const ClassOptions = classOptionsData[0].constructor;
 
 describe("ClassOptions", () => {
-  describe("xpBonusPercentage", () => {
+  describe("xpModifierPercentage", () => {
     test("should return correct prime req mod for Fighter (Strength)", () => {
       const scores = { strength: 15 } as AbilityScores;
       const fighter = classOptionsData.find((c) => c.name === "Fighter");
-      expect(fighter.xpBonusPercentage(scores)).toBe("5%");
+      expect(fighter.xpModifierPercentage(scores)).toBe("5%");
     });
 
     test("should return correct amount for low prime req", () => {
       const scores = { strength: 8 } as AbilityScores;
       const fighter = classOptionsData.find((c) => c.name === "Fighter");
-      expect(fighter.xpBonusPercentage(scores)).toBe("-10%");
+      expect(fighter.xpModifierPercentage(scores)).toBe("-10%");
     });
   });
 

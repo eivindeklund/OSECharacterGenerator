@@ -16,7 +16,7 @@ export interface AbilityScoresRowProps {
   canDecrease: boolean;
   characterClass: Pick<ClassOptionsData, 'name' | 'primeReqs'>; // TODO: See if we can get rid of name | primeReqs and just pass the whole class here
   pointBuy: number;
-  primeReq: string;
+  xpModifierPercentage: string;
   modArray: { text: string; value: string }[];  // TODO: Maybe import type from character modifiers instead of defining here
   rollAttribute: (attrOrEvent: string | React.ChangeEvent<HTMLInputElement>, optionalInput?: string) => void;
 }
@@ -31,19 +31,19 @@ export default function AbilityScoresRow(props: AbilityScoresRowProps) {
     canDecrease,
     characterClass,
     pointBuy,
-    primeReq,
+    xpModifierPercentage,
     modArray,
     rollAttribute
   } = props
 
-  const showPrimeReq = !!characterClass.primeReqs?.includes(abilityScoreName)
+  const showXPModifier = !!characterClass.primeReqs?.includes(abilityScoreName)
 
   return (
     <React.Fragment>
       <ScoreName
         abilityScoreName={abilityScoreName}
-        primeReq={primeReq}
-        showPrimeReq={showPrimeReq}
+        xpModifierPercentage={xpModifierPercentage}
+        showXPModifier={showXPModifier}
       ></ScoreName>
 
       <ScoreBox

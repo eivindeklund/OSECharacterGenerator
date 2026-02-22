@@ -36,7 +36,7 @@ export interface AbilityScoresCanDecrease {
 // ── Character Modifiers ───────────────────────────────────────────────────────
 
 export interface CharacterModifiers {
-  primeReq: string;
+  xpModifierPercentage: string;
   strengthModMelee: string;
   strengthModDoors: string;
   intelligenceModLanguages: string;
@@ -116,7 +116,7 @@ export interface ClassOptionsData {
   runesmithSpells?: boolean;
   divineSpells?: boolean;
   xpBonusFromPrimeRequirements?: (a: number, b: number) => number;
-  xpBonusPercentage: (abilityScoreValues: AbilityScores) => string;
+  xpModifierPercentage: (abilityScoreValues: AbilityScores) => string;
   checkAbilityScoreRequirements: (abilityScores: AbilityScores) => boolean;
 }
 

@@ -167,8 +167,8 @@ class ClassOptions implements ClassOptionsData {
     return requirements;
   }
 
-  /* Calculate the XP bonus percentage from prime requisites for the given ability scores. */
-  xpBonusPercentage(abilityScoreValues: AbilityScores): string {
+  /* Calculate the XP modifier percentage from prime requisites for the given ability scores. */
+  xpModifierPercentage(abilityScoreValues: AbilityScores): string {
     const firstAbilityName = this.primeReqs[0];
     const firstAbilityScoreValue = abilityScoreValues[firstAbilityName] ?? 0;
 

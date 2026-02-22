@@ -34,7 +34,7 @@ export const useCharacterManager = (
   const [abilityScores, setAbilityScores] = useState(defaultAbilityScoresState);
 
   const [characterModifiers, setCharacterModifiers] = useState({
-    primeReq: "0",
+    xpModifierPercentage: "0",
     strengthModMelee: "0",
     strengthModDoors: "0",
     intelligenceModLanguages: "0",
@@ -94,9 +94,7 @@ export const useCharacterManager = (
   useEffect(() => {
     if (characterRolled) {
       const newCharacterModifiers = updateAbilityModifiers(abilityScores);
-      const xpBonusPercentage = characterClass.xpBonusPercentage(abilityScores);
-      // TODO: Rename primeReq to xpBonusPercentage
-      newCharacterModifiers.primeReq = xpBonusPercentage;
+      newCharacterModifiers.xpModifierPercentage = characterClass.xpModifierPercentage(abilityScores);
       setCharacterModifiers(newCharacterModifiers);
     }
   }, [abilityScores, characterClass, characterRolled]);

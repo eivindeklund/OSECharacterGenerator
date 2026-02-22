@@ -9,14 +9,14 @@ vi.mock("../data/classOptionsData", () => ({
       primeReqs: ["strength"], 
       hd: 8,
       checkAbilityScoreRequirements: () => true,
-      xpBonusPercentage: () => '0%',
+      xpModifierPercentage: () => '0%',
     },
     { 
       name: "Cleric", 
       primeReqs: ["wisdom"], 
       hd: 6,
       checkAbilityScoreRequirements: () => true,
-      xpBonusPercentage: () => '0%',
+      xpModifierPercentage: () => '0%',
     },
   ],
   emptyClassOptions: {
@@ -37,7 +37,7 @@ vi.mock("../data/classOptionsData", () => ({
     link: "",
     arcane: false,
     divine: false,
-    xpBonusPercentage: () => '0%',
+    xpModifierPercentage: () => '0%',
   },
 }));
 
