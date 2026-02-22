@@ -1,9 +1,9 @@
 // generates the appropriate modifier for an ability value
 import React from 'react'
 import {
-    abilityScoreNames,
-    armourTypes,
-    primeRequisiteModifiers
+  abilityScoreNames,
+  armourTypes,
+  primeRequisiteModifiers
 } from '../constants/constants'
 import abilityScoreMods from '../data/abilityScoreMods'
 import classOptionsData from '../data/classOptionsData'
@@ -101,7 +101,7 @@ export const getPrimeReqMod = (abilityScoreValues: AbilityScores, characterClass
     primeReqPercentage = primeReqValue ?? 0
   }
 
-  // if class has more than one prime requisite, then we need to check the specific class rules for calculating
+     // if class has more than one prime requisite, then we need to check the specific class rules for calculating
 
   if (characterClass.primeReqs.length > 1) {
     const secondAbilityName = characterClass.primeReqs[1]
@@ -119,17 +119,16 @@ export const getPrimeReqMod = (abilityScoreValues: AbilityScores, characterClass
     ) ?? 0
   }
 
-  return (primeReqPercentage || 0) + '%'
+    return (primeReqPercentage || 0) + '%'
 }
 
 export const getRndInteger = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-export const d = (howMany, sides) => {
-  let total = 0
-  let i
-  for (i = 0; i < howMany; i++) {
+export const d = (howMany: number, sides: number) => {
+  let total = 0;
+  for (let i = 0; i < howMany; i++) {
     total += getRndInteger(1, sides)
   }
   return total
@@ -137,22 +136,6 @@ export const d = (howMany, sides) => {
 
 export const chooseRandomItem = (array) => {
   return array[Math.floor(Math.random() * array.length)]
-}
-
-export const d6 = (howMany, randomNumbersArray) => {
-  // uses default JS random number seed if randomNumber API doesn't load correctly
-
-  if (randomNumbersArray.length < 2) {
-    return d(3, 6)
-  }
-
-  let sum = 0
-
-  for (let i = 0; i < howMany; i++) {
-    sum = sum + chooseRandomItem(randomNumbersArray)
-  }
-
-  return sum
 }
 
 export const getWeightedValue = (weightedList, diceResult, listLength) => {

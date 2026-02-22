@@ -12,9 +12,8 @@ import { DeviceService as DefaultDeviceService } from "../utilities/DeviceServic
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
   d,
-  d6,
   getPrimeReqMod,
-  updateAbilityModifiers,
+  updateAbilityModifiers
 } from "../utilities/utilities";
 
 export const useCharacterManager = (
@@ -136,17 +135,12 @@ export const useCharacterManager = (
 
     if (!animateDice) {
       const newCharacterAbilityScores = { ...abilityScores };
-      if (attribute === "all") {
-        abilityScoreNames.forEach((score) => {
-          const dieResult = d6(3, randomNumbers);
-          newCharacterAbilityScores[score] = dieResult;
-          newCharacterAbilityScores[`${score}Original`] = dieResult;
-        });
-      } else {
-        const dieResult = d6(3, randomNumbers);
-        newCharacterAbilityScores[attribute] = dieResult;
-        newCharacterAbilityScores[`${attribute}Original`] = dieResult;
-      }
+      const abilityScoresToUpdate = attribute === "all" ? abilityScoreNames : [attribute];
+      abilityScoresToUpdate.forEach((score) => {
+        const dieResult = d(3, 6);
+        newCharacterAbilityScores[score] = dieResult;
+        newCharacterAbilityScores[`${score}Original`] = dieResult;
+      });
       setAbilityScores(newCharacterAbilityScores);
       setPointBuy(0);
       return;
@@ -198,11 +192,9 @@ export const useCharacterManager = (
     const animateDice = diceEnabled && diceService;
 
     if (!animateDice) {
-      const goldResult = d6(3, randomNumbers);
-      const totalGold = goldResult * 10;
       setCharacterEquipment((prev) => ({
         ...prev,
-        gold: totalGold,
+        gold: d(3, 6) * 10,
       }));
       return;
     }

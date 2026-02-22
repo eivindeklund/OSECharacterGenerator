@@ -45,6 +45,7 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 [ ] Clean up classOptionsData
   [ ] Clean up the XP bonus calculations
 [ ] Full sync with changes matthewfee has done since the original fork
+[ ] Remove all use of randomNumbers (the ones that we previously got from api.random.org)
 
 ## Large features (wishlist)
 
