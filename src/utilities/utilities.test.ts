@@ -1,26 +1,26 @@
 import {
   calculateArmourClass,
+  deriveCharacterModifiers,
   getWeightedValue,
   joinDuplicates,
-  updateAbilityModifiers,
 } from "./utilities";
 
 describe("Utility Functions", () => {
   describe("updateAbilityModifiers", () => {
     test("should return correct modifiers for strength", () => {
-      const result = updateAbilityModifiers({ strength: 15, intelligence: 10, dexterity: 10, wisdom: 10, constitution: 10, charisma: 10 });
+      const result = deriveCharacterModifiers({ strength: 15, intelligence: 10, dexterity: 10, wisdom: 10, constitution: 10, charisma: 10 });
       expect(result.strengthModMelee).toBe("+1");
       expect(result.strengthModDoors).toBe("3-in-6");
     });
 
     test("should return correct modifiers for intelligence", () => {
-      const result = updateAbilityModifiers({ strength: 10, intelligence: 18, dexterity: 10, wisdom: 10, constitution: 10, charisma: 10 });
+      const result = deriveCharacterModifiers({ strength: 10, intelligence: 18, dexterity: 10, wisdom: 10, constitution: 10, charisma: 10 });
       expect(result.intelligenceModLanguages).toBe("+3");
       expect(result.intelligenceModExtraLanguageCount).toBe("3");
     });
 
     test("should return correct modifiers for dexterity", () => {
-      const result = updateAbilityModifiers({ strength: 10, intelligence: 10, dexterity: 13, wisdom: 10, constitution: 10, charisma: 10 });
+      const result = deriveCharacterModifiers({ strength: 10, intelligence: 10, dexterity: 13, wisdom: 10, constitution: 10, charisma: 10 });
       expect(result.dexterityModAC).toBe("+1");
       expect(result.dexterityModInitiative).toBe("+1");
     });
@@ -34,7 +34,7 @@ describe("Utility Functions", () => {
         constitution: 10,
         charisma: 10,
       };
-      const result = updateAbilityModifiers(scores);
+      const result = deriveCharacterModifiers(scores);
       expect(result.strengthModMelee).toBe("0");
       expect(result.dexterityModAC).toBe("0");
       expect(result.constitutionMod).toBe("0");

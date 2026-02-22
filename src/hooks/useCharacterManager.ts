@@ -6,12 +6,12 @@ import {
   Thief,
 } from "../constants/constants";
 import classOptionsData, { emptyClassOptions } from "../data/classOptionsData";
-import { ClassOptionsData } from "../types";
+import { CharacterModifiers, ClassOptionsData } from "../types";
 import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
   d,
-  updateAbilityModifiers
+  deriveCharacterModifiers
 } from "../utilities/utilities";
 
 export const useCharacterManager = (
@@ -34,7 +34,7 @@ export const useCharacterManager = (
   const [abilityScores, setAbilityScores] = useState(defaultAbilityScoresState);
   const [originalAbilityScores, setOriginalAbilityScores] = useState(defaultAbilityScoresState);
 
-  const [characterModifiers, setCharacterModifiers] = useState({
+  const [characterModifiers, setCharacterModifiers] = useState<CharacterModifiers>({
     xpModifierPercentage: "0",
     strengthModMelee: "0",
     strengthModDoors: "0",
@@ -94,9 +94,9 @@ export const useCharacterManager = (
 
   useEffect(() => {
     if (characterRolled) {
-      const newCharacterModifiers = updateAbilityModifiers(abilityScores);
+      const newCharacterModifiers = deriveCharacterModifiers(abilityScores);
       newCharacterModifiers.xpModifierPercentage = characterClass.xpModifierPercentage(abilityScores);
-      setCharacterModifiers(newCharacterModifiers);
+      setCharacterModifiers(newCharacterModifiers satisfies Partial<CharacterModifiers> as CharacterModifiers);
     }
   }, [abilityScores, characterClass, characterRolled]);
 

@@ -4,7 +4,7 @@ import {
   armourTypes,
 } from '../constants/constants';
 import abilityScoreMods from '../data/abilityScoreMods';
-import type { AbilityScores } from '../types';
+import type { AbilityScores, CharacterModifiers } from '../types';
 
 interface LinkTextProps {
   href?: string;
@@ -19,7 +19,7 @@ export const LinkText = ({ href, children }: LinkTextProps) => {
   )
 }
 
-export const updateAbilityModifiers = (abilityScoreValues: AbilityScores): Partial<Record<string, string>> => {
+export const deriveCharacterModifiers = (abilityScoreValues: AbilityScores): Partial<CharacterModifiers> => {
   const { strength, intelligence, dexterity, wisdom, constitution, charisma } = abilityScoreValues
   return {
     strengthModMelee: abilityScoreMods.abilityMod[strength],
@@ -38,18 +38,18 @@ export const updateAbilityModifiers = (abilityScoreValues: AbilityScores): Parti
   }
 }
 
-export const getRndInteger = (min, max) => {
+export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-export const d = (howMany: number, sides: number) => {
+export const d = (howMany: number, sides: number): number => {
   let total = 0;
   for (let i = 0; i < howMany; i++) {
     total += getRndInteger(1, sides)
   }
   return total
 }
-
+  
 export const chooseRandomItem = (array) => {
   return array[Math.floor(Math.random() * array.length)]
 }
