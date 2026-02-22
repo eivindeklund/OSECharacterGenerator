@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { CircleLoader } from "react-spinners";
 import CheckBox from "../components/general/Checkbox";
 import { lngs } from "../constants/constants";
 import designed from "../img/designed.png";
@@ -14,8 +13,6 @@ interface LandingScreenProps {
   setCharacterRolled: Dispatch<SetStateAction<boolean>>;
   rollButtonHover: boolean;
   setRollButtonHover: Dispatch<SetStateAction<boolean>>;
-  loadingRandomNumbers: boolean;
-  setLoadingRandomNumbers: Dispatch<SetStateAction<boolean>>;
   screen: ScreenState;
   setScreen: (screen: ScreenState) => void;
   rollCharacter: () => void;
@@ -33,7 +30,6 @@ export default function LandingScreen(props: LandingScreenProps) {
     setCharacterRolled,
     rollButtonHover,
     setRollButtonHover,
-    loadingRandomNumbers,
     screen,
     setScreen,
     rollCharacter,
@@ -65,22 +61,11 @@ export default function LandingScreen(props: LandingScreenProps) {
         <button
           className={"button button--roll button-primary"}
           onClick={rollCharacter}
-          disabled={!!loadingRandomNumbers}
           onMouseEnter={() => setRollButtonHover(true)}
           onMouseLeave={() => setRollButtonHover(false)}
         >
-          {!loadingRandomNumbers && (
-            <div>
-              <Trans i18nKey="start">Start</Trans>
-            </div>
-          )}
-
-          <div className="sweet-loading">
-            <CircleLoader
-              size={50}
-              color={"white"}
-              loading={loadingRandomNumbers}
-            />
+          <div>
+            <Trans i18nKey="start">Start</Trans>
           </div>
         </button>
       )}

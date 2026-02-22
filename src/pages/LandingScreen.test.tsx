@@ -13,8 +13,6 @@ describe('LandingScreen', () => {
     setCharacterRolled: vi.fn(),
     rollButtonHover: false,
     setRollButtonHover: vi.fn(),
-    loadingRandomNumbers: false,
-    setLoadingRandomNumbers: vi.fn(),
     screen: { abilityScreen: true } as any,
     setScreen: vi.fn(),
     rollCharacter: vi.fn(),

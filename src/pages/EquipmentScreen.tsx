@@ -19,7 +19,6 @@ type EquipmentScreenProps = {
   setCharacterStatistics: Dispatch<SetStateAction<CharacterStatistics>>
   characterEquipment: CharacterEquipment
   setCharacterEquipment: Dispatch<SetStateAction<CharacterEquipment>>
-  randomNumbers?: number[]
   rollGold: () => void
 }
 

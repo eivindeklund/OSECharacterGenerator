@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { getRandomNumbers } from "../API/getRandomNumbers";
 import {
   abilityScoreNames,
   defaultAbilityScoresState,
@@ -83,8 +82,6 @@ export const useCharacterManager = (
   });
 
   const [diceEnabled, setDiceEnabled] = useState(false);
-  const [loadingRandomNumbers, setLoadingRandomNumbers] = useState(true);
-  const [randomNumbers, setRandomNumbers] = useState([]);
   const [characterRolled, setCharacterRolled] = useState(false);
   const [pendingRoll, setPendingRoll] = useState(null);
   const [storedCharacters, setStoredCharacters] = useState([]);
@@ -94,18 +91,6 @@ export const useCharacterManager = (
   }, [storageService]);
 
   const isMobile = deviceService.getIsMobile();
-
-  const loadRandomNumbers = useCallback(() => {
-    const numbers = getRandomNumbers();
-    if (numbers) {
-      setRandomNumbers(numbers);
-    }
-    setLoadingRandomNumbers(false);
-  }, []);
-
-  useEffect(() => {
-    loadRandomNumbers();
-  }, [loadRandomNumbers]);
 
   useEffect(() => {
     if (characterRolled) {
@@ -417,10 +402,6 @@ export const useCharacterManager = (
     setCharacterEquipment,
     diceEnabled,
     setDiceEnabled,
-    loadingRandomNumbers,
-    setLoadingRandomNumbers,
-    randomNumbers,
-    setRandomNumbers,
     characterRolled,
     setCharacterRolled,
     rollAttribute,

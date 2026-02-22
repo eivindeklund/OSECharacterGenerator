@@ -35,9 +35,6 @@ export default function CharacterGenerator() {
     setCharacterEquipment,
     diceEnabled,
     setDiceEnabled,
-    loadingRandomNumbers,
-    setLoadingRandomNumbers,
-    randomNumbers,
     characterRolled,
     setCharacterRolled,
     rollAttribute,
@@ -107,8 +104,6 @@ export default function CharacterGenerator() {
             setDiceEnabled={setDiceEnabled}
             rollButtonHover={rollButtonHover}
             setRollButtonHover={setRollButtonHover}
-            loadingRandomNumbers={loadingRandomNumbers}
-            setLoadingRandomNumbers={setLoadingRandomNumbers}
             characterRolled={characterRolled}
             setCharacterRolled={setCharacterRolled}
             rollCharacter={rollCharacter}
@@ -165,7 +160,6 @@ export default function CharacterGenerator() {
                 setCharacterStatistics={setCharacterStatistics}
                 characterEquipment={characterEquipment}
                 setCharacterEquipment={setCharacterEquipment}
-                randomNumbers={randomNumbers}
                 diceEnabled={diceEnabled}
                 rollGold={rollGold}
               />

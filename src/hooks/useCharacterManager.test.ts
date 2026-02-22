@@ -1,12 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getRandomNumbers } from "../API/getRandomNumbers";
 import { useCharacterManager } from "./useCharacterManager";
-
-// Mock dependencies
-vi.mock("../API/getRandomNumbers", () => ({
-  getRandomNumbers: vi.fn(),
-}));
 
 vi.mock("../data/classOptionsData", () => ({
   default: [
@@ -64,26 +58,22 @@ describe("useCharacterManager", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    getRandomNumbers.mockReturnValue([1, 2, 3, 4, 5, 6]);
   });
 
-  it("should initialize with default state", async () => {
+  it("should initialize with default state", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     expect(result.current.character.id).toBeNull();
     expect(result.current.characterRolled).toBe(false);
     expect(result.current.abilityScores.strength).toBeNull();
   });
 
-  it("should roll character and reset state", async () => {
+  it("should roll character and reset state", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.rollCharacter();
@@ -94,11 +84,10 @@ describe("useCharacterManager", () => {
     expect(result.current.screen.abilityScreen).toBe(true);
   });
 
-  it("should roll attributes without animation when dice are disabled", async () => {
+  it("should roll attributes without animation when dice are disabled", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.rollCharacter();
@@ -109,11 +98,10 @@ describe("useCharacterManager", () => {
     expect(mockDiceService.roll).not.toHaveBeenCalled();
   });
 
-  it("should trigger dice animation when dice are enabled", async () => {
+  it("should trigger dice animation when dice are enabled", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.setDiceEnabled(true);
@@ -127,11 +115,10 @@ describe("useCharacterManager", () => {
     expect(mockDiceService.roll).toHaveBeenCalledWith("3d6", expect.anything());
   });
 
-  it("should update state when dice roll is complete", async () => {
+  it("should update state when dice roll is complete", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.setDiceEnabled(true);
@@ -149,11 +136,10 @@ describe("useCharacterManager", () => {
     expect(result.current.abilityScores.strength).toBe(15);
   });
 
-  it("should roll HP correctly", async () => {
+  it("should roll HP correctly", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.rollCharacter();
@@ -170,11 +156,10 @@ describe("useCharacterManager", () => {
     expect(result.current.characterStatistics.hpRolls).toBe(1);
   });
 
-  it("should roll gold correctly", async () => {
+  it("should roll gold correctly", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.rollGold();
@@ -184,11 +169,10 @@ describe("useCharacterManager", () => {
     expect(result.current.characterEquipment.gold % 10).toBe(0);
   });
 
-  it("should increase ability score and decrease point buy", async () => {
+  it("should increase ability score and decrease point buy", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.rollCharacter();
@@ -204,11 +188,10 @@ describe("useCharacterManager", () => {
     expect(result.current.pointBuy).toBe(0);
   });
 
-  it("should decrease ability score and increase point buy", async () => {
+  it("should decrease ability score and increase point buy", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.rollCharacter();
@@ -224,11 +207,10 @@ describe("useCharacterManager", () => {
     expect(result.current.pointBuy).toBe(1);
   });
 
-  it("should save character using storageService", async () => {
+  it("should save character using storageService", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.saveCharacter();
@@ -237,11 +219,10 @@ describe("useCharacterManager", () => {
     expect(mockStorageService.saveCharacter).toHaveBeenCalled();
   });
 
-  it("should delete character using storageService", async () => {
+  it("should delete character using storageService", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     act(() => {
       result.current.deleteStoredCharacter("123");
@@ -250,11 +231,10 @@ describe("useCharacterManager", () => {
     expect(mockStorageService.deleteCharacter).toHaveBeenCalledWith("123");
   });
 
-  it("should import character correctly", async () => {
+  it("should import character correctly", () => {
     const { result } = renderHook(() =>
       useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
     );
-    await waitFor(() => expect(result.current.loadingRandomNumbers).toBe(false));
 
     const mockData = {
       character: { name: "Test Import", id: "000" },
