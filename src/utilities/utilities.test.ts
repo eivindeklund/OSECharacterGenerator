@@ -1,33 +1,30 @@
 import {
   calculateArmourClass,
-  getModValue,
   getWeightedValue,
   joinDuplicates,
   updateAbilityModifiers,
 } from "./utilities";
 
 describe("Utility Functions", () => {
-  describe("getModValue", () => {
+  describe("updateAbilityModifiers", () => {
     test("should return correct modifiers for strength", () => {
-      const result = getModValue("strength", 15);
+      const result = updateAbilityModifiers({ strength: 15, intelligence: 10, dexterity: 10, wisdom: 10, constitution: 10, charisma: 10 });
       expect(result.strengthModMelee).toBe("+1");
       expect(result.strengthModDoors).toBe("3-in-6");
     });
 
     test("should return correct modifiers for intelligence", () => {
-      const result = getModValue("intelligence", 18);
+      const result = updateAbilityModifiers({ strength: 10, intelligence: 18, dexterity: 10, wisdom: 10, constitution: 10, charisma: 10 });
       expect(result.intelligenceModLanguages).toBe("+3");
       expect(result.intelligenceModExtraLanguageCount).toBe("3");
     });
 
     test("should return correct modifiers for dexterity", () => {
-      const result = getModValue("dexterity", 13);
+      const result = updateAbilityModifiers({ strength: 10, intelligence: 10, dexterity: 13, wisdom: 10, constitution: 10, charisma: 10 });
       expect(result.dexterityModAC).toBe("+1");
       expect(result.dexterityModInitiative).toBe("+1");
     });
-  });
 
-  describe("updateAbilityModifiers", () => {
     test("should update all ability scores", () => {
       const scores = {
         strength: 10,

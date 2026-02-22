@@ -1,7 +1,6 @@
 // generates the appropriate modifier for an ability value
 import React from 'react';
 import {
-  abilityScoreNames,
   armourTypes,
 } from '../constants/constants';
 import abilityScoreMods from '../data/abilityScoreMods';
@@ -20,68 +19,23 @@ export const LinkText = ({ href, children }: LinkTextProps) => {
   )
 }
 
-export const getModValue = (abilityScoreName, abilityScore) => {
-  let newAbilityModifiers = {}
-
-  switch (abilityScoreName) {
-    case 'strength':
-      newAbilityModifiers = {
-        strengthModMelee: abilityScoreMods.abilityMod[abilityScore],
-        strengthModDoors: abilityScoreMods.openDoors[abilityScore]
-      }
-      break
-    case 'intelligence':
-      newAbilityModifiers = {
-        intelligenceModLanguages:
-          abilityScoreMods.spokenLanguages[abilityScore],
-        intelligenceModLiteracy: abilityScoreMods.literacy[abilityScore],
-        intelligenceModExtraLanguageCount:
-          abilityScoreMods.extraLanguageCount[abilityScore]
-      }
-      break
-    case 'dexterity':
-      newAbilityModifiers = {
-        dexterityModAC: abilityScoreMods.abilityMod[abilityScore],
-        dexterityModMissiles: abilityScoreMods.abilityMod[abilityScore],
-        dexterityModInitiative: abilityScoreMods.initiative[abilityScore]
-      }
-      break
-    case 'wisdom':
-      newAbilityModifiers = {
-        wisdomMod: abilityScoreMods.abilityMod[abilityScore]
-      }
-      break
-    case 'constitution':
-      newAbilityModifiers = {
-        constitutionMod: abilityScoreMods.abilityMod[abilityScore]
-      }
-      break
-    case 'charisma':
-      newAbilityModifiers = {
-        charismaModNPCReactions: abilityScoreMods.npcReactions[abilityScore],
-        charismaModRetainersMax: abilityScoreMods.retainersMax[abilityScore],
-        charismaModLoyalty: abilityScoreMods.loyalty[abilityScore]
-      }
-      break
-  }
-
-  return newAbilityModifiers
-}
-
 export const updateAbilityModifiers = (abilityScoreValues: AbilityScores): Partial<Record<string, string>> => {
-  // updates all ability modifiers and returns an object containing the updates
-  const abilityModifiers: Record<string, string> = {}
-
-  abilityScoreNames.forEach((abilityScoreName) => {
-    const value = abilityScoreValues[abilityScoreName]
-    const newModifiers = getModValue(abilityScoreName, value)
-
-    for (const key in newModifiers) {
-      abilityModifiers[key] = newModifiers[key]
-    }
-  })
-
-  return abilityModifiers
+  const { strength, intelligence, dexterity, wisdom, constitution, charisma } = abilityScoreValues
+  return {
+    strengthModMelee: abilityScoreMods.abilityMod[strength],
+    strengthModDoors: abilityScoreMods.openDoors[strength],
+    intelligenceModLanguages: abilityScoreMods.spokenLanguages[intelligence],
+    intelligenceModLiteracy: abilityScoreMods.literacy[intelligence],
+    intelligenceModExtraLanguageCount: abilityScoreMods.extraLanguageCount[intelligence],
+    dexterityModAC: abilityScoreMods.abilityMod[dexterity],
+    dexterityModMissiles: abilityScoreMods.abilityMod[dexterity],
+    dexterityModInitiative: abilityScoreMods.initiative[dexterity],
+    wisdomMod: abilityScoreMods.abilityMod[wisdom],
+    constitutionMod: abilityScoreMods.abilityMod[constitution],
+    charismaModNPCReactions: abilityScoreMods.npcReactions[charisma],
+    charismaModRetainersMax: abilityScoreMods.retainersMax[charisma],
+    charismaModLoyalty: abilityScoreMods.loyalty[charisma],
+  }
 }
 
 export const getRndInteger = (min, max) => {
