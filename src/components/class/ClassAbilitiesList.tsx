@@ -1,7 +1,11 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import type { ClassOptionsData } from '../../types'
 
-export default function ClassAbilitiesList({ characterClass }) {
+type ClassAbilitiesListProps = {
+  characterClass: ClassOptionsData
+}
+
+export default function ClassAbilitiesList({ characterClass }: ClassAbilitiesListProps) {
   return (
     <div className='class-ability-menu--abilities'>
       <ul className='class-ability-list'>
@@ -17,6 +21,4 @@ export default function ClassAbilitiesList({ characterClass }) {
   )
 }
 
-ClassAbilitiesList.propTypes = {
-  characterClass: PropTypes.object
-}
+

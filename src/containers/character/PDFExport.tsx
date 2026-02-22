@@ -1,6 +1,13 @@
 import download from 'downloadjs'
 import { PDFDocument } from 'pdf-lib'
-import PropTypes from 'prop-types'
+import type {
+  AbilityScores,
+  Character,
+  CharacterEquipment,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
+} from '../../types'
 import {
     CHARACTER_SHEET_PURIST_DAC_URL,
     CHARACTER_SHEET_PURIST_URL,
@@ -8,7 +15,16 @@ import {
 } from '../../constants/constants'
 import { joinDuplicates } from '../../utilities/utilities'
 
-export default function PDFExport(props) {
+type PDFExportProps = {
+  character: Character
+  characterStatistics: CharacterStatistics
+  characterClass: ClassOptionsData
+  characterEquipment: CharacterEquipment
+  characterModifiers: CharacterModifiers
+  abilityScores: AbilityScores
+}
+
+export default function PDFExport(props: PDFExportProps) {
   const {
     character,
     characterStatistics,
@@ -289,35 +305,4 @@ export default function PDFExport(props) {
   )
 }
 
-PDFExport.propTypes = {
-  character: PropTypes.object,
-  characterStatistics: PropTypes.shape({
-    hitPoints: PropTypes.number,
-    armourClass: PropTypes.number,
-    spell: PropTypes.string,
-    hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number
-  }),
-  characterClass: PropTypes.object,
-  characterEquipment: PropTypes.shape({
-    armour: PropTypes.array,
-    weapons: PropTypes.array,
-    adventuringGear: PropTypes.array,
-    gold: PropTypes.number
-  }),
-  characterModifiers: PropTypes.objectOf(PropTypes.string),
-  abilityScores: PropTypes.shape({
-    strength: PropTypes.number,
-    strengthOriginal: PropTypes.number,
-    intelligence: PropTypes.number,
-    intelligenceOriginal: PropTypes.number,
-    wisdom: PropTypes.number,
-    wisdomOriginal: PropTypes.number,
-    dexterity: PropTypes.number,
-    dexterityOriginal: PropTypes.number,
-    constitution: PropTypes.number,
-    constitutionOriginal: PropTypes.number,
-    charisma: PropTypes.number,
-    charismaOriginal: PropTypes.number
-  })
-}
+

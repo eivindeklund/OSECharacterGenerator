@@ -1,7 +1,11 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
-export default function ListItem({ type, value }) {
+type ListItemProps = {
+  type: string
+  value: string
+}
+
+export default function ListItem({ type, value }: ListItemProps) {
   return (
     <li className={`list-item list-item--${type}`}>
       <b>{type}:</b> {value}
@@ -9,7 +13,4 @@ export default function ListItem({ type, value }) {
   )
 }
 
-ListItem.propTypes = {
-  type: PropTypes.string,
-  value: PropTypes.string
-}
+

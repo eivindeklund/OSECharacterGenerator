@@ -1,12 +1,32 @@
-import PropTypes from "prop-types";
+import type { Dispatch, SetStateAction } from "react";
 import ClassAbilitiesList from "../components/class/ClassAbilitiesList";
 import SavingThrows from "../components/class/SavingThrows";
 import Header from "../components/general/Header";
 import ScreenNavigation from "../components/general/ScreenNavigation";
 import HPRoller from "../containers/class-details/HPRoller";
 import SpellSelection from "../containers/class-details/SpellSelection";
+import type {
+  Character,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
+  ScreenState,
+} from "../types";
 
-export default function ClassScreen(props) {
+type ClassScreenProps = {
+  diceEnabled?: boolean
+  screen: ScreenState
+  setScreen: Dispatch<SetStateAction<ScreenState>>
+  characterClass: ClassOptionsData
+  character?: Character
+  setCharacter?: Dispatch<SetStateAction<Character>>
+  characterStatistics: CharacterStatistics
+  setCharacterStatistics: Dispatch<SetStateAction<CharacterStatistics>>
+  characterModifiers: CharacterModifiers
+  rollHP: () => void
+}
+
+export default function ClassScreen(props: ClassScreenProps) {
   const {
     screen,
     setScreen,
@@ -82,21 +102,4 @@ export default function ClassScreen(props) {
   );
 }
 
-ClassScreen.propTypes = {
-  diceEnabled: PropTypes.bool,
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  characterClass: PropTypes.object,
-  character: PropTypes.object,
-  setCharacter: PropTypes.func,
-  characterStatistics: PropTypes.shape({
-    hitPoints: PropTypes.number,
-    armourClass: PropTypes.number,
-    spell: PropTypes.string,
-    hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number,
-  }),
-  setCharacterStatistics: PropTypes.func,
-  characterModifiers: PropTypes.object,
-  rollHP: PropTypes.func,
-};
+

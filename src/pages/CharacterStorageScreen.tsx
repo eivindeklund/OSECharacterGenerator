@@ -1,8 +1,21 @@
-import PropTypes from 'prop-types'
+import type { Dispatch, SetStateAction } from 'react'
+import type {
+  CharacterSetters,
+  ScreenState,
+  StoredCharacterData,
+} from '../types'
 import Header from '../components/general/Header'
 import CharacterStorage from '../containers/storage/CharacterStorage'
 
-export default function CharacterStorageScreen (props) {
+type CharacterStorageScreenProps = {
+  screen: ScreenState
+  setScreen: Dispatch<SetStateAction<ScreenState>>
+  characterSetters: CharacterSetters
+  storedCharacters: StoredCharacterData[]
+  deleteStoredCharacter: (id: string) => void
+}
+
+export default function CharacterStorageScreen (props: CharacterStorageScreenProps) {
   const {
     screen,
     setScreen,
@@ -41,18 +54,4 @@ export default function CharacterStorageScreen (props) {
   )
 }
 
-CharacterStorageScreen.propTypes = {
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  characterSetters: PropTypes.shape({
-    setCharacter: PropTypes.func,
-    setAbilityScores: PropTypes.func,
-    setCharacterStatistics: PropTypes.func,
-    setCharacterClass: PropTypes.func,
-    setCharacterEquipment: PropTypes.func,
-    setCharacterModifiers: PropTypes.func,
-    setCharacterRolled: PropTypes.func,
-  }),
-  storedCharacters: PropTypes.arrayOf(PropTypes.object),
-  deleteStoredCharacter: PropTypes.func
-}
+

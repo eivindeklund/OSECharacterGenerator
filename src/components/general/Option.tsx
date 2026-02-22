@@ -1,7 +1,10 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
-export default function Option({ value }) {
+type OptionProps = {
+  value: string
+}
+
+export default function Option({ value }: OptionProps) {
   return (
     <option className={`option option--${value}`} value={value}>
       {value}
@@ -9,6 +12,4 @@ export default function Option({ value }) {
   )
 }
 
-Option.propTypes = {
-  value: PropTypes.string
-}
+

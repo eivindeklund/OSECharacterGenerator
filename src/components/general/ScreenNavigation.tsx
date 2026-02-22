@@ -1,6 +1,14 @@
-import PropTypes from "prop-types";
+type ScreenNavigationProps = {
+  onNext?: () => void
+  onPrev?: () => void
+  onNavigation?: () => void
+  nextLabel?: string
+  prevLabel?: string
+  nextDisabled?: boolean
+  requirements?: string[]
+}
 
-export default function ScreenNavigation(props) {
+export default function ScreenNavigation(props: ScreenNavigationProps) {
   const {
     onNext,
     onPrev,
@@ -70,12 +78,4 @@ export default function ScreenNavigation(props) {
   );
 }
 
-ScreenNavigation.propTypes = {
-  onNext: PropTypes.func,
-  onPrev: PropTypes.func,
-  onNavigation: PropTypes.func,
-  nextLabel: PropTypes.string,
-  prevLabel: PropTypes.string,
-  nextDisabled: PropTypes.bool,
-  requirements: PropTypes.arrayOf(PropTypes.string),
-};
+

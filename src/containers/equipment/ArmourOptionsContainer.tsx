@@ -1,8 +1,14 @@
-import PropTypes from "prop-types";
+import type { ClassOptionsData } from "../../types";
 import { useState } from "react";
 import armourData from "../../data/armourData";
 
-export default function ArmourOptionsContainer(props) {
+type ArmourOptionsContainerProps = {
+  characterClass: ClassOptionsData
+  purchaseLedger: Record<string, number>
+  handleUpdateLedger: (name: string, quantity: number) => void
+}
+
+export default function ArmourOptionsContainer(props: ArmourOptionsContainerProps) {
   const { characterClass, purchaseLedger, handleUpdateLedger } = props;
 
   const [isOpen, setIsOpen] = useState(true);
@@ -138,8 +144,4 @@ export default function ArmourOptionsContainer(props) {
   );
 }
 
-ArmourOptionsContainer.propTypes = {
-  characterClass: PropTypes.object,
-  purchaseLedger: PropTypes.object,
-  handleUpdateLedger: PropTypes.func,
-};
+

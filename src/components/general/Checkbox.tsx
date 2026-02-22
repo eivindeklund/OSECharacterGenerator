@@ -1,7 +1,11 @@
-import React from 'react'
-import PropTypes from 'prop-types'
 
-export default function Checkbox(props) {
+type CheckboxProps = {
+  value: string
+  checkedCondition: boolean
+  callback: () => void
+}
+
+export default function Checkbox(props: CheckboxProps) {
   const { value, checkedCondition, callback } = props
 
   return (
@@ -10,14 +14,9 @@ export default function Checkbox(props) {
       value={value}
       className={`checkbox --${value}`}
       checked={checkedCondition}
-      key={callback}
       onChange={() => callback()}
     ></input>
   )
 }
 
-Checkbox.propTypes = {
-  value: PropTypes.string,
-  checkedCondition: PropTypes.bool,
-  callback: PropTypes.func
-}
+

@@ -1,7 +1,11 @@
-import PropTypes from 'prop-types';
+import type { ClassOptionsData } from '../../types';
 import ListItem from '../../components/general/ListItem';
 
-export default function ClassDescription(props) {
+type ClassDescriptionProps = {
+  characterClass: ClassOptionsData
+}
+
+export default function ClassDescription(props: ClassDescriptionProps) {
   const { characterClass } = props
 
   const primeReqString = characterClass.primeReqs.join(', ')
@@ -54,6 +58,4 @@ export default function ClassDescription(props) {
   )
 }
 
-ClassDescription.propTypes = {
-  characterClass: PropTypes.object
-}
+

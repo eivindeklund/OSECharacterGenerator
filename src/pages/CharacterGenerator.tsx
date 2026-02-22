@@ -144,7 +144,7 @@ export default function CharacterGenerator() {
               <ClassScreen
                 screen={screen}
                 setScreen={setScreen}
-                characterClass={characterClass}
+                characterClass={characterClass as ClassOptionsData}
                 character={character}
                 setCharacter={setCharacter}
                 characterModifiers={characterModifiers}
@@ -157,7 +157,7 @@ export default function CharacterGenerator() {
 
             {screen.equipmentScreen && (
               <EquipmentScreen
-                characterClass={characterClass}
+                characterClass={characterClass as ClassOptionsData}
                 screen={screen}
                 setScreen={setScreen}
                 characterModifiers={characterModifiers}

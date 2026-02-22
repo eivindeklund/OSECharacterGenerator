@@ -1,7 +1,12 @@
 import React from 'react'
-import PropTypes from "prop-types"
 
-export default function DetailsResult({name, value, callback}) {
+type DetailsResultProps = {
+  name: string
+  value: string
+  callback: () => void
+}
+
+export default function DetailsResult({name, value, callback}: DetailsResultProps) {
   return (
     <div className='details-result'>
       <span className='details-result--name'>{name}:</span>
@@ -17,8 +22,4 @@ export default function DetailsResult({name, value, callback}) {
   )
 }
 
-DetailsResult.propTypes = {
-  callback: PropTypes.func,
-  name: PropTypes.string,
-  value: PropTypes.string
-}
+

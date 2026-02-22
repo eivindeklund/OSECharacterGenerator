@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+import type { StoredCharacterData } from '../types'
 import ImportCharacterScreen from './ImportCharacterScreen'
 
 describe('ImportCharacterScreen', () => {
@@ -15,7 +16,7 @@ describe('ImportCharacterScreen', () => {
       constitution: 10,
       charisma: 10
     }
-  }
+  } as StoredCharacterData
 
   const mockOnConfirm = vi.fn()
   const mockOnCancel = vi.fn()

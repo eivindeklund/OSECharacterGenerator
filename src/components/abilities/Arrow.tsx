@@ -1,7 +1,12 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
-export default function Arrow(props) {
+type ArrowProps = {
+  abilityScoreName: string
+  direction: string
+  callBack: (name: string) => void
+}
+
+export default function Arrow(props: ArrowProps) {
   const { abilityScoreName, direction, callBack } = props
 
   let classDirection
@@ -25,8 +30,4 @@ export default function Arrow(props) {
   )
 }
 
-Arrow.propTypes = {
-  abilityScoreName: PropTypes.string,
-  direction: PropTypes.string,
-  callBack: PropTypes.func
-}
+

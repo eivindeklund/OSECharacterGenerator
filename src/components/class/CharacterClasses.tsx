@@ -1,7 +1,11 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
-export default function CharacterClasses(props) {
+type CharacterClassesProps = {
+  callback: (classType: string) => React.ReactNode
+  classType: string
+}
+
+export default function CharacterClasses(props: CharacterClassesProps) {
   const { callback, classType } = props
   return (
     <div className={`container class-container class-container--${classType}`}>
@@ -10,7 +14,4 @@ export default function CharacterClasses(props) {
   )
 }
 
-CharacterClasses.propTypes = {
-  callback: PropTypes.func,
-  classType: PropTypes.string
-}
+

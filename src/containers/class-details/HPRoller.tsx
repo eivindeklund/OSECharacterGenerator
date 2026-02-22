@@ -1,7 +1,21 @@
-import PropTypes from "prop-types";
+import type { Dispatch, SetStateAction } from "react";
 import React from "react";
+import type {
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
+} from "../../types";
 
-export default function HPRoller(props) {
+type HPRollerProps = {
+  characterClass: Pick<ClassOptionsData, 'hd'>
+  characterStatistics: Pick<CharacterStatistics, 'hitPoints' | 'hpResult' | 'hpRolls'>
+  characterModifiers: Pick<CharacterModifiers, 'constitutionMod'>
+  rollHP: () => void
+  diceEnabled?: boolean
+  setCharacterStatistics?: Dispatch<SetStateAction<CharacterStatistics>>
+}
+
+export default function HPRoller(props: HPRollerProps) {
   const {
     characterClass,
     characterStatistics,
@@ -64,21 +78,4 @@ export default function HPRoller(props) {
   );
 }
 
-HPRoller.propTypes = {
-  diceEnabled: PropTypes.bool,
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  characterClass: PropTypes.object,
-  character: PropTypes.object,
-  setCharacter: PropTypes.func,
-  characterStatistics: PropTypes.shape({
-    hitPoints: PropTypes.number,
-    armourClass: PropTypes.number,
-    spell: PropTypes.string,
-    hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number,
-  }),
-  setCharacterStatistics: PropTypes.func,
-  characterModifiers: PropTypes.object,
-  rollHP: PropTypes.func,
-};
+

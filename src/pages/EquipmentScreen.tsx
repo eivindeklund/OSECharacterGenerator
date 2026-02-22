@@ -1,8 +1,29 @@
-import PropTypes from "prop-types";
+import type { Dispatch, SetStateAction } from "react";
 import Header from "../components/general/Header";
 import EquipmentStore from "../containers/equipment/EquipmentStore";
+import type {
+  CharacterEquipment,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
+  ScreenState,
+} from "../types";
 
-export default function EquipmentScreen(props) {
+type EquipmentScreenProps = {
+  diceEnabled?: boolean
+  characterClass: ClassOptionsData
+  screen: ScreenState
+  setScreen: Dispatch<SetStateAction<ScreenState>>
+  characterModifiers: CharacterModifiers
+  characterStatistics: CharacterStatistics
+  setCharacterStatistics: Dispatch<SetStateAction<CharacterStatistics>>
+  characterEquipment: CharacterEquipment
+  setCharacterEquipment: Dispatch<SetStateAction<CharacterEquipment>>
+  randomNumbers?: number[]
+  rollGold: () => void
+}
+
+export default function EquipmentScreen(props: EquipmentScreenProps) {
   const {
     characterClass,
     screen,
@@ -36,28 +57,4 @@ export default function EquipmentScreen(props) {
   );
 }
 
-EquipmentScreen.propTypes = {
-  diceEnabled: PropTypes.bool,
-  characterClass: PropTypes.object,
-  screen: PropTypes.objectOf(PropTypes.bool),
-  setScreen: PropTypes.func,
-  characterModifiers: PropTypes.objectOf(PropTypes.string),
-  characterStatistics: PropTypes.shape({
-    hitPoints: PropTypes.number,
-    armourClass: PropTypes.number,
-    spell: PropTypes.string,
-    hasSpells: PropTypes.bool,
-    unarmouredAC: PropTypes.number,
-  }),
-  setCharacterStatistics: PropTypes.func,
-  pointBuy: PropTypes.number,
-  characterEquipment: PropTypes.shape({
-    armour: PropTypes.array,
-    weapons: PropTypes.array,
-    adventuringGear: PropTypes.array,
-    gold: PropTypes.number,
-  }),
-  randomNumbers: PropTypes.array,
-  setCharacterEquipment: PropTypes.func,
-  rollGold: PropTypes.func,
-};
+

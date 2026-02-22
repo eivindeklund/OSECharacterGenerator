@@ -1,9 +1,15 @@
-import PropTypes from "prop-types";
+import type { ClassOptionsData } from "../../types";
 import weaponsData from "../../data/weaponsData";
 import { isUniversalWeapon } from "../../utilities/WeaponUtils";
 import ItemOptionsContainer, { ItemData } from "./ItemOptionsContainer";
 
-export default function WeaponOptionsContainer(props) {
+type WeaponOptionsContainerProps = {
+  characterClass: ClassOptionsData
+  purchaseLedger: Record<string, number>
+  handleUpdateLedger: (name: string, quantity: number) => void
+}
+
+export default function WeaponOptionsContainer(props: WeaponOptionsContainerProps) {
   const { characterClass, purchaseLedger, handleUpdateLedger } = props;
 
   const renderItemDetails = (item: ItemData) => (
@@ -32,8 +38,4 @@ export default function WeaponOptionsContainer(props) {
   );
 }
 
-WeaponOptionsContainer.propTypes = {
-  characterClass: PropTypes.object,
-  purchaseLedger: PropTypes.object,
-  handleUpdateLedger: PropTypes.func,
-};
+

@@ -1,7 +1,21 @@
-import PropTypes from 'prop-types'
+import type { ChangeEvent, MouseEventHandler } from 'react'
 import Arrow from '../../components/abilities/Arrow'
 import { greenSuccess, redFail } from '../../constants/constants'
-export default function ScoreBox(props) {
+import type { ClassOptionsData } from '../../types'
+
+type ScoreBoxProps = {
+  abilityScoreName: string
+  abilityScoreValue: number
+  abilityScoreValueOriginal: number
+  characterClass: Pick<ClassOptionsData, 'name' | 'primeReqs'>
+  scoreIncrease: (name: string) => void
+  scoreDecrease: (name: string) => void
+  canDecrease: boolean
+  pointBuy: number
+  rollAttribute: (attrOrEvent: string | ChangeEvent<HTMLInputElement>, optionalInput?: string) => void
+}
+
+export default function ScoreBox(props: ScoreBoxProps) {
   const {
     abilityScoreValue,
     abilityScoreValueOriginal,
@@ -58,7 +72,7 @@ export default function ScoreBox(props) {
       <button
         className="ability-score--value-button"
         value={`${abilityScoreName}`}
-        onClick={rollAttribute}
+        onClick={rollAttribute as unknown as MouseEventHandler<HTMLButtonElement>}
         style={{ color: buttonColor, fontSize: scoreFontSize }}
       >
         {abilityScoreValue > 1 ? abilityScoreValue : '?'}
@@ -83,15 +97,4 @@ export default function ScoreBox(props) {
   )
 }
 
-ScoreBox.propTypes = {
-  abilityScoreName: PropTypes.string,
-  abilityScoreValueOriginal: PropTypes.number,
-  characterClass: PropTypes.object,
-  abilityScoreValue: PropTypes.number,
-  AbilityScoreValueOriginal: PropTypes.number,
-  scoreIncrease: PropTypes.func,
-  scoreDecrease: PropTypes.func,
-  canDecrease: PropTypes.bool,
-  pointBuy: PropTypes.number,
-  rollAttribute: PropTypes.func
-}
+

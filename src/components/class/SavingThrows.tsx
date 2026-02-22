@@ -1,7 +1,11 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import type { ClassOptionsData } from '../../types'
 
-export default function SavingThrows({ characterClass }) {
+type SavingThrowsProps = {
+  characterClass: ClassOptionsData
+}
+
+export default function SavingThrows({ characterClass }: SavingThrowsProps) {
   return (
     <div className='saving-throws container'>
       <div className='saving-throw--death saving-throw-name'>Death </div>
@@ -30,6 +34,4 @@ export default function SavingThrows({ characterClass }) {
   )
 }
 
-SavingThrows.propTypes = {
-  characterClass: PropTypes.object
-}
+

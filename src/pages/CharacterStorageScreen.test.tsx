@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ScreenState, StoredCharacterData } from '../types';
 import CharacterStorageScreen from './CharacterStorageScreen';
 
 // Mock the child component to verify props are passed
@@ -27,7 +28,7 @@ vi.mock('../components/general/Header', () => {
 describe('CharacterStorageScreen', () => {
   const mockDeleteStoredCharacter = vi.fn();
   const mockProps = {
-    screen: {},
+    screen: {} as ScreenState,
     setScreen: vi.fn(),
     characterSetters: {
       setCharacter: vi.fn(),
@@ -38,7 +39,7 @@ describe('CharacterStorageScreen', () => {
       setCharacterModifiers: vi.fn(),
       setCharacterRolled: vi.fn(),
     },
-    storedCharacters: [{ id: 1 }, { id: 2 }],
+    storedCharacters: [{ id: 1 }, { id: 2 }] as unknown as StoredCharacterData[],
     deleteStoredCharacter: mockDeleteStoredCharacter
   };
 

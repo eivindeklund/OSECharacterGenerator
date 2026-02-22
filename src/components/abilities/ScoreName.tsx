@@ -1,8 +1,13 @@
 import React from 'react'
 import { Trans } from 'react-i18next'
-import PropTypes from 'prop-types'
 
-export default function ScoreName(props) {
+type ScoreNameProps = {
+  abilityScoreName: string
+  primeReq?: string
+  showPrimeReq?: boolean
+}
+
+export default function ScoreName(props: ScoreNameProps) {
   const { abilityScoreName, primeReq, showPrimeReq } = props
 
   return (
@@ -16,8 +21,4 @@ export default function ScoreName(props) {
   )
 }
 
-ScoreName.propTypes = {
-  abilityScoreName: PropTypes.string,
-  primeReq: PropTypes.string,
-  showPrimeReq: PropTypes.bool
-}
+

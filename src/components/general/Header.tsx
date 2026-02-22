@@ -1,8 +1,13 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Trans } from 'react-i18next'
 
-export default function Header({ name, text, translation }) {
+type HeaderProps = {
+  name?: string
+  text?: string
+  translation?: string
+}
+
+export default function Header({ name, text, translation }: HeaderProps) {
   return (
     <h2 className={`header header-default header--${name}`}>
       {text}
@@ -11,8 +16,4 @@ export default function Header({ name, text, translation }) {
   )
 }
 
-Header.propTypes = {
-  name: PropTypes.string,
-  text: PropTypes.string,
-  translation: PropTypes.string
-}
+

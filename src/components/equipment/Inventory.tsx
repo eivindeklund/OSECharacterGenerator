@@ -1,9 +1,15 @@
 import React from 'react'
 import { Trans } from 'react-i18next'
 import Backpack from './Backpack'
-import PropTypes from 'prop-types'
 
-export default function Inventory(props) {
+type InventoryProps = {
+  weapons: string[]
+  adventuringGear: string[]
+  armour: string[]
+  storeHandler: (item: string, action: string, itemType: string) => void
+}
+
+export default function Inventory(props: InventoryProps) {
   const { weapons, adventuringGear, armour, storeHandler } = props
   return (
     <div className='inventory'>
@@ -33,9 +39,4 @@ export default function Inventory(props) {
   )
 }
 
-Inventory.propTypes = {
-  weapons: PropTypes.arrayOf(PropTypes.string),
-  adventuringGear: PropTypes.arrayOf(PropTypes.string),
-  armour: PropTypes.arrayOf(PropTypes.string),
-  storeHandler: PropTypes.func
-}
+

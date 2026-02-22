@@ -1,5 +1,15 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+
+type ButtonProps = {
+  name?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  callback?: (...args: any[]) => void
+  text?: string
+  color?: string
+  disabled?: boolean
+  children?: React.ReactNode
+  value?: string
+}
 
 export default function Button({
   name,
@@ -9,7 +19,7 @@ export default function Button({
   disabled,
   children,
   value
-}) {
+}: ButtonProps) {
   return (
     <button
       className={`button button--${name}`}
@@ -23,12 +33,4 @@ export default function Button({
   )
 }
 
-Button.propTypes = {
-  name: PropTypes.string,
-  callback: PropTypes.func,
-  text: PropTypes.string,
-  color: PropTypes.string,
-  disabled: PropTypes.bool,
-  children: PropTypes.any,
-  value: PropTypes.string
-}
+

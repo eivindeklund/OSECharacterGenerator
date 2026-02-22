@@ -1,6 +1,12 @@
-import PropTypes from 'prop-types';
+import type { StoredCharacterData } from '../types';
 
-export default function ImportCharacterScreen({ characterData, onConfirm, onCancel }) {
+type ImportCharacterScreenProps = {
+  characterData: StoredCharacterData | null
+  onConfirm: () => void
+  onCancel: () => void
+}
+
+export default function ImportCharacterScreen({ characterData, onConfirm, onCancel }: ImportCharacterScreenProps) {
   if (!characterData || !characterData.character || !characterData.characterClass || !characterData.characterStatistics || !characterData.abilityScores) {
     return (
       <div className="container" style={{ textAlign: 'center', marginTop: '50px' }}>
@@ -47,8 +53,4 @@ export default function ImportCharacterScreen({ characterData, onConfirm, onCanc
   );
 }
 
-ImportCharacterScreen.propTypes = {
-  characterData: PropTypes.object,
-  onConfirm: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired
-};
+
