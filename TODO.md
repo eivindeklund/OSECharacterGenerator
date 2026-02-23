@@ -8,6 +8,9 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 
 ### Features (small, to be done)
 
+[ ] Abilities screen
+  [ ] Add description of the XP bonus system for that class to the class description
+
 [ ] Equipemnt screen
   [ ] Weapon Categories, showing grayed-out or similar if there are no weapons
       in that category that can be used by the current class
@@ -28,6 +31,10 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 
 [ ] Check all implementation details against official class descriptions, at
     least for the main classes
+      [X] Import the OSE SRE as Markdown so we can check against the class
+          descriptions.
+      [ ] XP bonus descriptions are missing from the SRD; add them manually.
+      [ ] Use Carcass Crawler PDFs to check the Carcass Crawler classes
 
 ### Unregress
 
@@ -41,9 +48,9 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
   [ ] Clean up interfaces
 [ ] Get rid of dupe code
   [X] Merge checkBox / checkBoxStyled
-  [ ] Merge different classOptionsData bonus calculations implementations
+  [X] Merge different classOptionsData XP modifiers calculation implementations
 [ ] Clean up classOptionsData
-  [ ] Clean up the XP bonus calculations
+  [X] Clean up the XP bonus calculations
 [ ] Full sync with changes matthewfee has done since the original fork
 [ ] Remove all use of randomNumbers (the ones that we previously got from api.random.org)
 
