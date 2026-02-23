@@ -96,7 +96,7 @@ export const useCharacterManager = (
     if (characterRolled) {
       const newCharacterModifiers = deriveCharacterModifiers(abilityScores);
       newCharacterModifiers.xpModifierPercentage = characterClass.xpModifierPercentage(abilityScores);
-      setCharacterModifiers(newCharacterModifiers satisfies Partial<CharacterModifiers> as CharacterModifiers);
+      setCharacterModifiers(newCharacterModifiers as CharacterModifiers);
     }
   }, [abilityScores, characterClass, characterRolled]);
 
