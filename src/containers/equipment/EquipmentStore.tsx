@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Inventory from "../../components/equipment/Inventory";
 import ScreenNavigation from "../../components/general/ScreenNavigation";
 import {
-    Cleric,
-    Dwarf,
-    Elf,
-    Fighter,
-    Halfling,
+  Cleric,
+  Dwarf,
+  Elf,
+  Fighter,
+  Halfling,
 } from "../../constants/constants";
 import ArmourOptionsContainer from "../../containers/equipment/ArmourOptionsContainer";
 import GearOptionsContainer from "../../containers/equipment/GearOptionsContainer";
@@ -16,19 +16,19 @@ import armourData from "../../data/armourData";
 import equipmentData from "../../data/equipmentData";
 import weaponsData from "../../data/weaponsData";
 import type {
-    CharacterEquipment,
-    CharacterModifiers,
-    CharacterStatistics,
-    ClassOptionsData,
-    ScreenState,
+  CharacterEquipment,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
+  ScreenState,
 } from "../../types";
 import {
-    calculatePackPrice,
-    resolvePackItems,
+  calculatePackPrice,
+  resolvePackItems,
 } from "../../utilities/PackUtils";
 import {
-    calculateArmourClass,
-    chooseRandomItem
+  calculateArmourClass,
+  chooseRandomItem
 } from "../../utilities/utilities";
 
 interface EquipmentStoreProps {
@@ -311,9 +311,6 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     setAdventuringGearSelected(randomGear.name);
   };
 
-  /* Purchase Ledger Logic */
-  const [purchaseLedger, setPurchaseLedger] = useState<Record<string, number>>({});
-
   const getItemPrice = (itemName) => {
     const allItems = [...equipmentData, ...weaponsData, ...armourData];
     const item = allItems.find((i) => i.name === itemName);
@@ -326,61 +323,72 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     return "gear";
   };
 
-  const handleUpdateLedger = (itemName, quantity) => {
-    setPurchaseLedger((prevLedger) => {
-      const newLedger = { ...prevLedger };
-      if (quantity <= 0) {
-        delete newLedger[itemName];
-      } else {
-        newLedger[itemName] = quantity;
+  /* Derive item counts directly from inventory arrays */
+  const inventoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    [...weapons, ...armour, ...adventuringGear].forEach((name) => {
+      counts[name] = (counts[name] || 0) + 1;
+    });
+    return counts;
+  }, [weapons, armour, adventuringGear]);
+
+  const removeItemsFromArray = (arr: string[], name: string, count: number): string[] => {
+    let removed = 0;
+    return arr.filter((item) => {
+      if (item === name && removed < count) {
+        removed++;
+        return false;
       }
-      return newLedger;
+      return true;
     });
   };
 
-  const handleAddToLedger = (items) => {
-    setPurchaseLedger((prevLedger) => {
-      const newLedger = { ...prevLedger };
-      items.forEach((item) => {
-        const currentQty = newLedger[item.name] || 0;
-        newLedger[item.name] = currentQty + (item.quantity || 1);
-      });
-      return newLedger;
-    });
+  const handleUpdateInventory = (itemName: string, newQty: number) => {
+    const currentQty = inventoryCounts[itemName] || 0;
+    const diff = newQty - currentQty;
+    if (diff === 0) return;
+
+    const price = getItemPrice(itemName);
+    const category = getItemCategory(itemName);
+
+    if (diff > 0) {
+      if (price * diff > (gold ?? 0)) return; // not enough gold
+      setGold((g) => (g ?? 0) - price * diff);
+      const additions = Array(diff).fill(itemName);
+      if (category === "weapon") setWeapons((w) => [...w, ...additions]);
+      else if (category === "armour") setArmour((a) => [...a, ...additions]);
+      else setAdventuringGear((g) => [...g, ...additions]);
+    } else {
+      const refundCount = Math.abs(diff);
+      setGold((g) => (g ?? 0) + price * refundCount);
+      if (category === "weapon") setWeapons((w) => removeItemsFromArray(w, itemName, refundCount));
+      else if (category === "armour") setArmour((a) => removeItemsFromArray(a, itemName, refundCount));
+      else setAdventuringGear((g) => removeItemsFromArray(g, itemName, refundCount));
+    }
   };
 
-  const handleClearLedger = () => {
-    setPurchaseLedger({});
-  };
-
-  const getLedgerTotal = () => {
-    return Object.entries(purchaseLedger).reduce((total, [name, qty]) => {
-      return total + getItemPrice(name) * qty;
-    }, 0);
-  };
-
-  const handleBuyLedger = () => {
-    const totalCost = getLedgerTotal();
+  const handleBuyPack = (items: Array<{ name: string; price: number; quantity: number }>) => {
+    const totalCost = items.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
     if (totalCost > (gold ?? 0)) return;
 
     const newWeapons = [...weapons];
     const newArmour = [...armour];
     const newGear = [...adventuringGear];
 
-    Object.entries(purchaseLedger).forEach(([name, qty]) => {
-      const category = getItemCategory(name);
+    items.forEach((item) => {
+      const category = getItemCategory(item.name);
+      const qty = item.quantity || 1;
       for (let i = 0; i < qty; i++) {
-        if (category === "weapon") newWeapons.push(name);
-        else if (category === "armour") newArmour.push(name);
-        else newGear.push(name);
+        if (category === "weapon") newWeapons.push(item.name);
+        else if (category === "armour") newArmour.push(item.name);
+        else newGear.push(item.name);
       }
     });
 
     setWeapons(newWeapons);
     setArmour(newArmour);
     setAdventuringGear(newGear);
-    setGold((gold ?? 0) - totalCost);
-    setPurchaseLedger({});
+    setGold((g) => (g ?? 0) - totalCost);
   };
 
   useEffect(() => {
@@ -410,79 +418,34 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
             {
               <ArmourOptionsContainer
                 characterClass={characterClass}
-                purchaseLedger={purchaseLedger}
-                handleUpdateLedger={handleUpdateLedger}
+                purchaseLedger={inventoryCounts}
+                handleUpdateLedger={handleUpdateInventory}
               ></ArmourOptionsContainer>
             }
 
             {
               <WeaponOptionsContainer
                 characterClass={characterClass}
-                purchaseLedger={purchaseLedger}
-                handleUpdateLedger={handleUpdateLedger}
+                purchaseLedger={inventoryCounts}
+                handleUpdateLedger={handleUpdateInventory}
               ></WeaponOptionsContainer>
             }
 
             {
               <PackOptionsContainer
                 characterClass={characterClass}
-                handleAddToLedger={handleAddToLedger}
+                handleAddToLedger={handleBuyPack}
               />
             }
 
             {
               <GearOptionsContainer
-                purchaseLedger={purchaseLedger}
-                handleUpdateLedger={handleUpdateLedger}
+                purchaseLedger={inventoryCounts}
+                handleUpdateLedger={handleUpdateInventory}
               ></GearOptionsContainer>
             }
 
-            {/* Purchase Ledger Summary */}
-            {Object.keys(purchaseLedger).length > 0 && (
-              <div
-                className="purchase-ledger-summary"
-                style={{
-                  marginBottom: "20px",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                }}
-              >
-                <h4>Purchase Ledger</h4>
-                <ul>
-                  {Object.entries(purchaseLedger).map(([name, qty]) => (
-                    <li key={name} style={{ textAlign: "left" }}>
-                      {name} x{qty} ({getItemPrice(name) * (qty as number)} gp)
-                    </li>
-                  ))}
-                </ul>
-                <div style={{ marginTop: "10px", fontWeight: "bold" }}>
-                  Total: {getLedgerTotal()} gp
-                </div>
-                <div
-                  style={{ marginTop: "10px", display: "flex", gap: "10px" }}
-                >
-                  <button
-                    className="button button-primary"
-                    onClick={handleBuyLedger}
-                    disabled={getLedgerTotal() > (gold ?? 0)}
-                  >
-                    Buy Ledger
-                  </button>
-                  <button
-                    className="button button-secondary"
-                    onClick={handleClearLedger}
-                  >
-                    Clear Ledger
-                  </button>
-                </div>
-                {getLedgerTotal() > (gold ?? 0) && (
-                  <div style={{ color: "red", marginTop: "5px" }}>
-                    Not enough gold!
-                  </div>
-                )}
-              </div>
-            )}
+
           </div>
 
           <Inventory
@@ -499,7 +462,6 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
       {/* TODO: Make this part of the button conditional */}
       {/* TODO: Do not show this for the Magic user class, and remove "unarmoured" as a purchase option */}
       {/* TODO: Add a warning for not buying a weapon */}
-      {/* TODO: Add a warning for not having purchased your ledger. Maybe make clearing or purchasing mandatory? */}
       {goldRolled && armour.length == 0 && (
         <div style={{ color: "red", marginTop: "5px" }}>
           Warning: You have no armour!

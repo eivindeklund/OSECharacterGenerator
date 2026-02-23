@@ -87,7 +87,7 @@ const PackOptionsContainer: React.FC<PackOptionsContainerProps> = ({
             className="button button-small"
             onClick={() => handleAddToLedger(contents)}
           >
-            Add to Ledger
+            Buy Pack
           </button>
         </div>
         <ul className="pack-contents-list">
