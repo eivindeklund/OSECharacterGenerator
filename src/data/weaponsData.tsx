@@ -2,6 +2,7 @@ const weaponsData = [
   {
     id: "battle_axe",
     name: "Battle axe",
+    category: "Melee",
     price: 7,
     weight: 50,
     damage: "1d8",
@@ -10,6 +11,7 @@ const weaponsData = [
   {
     id: "club",
     name: "Club",
+    category: "Melee",
     price: 3,
     weight: 50,
     damage: "1d4",
@@ -18,6 +20,7 @@ const weaponsData = [
   {
     id: "crossbow",
     name: "Crossbow",
+    category: "Ranged",
     price: 30,
     weight: 50,
     damage: "1d6",
@@ -31,6 +34,7 @@ const weaponsData = [
   {
     id: "dagger",
     name: "Dagger",
+    category: "Melee",
     price: 3,
     weight: 10,
     damage: "1d4",
@@ -39,6 +43,7 @@ const weaponsData = [
   {
     id: "hand_axe",
     name: "Hand axe",
+    category: "Melee",
     price: 4,
     weight: 30,
     damage: "1d6",
@@ -47,6 +52,7 @@ const weaponsData = [
   {
     id: "holy_water_vial",
     name: "Holy water (vial)",
+    category: "Thrown",
     price: 25,
     weight: 0,
     damage: "1d8",
@@ -55,6 +61,7 @@ const weaponsData = [
   {
     id: "lance",
     name: "Lance",
+    category: "Melee",
     price: 5,
     weight: 120,
     damage: "1d6",
@@ -63,6 +70,7 @@ const weaponsData = [
   {
     id: "long_bow",
     name: "Long bow",
+    category: "Ranged",
     price: 40,
     weight: 30,
     damage: "1d6",
@@ -71,6 +79,7 @@ const weaponsData = [
   {
     id: "mace",
     name: "Mace",
+    category: "Melee",
     price: 5,
     weight: 30,
     damage: "1d6",
@@ -79,6 +88,7 @@ const weaponsData = [
   {
     id: "oil_flask_burning",
     name: "Oil flask, burning",
+    category: "Thrown",
     price: 2,
     weight: 0,
     damage: "1d8",
@@ -87,6 +97,7 @@ const weaponsData = [
   {
     id: "polearm",
     name: "Polearm",
+    category: "Melee",
     price: 7,
     weight: 150,
     damage: "1d10",
@@ -95,6 +106,7 @@ const weaponsData = [
   {
     id: "short_bow",
     name: "Short bow",
+    category: "Ranged",
     price: 25,
     weight: 30,
     damage: "1d6",
@@ -103,6 +115,7 @@ const weaponsData = [
   {
     id: "short_sword",
     name: "Short sword",
+    category: "Melee",
     price: 7,
     weight: 30,
     damage: "1d6",
@@ -111,6 +124,7 @@ const weaponsData = [
   {
     id: "silver_dagger",
     name: "Silver dagger",
+    category: "Melee",
     price: 30,
     weight: 10,
     damage: "1d4",
@@ -119,6 +133,7 @@ const weaponsData = [
   {
     id: "sling",
     name: "Sling",
+    category: "Ranged",
     price: 2,
     weight: 20,
     damage: "1d6",
@@ -127,6 +142,7 @@ const weaponsData = [
   {
     id: "spear",
     name: "Spear",
+    category: "Melee",
     price: 4,
     weight: 30,
     damage: "1d6",
@@ -135,6 +151,7 @@ const weaponsData = [
   {
     id: "staff",
     name: "Staff",
+    category: "Melee",
     price: 2,
     weight: 40,
     damage: "1d4",
@@ -143,6 +160,7 @@ const weaponsData = [
   {
     id: "sword",
     name: "Sword",
+    category: "Melee",
     price: 10,
     weight: 60,
     damage: "1d8",
@@ -151,6 +169,7 @@ const weaponsData = [
   {
     id: "torches",
     name: "Torches (6)",
+    category: "Melee",
     price: 1,
     weight: 0,
     damage: "1d4",
@@ -159,6 +178,7 @@ const weaponsData = [
   {
     id: "two_handed_sword",
     name: "Two-handed sword",
+    category: "Melee",
     price: 15,
     weight: 150,
     damage: "1d10",
@@ -167,6 +187,7 @@ const weaponsData = [
   {
     id: "warhammer",
     name: "Warhammer",
+    category: "Melee",
     price: 5,
     weight: 30,
     damage: "1d6",
@@ -175,6 +196,7 @@ const weaponsData = [
   {
     id: "arrows_20",
     name: "Arrows (20)",
+    category: "Ammunition",
     price: 5,
     weight: 0,
     damage: "1d6",
@@ -183,6 +205,7 @@ const weaponsData = [
   {
     id: "crossbow_bolts_30",
     name: "Crossbow Bolts (30)",
+    category: "Ammunition",
     price: 10,
     weight: 0,
     damage: "1d6",
@@ -191,6 +214,7 @@ const weaponsData = [
   {
     id: "silver_tipped_arrow_1",
     name: "Silver tipped arrow (1)",
+    category: "Ammunition",
     price: 5,
     weight: 0,
     damage: "1d6",
