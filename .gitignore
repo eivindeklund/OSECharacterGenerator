@@ -30,6 +30,3 @@ dist-ssr
 
 # Test output
 test-results
-
-# For hacking
-tmp
