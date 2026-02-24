@@ -1,4 +1,3 @@
-import download from 'downloadjs'
 import { PDFDocument } from 'pdf-lib'
 import {
   CHARACTER_SHEET_PURIST_DAC_URL,
@@ -22,6 +21,13 @@ type PDFExportProps = {
   characterEquipment: CharacterEquipment
   characterModifiers: CharacterModifiers
   abilityScores: AbilityScores
+}
+
+function openPdfInBrowser(pdfBytes: Uint8Array, fileName: string) {
+  const file = new File([pdfBytes as BlobPart], fileName, { type: 'application/pdf' })
+  const url = URL.createObjectURL(file)
+  window.open(url, '_blank', 'noopener,noreferrer')
+  setTimeout(() => URL.revokeObjectURL(url), 60000)
 }
 
 export default function PDFExport(props: PDFExportProps) {
@@ -136,7 +142,7 @@ export default function PDFExport(props: PDFExportProps) {
 
     const fileName = `${character.name} the ${characterClass.name}.pdf`
 
-    download(pdfBytes, fileName, 'application/pdf')
+    openPdfInBrowser(pdfBytes, fileName)
   }
 
   async function fillFormDAC() {
@@ -226,7 +232,7 @@ export default function PDFExport(props: PDFExportProps) {
 
     const fileName = `${character.name} the ${characterClass.name}.pdf`
 
-    download(pdfBytes, fileName, 'application/pdf')
+    openPdfInBrowser(pdfBytes, fileName)
   }
 
   async function fillFormUnderground() {
@@ -292,7 +298,7 @@ export default function PDFExport(props: PDFExportProps) {
 
     const fileName = `${character.name} the ${characterClass.name}.pdf`
 
-    download(pdfBytes, fileName, 'application/pdf')
+    openPdfInBrowser(pdfBytes, fileName)
   }
 
   return (

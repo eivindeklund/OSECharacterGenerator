@@ -9,6 +9,7 @@ TODO-list for maintainer work on OSECharacterGenerator.  Tracked here instead of
     same as the filters for the weapons visually.  Current implementation is the
     minimum I could have to get the filter.  Should also find out if OSE has
     exactly the same equipment.
+[ ] Tavern navigation to character does not work
 
 ## Necessary to get the fork to "completion" for handback to matthewfee
 
@@ -47,6 +48,7 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 ### Unregress
 
 [ ] Test on mobile
+[ ] Make the download of PDFs with nice names work again, instead of only showing the PDF in the browser.
 
 ### Code status
 
