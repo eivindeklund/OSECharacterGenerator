@@ -77,6 +77,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   const [weaponSelected, setWeaponSelected] = useState("Dagger");
   const [armourClass, setArmourClass] = useState<number | null>(null);
   const [unarmouredAC, setUnarmouredAC] = useState<number | null>(null);
+  const [bxOnly, setBxOnly] = useState(true);
 
   useEffect(() => {
     // calculate base armour class
@@ -434,6 +435,9 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
             {
               <PackOptionsContainer
                 characterClass={characterClass}
+                gold={gold}
+                bxOnly={bxOnly}
+                onBxOnlyChange={setBxOnly}
                 handleAddToLedger={handleBuyPack}
               />
             }
