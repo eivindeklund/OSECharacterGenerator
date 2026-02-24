@@ -4,6 +4,7 @@ const equipmentData = [
     name: "Backpack",
     price: 5,
     category: "Containers",
+    in_bx_basic: true,
   },
   {
     id: "barrel",
@@ -94,6 +95,7 @@ const equipmentData = [
     name: "Crowbar",
     price: 10,
     category: "Tools & Hardware",
+    in_bx_expert: true,
   },
   {
     id: "firewood",
@@ -112,18 +114,21 @@ const equipmentData = [
     name: "Garlic",
     price: 5,
     category: "Religious & Occult",
+    in_bx_expert: true,
   },
   {
     id: "grappling_hook",
     name: "Grappling hook",
     price: 25,
     category: "Tools & Hardware",
+    in_bx_expert: true,
   },
   {
     id: "hammer_small",
     name: "Hammer (small)",
     price: 2,
     category: "Tools & Hardware",
+    in_bx_basic: true,
   },
   {
     id: "holy_symbol_gold",
@@ -131,11 +136,17 @@ const equipmentData = [
     price: 100,
     category: "Religious & Occult",
   },
+  /* The holy symbol in BX is not described as being made of silver, but that seems in line with the price
+     and if I was going to have one that's not silver I'd have to add separate
+     filter that can swap the name around from "Holy symbol (silver)" to "Holy
+     symbol" or something like that, so I'm just going to call it silver here.
+     */
   {
     id: "holy_symbol_silver",
     name: "Holy symbol (silver)",
     price: 25,
     category: "Religious & Occult",
+    in_bx_basic: true,
   },
   {
     id: "holy_symbol_wooden",
@@ -148,6 +159,7 @@ const equipmentData = [
     name: "Holy water (vial)",
     price: 25,
     category: "Religious & Occult",
+    in_bx_basic: true,
   },
   {
     id: "ink_vial",
@@ -160,6 +172,7 @@ const equipmentData = [
     name: "Iron spikes (12)",
     price: 1,
     category: "Tools & Hardware",
+    in_bx_basic: true,
   },
   {
     id: "ladder_wooden_10",
@@ -172,6 +185,7 @@ const equipmentData = [
     name: "Lantern",
     price: 10,
     category: "Light Sources",
+    in_bx_basic: true,
   },
   {
     id: "lantern_bullseye",
@@ -214,6 +228,7 @@ const equipmentData = [
     name: "Mirror (hand-sized, steel)",
     price: 5,
     category: "Dungeoneering",
+    in_bx_basic: true,
   },
   {
     id: "musical_instrument_string",
@@ -232,6 +247,7 @@ const equipmentData = [
     name: "Oil (1 flask)",
     price: 2,
     category: "Light Sources",
+    in_bx_basic: true,
   },
   {
     id: "paper",
@@ -244,6 +260,7 @@ const equipmentData = [
     name: "Pole (10’ long, wooden)",
     price: 1,
     category: "Dungeoneering",
+    in_bx_basic: true,
   },
   {
     id: "quill",
@@ -256,30 +273,35 @@ const equipmentData = [
     name: "Rations (iron, 7 days)",
     price: 15,
     category: "Camping & Survival",
+    in_bx_basic: true,
   },
   {
     id: "rations_standard",
     name: "Rations (standard, 7 days)",
     price: 5,
     category: "Camping & Survival",
+    in_bx_basic: true,
   },
   {
     id: "rope_50",
     name: "Rope (50')",
     price: 1,
     category: "Tools & Hardware",
+    in_bx_basic: true,
   },
   {
     id: "sack_large",
     name: "Sack (large)",
     price: 2,
     category: "Containers",
+    in_bx_basic: true,
   },
   {
     id: "sack_small",
     name: "Sack (small)",
     price: 1,
     category: "Containers",
+    in_bx_basic: true,
   },
   {
     id: "saw",
@@ -316,6 +338,7 @@ const equipmentData = [
     name: "Stakes (3) and mallet",
     price: 3,
     category: "Religious & Occult",
+    in_bx_expert: true,
   },
   {
     id: "tent",
@@ -328,18 +351,21 @@ const equipmentData = [
     name: "Thieves’ tools",
     price: 25,
     category: "Dungeoneering",
+    in_bx_basic: true,
   },
   {
     id: "tinder_box",
     name: "Tinder box (flint & steel)",
     price: 3,
     category: "Light Sources",
+    in_bx_basic: true,
   },
   {
     id: "torches",
     name: "Torches (6)",
     price: 1,
     category: "Light Sources",
+    in_bx_basic: true,
   },
   {
     id: "twine_100",
@@ -358,6 +384,7 @@ const equipmentData = [
     name: "Waterskin",
     price: 1,
     category: "Containers",
+    in_bx_basic: true,
   },
   {
     id: "whistle",
@@ -370,12 +397,14 @@ const equipmentData = [
     name: "Wine (2 pints)",
     price: 1,
     category: "Camping & Survival",
+    in_bx_basic: true,
   },
   {
     id: "wolfsbane",
     name: "Wolfsbane (1 bunch)",
     price: 10,
     category: "Religious & Occult",
+    in_bx_basic: true,
   },
 ];
 

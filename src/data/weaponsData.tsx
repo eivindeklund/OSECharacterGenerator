@@ -1,3 +1,4 @@
+/* All weapons in this file are in B/X Expert */
 const weaponsData = [
   {
     id: "battle_axe",
@@ -132,7 +133,7 @@ const weaponsData = [
   },
   {
     id: "sling",
-    name: "Sling",
+    name: "Sling w/30 sling stones",
     category: "Ranged",
     price: 2,
     weight: 20,
@@ -219,6 +220,45 @@ const weaponsData = [
     weight: 0,
     damage: "1d6",
     qualities: ["Ammunition"],
+  },
+  /* These are in B/X expert, but I'm not sure we should have them in the character generator.
+  {
+    id: "catapult_light",
+    name: "Catapult (light)",
+    category: "Siege Weapons",
+    price: 100,
+    weight: 500,
+    damage: "?",
+    qualities: ["Siege", "Ranged"],
+  },
+  {
+    id: "catapult_shot",
+    name: "Catapult shot",
+    category: "Ammunition",
+    price: 5,
+    weight: 0,
+    damage: "?",
+    qualities: ["Ammunition"],
+   },
+  {
+    id: "catapult_shot",
+    name: "Catapult shot, Pitch",
+    category: "Ammunition",
+    price: 25,
+    weight: 0,
+    damage: "?",
+    qualities: ["Ammunition"],
+   },
+   */
+   {
+    id: "javelin",
+    name: "Javelin",
+    category: "Melee",
+    price: 1,
+    weight: 20,
+    damage: "1d6",
+    /* TODO: Verify if these qualities are correct.  The expert rules says nothing about this where I'm looking. */
+    qualities: ["Melee", "Missile (5’–20’ / 21’–40’ / 41’–60’)"],
   },
 ];
 

@@ -5,7 +5,10 @@ TODO-list for maintainer work on OSECharacterGenerator.  Tracked here instead of
 ## Bugs
 
 [ ] Recover CSS font etc styling to what it was before
-
+[ ] Make the B/X filter look at all decent; it should also be set up to work the
+    same as the filters for the weapons visually.  Current implementation is the
+    minimum I could have to get the filter.  Should also find out if OSE has
+    exactly the same equipment.
 
 ## Necessary to get the fork to "completion" for handback to matthewfee
 
@@ -17,10 +20,10 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
   [ ] Add description of the XP bonus system for that class to the class description
 
 [ ] Equipemnt screen
-  [ ] Weapon Categories, showing grayed-out or similar if there are no weapons
+  [X] Weapon Categories, showing grayed-out or similar if there are no weapons
       in that category that can be used by the current class
-  [ ] Stop the use of the separate ledger, just have next page
-  [ ] Show cost in gold for currently selected items
+  [X] Stop the use of the separate ledger, just have next page
+  [X] Show cost in gold for currently selected items
   [ ] Auto-include holy symbol for cleric
   [ ] No armor selection for magic-user
   [ ] Automatic "best" equipment pack based on class & available gold.
