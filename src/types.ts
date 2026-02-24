@@ -70,6 +70,8 @@ export interface Character {
   backgroundSkill: string | null;
   alignment: string | null;
   background?: string | null;
+  description?: string | null;
+  gender?: "male" | "female" | "neutral";
 }
 
 // ── Ability Requirement ───────────────────────────────────────────────────────

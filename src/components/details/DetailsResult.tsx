@@ -1,14 +1,14 @@
-import React from 'react'
 
 type DetailsResultProps = {
   name: string
   value: string
   callback: () => void
+  className?: string
 }
 
-export default function DetailsResult({name, value, callback}: DetailsResultProps) {
+export default function DetailsResult({name, value, callback, className}: DetailsResultProps) {
   return (
-    <div className='details-result'>
+    <div className={`details-result${className ? ` ${className}` : ''}`}>
       <span className='details-result--name'>{name}:</span>
       <span className='details-result--data'>{value}</span>
       <button

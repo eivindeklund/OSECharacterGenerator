@@ -175,6 +175,7 @@ export default function CharacterGenerator() {
                 setCharacter={setCharacter}
                 characterClass={characterClass as ClassOptionsData}
                 characterModifiers={characterModifiers}
+                abilityScores={abilityScores}
                 dice={{ diceEnabled, diceService: Dice }}
                 isMobile={isMobile}
               ></DetailsScreen>

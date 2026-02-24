@@ -1,12 +1,12 @@
 import React from 'react';
 import { Trans } from 'react-i18next';
 import type {
-    AbilityScores,
-    Character,
-    CharacterEquipment,
-    CharacterModifiers,
-    CharacterStatistics,
-    ClassOptionsData,
+  AbilityScores,
+  Character,
+  CharacterEquipment,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
 } from '../../types';
 import { joinDuplicates } from '../../utilities/utilities';
 
@@ -37,29 +37,29 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
     ? `${alignmentCapitalized}, Common, ${character.languages.join(', ')}`
     : `${alignmentCapitalized}, Common`
 
-  const characterFields = [
-    ['Background Skill', character.background],
-    ['Appearance', character.appearance],
-    ['Personality', character.personality],
-    ['Misfortune', character.misfortune],
-    ['Languages', languageText]
+  const characterFields: [string, string, string | null | undefined][] = [
+    ['Description', 'description', character.description],
+    ['Background Skill', 'background-skill', character.background],
+    ['Appearance', 'appearance', character.appearance],
+    ['Personality', 'personality', character.personality],
+    ['Misfortune', 'misfortune', character.misfortune],
+    ['Languages', 'languages', languageText]
   ]
 
   const getCharacterFields = () => {
-    return characterFields.map((field) => {
-      const fieldDescription = field[0]
-      const fieldValue = field[1]
-
-      return (
-        <div
-          key={fieldDescription}
-          className={`character-container ${fieldValue}`}
-        >
-          <span className='charsheet-value-name'>{fieldDescription}</span>
-          <span className='charsheet-value'>{fieldValue}</span>{' '}
-        </div>
-      )
-    })
+    return characterFields
+      .filter(([, , fieldValue]) => fieldValue)
+      .map(([fieldDescription, fieldName, fieldValue]) => {
+        return (
+          <div
+            key={fieldDescription}
+            className={`character-container character-container-${fieldName}`}
+          >
+            <span className='charsheet-value-name'>{fieldDescription}</span>
+            <span className='charsheet-value'>{fieldValue}</span>{' '}
+          </div>
+        )
+      })
   }
 
   return (

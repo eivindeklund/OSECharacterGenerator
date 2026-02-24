@@ -1,6 +1,7 @@
 import Header from "../components/general/Header";
 import CharacterDetails from "../containers/character-details/CharacterDetails";
 import type {
+  AbilityScores,
   Character,
   CharacterModifiers,
   ClassOptionsData,
@@ -16,6 +17,7 @@ interface DetailsScreenProps {
   setCharacter: (character: Character) => void;
   characterClass: ClassOptionsData;
   characterModifiers: CharacterModifiers;
+  abilityScores?: AbilityScores;
   // TODO: This isMobile prop is used to conditionally render the dice roller,
   // but it would be better to handle this with CSS media queries to not give
   // the user the ability to enable the dice roller if the screen is too small.
@@ -33,6 +35,7 @@ export default function DetailsScreen(props: DetailsScreenProps) {
     setCharacter,
     characterClass,
     characterModifiers,
+    abilityScores,
     dice,
     isMobile,
   } = props;
@@ -49,6 +52,7 @@ export default function DetailsScreen(props: DetailsScreenProps) {
           setCharacter={setCharacter}
           characterClass={characterClass}
           characterModifiers={characterModifiers}
+          abilityScores={abilityScores}
           dice={dice}
           isMobile={isMobile}
         ></CharacterDetails>

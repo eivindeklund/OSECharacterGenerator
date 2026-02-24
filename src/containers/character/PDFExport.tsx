@@ -1,5 +1,10 @@
 import download from 'downloadjs'
 import { PDFDocument } from 'pdf-lib'
+import {
+  CHARACTER_SHEET_PURIST_DAC_URL,
+  CHARACTER_SHEET_PURIST_URL,
+  CHARACTER_SHEET_UNDERGROUND_URL
+} from '../../constants/constants'
 import type {
   AbilityScores,
   Character,
@@ -8,11 +13,6 @@ import type {
   CharacterStatistics,
   ClassOptionsData,
 } from '../../types'
-import {
-    CHARACTER_SHEET_PURIST_DAC_URL,
-    CHARACTER_SHEET_PURIST_URL,
-    CHARACTER_SHEET_UNDERGROUND_URL
-} from '../../constants/constants'
 import { joinDuplicates } from '../../utilities/utilities'
 
 type PDFExportProps = {
@@ -58,6 +58,7 @@ export default function PDFExport(props: PDFExportProps) {
   const spellText = characterStatistics.hasSpells ? `Spells: ${characterStatistics.spell}` : ''
 
   const descriptionInfo = `
+    ${character.description && `${character.description}`}
     ${character.appearance && `Appearance: ${character.appearance}`}
     ${character.background && `Background: ${character.background}`}
     ${character.personality && `Personality: ${character.personality}`}
