@@ -3,7 +3,8 @@ import type { AbilityScores } from "../types";
 import classOptionsData from "./classOptionsData";
 
 // Get the ClassOptions class from the first item in the array
-const ClassOptions = classOptionsData[0].constructor;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ClassOptions = classOptionsData[0].constructor as any;
 
 describe("ClassOptions", () => {
   describe("xpModifierPercentage", () => {

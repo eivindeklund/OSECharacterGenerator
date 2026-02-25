@@ -10,7 +10,7 @@ describe('StorageService', () => {
 
   beforeEach(() => {
     vi.stubGlobal('localStorage', {
-      getItem: vi.fn(),
+      getItem: vi.fn() as any, // allows .mockReturnValue() calls in tests
       setItem: vi.fn(),
       removeItem: vi.fn(),
       clear: vi.fn()
@@ -19,6 +19,7 @@ describe('StorageService', () => {
   });
 
   it('should load characters from localStorage', () => {
+    // @ts-ignore — getItem is a vi.fn() stub; .mockReturnValue is valid at runtime
     localStorage.getItem.mockReturnValue(JSON.stringify(mockCharacters));
     const result = StorageService.loadCharacters();
     expect(result).toEqual(mockCharacters);
@@ -26,6 +27,7 @@ describe('StorageService', () => {
   });
 
   it('should return empty array if no characters in storage', () => {
+    // @ts-ignore — getItem is a vi.fn() stub; .mockReturnValue is valid at runtime
     localStorage.getItem.mockReturnValue(null);
     const result = StorageService.loadCharacters();
     expect(result).toEqual([]);
@@ -40,6 +42,7 @@ describe('StorageService', () => {
   });
 
   it('should append new character if not exists', () => {
+    // @ts-ignore — getItem is a vi.fn() stub; .mockReturnValue is valid at runtime
     localStorage.getItem.mockReturnValue(JSON.stringify([mockCharacters[0]]));
     const newChar = mockCharacters[1];
     
@@ -52,6 +55,7 @@ describe('StorageService', () => {
   });
 
   it('should not append duplicate character', () => {
+    // @ts-ignore — getItem is a vi.fn() stub; .mockReturnValue is valid at runtime
     localStorage.getItem.mockReturnValue(JSON.stringify([mockCharacters[0]]));
     const duplicate = mockCharacters[0];
     
@@ -61,6 +65,7 @@ describe('StorageService', () => {
   });
 
   it('should delete character by id', () => {
+    // @ts-ignore — getItem is a vi.fn() stub; .mockReturnValue is valid at runtime
     localStorage.getItem.mockReturnValue(JSON.stringify(mockCharacters));
     
     StorageService.deleteCharacter('1');

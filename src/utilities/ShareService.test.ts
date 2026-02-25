@@ -35,7 +35,9 @@ describe('ShareService', () => {
     const originalLocation = window.location
 
     // Mock window.location
+    // @ts-ignore — deleting window.location is valid in jsdom test environments
     delete window.location
+    // @ts-ignore — assigning partial location object is intentional in this mock
     window.location = { origin: 'http://localhost', pathname: '/' }
 
     try {
@@ -47,6 +49,7 @@ describe('ShareService', () => {
       expect(decompressed).toEqual(mockCharacterData)
     } finally {
       // Restore window.location
+      // @ts-ignore — restoring original location object
       window.location = originalLocation
     }
   })

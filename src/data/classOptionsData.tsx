@@ -5,7 +5,7 @@ import { checkWeaponQuality } from "../utilities/WeaponUtils";
 const large_weapons = ["long_bow", "two_handed_sword", "polearm"];
 const magic_user_weapons = ["dagger", "staff", "silver_dagger"];
 
-type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements'>;
+type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage'>;
 
 function xpBonus_16_13_Or_Both_13(abilityScore1: number, abilityScore2: number): number {
   // "16/13 or both 13" implementation

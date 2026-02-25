@@ -49,11 +49,13 @@ describe("useCharacterManager", () => {
     onRollComplete: null,
   };
 
+  // Partial mock; deliberately omits saveCharacters which is not under test
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mockStorageService = {
     loadCharacters: vi.fn().mockReturnValue([]),
     saveCharacter: vi.fn(),
     deleteCharacter: vi.fn(),
-  };
+  } as any;
 
   const mockDeviceService = {
     getIsMobile: vi.fn().mockReturnValue(false),
@@ -94,6 +96,7 @@ describe("useCharacterManager", () => {
 
     act(() => {
       result.current.rollCharacter();
+      // @ts-ignore — test intentionally calls with one arg (attribute name only)
       result.current.rollAttribute("strength");
     });
 
@@ -111,6 +114,7 @@ describe("useCharacterManager", () => {
     });
 
     act(() => {
+      // @ts-ignore — test intentionally calls with one arg (attribute name only)
       result.current.rollAttribute("strength");
     });
 
@@ -128,6 +132,7 @@ describe("useCharacterManager", () => {
     });
 
     act(() => {
+      // @ts-ignore — test intentionally calls with one arg (attribute name only)
       result.current.rollAttribute("strength");
     });
 
@@ -179,7 +184,9 @@ describe("useCharacterManager", () => {
 
     act(() => {
       result.current.rollCharacter();
+      // @ts-ignore — partial ability scores are valid for this test
       result.current.setAbilityScores({ strength: 10 });
+      // @ts-ignore — partial ability scores are valid for this test
       result.current.setOriginalAbilityScores({ strength: 10 });
       result.current.setPointBuy(1);
     });
@@ -199,7 +206,9 @@ describe("useCharacterManager", () => {
 
     act(() => {
       result.current.rollCharacter();
+      // @ts-ignore — partial ability scores are valid for this test
       result.current.setAbilityScores({ strength: 12 });
+      // @ts-ignore — partial ability scores are valid for this test
       result.current.setOriginalAbilityScores({ strength: 12 });
       result.current.setPointBuy(0);
     });
