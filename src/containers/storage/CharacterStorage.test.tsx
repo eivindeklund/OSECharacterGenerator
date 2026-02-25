@@ -34,15 +34,7 @@ describe('CharacterStorage', () => {
   const defaultProps = {
     screen: { characterStorageScreen: true } as any,
     setScreen: vi.fn(),
-    characterSetters: {
-      setCharacter: vi.fn(),
-      setAbilityScores: vi.fn(),
-      setCharacterStatistics: vi.fn(),
-      setCharacterClass: vi.fn(),
-      setCharacterEquipment: vi.fn(),
-      setCharacterModifiers: vi.fn(),
-      setCharacterRolled: vi.fn(),
-    },
+    loadCharacter: vi.fn(),
     storedCharacters: mockCharacters as any[],
     deleteStoredCharacter: vi.fn()
   };
@@ -65,9 +57,14 @@ describe('CharacterStorage', () => {
     render(<CharacterStorage {...defaultProps} />);
     fireEvent.click(screen.getByText('Aragorn'));
     
-    expect(defaultProps.characterSetters.setCharacter).toHaveBeenCalledWith(mockCharacters[0].character);
-    expect(defaultProps.characterSetters.setCharacterRolled).toHaveBeenCalledWith(true);
-    expect(defaultProps.setScreen).toHaveBeenCalled();
+    expect(defaultProps.loadCharacter).toHaveBeenCalledWith(mockCharacters[0]);
+  });
+
+  it('should call loadCharacter with the full stored character data when a character is selected', () => {
+    render(<CharacterStorage {...defaultProps} />);
+    fireEvent.click(screen.getByText('Aragorn'));
+
+    expect(defaultProps.loadCharacter).toHaveBeenCalledWith(mockCharacters[0]);
   });
 
   it('should trigger deleteStoredCharacter when delete button is clicked', () => {
@@ -83,7 +80,7 @@ describe('CharacterStorage', () => {
     const deleteButtons = screen.getAllByText('x');
     fireEvent.click(deleteButtons[0]);
     
-    expect(defaultProps.characterSetters.setCharacter).not.toHaveBeenCalled();
+    expect(defaultProps.loadCharacter).not.toHaveBeenCalled();
   });
 
   it('should copy share URL to clipboard when share button is clicked', async () => {

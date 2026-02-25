@@ -1,33 +1,21 @@
 import share_icon from '../../img/share.svg';
-import type { CharacterSetters, ScreenState, StoredCharacterData } from '../../types';
+import type { ScreenState, StoredCharacterData } from '../../types';
 import ShareService from '../../utilities/ShareService';
 
 interface CharacterStorageProps {
   screen: ScreenState;
   setScreen: (screen: ScreenState) => void;
-  characterSetters: CharacterSetters;
+  loadCharacter: (data: StoredCharacterData) => void;
   storedCharacters: StoredCharacterData[];
   deleteStoredCharacter: (id: string | null) => void;
 }
 
 export default function CharacterStorage(props: CharacterStorageProps) {
   const {
-    screen,
-    setScreen,
-    characterSetters,
+    loadCharacter,
     storedCharacters,
     deleteStoredCharacter
   } = props
-
-  const {
-    setCharacter,
-    setAbilityScores,
-    setCharacterStatistics,
-    setCharacterClass,
-    setCharacterEquipment,
-    setCharacterModifiers,
-    setCharacterRolled,
-  } = characterSetters
 
   const handleCharacter = (e, index, action) => {
     e.stopPropagation()
@@ -35,20 +23,7 @@ export default function CharacterStorage(props: CharacterStorageProps) {
     const characterObject = storedCharacters[index]
     switch (action) {
       case 'setActiveCharacter':
-        setCharacter(characterObject.character)
-        setCharacterStatistics(characterObject.characterStatistics)
-        setCharacterClass(characterObject.characterClass)
-        setCharacterEquipment(characterObject.characterEquipment)
-        setCharacterModifiers(characterObject.characterModifiers)
-        setAbilityScores(characterObject.abilityScores)
-        setCharacterRolled(true)
-
-        setScreen({
-          ...screen,
-          characterSheetScreen: true,
-          characterStorageScreen: false
-        })
-
+        loadCharacter(characterObject)
         break
 
       case 'deleteCharacter':

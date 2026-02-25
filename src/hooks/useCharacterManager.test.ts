@@ -264,4 +264,37 @@ describe("useCharacterManager", () => {
     expect(result.current.pointBuy).toBe(0);
     expect(result.current.screen.characterSheetScreen).toBe(true);
   });
+
+  it("should expose a loadCharacter function", () => {
+    const { result } = renderHook(() =>
+      useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+    );
+
+    expect(typeof result.current.loadCharacter).toBe("function");
+  });
+
+  it("should resolve characterClass from classOptionsData when loading a stored character", () => {
+    const { result } = renderHook(() =>
+      useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+    );
+
+    const storedCharacter = {
+      character: { name: "Conan", id: "abc" },
+      abilityScores: { strength: 16, intelligence: 10, wisdom: 9, dexterity: 12, constitution: 14, charisma: 8 },
+      characterModifiers: { xpModifierPercentage: "5%", strengthModMelee: "+2" },
+      characterStatistics: { hitPoints: 8, hpRolls: 1, hpResult: 8, armourClass: 9, spell: null, hasSpells: false, unarmouredAC: null },
+      characterClass: { name: "Fighter" }, // plain object — no xpModifierPercentage method
+      characterEquipment: { armour: [], weapons: [], adventuringGear: [], gold: 80 },
+    };
+
+    act(() => {
+      result.current.loadCharacter(storedCharacter);
+    });
+
+    expect(result.current.character.name).toBe("Conan");
+    expect(result.current.characterClass.name).toBe("Fighter");
+    expect(typeof result.current.characterClass.xpModifierPercentage).toBe("function");
+    expect(result.current.characterRolled).toBe(true);
+    expect(result.current.screen.characterSheetScreen).toBe(true);
+  });
 });

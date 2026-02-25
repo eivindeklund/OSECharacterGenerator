@@ -1,16 +1,16 @@
 import type { Dispatch, SetStateAction } from 'react'
+import Header from '../components/general/Header'
+import CharacterStorage from '../containers/storage/CharacterStorage'
 import type {
-  CharacterSetters,
   ScreenState,
   StoredCharacterData,
 } from '../types'
-import Header from '../components/general/Header'
-import CharacterStorage from '../containers/storage/CharacterStorage'
 
 type CharacterStorageScreenProps = {
   screen: ScreenState
   setScreen: Dispatch<SetStateAction<ScreenState>>
-  characterSetters: CharacterSetters
+  loadCharacter: (data: StoredCharacterData) => void
+  setCharacterRolled: Dispatch<SetStateAction<boolean>>
   storedCharacters: StoredCharacterData[]
   deleteStoredCharacter: (id: string) => void
 }
@@ -19,12 +19,11 @@ export default function CharacterStorageScreen (props: CharacterStorageScreenPro
   const {
     screen,
     setScreen,
-    characterSetters,
+    loadCharacter,
+    setCharacterRolled,
     storedCharacters,
     deleteStoredCharacter
   } = props
-
-  const { setCharacterRolled } = characterSetters
 
   return (
     <div className='character-storage-screen'>
@@ -32,7 +31,7 @@ export default function CharacterStorageScreen (props: CharacterStorageScreenPro
       <CharacterStorage
         screen={screen}
         setScreen={setScreen}
-        characterSetters={characterSetters}
+        loadCharacter={loadCharacter}
         storedCharacters={storedCharacters}
         deleteStoredCharacter={deleteStoredCharacter}
       ></CharacterStorage>

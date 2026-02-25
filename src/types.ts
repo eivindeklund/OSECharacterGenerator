@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from 'react';
 
 // ── Ability Scores ────────────────────────────────────────────────────────────
 
@@ -143,18 +142,6 @@ export interface StoredCharacterData {
   characterEquipment: CharacterEquipment;
   characterModifiers: CharacterModifiers;
   abilityScores: AbilityScores;
-}
-
-// ── Character Setters ─────────────────────────────────────────────────────────
-
-export interface CharacterSetters {
-  setCharacter: Dispatch<SetStateAction<Character>>;
-  setAbilityScores: Dispatch<SetStateAction<AbilityScores>>;
-  setCharacterStatistics: Dispatch<SetStateAction<CharacterStatistics>>;
-  setCharacterClass: Dispatch<SetStateAction<ClassOptionsData>>;
-  setCharacterEquipment: Dispatch<SetStateAction<CharacterEquipment>>;
-  setCharacterModifiers: Dispatch<SetStateAction<CharacterModifiers>>;
-  setCharacterRolled: Dispatch<SetStateAction<boolean>>;
 }
 
 // ── Score Actions ─────────────────────────────────────────────────────────────

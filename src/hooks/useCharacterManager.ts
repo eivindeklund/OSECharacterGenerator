@@ -383,6 +383,31 @@ export const useCharacterManager = (
     });
   };
 
+  const loadCharacter = (data) => {
+    if (!data) return;
+
+    setCharacter(data.character);
+    setAbilityScores(data.abilityScores);
+    setCharacterModifiers(data.characterModifiers);
+    setCharacterStatistics(data.characterStatistics);
+
+    const matchedClass = classOptionsData.find(c => c.name === data.characterClass.name) || data.characterClass;
+    setCharacterClass(matchedClass);
+
+    setCharacterEquipment(data.characterEquipment);
+    setPointBuy(0);
+    setCharacterRolled(true);
+
+    setScreen({
+      equipmentScreen: false,
+      abilityScreen: false,
+      classScreen: false,
+      detailsScreen: false,
+      characterSheetScreen: true,
+      characterStorageScreen: false,
+    });
+  };
+
   const abilityScoresThatCanDecrease = {
     strength: characterClass.name !== Thief,
     intelligence: true,
@@ -425,6 +450,7 @@ export const useCharacterManager = (
     saveCharacter,
     deleteStoredCharacter,
     importCharacter,
+    loadCharacter,
     storedCharacters,
     isMobile,
     abilityScoresThatCanDecrease,

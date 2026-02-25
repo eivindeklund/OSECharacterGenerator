@@ -48,6 +48,7 @@ export default function CharacterGenerator() {
     saveCharacter,
     deleteStoredCharacter,
     importCharacter,
+    loadCharacter,
     storedCharacters,
     isMobile,
     abilityScoresThatCanDecrease,
@@ -200,15 +201,8 @@ export default function CharacterGenerator() {
               <CharacterStorageScreen
                 screen={screen}
                 setScreen={setScreen}
-                characterSetters={{
-                  setCharacter,
-                  setAbilityScores,
-                  setCharacterClass,
-                  setCharacterStatistics,
-                  setCharacterEquipment,
-                  setCharacterModifiers,
-                  setCharacterRolled,
-                }}
+                loadCharacter={loadCharacter}
+                setCharacterRolled={setCharacterRolled}
                 storedCharacters={storedCharacters}
                 deleteStoredCharacter={deleteStoredCharacter}
               ></CharacterStorageScreen>
