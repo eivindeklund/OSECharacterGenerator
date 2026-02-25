@@ -293,6 +293,12 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     }
   };
 
+  const handleResetEquipment = () => {
+    setWeapons([]);
+    setArmour([]);
+    setAdventuringGear([]);
+  };
+
   const calculateAC = () => {
     const [baseArmour, armourClass] = calculateArmourClass(
       characterModifiers.dexterityModAC,
@@ -410,6 +416,14 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
             onClick={() => setTimeout(() => rollGold(), 200)}
           >
             Roll Gold
+          </button>
+        )}
+        {goldRolled && (
+          <button
+            className="button button-secondary button--reset-equipment"
+            onClick={handleResetEquipment}
+          >
+            Reset Equipment
           </button>
         )}
       </div>
