@@ -836,6 +836,20 @@ a {
   grid-gap: 10px;
 }
 
+.character-button--partial {
+  border: 2px dashed #888 !important;
+  opacity: 0.85;
+}
+
+.character-button--partial-badge {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #888;
+  margin-bottom: 4px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .character-storage-screen-main {
   position: absolute;
   display: flex;
@@ -1481,6 +1495,47 @@ div > .button-class-option {
   margin-bottom: 0.5rem;
   padding: 0;
   color: rgb(255, 255, 255) !important;
+}
+
+.partial-character-resume {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.partial-character-resume--info {
+  font-size: 1.2rem;
+  font-style: italic;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 0.25rem;
+}
+
+.header > .partial-character-resume > .button--roll {
+  /* background-color: black; */
+  border: none;
+  width: 10rem;
+  height: 4rem;
+  padding: 0;
+}
+
+.button--discard-partial {
+  width: 10rem;
+  height: 3rem;
+  font-size: 1.2rem;
+  background-color: red;
+  /* background-color: transparent;
+  border: 2px solid rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.75);
+  padding: 0;
+  margin-top: 0; */
+}
+
+.button--discard-partial:hover {
+  /* border-color: white;
+  color: white; */
+  background-color: pink;
 }
 
 .header > .button {

@@ -110,3 +110,70 @@ describe('CharacterStorage', () => {
     });
   });
 });
+
+// ── Modal warning when loading a saved character while a partial is in progress ──
+
+const partialInProgress = {
+  character: { id: 'partial-id', name: null, languages: [], hasLanguages: null, personality: null, misfortune: null, appearance: null, backgroundSkill: null, alignment: null },
+  characterClass: { name: 'Elf' } as any,
+  characterStatistics: { hitPoints: null, hpRolls: 0, hpResult: null, armourClass: null, spell: null, hasSpells: false, unarmouredAC: null },
+  characterEquipment: { armour: [], weapons: [], adventuringGear: [], gold: null },
+  characterModifiers: { xpModifierPercentage: '0', strengthModMelee: '0', strengthModDoors: '0', intelligenceModLanguages: '0', intelligenceModLiteracy: '', intelligenceModExtraLanguageCount: '0', wisdomMod: '0', dexterityModAC: '0', dexterityModMissiles: '0', dexterityModInitiative: '0', constitutionMod: '0', charismaModNPCReactions: '0', charismaModRetainersMax: '0', charismaModLoyalty: '0' },
+  abilityScores: { strength: 10, intelligence: 10, wisdom: 10, dexterity: 10, constitution: 10, charisma: 10 },
+  partial: true as const,
+};
+
+describe('CharacterStorage — confirmation modal when partial is in progress', () => {
+  const propsWithPartial = {
+    loadCharacter: vi.fn(),
+    storedCharacters: [{ character: { id: '1', name: 'Aragorn' }, characterClass: { name: 'Fighter' }, characterStatistics: {}, characterEquipment: {}, characterModifiers: {}, abilityScores: {} }] as any[],
+    deleteStoredCharacter: vi.fn(),
+    partialCharacter: partialInProgress as any,
+    clearPartialCharacter: vi.fn(),
+  };
+
+  beforeEach(() => vi.clearAllMocks());
+
+  it('does NOT call loadCharacter immediately when a saved character is clicked', () => {
+    render(<CharacterStorage {...propsWithPartial} />);
+    fireEvent.click(screen.getByText('Aragorn'));
+    expect(propsWithPartial.loadCharacter).not.toHaveBeenCalled();
+  });
+
+  it('shows a confirmation modal when a saved character is clicked', () => {
+    render(<CharacterStorage {...propsWithPartial} />);
+    fireEvent.click(screen.getByText('Aragorn'));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('modal body warns about the in-progress character', () => {
+    render(<CharacterStorage {...propsWithPartial} />);
+    fireEvent.click(screen.getByText('Aragorn'));
+    expect(screen.getByRole('dialog')).toHaveTextContent(/in.progress/i);
+  });
+
+  it('confirming calls clearPartialCharacter and loadCharacter, then closes the modal', () => {
+    render(<CharacterStorage {...propsWithPartial} />);
+    fireEvent.click(screen.getByText('Aragorn'));
+    fireEvent.click(screen.getByRole('button', { name: /Load Character/i }));
+    expect(propsWithPartial.clearPartialCharacter).toHaveBeenCalledTimes(1);
+    expect(propsWithPartial.loadCharacter).toHaveBeenCalledWith(propsWithPartial.storedCharacters[0]);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('cancelling does not call loadCharacter and closes the modal', () => {
+    render(<CharacterStorage {...propsWithPartial} />);
+    fireEvent.click(screen.getByText('Aragorn'));
+    fireEvent.click(screen.getByRole('button', { name: /^Cancel$/i }));
+    expect(propsWithPartial.loadCharacter).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('clicking the partial card resumes directly without showing the modal', () => {
+    render(<CharacterStorage {...propsWithPartial} />);
+    const partialCard = screen.getByText(/In Progress/i).closest('.character-button--partial') as HTMLElement;
+    fireEvent.click(partialCard);
+    expect(propsWithPartial.loadCharacter).toHaveBeenCalledWith(partialInProgress);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+});

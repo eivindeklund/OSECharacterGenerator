@@ -41,6 +41,7 @@ export const lngs = {
 };
 
 export const CHARACTER_STORAGE = "characterStorage";
+export const PARTIAL_CHARACTER_KEY = "partialCharacter";
 
 export const primeRequisiteModifiers = [
   null,

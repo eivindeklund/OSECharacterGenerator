@@ -60,6 +60,9 @@ describe("useCharacterManager", () => {
     loadCharacters: vi.fn().mockReturnValue([]),
     saveCharacter: vi.fn(),
     deleteCharacter: vi.fn(),
+    loadPartialCharacter: vi.fn().mockReturnValue(null),
+    savePartialCharacter: vi.fn(),
+    clearPartialCharacter: vi.fn(),
   } as any;
 
   const mockDeviceService = {

@@ -51,6 +51,9 @@ export default function CharacterGenerator() {
     storedCharacters,
     isMobile,
     abilityScoresThatCanDecrease,
+    partialCharacter,
+    discardPartialCharacter,
+    clearPartialCharacter,
   } = useCharacterManager(Dice);
 
   const [rollButtonHover, setRollButtonHover] = useState(false);
@@ -110,6 +113,9 @@ export default function CharacterGenerator() {
             rollCharacter={rollCharacter}
             isMobile={isMobile}
             storedCharacters={storedCharacters}
+            partialCharacter={partialCharacter}
+            discardPartialCharacter={discardPartialCharacter}
+            loadCharacter={loadCharacter}
           />
           <div
             className={"character-menu container"}
@@ -203,6 +209,8 @@ export default function CharacterGenerator() {
                     setCharacterRolled={setCharacterRolled}
                     storedCharacters={storedCharacters}
                     deleteStoredCharacter={deleteStoredCharacter}
+                    partialCharacter={partialCharacter}
+                    clearPartialCharacter={clearPartialCharacter}
                   />
                 }
               />

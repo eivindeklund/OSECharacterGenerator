@@ -31,7 +31,7 @@ export default function Modal({ isOpen, onClose, children, title }: ModalProps) 
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" role="dialog" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2 className="modal-title">{title}</h2>
           <button className="modal-close-button" onClick={onClose} aria-label="Close modal">

@@ -7,13 +7,25 @@ import {
   Thief,
 } from "../constants/constants";
 import classOptionsData, { emptyClassOptions } from "../data/classOptionsData";
-import { CharacterModifiers, ClassOptionsData } from "../types";
+import { CharacterModifiers, ClassOptionsData, StoredCharacterData } from "../types";
 import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
   d,
   deriveCharacterModifiers
 } from "../utilities/utilities";
+
+/** Returns the furthest wizard route that is valid for the given (possibly partial) character data. */
+function getFurthestRoute(data: StoredCharacterData): string {
+  const { abilityScores, characterClass, characterStatistics, characterEquipment, character } = data;
+  const allScoresRolled = abilityScores && Object.values(abilityScores).every(v => v !== null);
+  const classSelected = characterClass && characterClass.name !== '';
+  if (!allScoresRolled || !classSelected) return '/ability';
+  if (characterStatistics.hitPoints === null) return '/class';
+  if (characterEquipment.gold === null) return '/equipment';
+  if (!character.name || !character.alignment) return '/details';
+  return '/sheet';
+}
 
 export const useCharacterManager = (
   diceService,
@@ -79,9 +91,26 @@ export const useCharacterManager = (
   const [characterRolled, setCharacterRolled] = useState(false);
   const [pendingRoll, setPendingRoll] = useState(null);
   const [storedCharacters, setStoredCharacters] = useState([]);
+  const [partialCharacter, setPartialCharacter] = useState<StoredCharacterData | null>(null);
 
   useEffect(() => {
     setStoredCharacters(storageService.loadCharacters());
+    const partial = storageService.loadPartialCharacter();
+    if (partial) {
+      const matchedClass = classOptionsData.find(c => c.name === partial.characterClass?.name) || emptyClassOptions;
+      setCharacter(partial.character);
+      setAbilityScores(partial.abilityScores);
+      setOriginalAbilityScores(partial.abilityScores);
+      if (partial.characterModifiers) {
+        setCharacterModifiers(partial.characterModifiers);
+      }
+      setCharacterStatistics(partial.characterStatistics);
+      setCharacterClass(matchedClass);
+      setCharacterEquipment(partial.characterEquipment);
+      setCharacterRolled(true);
+      setPartialCharacter({ ...partial, characterClass: matchedClass });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageService]);
 
   const isMobile = deviceService.getIsMobile();
@@ -93,6 +122,23 @@ export const useCharacterManager = (
       setCharacterModifiers(newCharacterModifiers as CharacterModifiers);
     }
   }, [abilityScores, characterClass, characterRolled]);
+
+  // Auto-save in-progress character to localStorage whenever wizard state changes.
+  useEffect(() => {
+    if (!characterRolled) return;
+    const partialData: StoredCharacterData = {
+      character,
+      abilityScores,
+      characterModifiers,
+      characterStatistics,
+      characterClass,
+      characterEquipment,
+      partial: true,
+    };
+    storageService.savePartialCharacter(partialData);
+    setPartialCharacter(partialData);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [character, abilityScores, characterModifiers, characterStatistics, characterClass, characterEquipment, characterRolled]);
 
   const rollAttribute = (attributeOrEvent, optionalInput) => {
     const attribute =
@@ -252,6 +298,7 @@ export const useCharacterManager = (
   }, [diceService, handleRollComplete]);
 
   const rollCharacter = () => {
+    storageService.clearPartialCharacter();
     const newID = uuidv4();
     setCharacter({
       id: newID,
@@ -334,6 +381,8 @@ export const useCharacterManager = (
     };
     const updated = storageService.saveCharacter(characterData);
     setStoredCharacters(updated);
+    storageService.clearPartialCharacter();
+    setPartialCharacter(null);
   };
 
   const deleteStoredCharacter = (id) => {
@@ -376,7 +425,19 @@ export const useCharacterManager = (
     setCharacterEquipment(data.characterEquipment);
     setPointBuy(0);
     setCharacterRolled(true);
-    navigate('/sheet');
+    navigate(data.partial ? getFurthestRoute(data) : '/sheet');
+  };
+
+  const discardPartialCharacter = () => {
+    storageService.clearPartialCharacter();
+    setPartialCharacter(null);
+    rollCharacter();
+  };
+
+  const clearPartialCharacter = () => {
+    storageService.clearPartialCharacter();
+    setPartialCharacter(null);
+    setCharacterRolled(false);
   };
 
   const abilityScoresThatCanDecrease = {
@@ -423,5 +484,8 @@ export const useCharacterManager = (
     storedCharacters,
     isMobile,
     abilityScoresThatCanDecrease,
+    partialCharacter,
+    discardPartialCharacter,
+    clearPartialCharacter,
   };
 };

@@ -16,7 +16,10 @@ describe('LandingScreen', () => {
     setRollButtonHover: vi.fn(),
     rollCharacter: vi.fn(),
     isMobile: false,
-    storedCharacters: []
+    storedCharacters: [],
+    partialCharacter: null,
+    discardPartialCharacter: vi.fn(),
+    loadCharacter: vi.fn(),
   };
 
   const renderWithI18n = (props) => {

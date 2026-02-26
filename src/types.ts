@@ -130,6 +130,8 @@ export interface StoredCharacterData {
   characterEquipment: CharacterEquipment;
   characterModifiers: CharacterModifiers;
   abilityScores: AbilityScores;
+  /** True for in-progress characters that haven't been saved to the tavern yet */
+  partial?: boolean;
 }
 
 // ── Score Actions ─────────────────────────────────────────────────────────────

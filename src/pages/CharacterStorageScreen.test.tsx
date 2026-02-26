@@ -32,7 +32,9 @@ describe('CharacterStorageScreen', () => {
     loadCharacter: vi.fn(),
     setCharacterRolled: vi.fn(),
     storedCharacters: [{ id: 1 }, { id: 2 }] as unknown as StoredCharacterData[],
-    deleteStoredCharacter: mockDeleteStoredCharacter
+    deleteStoredCharacter: mockDeleteStoredCharacter,
+    partialCharacter: null,
+    clearPartialCharacter: vi.fn(),
   };
 
   beforeEach(() => {

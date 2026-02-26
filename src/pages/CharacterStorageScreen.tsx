@@ -11,6 +11,8 @@ type CharacterStorageScreenProps = {
   setCharacterRolled: Dispatch<SetStateAction<boolean>>
   storedCharacters: StoredCharacterData[]
   deleteStoredCharacter: (id: string) => void
+  partialCharacter: StoredCharacterData | null
+  clearPartialCharacter: () => void
 }
 
 export default function CharacterStorageScreen (props: CharacterStorageScreenProps) {
@@ -18,7 +20,9 @@ export default function CharacterStorageScreen (props: CharacterStorageScreenPro
     loadCharacter,
     setCharacterRolled,
     storedCharacters,
-    deleteStoredCharacter
+    deleteStoredCharacter,
+    partialCharacter,
+    clearPartialCharacter,
   } = props
 
   const navigate = useNavigate()
@@ -30,6 +34,8 @@ export default function CharacterStorageScreen (props: CharacterStorageScreenPro
         loadCharacter={loadCharacter}
         storedCharacters={storedCharacters}
         deleteStoredCharacter={deleteStoredCharacter}
+        partialCharacter={partialCharacter}
+        clearPartialCharacter={clearPartialCharacter}
       ></CharacterStorage>
 
       <button

@@ -17,6 +17,9 @@ interface LandingScreenProps {
   rollCharacter: () => void;
   isMobile: boolean;
   storedCharacters: StoredCharacterData[];
+  partialCharacter: StoredCharacterData | null;
+  discardPartialCharacter: () => void;
+  loadCharacter: (data: StoredCharacterData) => void;
 }
 
 export default function LandingScreen(props: LandingScreenProps) {
@@ -34,6 +37,9 @@ export default function LandingScreen(props: LandingScreenProps) {
     rollCharacter,
     isMobile,
     storedCharacters,
+    partialCharacter,
+    discardPartialCharacter,
+    loadCharacter,
   } = props;
 
   const override = {
@@ -42,23 +48,27 @@ export default function LandingScreen(props: LandingScreenProps) {
     borderColor: "red",
   };
 
+  const isAtLanding = location.pathname === '/';
+  const isPartialLanding = isAtLanding && !!partialCharacter;
+  const isInitialLanding = isAtLanding && !characterRolled;
+
   const myCharacters = storedCharacters;
 
   return (
     <header
-      className={`header ${characterRolled ? "" : "header--initial"} ${
+      className={`header ${(characterRolled && !isPartialLanding) ? "" : "header--initial"} ${
         rollButtonHover ? "header--hover" : ""
       }`}
     >
       <h2
         className={`title ${rollButtonHover ? "fade" : ""}`}
-        style={{ fontSize: characterRolled ? "1.4rem" : "" }}
+        style={{ fontSize: (characterRolled && !isPartialLanding) ? "1.4rem" : "" }}
       >
         <Trans i18nKey="AppName">OSE Character Generator</Trans>
       </h2>
-      {location.pathname === '/' && !characterRolled && (
+      {isInitialLanding && !partialCharacter && (
         <button
-          className={"button button--roll button-primary"}
+          className={"button--roll button-primary"}
           onClick={rollCharacter}
           onMouseEnter={() => setRollButtonHover(true)}
           onMouseLeave={() => setRollButtonHover(false)}
@@ -69,7 +79,34 @@ export default function LandingScreen(props: LandingScreenProps) {
         </button>
       )}
 
-      {location.pathname === '/' && !characterRolled && myCharacters && myCharacters.length > 0 && (
+      {isAtLanding && partialCharacter && (
+        <div className="partial-character-resume">
+          <div className="partial-character-resume--info">
+            {partialCharacter.characterClass?.name
+              ? `In progress: ${partialCharacter.characterClass.name}`
+              : 'In progress: character started'}
+            {partialCharacter.character?.name
+              ? ` — ${partialCharacter.character.name}`
+              : ''}
+          </div>
+          <button
+            className="button--roll button-primary"
+            onClick={() => loadCharacter(partialCharacter)}
+            onMouseEnter={() => setRollButtonHover(true)}
+            onMouseLeave={() => setRollButtonHover(false)}
+          >
+            Continue
+          </button>
+          <button
+            className="button--roll button--discard-partial"
+            onClick={discardPartialCharacter}
+          >
+            Discard &amp; start new
+          </button>
+        </div>
+      )}
+
+      {(isInitialLanding || isPartialLanding) && (myCharacters?.length > 0 || !!partialCharacter) && (
         <button
           className={`button button--storage button-primary ${
             rollButtonHover ? "fade" : ""
@@ -83,7 +120,7 @@ export default function LandingScreen(props: LandingScreenProps) {
         </button>
       )}
 
-      {location.pathname === '/' && !characterRolled && (
+      {(isInitialLanding || isPartialLanding) && (
         <div
           className={`main-page--subheader ${rollButtonHover ? "fade" : ""} `}
         >
@@ -133,7 +170,7 @@ export default function LandingScreen(props: LandingScreenProps) {
         </div>
       )}
 
-      {location.pathname === '/' && !characterRolled && (
+      {(isInitialLanding || isPartialLanding) && (
         <div
           className="main-page--created-by"
           style={{ opacity: rollButtonHover ? 0 : 1 }}
