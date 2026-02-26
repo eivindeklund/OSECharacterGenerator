@@ -1,42 +1,149 @@
-# OSE Character Generator - Agent Guidelines
+# AGENTS.md — OSE Character Generator
 
-This document outlines the rules and workflows for AI agents contributing to the OSE Character Generator.
+A React/TypeScript single-page application that guides users through step-by-step creation of Old School Essentials (B/X D&D 1981) characters, enforcing all game rules, and exporting a filled-in PDF character sheet.
 
-## Core Principles
+---
 
-- **[GOAL] Focus**: Keep changes small and focused.
-- **[GOAL] Minimalism**: Do not edit parts of the code that are not directly related to the current change.
-- **[GOAL] Safety**: Never commit directly to the `main` branch. Use feature branches created specifically for each change.
-- **[GOAL] Testing**: Always run tests before and after making changes.
+## Tech Stack
 
-## Development Workflow
+| Layer | Library / Tool | Version |
+|---|---|---|
+| UI framework | React | ^18.0.0 |
+| Language | TypeScript | ^5.9.3 |
+| Build tool | Vite | ^2.9.18 |
+| Unit tests | Vitest | ^4.0.18 |
+| E2E tests | Playwright | ^1.58.2 |
+| 3-D dice | @3d-dice/dice-box | ^1.0.5 |
+| PDF export | pdf-lib | ^1.17.1 |
+| URL sharing | lz-string | ^1.5.0 |
+| i18n | i18next + react-i18next | ^21 / ^11 |
+| Character persistence | browser localStorage | — |
 
-[CONTEXT] The user will review the diffs for each step. Every change must be easy for a human to review.
+---
 
-Follow this structured process for every feature or non-trivial change:
+## Development Commands
 
-1.  **Refactor for Change**: Restructure the code to make the new feature easy to add. This may involve several small, incremental steps.
-    - [CONSTRAINT] Refactors should be "clean" whenever possible (no change in functional behavior).
-    - [CONSTRAINT] If existing tests are insufficient to verify a refactor, write tests *before* refactoring. Use `git stash` to manage work-in-progress if needed.
-    - [CONSTRAINT] If a refactor cannot be completed "clean", split it into multiple steps. Use clean steps where possible, and keep non-clean changes as small as possible.
-    - [CONSTRAINT] If a refactor would be simpler if a specific feature existed first, loop back to the implementation step.
-2.  **User Approval (Refactoring)**: Prompt the user to approve the refactoring phase before proceeding further.
-3.  **Implement Feature**: Add the new feature with appropriate tests. 
-    - [CONSTRAINT] Break complex features into small, incremental steps.
-    - [CONSTRAINT] If any implementation step would be simpler with a refactor before it, loop back to the refactor step.
-4.  **Verify**: Run all tests to ensure correctness.
-5.  **Clean Up**: Refine and polish the code.
-6.  **Final Verification**: Run tests again to ensure no regressions were introduced during cleanup.
+```bash
+npm run dev            # Vite dev server → http://localhost:3000
+npm run build          # Production build to /dist
+npm run check-types    # TypeScript type-check (no emit)
+npm run test           # Vitest unit tests (single run)
+npm run test:ui        # Vitest interactive UI
+npm run test:e2e       # Playwright e2e (Chrome + Firefox + WebKit)
+npm run test:e2e-ui    # Playwright interactive UI
+npm run test:all       # Vitest + Playwright combined
+npm run find-duplicate-code  # jscpd duplicate detection (excludes test files)
+```
 
-> [!IMPORTANT]
-> Always prompt the user for approval before proceeding with any steps that are not reasonably trivial.
+---
 
-> [!IMPORTANT]
-> Every step must be optimized for reviewability. The user reviews diffs for every incremental change.
+## Repository Map
 
-## Coding Standards
+```
+src/
+  App.tsx                     # Root: initialises DiceBox, renders CharacterGenerator
+  types.ts                    # ALL shared TypeScript interfaces
+  main.tsx                    # React DOM entry point
+  pages/                      # One file per wizard screen + its *.test.tsx
+  hooks/
+    useCharacterManager.ts    # SINGLE source of truth for ALL wizard state
+  data/                       # Static game-rule data (classes, equipment, spells…)
+  constants/constants.tsx     # Global constants, default states, armour type maps
+  utilities/                  # Pure-function helpers + service objects
+  css/                        # Global stylesheets (skeleton, normalize, App)
+  img/                        # Static image assets
+e2e/                          # Playwright end-to-end specs
+reference/OSE.SRD.Wiki/       # Markdown copy of OSE SRD — game reference only, not code
+temp/                         # Scribus .sla files for character sheet design — not code
+public/assets/dice-box/       # Web-worker assets required by @3d-dice/dice-box
+```
 
-- **[STYLE] Indentation**: Use 2-space indentation for all JSX, TSX, and JavaScript files.
-- **[STYLE] DRY (Don't Repeat Yourself)**: Avoid duplicating code. If logic is repeated, refactor to consolidate it.
-- **[STYLE] Philosophy**: Follow the "Refactor to make it easy to add new feature" principle for all structural improvements.
-  
+---
+
+## Architecture
+
+### Wizard flow
+
+Navigation is **not** React Router. Instead, `useCharacterManager` owns a `screen` object of boolean flags:
+
+```ts
+screen = {
+  abilityScreen: true,   // step 1
+  classScreen: false,    // step 2
+  detailsScreen: false,  // step 3
+  equipmentScreen: false,// step 4
+  characterSheetScreen: false,
+  characterStorageScreen: false,
+}
+```
+
+`CharacterGenerator.tsx` reads these flags and conditionally mounts the matching `*Screen` component. Each screen receives props drilled down from `useCharacterManager`.
+
+### State management
+
+`useCharacterManager` (a custom hook) is the **only** state container. There is no Redux, Zustand, or React Context in use — the `src/contexts/` and `src/API/` directories exist but are **empty**. All wizard state is co-located in this one hook and passed as props.
+
+### Game-rule data
+
+`src/data/classOptionsData.tsx` (~1400 lines) is the central rules file. Each class entry is a plain object that includes **embedded functions** — notably:
+
+- `xpModifierPercentage(abilityScores)` — returns the XP bonus string for the class.
+- `checkAbilityScoreRequirements(abilityScores)` — returns `true` if the player qualifies.
+- `isStandardWeapon(weapon)` — weapon filter for the class.
+
+Do not treat `classOptionsData` as inert JSON; it contains logic.
+
+---
+
+## Domain Concepts (OSE / B/X D&D)
+
+Understanding these is required to make sensible changes to game-rule code.
+
+| Concept | Explanation |
+|---|---|
+| **Ability scores** | STR, INT, WIS, DEX, CON, CHA — each 3–18, rolled 3d6. Scores drive modifiers looked up in `src/data/abilityScoreMods.tsx`. |
+| **Prime Requisites** | One or two ability scores specific to each class. Thresholds (13 / 16) unlock +5% or +10% XP bonuses. The exact rule varies per class; see the `xpBonus_*` helper functions in `classOptionsData.tsx`. |
+| **Hit Die (HD)** | The die type rolled for HP (e.g., d6 for Fighter). HP = roll + CON modifier, minimum 1. Re-rolling is allowed (tracked via `hpRolls`). |
+| **Saving throws** | Five categories (Death/Poison, Wands, Paralysis/Petrify, Breath, Spells). Values come from the `savingThrows` array on each class object (indexed 0–4). |
+| **Armour Class (AC)** | Traditional descending AC (lower = better). Unarmoured AC is tracked separately (`unarmouredAC`) for some class abilities. A "DAC" (Descending AC) character sheet variant exists. |
+| **Gold Pieces (GP)** | Starting wealth rolled (`3d6 × 10` GP for most classes). Equipment purchases are constrained by this pool. |
+| **Equipment packs** | Pre-configured gear bundles in `src/data/equipmentData.tsx`. Resolved by `PackUtils.ts`; some items are conditional on class (e.g., holy symbol for Cleric). |
+| **XP modifier** | Stored as a string percentage (e.g., `"+10%"`). Derived by calling `characterClass.xpModifierPercentage(abilityScores)` whenever ability scores or class changes. |
+| **Character classes** | Core OSE B/X classes + Advanced Fantasy classes + Carcass Crawler classes. All defined in `classOptionsData.tsx`. |
+| **Spells** | Some classes have arcane, divine, druid, illusionist, necromancer, or runesmith spells (boolean flags on class). Spell data is in `src/data/spells.tsx`. |
+
+---
+
+## Files Never to Touch
+
+| Path | Reason |
+|---|---|
+| `reference/` | Game SRD content. Read-only reference material. |
+| `temp/` | Designer scratch files (.sla). Not part of the codebase. |
+| `public/assets/dice-box/` | Pre-built web-worker assets for @3d-dice/dice-box. Replacing these will break 3-D dice. |
+| `src/css/normalize.css` | Third-party reset stylesheet. |
+| `src/css/skeleton.css` | Third-party layout stylesheet. |
+
+---
+
+## Gotchas
+
+1. **Vitest config lives inside `vite.config.js`**, not a separate `vitest.config.js`. Test environment is `jsdom`; setup file is `src/test/setup.ts`.
+
+2. **`jsconfig.json` exists alongside `tsconfig.json`** — artifact of an in-progress TypeScript migration. Do not delete `jsconfig.json` without checking editor tooling still works.
+
+3. **TypeScript migration is incomplete.** Several files lack explicit types; `useCharacterManager.ts` has untyped props in several functions. See TODO.md for tracking.
+
+4. **DiceBox requires static assets in `public/assets/dice-box/`**. The library uses web workers and loads assets from that path at runtime. Moving or renaming these assets will silently break dice animation.
+
+5. **Character sharing uses URL query params**, not routing. `ShareService` compresses the full character state with lz-string and appends it as `?data=…`. `CharacterGenerator.tsx` reads `window.location.search` on mount.
+
+6. **i18n translations are inline** in `src/utilities/i18n.tsx`, not in separate JSON files. Currently English and German are supported.
+
+7. **PDF character sheet templates are hosted remotely** on `matthewfee.github.io`. If that server is down, PDF export will not work (not a local asset).
+
+8. **`emptyClassOptions`** is an exported sentinel object from `classOptionsData.tsx`. It is used as the initial `characterClass` state. Its functions return safe defaults. Never replace it with `null`.
+
+9. **`screen` flags are mutually exclusive by convention** but not enforced by TypeScript. Setting two `true` simultaneously will render two screens. When navigating, always set exactly one flag to `true`.
+
+10. **`hpRolls` counter** tracks how many times HP has been re-rolled; it resets only on class change. The UI uses this to decide whether to show "re-roll" affordances.
