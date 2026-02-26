@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import CharacterDetails from './CharacterDetails';
 
@@ -11,8 +12,6 @@ describe('CharacterDetails', () => {
   };
 
   const defaultProps: any = {
-    screen: { detailsScreen: true },
-    setScreen: vi.fn(),
     character: {
         name: '',
         alignment: '',
@@ -35,21 +34,21 @@ describe('CharacterDetails', () => {
   });
 
   test('should update name input', () => {
-    render(<CharacterDetails {...defaultProps} />);
+    render(<MemoryRouter><CharacterDetails {...defaultProps} /></MemoryRouter>);
     const nameInput = screen.getByLabelText(/Choose Name:/i);
     fireEvent.change(nameInput, { target: { value: 'Aragorn' } });
     expect((nameInput as HTMLInputElement).value).toBe('Aragorn');
   });
 
   test('should select alignment', () => {
-    render(<CharacterDetails {...defaultProps} />);
+    render(<MemoryRouter><CharacterDetails {...defaultProps} /></MemoryRouter>);
     const lawfulButton = screen.getByRole('button', { name: /Lawful/i });
     fireEvent.click(lawfulButton);
     expect(lawfulButton).toHaveClass('button--alignment--selected');
   });
 
   test('should trigger background roll via diceService', async () => {
-    render(<CharacterDetails {...defaultProps} />);
+    render(<MemoryRouter><CharacterDetails {...defaultProps} /></MemoryRouter>);
     const backgroundButton = screen.getByRole('button', { name: /Background \(d100\)/i });
     
     await act(async () => {

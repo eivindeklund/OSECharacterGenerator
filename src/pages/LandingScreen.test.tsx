@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import i18n from '../utilities/i18n';
 import LandingScreen from './LandingScreen';
@@ -13,8 +14,6 @@ describe('LandingScreen', () => {
     setCharacterRolled: vi.fn(),
     rollButtonHover: false,
     setRollButtonHover: vi.fn(),
-    screen: { abilityScreen: true } as any,
-    setScreen: vi.fn(),
     rollCharacter: vi.fn(),
     isMobile: false,
     storedCharacters: []
@@ -22,9 +21,11 @@ describe('LandingScreen', () => {
 
   const renderWithI18n = (props) => {
     return render(
-      <I18nextProvider i18n={i18n}>
-        <LandingScreen {...props} />
-      </I18nextProvider>
+      <MemoryRouter>
+        <I18nextProvider i18n={i18n}>
+          <LandingScreen {...props} />
+        </I18nextProvider>
+      </MemoryRouter>
     );
   };
 
@@ -39,9 +40,11 @@ describe('LandingScreen', () => {
 
     const propsWithChars = { ...defaultProps, storedCharacters: [{ id: '1' }] as any };
     rerender(
-      <I18nextProvider i18n={i18n}>
-        <LandingScreen {...propsWithChars} />
-      </I18nextProvider>
+      <MemoryRouter>
+        <I18nextProvider i18n={i18n}>
+          <LandingScreen {...propsWithChars} />
+        </I18nextProvider>
+      </MemoryRouter>
     );
     expect(screen.getByRole('button', { name: /Tavern/i })).toBeInTheDocument();
   });
@@ -52,9 +55,11 @@ describe('LandingScreen', () => {
 
     const propsMobile = { ...defaultProps, isMobile: true };
     rerender(
-      <I18nextProvider i18n={i18n}>
-        <LandingScreen {...propsMobile} />
-      </I18nextProvider>
+      <MemoryRouter>
+        <I18nextProvider i18n={i18n}>
+          <LandingScreen {...propsMobile} />
+        </I18nextProvider>
+      </MemoryRouter>
     );
     expect(screen.queryByText(/Dice Animations/i)).not.toBeInTheDocument();
   });

@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import { useCharacterManager } from '../hooks/useCharacterManager';
 import CharacterGenerator from './CharacterGenerator';
@@ -52,15 +53,6 @@ describe('CharacterGenerator', () => {
     setPointBuy: vi.fn(),
     characterClass: { name: null, primeReqs: [] },
     setCharacterClass: vi.fn(),
-    screen: {
-      equipmentScreen: false,
-      abilityScreen: true,
-      classScreen: false,
-      detailsScreen: false,
-      characterSheetScreen: false,
-      characterStorageScreen: false,
-    },
-    setScreen: vi.fn(),
     characterEquipment: {},
     setCharacterEquipment: vi.fn(),
     diceEnabled: false,
@@ -82,79 +74,47 @@ describe('CharacterGenerator', () => {
     abilityScoresThatCanDecrease: {},
   };
 
-  it('renders LandingScreen when character has not been rolled', () => {
-    vi.mocked(useCharacterManager).mockReturnValue({
-      ...mockManagerBase,
-      characterRolled: false,
-    } as any);
+  const renderAt = (path: string, overrides = {}) => {
+    vi.mocked(useCharacterManager).mockReturnValue({ ...mockManagerBase, ...overrides } as any);
+    return render(
+      <MemoryRouter initialEntries={[path]}>
+        <CharacterGenerator />
+      </MemoryRouter>
+    );
+  };
 
-    render(<CharacterGenerator />);
+  it('renders LandingScreen when character has not been rolled', () => {
+    renderAt('/');
     expect(screen.getByTestId('landing-screen')).toBeInTheDocument();
   });
 
-  it('renders AbilityScreen when screen.abilityScreen is true and character is rolled', () => {
-    vi.mocked(useCharacterManager).mockReturnValue({
-      ...mockManagerBase,
-      characterRolled: true,
-      screen: { ...mockManagerBase.screen, abilityScreen: true }
-    } as any);
-
-    render(<CharacterGenerator />);
+  it('renders AbilityScreen at /ability', () => {
+    renderAt('/ability', { characterRolled: true });
     expect(screen.getByTestId('ability-screen')).toBeInTheDocument();
   });
 
-  it('renders ClassScreen when screen.classScreen is true', () => {
-    vi.mocked(useCharacterManager).mockReturnValue({
-      ...mockManagerBase,
-      characterRolled: true,
-      screen: { ...mockManagerBase.screen, abilityScreen: false, classScreen: true }
-    } as any);
-
-    render(<CharacterGenerator />);
+  it('renders ClassScreen at /class', () => {
+    renderAt('/class', { characterRolled: true });
     expect(screen.getByTestId('class-screen')).toBeInTheDocument();
   });
 
-  it('renders EquipmentScreen when screen.equipmentScreen is true', () => {
-    vi.mocked(useCharacterManager).mockReturnValue({
-      ...mockManagerBase,
-      characterRolled: true,
-      screen: { ...mockManagerBase.screen, abilityScreen: false, equipmentScreen: true }
-    } as any);
-
-    render(<CharacterGenerator />);
+  it('renders EquipmentScreen at /equipment', () => {
+    renderAt('/equipment', { characterRolled: true });
     expect(screen.getByTestId('equipment-screen')).toBeInTheDocument();
   });
 
-  it('renders DetailsScreen when screen.detailsScreen is true', () => {
-    vi.mocked(useCharacterManager).mockReturnValue({
-      ...mockManagerBase,
-      characterRolled: true,
-      screen: { ...mockManagerBase.screen, abilityScreen: false, detailsScreen: true }
-    } as any);
-
-    render(<CharacterGenerator />);
+  it('renders DetailsScreen at /details', () => {
+    renderAt('/details', { characterRolled: true });
     expect(screen.getByTestId('details-screen')).toBeInTheDocument();
   });
 
-  it('renders CharacterSheetScreen when screen.characterSheetScreen is true', () => {
-    vi.mocked(useCharacterManager).mockReturnValue({
-      ...mockManagerBase,
-      characterRolled: true,
-      screen: { ...mockManagerBase.screen, abilityScreen: false, characterSheetScreen: true }
-    } as any);
-
-    render(<CharacterGenerator />);
+  it('renders CharacterSheetScreen at /sheet', () => {
+    renderAt('/sheet', { characterRolled: true });
     expect(screen.getByTestId('character-sheet-screen')).toBeInTheDocument();
   });
 
-  it('renders CharacterStorageScreen when screen.characterStorageScreen is true', () => {
-    vi.mocked(useCharacterManager).mockReturnValue({
-      ...mockManagerBase,
-      characterRolled: true,
-      screen: { ...mockManagerBase.screen, abilityScreen: false, characterStorageScreen: true }
-    } as any);
-
-    render(<CharacterGenerator />);
+  it('renders CharacterStorageScreen at /tavern', () => {
+    renderAt('/tavern', { characterRolled: true });
     expect(screen.getByTestId('character-storage-screen')).toBeInTheDocument();
   });
 });

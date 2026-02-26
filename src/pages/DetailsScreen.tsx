@@ -6,13 +6,10 @@ import type {
   CharacterModifiers,
   ClassOptionsData,
   DiceState,
-  ScreenState,
 } from "../types";
 
 interface DetailsScreenProps {
   dice: DiceState;
-  screen: ScreenState;
-  setScreen: (screen: ScreenState) => void;
   character: Character;
   setCharacter: (character: Character) => void;
   characterClass: ClassOptionsData;
@@ -29,8 +26,6 @@ interface DetailsScreenProps {
 
 export default function DetailsScreen(props: DetailsScreenProps) {
   const {
-    screen,
-    setScreen,
     character,
     setCharacter,
     characterClass,
@@ -46,8 +41,6 @@ export default function DetailsScreen(props: DetailsScreenProps) {
         <Header translation="characterDetails"></Header>
 
         <CharacterDetails
-          screen={screen}
-          setScreen={setScreen}
           character={character}
           setCharacter={setCharacter}
           characterClass={characterClass}

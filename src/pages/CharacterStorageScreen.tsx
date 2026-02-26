@@ -1,14 +1,12 @@
 import type { Dispatch, SetStateAction } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from '../components/general/Header'
 import CharacterStorage from '../containers/storage/CharacterStorage'
 import type {
-  ScreenState,
   StoredCharacterData,
 } from '../types'
 
 type CharacterStorageScreenProps = {
-  screen: ScreenState
-  setScreen: Dispatch<SetStateAction<ScreenState>>
   loadCharacter: (data: StoredCharacterData) => void
   setCharacterRolled: Dispatch<SetStateAction<boolean>>
   storedCharacters: StoredCharacterData[]
@@ -17,20 +15,18 @@ type CharacterStorageScreenProps = {
 
 export default function CharacterStorageScreen (props: CharacterStorageScreenProps) {
   const {
-    screen,
-    setScreen,
     loadCharacter,
     setCharacterRolled,
     storedCharacters,
     deleteStoredCharacter
   } = props
 
+  const navigate = useNavigate()
+
   return (
     <div className='character-storage-screen'>
       <Header name='tavern' text='tavern'></Header>
       <CharacterStorage
-        screen={screen}
-        setScreen={setScreen}
         loadCharacter={loadCharacter}
         storedCharacters={storedCharacters}
         deleteStoredCharacter={deleteStoredCharacter}
@@ -39,12 +35,8 @@ export default function CharacterStorageScreen (props: CharacterStorageScreenPro
       <button
         className='button--new-character'
         onClick={() => {
-          setScreen({
-            ...screen,
-            abilityScreen: true,
-            characterStorageScreen: false
-          })
           setCharacterRolled(false)
+          navigate('/')
         }}
       >
         Back to Main

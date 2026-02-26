@@ -112,18 +112,6 @@ export interface ClassOptionsData {
   checkAbilityScoreRequirements: (abilityScores: AbilityScores) => boolean;
 }
 
-// ── Screen State ──────────────────────────────────────────────────────────────
-
-export interface ScreenState {
-  equipmentScreen: boolean;
-  abilityScreen: boolean;
-  classScreen: boolean;
-  detailsScreen: boolean;
-  characterSheetScreen: boolean;
-  characterStorageScreen: boolean;
-  [key: string]: boolean;
-}
-
 // ── Character Equipment ───────────────────────────────────────────────────────
 
 export interface CharacterEquipment {

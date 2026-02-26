@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Inventory from "../../components/equipment/Inventory";
 import ScreenNavigation from "../../components/general/ScreenNavigation";
 import {
@@ -20,7 +21,6 @@ import type {
   CharacterModifiers,
   CharacterStatistics,
   ClassOptionsData,
-  ScreenState,
 } from "../../types";
 import {
   calculatePackPrice,
@@ -38,8 +38,6 @@ interface EquipmentStoreProps {
   setCharacterStatistics: React.Dispatch<React.SetStateAction<CharacterStatistics>>;
   characterEquipment: CharacterEquipment;
   setCharacterEquipment: React.Dispatch<React.SetStateAction<CharacterEquipment>>;
-  screen: ScreenState;
-  setScreen: (screen: ScreenState) => void;
   diceEnabled: boolean;
   rollGold: () => void;
 }
@@ -52,11 +50,11 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     setCharacterStatistics,
     characterEquipment,
     setCharacterEquipment,
-    screen,
-    setScreen,
     diceEnabled,
     rollGold,
   } = props;
+
+  const navigate = useNavigate();
 
   const [gold, setGold] = useState<number | null>(characterEquipment.gold);
   const [goldRolled, setGoldRolled] = useState(
@@ -488,19 +486,11 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
       {/* updates parent state with all new values when moving on to next page */}
       <ScreenNavigation
         onPrev={() => {
-          setScreen({
-            ...screen,
-            equipmentScreen: false,
-            classScreen: true,
-          });
+          navigate('/class');
         }}
         prevLabel="Class Options"
         onNext={() => {
-          setScreen({
-            ...screen,
-            equipmentScreen: false,
-            detailsScreen: true,
-          });
+          navigate('/details');
         }}
         onNavigation={() => {
           const newCharacterEquipment = {

@@ -9,93 +9,33 @@ description: >
 
 ## How screens work
 
-Navigation is **not** React Router. The wizard uses a `screen` object of boolean flags managed inside `useCharacterManager.ts`:
+Navigation uses **React Router** (`HashRouter`). `CharacterGenerator.tsx` declares a `<Routes>` block with one `<Route>` per wizard step:
 
-```ts
-screen = {
-  abilityScreen: boolean,
-  classScreen: boolean,
-  detailsScreen: boolean,
-  equipmentScreen: boolean,
-  characterSheetScreen: boolean,
-  characterStorageScreen: boolean,
-}
+| Route | Screen component |
+|---|---|
+| `/` | `LandingScreen` — always visible as header (rendered outside `<Routes>`) |
+| `/ability` | `AbilityScreen` — roll stats, pick class |
+| `/class` | `ClassScreen` — class details, roll HP |
+| `/equipment` | `EquipmentScreen` — roll gold, buy gear |
+| `/details` | `DetailsScreen` — name, alignment, description |
+| `/sheet` | `CharacterSheetScreen` — review + export PDF |
+| `/tavern` | `CharacterStorageScreen` — saved characters list |
+
+`LandingScreen` is rendered **outside** the `<Routes>` block so it remains visible as a persistent header on every step.
+
+There is also `ImportCharacterScreen`, shown wThere is alsoontains a `?data=…` querThere is also `ImportCharacterScreen`, shown wThere is alsoontains a `?date haThere is also `ImportCharacterScreen`, shosers exThse There is also `ImportCharch`There is also `ImpvigThere is also `ImportCharacterScreen`, shown wThere is alsoontains a `?data=…` querThere is also `ImportCharacterScreen`, shown wTherel sThere is also `ImportCharac"CThere isioThere is also `ImportCharacterScreen`, shown wThere is alsoontains a `?data=…`" →There is also `ImportCharacterScreen`, shown wThere is ar)
+  └─ "Character Details" → navigate('/details')
+
+/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/Sh/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/Sh/─ "Tavern" → navigate('/tavern')
+
+/tavern  (saved characters list)
 ```
-
-`CharacterGenerator.tsx` conditionally renders the matching `*Screen` component based on which flag is `true`. Exactly one flag should be `true` at any time (by convention — TypeScript does not enforce this).
-
-## Navigation order (happy path)
-
-```
-LandingScreen
-  └─ Start button → abilityScreen: true
-
-AbilityScreen  (roll stats, pick class)
-  └─ "Class Options" → classScreen: true
-
-ClassScreen  (class details, roll HP)
-  └─ "Equipment" → equipmentScreen: true
-
-EquipmentScreen  (roll gold, buy gear)
-  └─ "Character Details" → detailsScreen: true
-
-DetailsScreen  (name, alignment, description)
-  └─ "Character Sheet" → characterSheetScreen: true
-
-CharacterSheetScreen  (review + export PDF)
-  └─ "Tavern" → characterStorageScreen: true
-
-CharacterStorageScreen  (saved characters list)
-```
-
-There is also `ImportCharacterScreen`, shown when the URL contains a `?data=…` query param (shared character).
 
 ## Changing screens
 
-Call `setScreen` with all flags overridden:
+Each screen component calls `useNavEach screen component calls `useNavEach screen component calls `useNavEach screen component calls `useNavEach screen nce tEach screen component calls `useNavEach screen component calls `useNavEach screen component calls `useNavEach screen component calls `useNavEach screen nce tEach screen component calls `useNavEach screen component calls `useNavEach screen component calls `useNavEach screen component calls `useNavEach screen nce tEach screen component calls `useNavEach screen component calls `useNavEach screen component calls `useNavEach screen component calls `useNavEach screen nce tEach screen component calls `useNavEach screen component calls `useNavEach screen component calls `useNavEach screeabEach screen component calls `useNavEach screen compd |
+| `/class` | HP rolled (`hitPoints != null`) |
+| `/equipment` | Gold rolled (`gold != null`) |
+| `/details` | Name entered AND alignment selected |
 
-```ts
-setScreen({
-  abilityScreen: false,
-  classScreen: true,
-  detailsScreen: false,
-  equipmentScreen: false,
-  characterSheetScreen: false,
-  characterStorageScreen: false,
-})
-```
-
-A helper pattern used in the codebase:
-
-```ts
-const navigateTo = (screenName: keyof ScreenState) =>
-  setScreen(Object.fromEntries(
-    Object.keys(screen).map(k => [k, k === screenName])
-  ) as ScreenState)
-```
-
-## Guard conditions (Next button disabled)
-
-Each screen's "Next" button is disabled until the player has completed the required step:
-
-| Screen | Required state |
-|---|---|
-| AbilityScreen | All 6 ability scores rolled (`!= null`) AND a class selected |
-| ClassScreen | HP rolled (`hitPoints != null`) |
-| EquipmentScreen | Gold rolled (`gold != null`) |
-| DetailsScreen | Name entered AND alignment selected |
-
-When writing new guard logic, check the existing `disabled` prop in the screen component's Next button.
-
-## Scrolling
-
-After navigation, the view should scroll to the appropriate position. As of Feb 2026 this is an open bug (see TODO.md "Planned prompts — Scrolling during navigation" for the full spec).
-
-## Adding a new screen
-
-1. Create `src/pages/NewScreen.tsx` + `src/pages/NewScreen.test.tsx`.
-2. Add the flag to the `ScreenState` interface in `src/types.ts`.
-3. Add the flag to the `screen` initial state in `useCharacterManager.ts`.
-4. Add a conditional render block in `CharacterGenerator.tsx`.
-5. Wire up navigation from the preceding and following screens.
-6. Add an e2e spec or extend `happy-path.spec.js`.
+When writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existing `disaWhen writing new gscrWhen writing new guard logic, check the existingenWhen writing new guard logic, check the exis scWhen writing new guard logic, check the existi.spec.js`.

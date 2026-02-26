@@ -6,14 +6,11 @@ import type {
   CharacterModifiers,
   CharacterStatistics,
   ClassOptionsData,
-  ScreenState,
 } from "../types";
 
 type EquipmentScreenProps = {
   diceEnabled?: boolean
   characterClass: ClassOptionsData
-  screen: ScreenState
-  setScreen: Dispatch<SetStateAction<ScreenState>>
   characterModifiers: CharacterModifiers
   characterStatistics: CharacterStatistics
   setCharacterStatistics: Dispatch<SetStateAction<CharacterStatistics>>
@@ -25,8 +22,6 @@ type EquipmentScreenProps = {
 export default function EquipmentScreen(props: EquipmentScreenProps) {
   const {
     characterClass,
-    screen,
-    setScreen,
     characterModifiers,
     characterStatistics,
     setCharacterStatistics,
@@ -47,8 +42,6 @@ export default function EquipmentScreen(props: EquipmentScreenProps) {
         setCharacterStatistics={setCharacterStatistics}
         characterEquipment={characterEquipment}
         setCharacterEquipment={setCharacterEquipment}
-        screen={screen}
-        setScreen={setScreen}
         diceEnabled={diceEnabled}
         rollGold={rollGold}
       ></EquipmentStore>

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DetailsResult from "../../components/details/DetailsResult";
 import Button from "../../components/general/Button";
 import ScreenNavigation from "../../components/general/ScreenNavigation";
@@ -17,7 +18,6 @@ import type {
   CharacterModifiers,
   ClassOptionsData,
   DiceState,
-  ScreenState,
 } from "../../types";
 import { generateDescriptionTemplate, renderDescriptionTemplate, type DescriptionTemplate } from "../../utilities/DescriptionUtils";
 import { detectGender, type Gender } from "../../utilities/GenderUtils";
@@ -28,8 +28,6 @@ import {
 } from "../../utilities/utilities";
 
 interface CharacterDetailsProps {
-  screen: ScreenState;
-  setScreen: (screen: ScreenState) => void;
   character: Character;
   setCharacter: (character: Character) => void;
   characterClass: Pick<ClassOptionsData, 'name' | 'languages'>;
@@ -41,8 +39,6 @@ interface CharacterDetailsProps {
 
 export default function CharacterDetails(props: CharacterDetailsProps) {
   const {
-    screen,
-    setScreen,
     character,
     setCharacter,
     characterClass,
@@ -52,6 +48,8 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
     isMobile,
   } = props;
   const { diceEnabled, diceService } = dice ?? {};
+
+  const navigate = useNavigate();
 
   const [characterName, setCharacterName] = useState(character.name || "");
   const [alignment, setAlignment] = useState(character.alignment || "");
@@ -519,19 +517,11 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
 
       <ScreenNavigation
         onPrev={() => {
-          setScreen({
-            ...screen,
-            detailsScreen: false,
-            equipmentScreen: true,
-          });
+          navigate('/equipment');
         }}
         prevLabel="Equipment"
         onNext={() => {
-          setScreen({
-            ...screen,
-            detailsScreen: false,
-            characterSheetScreen: true,
-          });
+          navigate('/sheet');
         }}
         onNavigation={() => {
           setCharacter({

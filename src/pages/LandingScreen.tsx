@@ -1,9 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
 import CheckBox from "../components/general/Checkbox";
 import { lngs } from "../constants/constants";
 import designed from "../img/designed.png";
-import type { ScreenState, StoredCharacterData } from "../types";
+import type { StoredCharacterData } from "../types";
 import { LinkText } from "../utilities/utilities";
 
 interface LandingScreenProps {
@@ -13,8 +14,6 @@ interface LandingScreenProps {
   setCharacterRolled: Dispatch<SetStateAction<boolean>>;
   rollButtonHover: boolean;
   setRollButtonHover: Dispatch<SetStateAction<boolean>>;
-  screen: ScreenState;
-  setScreen: (screen: ScreenState) => void;
   rollCharacter: () => void;
   isMobile: boolean;
   storedCharacters: StoredCharacterData[];
@@ -22,6 +21,8 @@ interface LandingScreenProps {
 
 export default function LandingScreen(props: LandingScreenProps) {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const {
     diceEnabled,
@@ -30,8 +31,6 @@ export default function LandingScreen(props: LandingScreenProps) {
     setCharacterRolled,
     rollButtonHover,
     setRollButtonHover,
-    screen,
-    setScreen,
     rollCharacter,
     isMobile,
     storedCharacters,
@@ -57,7 +56,7 @@ export default function LandingScreen(props: LandingScreenProps) {
       >
         <Trans i18nKey="AppName">OSE Character Generator</Trans>
       </h2>
-      {screen.abilityScreen && !characterRolled && (
+      {location.pathname === '/' && !characterRolled && (
         <button
           className={"button button--roll button-primary"}
           onClick={rollCharacter}
@@ -70,25 +69,21 @@ export default function LandingScreen(props: LandingScreenProps) {
         </button>
       )}
 
-      {screen.abilityScreen && !characterRolled && myCharacters && myCharacters.length > 0 && (
+      {location.pathname === '/' && !characterRolled && myCharacters && myCharacters.length > 0 && (
         <button
           className={`button button--storage button-primary ${
             rollButtonHover ? "fade" : ""
           }`}
           onClick={() => {
-            setScreen({
-              ...screen,
-              abilityScreen: false,
-              characterStorageScreen: true,
-            });
             setCharacterRolled(true);
+            navigate('/tavern');
           }}
         >
           <Trans i18nKey="Tavern"></Trans>
         </button>
       )}
 
-      {screen.abilityScreen && !characterRolled && (
+      {location.pathname === '/' && !characterRolled && (
         <div
           className={`main-page--subheader ${rollButtonHover ? "fade" : ""} `}
         >
@@ -138,7 +133,7 @@ export default function LandingScreen(props: LandingScreenProps) {
         </div>
       )}
 
-      {screen.abilityScreen && !characterRolled && (
+      {location.pathname === '/' && !characterRolled && (
         <div
           className="main-page--created-by"
           style={{ opacity: rollButtonHover ? 0 : 1 }}

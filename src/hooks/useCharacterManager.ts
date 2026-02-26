@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
   abilityScoreNames,
@@ -65,14 +66,7 @@ export const useCharacterManager = (
 
   const [characterClass, setCharacterClass] = useState<ClassOptionsData>(emptyClassOptions);
 
-  const [screen, setScreen] = useState({
-    equipmentScreen: false,
-    abilityScreen: true,
-    classScreen: false,
-    detailsScreen: false,
-    characterSheetScreen: false,
-    characterStorageScreen: false,
-  });
+  const navigate = useNavigate();
 
   const [characterEquipment, setCharacterEquipment] = useState({
     armour: [],
@@ -274,14 +268,7 @@ export const useCharacterManager = (
     setCharacterRolled(true);
     setAbilityScores(defaultAbilityScoresState);
     setOriginalAbilityScores(defaultAbilityScoresState);
-    setScreen({
-      equipmentScreen: false,
-      abilityScreen: true,
-      classScreen: false,
-      detailsScreen: false,
-      characterSheetScreen: false,
-      characterStorageScreen: false,
-    });
+    navigate('/ability');
     setPointBuy(0);
     setCharacterStatistics({
       hitPoints: null,
@@ -372,15 +359,7 @@ export const useCharacterManager = (
     setCharacterEquipment(data.characterEquipment);
     setPointBuy(0); 
     setCharacterRolled(true);
-
-    setScreen({
-      equipmentScreen: false,
-      abilityScreen: false,
-      classScreen: false,
-      detailsScreen: false,
-      characterSheetScreen: true,
-      characterStorageScreen: false,
-    });
+    navigate('/sheet');
   };
 
   const loadCharacter = (data) => {
@@ -397,15 +376,7 @@ export const useCharacterManager = (
     setCharacterEquipment(data.characterEquipment);
     setPointBuy(0);
     setCharacterRolled(true);
-
-    setScreen({
-      equipmentScreen: false,
-      abilityScreen: false,
-      classScreen: false,
-      detailsScreen: false,
-      characterSheetScreen: true,
-      characterStorageScreen: false,
-    });
+    navigate('/sheet');
   };
 
   const abilityScoresThatCanDecrease = {
@@ -432,8 +403,6 @@ export const useCharacterManager = (
     setPointBuy,
     characterClass,
     setCharacterClass,
-    screen,
-    setScreen,
     characterEquipment,
     setCharacterEquipment,
     diceEnabled,

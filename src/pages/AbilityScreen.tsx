@@ -8,10 +8,10 @@ import type {
   CharacterModifiers,
   ClassOptionsData,
   ScoreActions,
-  ScreenState
 } from "../types";
 
 import { Dispatch, SetStateAction, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface AbilityScreenProps {
   characterRolled?: boolean;
@@ -25,8 +25,6 @@ interface AbilityScreenProps {
   characterModifiers: CharacterModifiers;
   rollCharacter: () => void;
   scoreActions: ScoreActions;
-  screen: ScreenState;
-  setScreen: (screen: ScreenState) => void;
   diceEnabled: boolean;
   abilityScoresThatCanDecrease: AbilityScoresThatCanDecrease;
 }
@@ -43,11 +41,11 @@ export default function AbilityScreen(props: AbilityScreenProps) {
     characterModifiers,
     rollCharacter,
     scoreActions,
-    screen,
-    setScreen,
     diceEnabled,
     abilityScoresThatCanDecrease
   } = props;
+
+  const navigate = useNavigate();
 
   const { rollAttribute, scoreIncrease, scoreDecrease } = scoreActions;
 
@@ -87,12 +85,7 @@ export default function AbilityScreen(props: AbilityScreenProps) {
 
       <ScreenNavigation
         onNext={() =>
-          setScreen({
-            ...screen,
-            equipmentScreen: false,
-            abilityScreen: false,
-            classScreen: true,
-          })
+          navigate('/class')
         }
         nextLabel="Class Options"
         requirements={[

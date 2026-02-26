@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
+import { useNavigate } from "react-router-dom";
 import ClassAbilitiesList from "../components/class/ClassAbilitiesList";
 import SavingThrows from "../components/class/SavingThrows";
 import Header from "../components/general/Header";
@@ -10,13 +11,10 @@ import type {
   CharacterModifiers,
   CharacterStatistics,
   ClassOptionsData,
-  ScreenState,
 } from "../types";
 
 type ClassScreenProps = {
   diceEnabled?: boolean
-  screen: ScreenState
-  setScreen: Dispatch<SetStateAction<ScreenState>>
   characterClass: ClassOptionsData
   character?: Character
   setCharacter?: Dispatch<SetStateAction<Character>>
@@ -28,8 +26,6 @@ type ClassScreenProps = {
 
 export default function ClassScreen(props: ClassScreenProps) {
   const {
-    screen,
-    setScreen,
     characterClass,
     characterStatistics,
     setCharacterStatistics,
@@ -37,6 +33,8 @@ export default function ClassScreen(props: ClassScreenProps) {
     diceEnabled,
     rollHP,
   } = props;
+
+  const navigate = useNavigate();
 
   return (
     <div className="class-options-screen">
@@ -77,11 +75,11 @@ export default function ClassScreen(props: ClassScreenProps) {
 
       <ScreenNavigation
         onPrev={() => {
-          setScreen({ ...screen, abilityScreen: true, classScreen: false });
+          navigate('/ability');
         }}
         prevLabel="Character Class"
         onNext={() => {
-          setScreen({ ...screen, equipmentScreen: true, classScreen: false });
+          navigate('/equipment');
         }}
         nextLabel="Equipment"
         requirements={[

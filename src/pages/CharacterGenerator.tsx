@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import { useCharacterManager } from "../hooks/useCharacterManager";
 import type { ClassOptionsData } from "../types";
 import { Dice } from "../utilities/DiceBox";
@@ -30,8 +31,6 @@ export default function CharacterGenerator() {
     setPointBuy,
     characterClass,
     setCharacterClass,
-    screen,
-    setScreen,
     characterEquipment,
     setCharacterEquipment,
     diceEnabled,
@@ -109,104 +108,105 @@ export default function CharacterGenerator() {
             characterRolled={characterRolled}
             setCharacterRolled={setCharacterRolled}
             rollCharacter={rollCharacter}
-            screen={screen}
-            setScreen={setScreen}
             isMobile={isMobile}
             storedCharacters={storedCharacters}
-          ></LandingScreen>
+          />
           <div
             className={"character-menu container"}
             style={characterMenuStyle}
           >
-            {screen.abilityScreen && characterRolled && (
-              <AbilityScreen
-                diceEnabled={diceEnabled}
-                characterRolled={characterRolled}
-                characterClass={characterClass}
-                abilityScores={abilityScores}
-                changeCharacterClass={changeCharacterClass}
-                setAbilityScores={setAbilityScores}
-                originalAbilityScores={originalAbilityScores}
-                pointBuy={pointBuy}
-                setPointBuy={setPointBuy}
-                characterModifiers={characterModifiers}
-                rollCharacter={rollCharacter}
-                scoreActions={{ rollAttribute, scoreIncrease, scoreDecrease }}
-                screen={screen}
-                setScreen={setScreen}
-                abilityScoresThatCanDecrease={abilityScoresThatCanDecrease}
-              ></AbilityScreen>
-            )}
-
-            {screen.classScreen && (
-              <ClassScreen
-                screen={screen}
-                setScreen={setScreen}
-                characterClass={characterClass as ClassOptionsData}
-                character={character}
-                setCharacter={setCharacter}
-                characterModifiers={characterModifiers}
-                characterStatistics={characterStatistics}
-                setCharacterStatistics={setCharacterStatistics}
-                diceEnabled={diceEnabled}
-                rollHP={rollHP}
-              ></ClassScreen>
-            )}
-
-            {screen.equipmentScreen && (
-              <EquipmentScreen
-                characterClass={characterClass as ClassOptionsData}
-                screen={screen}
-                setScreen={setScreen}
-                characterModifiers={characterModifiers}
-                characterStatistics={characterStatistics}
-                setCharacterStatistics={setCharacterStatistics}
-                characterEquipment={characterEquipment}
-                setCharacterEquipment={setCharacterEquipment}
-                diceEnabled={diceEnabled}
-                rollGold={rollGold}
+            <Routes>
+              <Route
+                path="/ability"
+                element={
+                  <AbilityScreen
+                    diceEnabled={diceEnabled}
+                    characterRolled={characterRolled}
+                    characterClass={characterClass}
+                    abilityScores={abilityScores}
+                    changeCharacterClass={changeCharacterClass}
+                    setAbilityScores={setAbilityScores}
+                    originalAbilityScores={originalAbilityScores}
+                    pointBuy={pointBuy}
+                    setPointBuy={setPointBuy}
+                    characterModifiers={characterModifiers}
+                    rollCharacter={rollCharacter}
+                    scoreActions={{ rollAttribute, scoreIncrease, scoreDecrease }}
+                    abilityScoresThatCanDecrease={abilityScoresThatCanDecrease}
+                  />
+                }
               />
-            )}
-
-            {screen.detailsScreen && (
-              <DetailsScreen
-                screen={screen}
-                setScreen={setScreen}
-                character={character}
-                setCharacter={setCharacter}
-                characterClass={characterClass as ClassOptionsData}
-                characterModifiers={characterModifiers}
-                abilityScores={abilityScores}
-                dice={{ diceEnabled, diceService: Dice }}
-                isMobile={isMobile}
-              ></DetailsScreen>
-            )}
-
-            {screen.characterSheetScreen && (
-              <CharacterSheetScreen
-                screen={screen}
-                setScreen={setScreen}
-                character={character}
-                characterStatistics={characterStatistics}
-                characterClass={characterClass as ClassOptionsData}
-                characterEquipment={characterEquipment}
-                characterModifiers={characterModifiers}
-                abilityScores={abilityScores}
-                setCharacterRolled={setCharacterRolled}
-                saveCharacter={saveCharacter}
-              ></CharacterSheetScreen>
-            )}
-
-            {screen.characterStorageScreen && (
-              <CharacterStorageScreen
-                screen={screen}
-                setScreen={setScreen}
-                loadCharacter={loadCharacter}
-                setCharacterRolled={setCharacterRolled}
-                storedCharacters={storedCharacters}
-                deleteStoredCharacter={deleteStoredCharacter}
-              ></CharacterStorageScreen>
-            )}
+              <Route
+                path="/class"
+                element={
+                  <ClassScreen
+                    characterClass={characterClass as ClassOptionsData}
+                    character={character}
+                    setCharacter={setCharacter}
+                    characterModifiers={characterModifiers}
+                    characterStatistics={characterStatistics}
+                    setCharacterStatistics={setCharacterStatistics}
+                    diceEnabled={diceEnabled}
+                    rollHP={rollHP}
+                  />
+                }
+              />
+              <Route
+                path="/equipment"
+                element={
+                  <EquipmentScreen
+                    characterClass={characterClass as ClassOptionsData}
+                    characterModifiers={characterModifiers}
+                    characterStatistics={characterStatistics}
+                    setCharacterStatistics={setCharacterStatistics}
+                    characterEquipment={characterEquipment}
+                    setCharacterEquipment={setCharacterEquipment}
+                    diceEnabled={diceEnabled}
+                    rollGold={rollGold}
+                  />
+                }
+              />
+              <Route
+                path="/details"
+                element={
+                  <DetailsScreen
+                    character={character}
+                    setCharacter={setCharacter}
+                    characterClass={characterClass as ClassOptionsData}
+                    characterModifiers={characterModifiers}
+                    abilityScores={abilityScores}
+                    dice={{ diceEnabled, diceService: Dice }}
+                    isMobile={isMobile}
+                  />
+                }
+              />
+              <Route
+                path="/sheet"
+                element={
+                  <CharacterSheetScreen
+                    character={character}
+                    characterStatistics={characterStatistics}
+                    characterClass={characterClass as ClassOptionsData}
+                    characterEquipment={characterEquipment}
+                    characterModifiers={characterModifiers}
+                    abilityScores={abilityScores}
+                    setCharacterRolled={setCharacterRolled}
+                    saveCharacter={saveCharacter}
+                  />
+                }
+              />
+              <Route
+                path="/tavern"
+                element={
+                  <CharacterStorageScreen
+                    loadCharacter={loadCharacter}
+                    setCharacterRolled={setCharacterRolled}
+                    storedCharacters={storedCharacters}
+                    deleteStoredCharacter={deleteStoredCharacter}
+                  />
+                }
+              />
+            </Routes>
           </div>
         </div>
       </div>

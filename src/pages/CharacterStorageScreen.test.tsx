@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ScreenState, StoredCharacterData } from '../types';
+import type { StoredCharacterData } from '../types';
 import CharacterStorageScreen from './CharacterStorageScreen';
 
 // Mock the child component to verify props are passed
@@ -28,8 +29,6 @@ vi.mock('../components/general/Header', () => {
 describe('CharacterStorageScreen', () => {
   const mockDeleteStoredCharacter = vi.fn();
   const mockProps = {
-    screen: {} as ScreenState,
-    setScreen: vi.fn(),
     loadCharacter: vi.fn(),
     setCharacterRolled: vi.fn(),
     storedCharacters: [{ id: 1 }, { id: 2 }] as unknown as StoredCharacterData[],
@@ -41,12 +40,12 @@ describe('CharacterStorageScreen', () => {
   });
 
   it('passes storedCharacters to CharacterStorage', () => {
-    render(<CharacterStorageScreen {...mockProps} />);
+    render(<MemoryRouter><CharacterStorageScreen {...mockProps} /></MemoryRouter>);
     expect(screen.getByTestId('mock-storage')).toHaveTextContent('2 characters');
   });
 
   it('passes deleteStoredCharacter to CharacterStorage', () => {
-    render(<CharacterStorageScreen {...mockProps} />);
+    render(<MemoryRouter><CharacterStorageScreen {...mockProps} /></MemoryRouter>);
     fireEvent.click(screen.getByText('Delete'));
     expect(mockDeleteStoredCharacter).toHaveBeenCalled();
   });

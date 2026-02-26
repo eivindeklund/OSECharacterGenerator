@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import i18n from '../utilities/i18n';
 import AbilityScreen from './AbilityScreen';
@@ -29,17 +30,17 @@ describe('AbilityScreen', () => {
       scoreIncrease: vi.fn(),
       scoreDecrease: vi.fn(),
     },
-    screen: { abilityScreen: true },
-    setScreen: vi.fn(),
     diceEnabled: false,
     abilityScoresThatCanDecrease: { strength: true, intelligence: true, wisdom: true, dexterity: false, constitution: false, charisma: false }
   };
 
   const renderWithI18n = (props) => {
     return render(
-      <I18nextProvider i18n={i18n}>
-        <AbilityScreen {...props} />
-      </I18nextProvider>
+      <MemoryRouter>
+        <I18nextProvider i18n={i18n}>
+          <AbilityScreen {...props} />
+        </I18nextProvider>
+      </MemoryRouter>
     );
   };
 

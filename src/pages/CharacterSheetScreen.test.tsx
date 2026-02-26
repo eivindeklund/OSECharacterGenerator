@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import i18n from '../utilities/i18n';
 import CharacterSheetScreen from './CharacterSheetScreen';
@@ -16,8 +17,6 @@ vi.mock('../containers/character/PDFExport', () => ({
 
 describe('CharacterSheetScreen', () => {
   const defaultProps = {
-    screen: { characterSheetScreen: true },
-    setScreen: vi.fn(),
     character: { name: 'Test Hero' },
     characterStatistics: { hitPoints: 10, armourClass: 9 },
     characterClass: { name: 'Fighter' },
@@ -30,9 +29,11 @@ describe('CharacterSheetScreen', () => {
 
   const renderWithI18n = (props) => {
     return render(
-      <I18nextProvider i18n={i18n}>
-        <CharacterSheetScreen {...props} />
-      </I18nextProvider>
+      <MemoryRouter>
+        <I18nextProvider i18n={i18n}>
+          <CharacterSheetScreen {...props} />
+        </I18nextProvider>
+      </MemoryRouter>
     );
   };
 

@@ -1,21 +1,19 @@
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { Trans } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import ScreenNavigation from "../components/general/ScreenNavigation";
 import CharacterSheet from "../containers/character/CharacterSheet";
 import PDFExport from "../containers/character/PDFExport";
 import type {
-    AbilityScores,
-    Character,
-    CharacterEquipment,
-    CharacterModifiers,
-    CharacterStatistics,
-    ClassOptionsData,
-    ScreenState,
+  AbilityScores,
+  Character,
+  CharacterEquipment,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
 } from "../types";
 
 interface CharacterSheetScreenProps {
-  screen: ScreenState;
-  setScreen: (screen: ScreenState) => void;
   character: Character;
   characterStatistics: CharacterStatistics;
   characterClass: ClassOptionsData;
@@ -28,8 +26,6 @@ interface CharacterSheetScreenProps {
 
 export default function CharacterSheetScreen(props: CharacterSheetScreenProps) {
   const {
-    screen,
-    setScreen,
     character,
     characterStatistics,
     characterClass,
@@ -41,6 +37,7 @@ export default function CharacterSheetScreen(props: CharacterSheetScreenProps) {
   } = props;
 
   const componentRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     saveCharacter();
@@ -74,11 +71,7 @@ export default function CharacterSheetScreen(props: CharacterSheetScreenProps) {
 
         <ScreenNavigation
           onPrev={() => {
-            setScreen({
-              ...screen,
-              detailsScreen: true,
-              characterSheetScreen: false,
-            });
+            navigate('/details');
           }}
           prevLabel="Character Details"
         />
@@ -86,11 +79,7 @@ export default function CharacterSheetScreen(props: CharacterSheetScreenProps) {
         <div className="navigation-footer">
           <button
             onClick={() => {
-              setScreen({
-                ...screen,
-                characterStorageScreen: true,
-                characterSheetScreen: false,
-              });
+              navigate('/tavern');
             }}
           >
             <Trans i18nKey={"Tavern"}>Tavern</Trans>
@@ -98,12 +87,8 @@ export default function CharacterSheetScreen(props: CharacterSheetScreenProps) {
 
           <button
             onClick={() => {
-              setScreen({
-                ...screen,
-                abilityScreen: true,
-                characterSheetScreen: false,
-              });
               setCharacterRolled(false);
+              navigate('/');
             }}
           >
             <Trans i18nKey={"mainPage"}>Main Page</Trans>

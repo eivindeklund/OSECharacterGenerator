@@ -138,10 +138,10 @@ The following rules applies:
   page, so the user can quickly get to the earlier pages again.  Since the user
   is navigating backwards, all the required fields must already be set.
 
-* When navigating from the characterSheet screen to the tavern, it's most useful
+* When navigating from the `/sheet` route to `/tavern`, it's most useful
   to scroll so the character the user has just worked on is visible in the
   frame.
 
-* When navigating to the start page, we need to scroll to the top
+* When navigating to the `/` (landing) route, we need to scroll to the top
 
 Can you fix the scrolling logic?  If possible, use red/green TDD during development.

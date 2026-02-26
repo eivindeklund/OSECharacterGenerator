@@ -1,10 +1,8 @@
 import share_icon from '../../img/share.svg';
-import type { ScreenState, StoredCharacterData } from '../../types';
+import type { StoredCharacterData } from '../../types';
 import ShareService from '../../utilities/ShareService';
 
 interface CharacterStorageProps {
-  screen: ScreenState;
-  setScreen: (screen: ScreenState) => void;
   loadCharacter: (data: StoredCharacterData) => void;
   storedCharacters: StoredCharacterData[];
   deleteStoredCharacter: (id: string | null) => void;

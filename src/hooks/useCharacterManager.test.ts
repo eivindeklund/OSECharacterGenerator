@@ -2,6 +2,11 @@ import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useCharacterManager } from "./useCharacterManager";
 
+const mockNavigate = vi.fn();
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => mockNavigate,
+}));
+
 vi.mock("../data/classOptionsData", () => ({
   default: [
     { 
@@ -86,7 +91,7 @@ describe("useCharacterManager", () => {
 
     expect(result.current.character.id).not.toBeNull();
     expect(result.current.characterRolled).toBe(true);
-    expect(result.current.screen.abilityScreen).toBe(true);
+    expect(mockNavigate).toHaveBeenCalledWith('/ability');
   });
 
   it("should roll attributes without animation when dice are disabled", () => {
@@ -271,7 +276,7 @@ describe("useCharacterManager", () => {
     expect(result.current.characterEquipment.gold).toBe(100);
     expect(result.current.characterRolled).toBe(true);
     expect(result.current.pointBuy).toBe(0);
-    expect(result.current.screen.characterSheetScreen).toBe(true);
+    expect(mockNavigate).toHaveBeenCalledWith('/sheet');
   });
 
   it("should expose a loadCharacter function", () => {
@@ -304,6 +309,6 @@ describe("useCharacterManager", () => {
     expect(result.current.characterClass.name).toBe("Fighter");
     expect(typeof result.current.characterClass.xpModifierPercentage).toBe("function");
     expect(result.current.characterRolled).toBe(true);
-    expect(result.current.screen.characterSheetScreen).toBe(true);
+    expect(mockNavigate).toHaveBeenCalledWith('/sheet');
   });
 });

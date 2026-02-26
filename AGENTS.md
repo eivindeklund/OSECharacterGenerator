@@ -11,6 +11,7 @@ A React/TypeScript single-page application that guides users through step-by-ste
 | UI framework | React | ^18.0.0 |
 | Language | TypeScript | ^5.9.3 |
 | Build tool | Vite | ^2.9.18 |
+| Routing | react-router-dom (HashRouter) | ^7 |
 | Unit tests | Vitest | ^4.0.18 |
 | E2E tests | Playwright | ^1.58.2 |
 | 3-D dice | @3d-dice/dice-box | ^1.0.5 |
@@ -64,24 +65,27 @@ public/assets/dice-box/       # Web-worker assets required by @3d-dice/dice-box
 
 ### Wizard flow
 
-Navigation is **not** React Router. Instead, `useCharacterManager` owns a `screen` object of boolean flags:
+Navigation uses **React Router** (`HashRouter`) with one route per wizard step:
 
-```ts
-screen = {
-  abilityScreen: true,   // step 1
-  classScreen: false,    // step 2
-  detailsScreen: false,  // step 3
-  equipmentScreen: false,// step 4
-  characterSheetScreen: false,
-  characterStorageScreen: false,
-}
-```
+| Route | Screen |
+|---|---|
+| `/` | `LandingScreen` (initial landing, always visible as header) |
+| `/ability` | `AbilityScreen` — roll stats, pick class |
+| `/class` | `ClassScreen` — class details, roll HP |
+| `/equipment` | `EquipmentScreen` — roll gold, buy gear |
+| `/details` | `DetailsScreen` — name, alignment, description |
+| `/sheet` | `CharacterSheetScreen` — review + export PDF |
+| `/tavern` | `CharacterStorageScreen` — saved characters list |
 
-`CharacterGenerator.tsx` reads these flags and conditionally mounts the matching `*Screen` component. Each screen receives props drilled down from `useCharacterManager`.
+`CharacterGenerator.tsx` declares these routes with `<Routes>` + `<Route>`. Each screen calls `useNavigate()` internally to advance or retreat. `useCharacterManager` calls `navigate()` when character state transitions require a route change (e.g., after `rollCharacter()` navigates to `/ability`; after `importCharacter()` or `loadCharacter()` navigates to `/sheet`).
+
+`LandingScreen` is rendered **outside** the `<Routes>` block so it remains visible (as a header) on all wizard steps.
 
 ### State management
 
 `useCharacterManager` (a custom hook) is the **only** state container. There is no Redux, Zustand, or React Context in use — the `src/contexts/` and `src/API/` directories exist but are **empty**. All wizard state is co-located in this one hook and passed as props.
+
+Navigation is **not** part of hook state. `useCharacterManager` calls `useNavigate()` from react-router-dom and issues `navigate('/route')` calls directly. There is no `screen` object or `setScreen` function.
 
 ### Game-rule data
 
@@ -136,7 +140,7 @@ Understanding these is required to make sensible changes to game-rule code.
 
 4. **DiceBox requires static assets in `public/assets/dice-box/`**. The library uses web workers and loads assets from that path at runtime. Moving or renaming these assets will silently break dice animation.
 
-5. **Character sharing uses URL query params**, not routing. `ShareService` compresses the full character state with lz-string and appends it as `?data=…`. `CharacterGenerator.tsx` reads `window.location.search` on mount.
+5. **Character sharing uses URL query params**, not routes. `ShareService` compresses the full character state with lz-string and appends it as `?data=…`. `CharacterGenerator.tsx` reads `window.location.search` on mount. Because `HashRouter` is used, the full URL looks like `https://…/#/?data=…` — the `?data=` param comes after the hash fragment, which browsers still expose via `window.location.search` as normal.
 
 6. **i18n translations are inline** in `src/utilities/i18n.tsx`, not in separate JSON files. Currently English and German are supported.
 
@@ -144,6 +148,4 @@ Understanding these is required to make sensible changes to game-rule code.
 
 8. **`emptyClassOptions`** is an exported sentinel object from `classOptionsData.tsx`. It is used as the initial `characterClass` state. Its functions return safe defaults. Never replace it with `null`.
 
-9. **`screen` flags are mutually exclusive by convention** but not enforced by TypeScript. Setting two `true` simultaneously will render two screens. When navigating, always set exactly one flag to `true`.
-
-10. **`hpRolls` counter** tracks how many times HP has been re-rolled; it resets only on class change. The UI uses this to decide whether to show "re-roll" affordances.
+9. **`hpRolls` counter** tracks how many times HP has been re-rolled; it resets only on class change. The UI uses this to decide whether to show "re-roll" affordances.
