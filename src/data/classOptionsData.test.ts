@@ -297,4 +297,376 @@ describe("ClassOptions", () => {
       expect(invalidClasses).toEqual([]);
     });
   });
+
+  describe("parseXpBonusRule", () => {
+    test("should return empty array for null", () => {
+      expect(ClassOptions.parseXpBonusRule(null)).toEqual([]);
+    });
+
+    test("should parse an 'either A or B is N or more' condition", () => {
+      const clauses = ClassOptions.parseXpBonusRule(
+        "5% if either strength or wisdom is 13 or more"
+      );
+      expect(clauses).toEqual([
+        { percent: 5, condition: { type: "either", ability1: "strength", ability2: "wisdom", threshold: 13 } },
+      ]);
+    });
+
+    test("should parse a 'both A and B are N or more' condition", () => {
+      const clauses = ClassOptions.parseXpBonusRule(
+        "5% if both dexterity and strength are 13 or more"
+      );
+      expect(clauses).toEqual([
+        { percent: 5, condition: { type: "both", ability1: "dexterity", ability2: "strength", threshold: 13 } },
+      ]);
+    });
+
+    test("should parse an 'A is N or more and B is M or more' condition", () => {
+      const clauses = ClassOptions.parseXpBonusRule(
+        "5% if intelligence is 13 or more and strength is 13 or more"
+      );
+      expect(clauses).toEqual([
+        { percent: 5, condition: { type: "pair", ability1: "intelligence", threshold1: 13, ability2: "strength", threshold2: 13 } },
+      ]);
+    });
+
+    test("should parse a pair condition with differing thresholds", () => {
+      const clauses = ClassOptions.parseXpBonusRule(
+        "5% if intelligence is 16 or more and strength is 13 or more"
+      );
+      expect(clauses).toEqual([
+        { percent: 5, condition: { type: "pair", ability1: "intelligence", threshold1: 16, ability2: "strength", threshold2: 13 } },
+      ]);
+    });
+
+    test("should parse an 'either A or B is N or more and the other is M or more' condition", () => {
+      const clauses = ClassOptions.parseXpBonusRule(
+        "5% if either intelligence or strength is 16 or more and the other is 13 or more"
+      );
+      expect(clauses).toEqual([
+        { percent: 5, condition: { type: "symmetric", ability1: "intelligence", ability2: "strength", threshold1: 16, threshold2: 13 } },
+      ]);
+    });
+
+    test("should parse multiple clauses", () => {
+      const clauses = ClassOptions.parseXpBonusRule(
+        "10% if both dexterity and strength are 13 or more; 5% if either dexterity or strength is 13 or more"
+      );
+      expect(clauses).toHaveLength(2);
+      expect(clauses[0].condition.type).toBe("both");
+      expect(clauses[1].condition.type).toBe("either");
+    });
+
+    test("should parse different percentage amounts", () => {
+      const clauses = ClassOptions.parseXpBonusRule(
+        "10% if both charisma and dexterity are 16 or more; 5% if either charisma or dexterity is 13 or more"
+      );
+      expect(clauses[0].percent).toBe(10);
+      expect(clauses[1].percent).toBe(5);
+    });
+
+    test("should throw on an invalid clause", () => {
+      expect(() => ClassOptions.parseXpBonusRule("bad string")).toThrow();
+    });
+
+    test("should throw on an unknown condition form", () => {
+      expect(() =>
+        ClassOptions.parseXpBonusRule("5% if something weird happens")
+      ).toThrow();
+    });
+  });
+
+  describe("evaluateXpClauses", () => {
+    const parse = (rule: string) => ClassOptions.parseXpBonusRule(rule);
+    const eval_ = (rule: string, scores: Partial<AbilityScores>) =>
+      ClassOptions.evaluateXpClauses(parse(rule), scores as AbilityScores);
+
+    describe("'either' condition", () => {
+      const rule = "5% if either strength or wisdom is 13 or more";
+
+      test("returns 5 when first ability meets threshold", () => {
+        expect(eval_(rule, { strength: 13, wisdom: 8 })).toBe(5);
+      });
+      test("returns 5 when second ability meets threshold", () => {
+        expect(eval_(rule, { strength: 8, wisdom: 14 })).toBe(5);
+      });
+      test("returns 5 when both abilities meet threshold", () => {
+        expect(eval_(rule, { strength: 13, wisdom: 13 })).toBe(5);
+      });
+      test("returns 0 when neither ability meets threshold", () => {
+        expect(eval_(rule, { strength: 12, wisdom: 12 })).toBe(0);
+      });
+    });
+
+    describe("'both' condition", () => {
+      const rule = "5% if both dexterity and strength are 13 or more";
+
+      test("returns 5 when both meet threshold", () => {
+        expect(eval_(rule, { dexterity: 13, strength: 13 })).toBe(5);
+      });
+      test("returns 0 when only first meets threshold", () => {
+        expect(eval_(rule, { dexterity: 13, strength: 12 })).toBe(0);
+      });
+      test("returns 0 when only second meets threshold", () => {
+        expect(eval_(rule, { dexterity: 12, strength: 13 })).toBe(0);
+      });
+    });
+
+    describe("'pair' condition (different thresholds)", () => {
+      const rule = "5% if constitution is 16 or more and strength is 13 or more";
+
+      test("returns 5 when both conditions met", () => {
+        expect(eval_(rule, { constitution: 16, strength: 13 })).toBe(5);
+      });
+      test("returns 0 when first threshold not met", () => {
+        expect(eval_(rule, { constitution: 15, strength: 13 })).toBe(0);
+      });
+      test("returns 0 when second threshold not met", () => {
+        expect(eval_(rule, { constitution: 16, strength: 12 })).toBe(0);
+      });
+    });
+
+    describe("'symmetric' condition", () => {
+      const rule = "5% if either intelligence or strength is 16 or more and the other is 13 or more";
+
+      test("returns 5 when first>=16 and second>=13", () => {
+        expect(eval_(rule, { intelligence: 16, strength: 13 })).toBe(5);
+      });
+      test("returns 5 when first>=13 and second>=16 (swapped)", () => {
+        expect(eval_(rule, { intelligence: 13, strength: 16 })).toBe(5);
+      });
+      test("returns 0 when first>=16 but second<13", () => {
+        expect(eval_(rule, { intelligence: 16, strength: 12 })).toBe(0);
+      });
+      test("returns 0 when neither is >=16", () => {
+        expect(eval_(rule, { intelligence: 15, strength: 13 })).toBe(0);
+      });
+    });
+
+    describe("tiered rules (real class patterns)", () => {
+      describe("xpBonus_16_13_Or_Both_13 pattern (Elf: int/str)", () => {
+        const rule =
+          "10% if intelligence is 16 or more and strength is 13 or more; 5% if both intelligence and strength are 13 or more";
+
+        test("10% when int>=16 and str>=13", () => {
+          expect(eval_(rule, { intelligence: 16, strength: 13 })).toBe(10);
+        });
+        test("5% when both>=13 but int<16", () => {
+          expect(eval_(rule, { intelligence: 15, strength: 13 })).toBe(5);
+        });
+        test("0% when str<13", () => {
+          expect(eval_(rule, { intelligence: 16, strength: 12 })).toBe(0);
+        });
+        test("0% when both<13", () => {
+          expect(eval_(rule, { intelligence: 8, strength: 8 })).toBe(0);
+        });
+      });
+
+      describe("xpBonus_Both13_Or_Either13 pattern (Halfling: dex/str)", () => {
+        const rule =
+          "10% if both dexterity and strength are 13 or more; 5% if either dexterity or strength is 13 or more";
+
+        test("10% when both>=13", () => {
+          expect(eval_(rule, { dexterity: 14, strength: 13 })).toBe(10);
+        });
+        test("5% when only one>=13", () => {
+          expect(eval_(rule, { dexterity: 13, strength: 12 })).toBe(5);
+        });
+        test("0% when neither>=13", () => {
+          expect(eval_(rule, { dexterity: 8, strength: 8 })).toBe(0);
+        });
+      });
+
+      describe("xpBonus_Both16_Or_Either13 pattern (Paladin: str/wis)", () => {
+        const rule =
+          "10% if both strength and wisdom are 16 or more; 5% if either strength or wisdom is 13 or more";
+
+        test("10% when both>=16", () => {
+          expect(eval_(rule, { strength: 16, wisdom: 16 })).toBe(10);
+        });
+        test("5% when only one>=16 and other>=13 (10% tier not met)", () => {
+          expect(eval_(rule, { strength: 16, wisdom: 13 })).toBe(5);
+        });
+        test("5% when only one>=13", () => {
+          expect(eval_(rule, { strength: 13, wisdom: 8 })).toBe(5);
+        });
+        test("0% when neither>=13", () => {
+          expect(eval_(rule, { strength: 12, wisdom: 12 })).toBe(0);
+        });
+      });
+
+      describe("xpBonus_Any16_13_Or_Both13 pattern (Half-Elf: int/str)", () => {
+        const rule =
+          "10% if either intelligence or strength is 16 or more and the other is 13 or more; 5% if both intelligence and strength are 13 or more";
+
+        test("10% when int>=16 and str>=13", () => {
+          expect(eval_(rule, { intelligence: 16, strength: 13 })).toBe(10);
+        });
+        test("10% when int>=13 and str>=16 (symmetric)", () => {
+          expect(eval_(rule, { intelligence: 13, strength: 16 })).toBe(10);
+        });
+        test("5% when both>=13 but neither>=16", () => {
+          expect(eval_(rule, { intelligence: 15, strength: 14 })).toBe(5);
+        });
+        test("0% when neither>=13", () => {
+          expect(eval_(rule, { intelligence: 8, strength: 8 })).toBe(0);
+        });
+      });
+
+      describe("xpBonus_Any13_16_Or_Either13 pattern (Arcane Bard: cha/dex)", () => {
+        const rule =
+          "10% if either charisma or dexterity is 16 or more and the other is 13 or more; 5% if either charisma or dexterity is 13 or more";
+
+        test("10% when cha>=16 and dex>=13", () => {
+          expect(eval_(rule, { charisma: 16, dexterity: 13 })).toBe(10);
+        });
+        test("10% when cha>=13 and dex>=16 (symmetric)", () => {
+          expect(eval_(rule, { charisma: 13, dexterity: 16 })).toBe(10);
+        });
+        test("5% when only one>=13 and neither>=16", () => {
+          expect(eval_(rule, { charisma: 13, dexterity: 8 })).toBe(5);
+        });
+        test("0% when neither>=13", () => {
+          expect(eval_(rule, { charisma: 8, dexterity: 8 })).toBe(0);
+        });
+      });
+    });
+  });
+
+  describe("XP Bonus Rule Format Validation", () => {
+    const VALID_CLAUSE = /^\d+% if .+$/;
+    const VALID_ABILITY =
+      /^(strength|intelligence|wisdom|dexterity|constitution|charisma)$/;
+
+    test("all classes with 2 prime reqs must have an xpBonusRule string", () => {
+      const missing: string[] = [];
+      classOptionsData.forEach((c) => {
+        if (c.primeReqs.length === 2 && !c.xpBonusRule) {
+          missing.push(c.name);
+        }
+      });
+      if (missing.length > 0) console.error("Missing xpBonusRule:", missing);
+      expect(missing).toEqual([]);
+    });
+
+    test("all classes with 0 or 1 prime reqs must NOT have an xpBonusRule", () => {
+      const unexpected: string[] = [];
+      classOptionsData.forEach((c) => {
+        if (c.primeReqs.length !== 2 && c.xpBonusRule) {
+          unexpected.push(c.name);
+        }
+      });
+      if (unexpected.length > 0) console.error("Unexpected xpBonusRule:", unexpected);
+      expect(unexpected).toEqual([]);
+    });
+
+    test("every xpBonusRule must parse without throwing", () => {
+      const failures: Array<{ name: string; error: string }> = [];
+      classOptionsData.forEach((c) => {
+        if (!c.xpBonusRule) return;
+        try {
+          ClassOptions.parseXpBonusRule(c.xpBonusRule);
+        } catch (e) {
+          failures.push({ name: c.name, error: String(e) });
+        }
+      });
+      if (failures.length > 0) console.error("Parse failures:", failures);
+      expect(failures).toEqual([]);
+    });
+
+    test("every xpBonusRule must have exactly 2 clauses: 10% first, 5% second", () => {
+      const invalid: Array<{ name: string; reason: string }> = [];
+      classOptionsData.forEach((c) => {
+        if (!c.xpBonusRule) return;
+        const clauses = ClassOptions.parseXpBonusRule(c.xpBonusRule);
+        if (clauses.length !== 2) {
+          invalid.push({ name: c.name, reason: `Expected 2 clauses, got ${clauses.length}` });
+        } else {
+          if (clauses[0].percent !== 10) invalid.push({ name: c.name, reason: `First clause must be 10%, got ${clauses[0].percent}%` });
+          if (clauses[1].percent !== 5)  invalid.push({ name: c.name, reason: `Second clause must be 5%, got ${clauses[1].percent}%` });
+        }
+      });
+      if (invalid.length > 0) console.error("Malformed tiered rules:", invalid);
+      expect(invalid).toEqual([]);
+    });
+
+    test("every clause in every xpBonusRule must match the N% if ... pattern", () => {
+      const invalid: Array<{ name: string; clause: string }> = [];
+      classOptionsData.forEach((c) => {
+        if (!c.xpBonusRule) return;
+        c.xpBonusRule.split("; ").forEach((clause) => {
+          if (!VALID_CLAUSE.test(clause)) {
+            invalid.push({ name: c.name, clause });
+          }
+        });
+      });
+      if (invalid.length > 0) console.error("Invalid clauses:", invalid);
+      expect(invalid).toEqual([]);
+    });
+
+    test("all ability names referenced in every xpBonusRule must be valid", () => {
+      const invalid: Array<{ name: string; ability: string }> = [];
+      classOptionsData.forEach((c) => {
+        if (!c.xpBonusRule) return;
+        const clauses = ClassOptions.parseXpBonusRule(c.xpBonusRule);
+        clauses.forEach(({ condition }) => {
+          const abilities: string[] = [condition.ability1, condition.ability2];
+          abilities.forEach((ab) => {
+            if (!VALID_ABILITY.test(ab)) {
+              invalid.push({ name: c.name, ability: ab });
+            }
+          });
+        });
+      });
+      if (invalid.length > 0) console.error("Invalid abilities:", invalid);
+      expect(invalid).toEqual([]);
+    });
+
+    test("all ability names in xpBonusRule must be actual prime reqs of that class", () => {
+      const mismatched: Array<{ name: string; ability: string; primeReqs: string[] }> = [];
+      classOptionsData.forEach((c) => {
+        if (!c.xpBonusRule) return;
+        const clauses = ClassOptions.parseXpBonusRule(c.xpBonusRule);
+        clauses.forEach(({ condition }) => {
+          [condition.ability1, condition.ability2].forEach((ab) => {
+            if (!c.primeReqs.includes(ab)) {
+              mismatched.push({ name: c.name, ability: ab, primeReqs: c.primeReqs });
+            }
+          });
+        });
+      });
+      if (mismatched.length > 0) console.error("Mismatched abilities:", mismatched);
+      expect(mismatched).toEqual([]);
+    });
+
+    test("every xpBonusRule must yield 10% when all prime reqs are 16", () => {
+      const failures: Array<{ name: string; result: number }> = [];
+      classOptionsData.forEach((c) => {
+        if (!c.xpBonusRule) return;
+        const scores: Record<string, number> = {};
+        c.primeReqs.forEach((pr) => (scores[pr] = 16));
+        const result = c.xpModifierPercentage(scores as AbilityScores);
+        if (result !== "10%") {
+          failures.push({ name: c.name, result: parseInt(result) });
+        }
+      });
+      if (failures.length > 0) console.error("Not 10% at 16/16:", failures);
+      expect(failures).toEqual([]);
+    });
+
+    test("every xpBonusRule must yield 0% when all prime reqs are 8", () => {
+      const failures: Array<{ name: string; result: string }> = [];
+      classOptionsData.forEach((c) => {
+        if (!c.xpBonusRule) return;
+        const scores: Record<string, number> = {};
+        c.primeReqs.forEach((pr) => (scores[pr] = 8));
+        const result = c.xpModifierPercentage(scores as AbilityScores);
+        if (result !== "0%") {
+          failures.push({ name: c.name, result });
+        }
+      });
+      if (failures.length > 0) console.error("Not 0% at 8/8:", failures);
+      expect(failures).toEqual([]);
+    });
+  });
 });

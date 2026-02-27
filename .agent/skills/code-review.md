@@ -26,7 +26,7 @@ description: >
 ### Game-rule correctness
 
 - [ ] Ability score modifiers are looked up from `src/data/abilityScoreMods.tsx`, not hardcoded.
-- [ ] XP bonus logic uses the appropriate `xpBonus_*` helper in `classOptionsData.tsx`.
+- [ ] Classes with two prime requisites have a valid `xpBonusRule` string (parseable by `ClassOptions.parseXpBonusRule`).
 - [ ] HP minimum is enforced (`Math.max(1, roll + constitutionMod)`).
 - [ ] Equipment purchases are constrained by the character's `gold` value.
 - [ ] If a new class is added, all required `ClassOptionsData` fields are present,

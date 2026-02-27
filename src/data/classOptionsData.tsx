@@ -7,101 +7,39 @@ const magic_user_weapons = ["dagger", "staff", "silver_dagger"];
 
 type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage'>;
 
-function xpBonus_16_13_Or_Both_13(abilityScore1: number, abilityScore2: number): number {
-  // "16/13 or both 13" implementation
-  if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-    return 10;
-  }
+// ── XP bonus rule DSL ─────────────────────────────────────────────────────────
+//
+// Each class with two prime requisites stores its XP bonus logic as a
+// human-readable string matching the phrasing found in OSE rulebooks.
+//
+// Format:  "10% if <condition>; 5% if <condition>"
+//
+// The two tiers are stated in descending order (10% first, 5% second).
+// Evaluation is first-match: the result is the percent of the first clause
+// whose condition is satisfied, or 0% if neither is. This mirrors rulebook
+// presentation where the higher bonus is stated first.
+//
+// Supported condition forms (A, B are lowercase ability names; N, M are
+// integers; names must match those in abilityScoreNames):
+//
+//   "either A or B is N or more"
+//       → score[A] >= N  OR  score[B] >= N
+//
+//   "both A and B are N or more"
+//       → score[A] >= N  AND  score[B] >= N
+//
+//   "A is N or more and B is M or more"
+//       → score[A] >= N  AND  score[B] >= M
+//
+//   "either A or B is N or more and the other is M or more"
+//       → (score[A] >= N AND score[B] >= M) OR (score[A] >= M AND score[B] >= N)
 
-  if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-    return 5;
-  }
-
-  return 0;
-}
-
-function xpBonus_16_13_Or_Either_13(abilityScore1: number, abilityScore2: number): number {
-  // "16/13 or either 13" implementation
-  if (abilityScore1 >= 16 && abilityScore2 >= 13) {
-    return 10;
-  }
-
-  if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-    return 5;
-  }
-
-  return 0;
-}
-
-
-function xpBonus_Any16_13_Or_Both13(abilityScore1: number, abilityScore2: number): number {
-  // "Any 16/13 or both 13" implementation
-  if (abilityScore1 >= 16 && abilityScore2 >= 13 || abilityScore1 >= 13 && abilityScore2 >= 16) {
-    return 10;
-  }
-
-  if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-    return 5;
-  }
-
-  return 0;
-}
-
-function xpBonus_Both16_Or_Both13(abilityScore1: number, abilityScore2: number): number {
-  // "Both 16 or both 13" implementation
-  if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-    return 10;
-  }
-
-  if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-    return 5;
-  }
-
-  return 0;
-}
-
-function xpBonus_Both16_Or_Either13(abilityScore1: number, abilityScore2: number): number {
-  // "Both 16 or either 13" implementation
-  if (abilityScore1 >= 16 && abilityScore2 >= 16) {
-    return 10;
-  }
-
-  if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-    return 5;
-  }
-
-  return 0;
-}
-
-
-function xpBonus_Both13_Or_Either13(abilityScore1: number, abilityScore2: number): number {
-  // "Both 13 or either 13" implementation
-  if (abilityScore1 >= 13 && abilityScore2 >= 13) {
-    return 10;
-  }
-
-  if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-    return 5;
-  }
-
-  return 0;
-}
-
-function xpBonus_Any13_16_Or_Either13(abilityScore1: number, abilityScore2: number): number {
-  // "Any 16/13 or either 13" implementation
-  if (
-    (abilityScore1 >= 16 && abilityScore2 >= 13) ||
-    (abilityScore1 >= 13 && abilityScore2 >= 16)
-  ) {
-    return 10;
-  }
-
-  if (abilityScore1 >= 13 || abilityScore2 >= 13) {
-    return 5;
-  }
-
-  return 0;
-}
+type XpConditionEither    = { type: 'either';    ability1: string; ability2: string; threshold: number };
+type XpConditionBoth      = { type: 'both';       ability1: string; ability2: string; threshold: number };
+type XpConditionPair      = { type: 'pair';       ability1: string; threshold1: number; ability2: string; threshold2: number };
+type XpConditionSymmetric = { type: 'symmetric';  ability1: string; ability2: string; threshold1: number; threshold2: number };
+type XpCondition = XpConditionEither | XpConditionBoth | XpConditionPair | XpConditionSymmetric;
+type XpClause = { percent: number; condition: XpCondition };
 
 
 
@@ -129,7 +67,7 @@ class ClassOptions implements ClassOptionsData {
   illusionistSpells?: boolean;
   necromancerSpells?: boolean;
   runesmithSpells?: boolean;
-  xpBonusFromPrimeRequirements?: (a: number, b: number) => number;
+  xpBonusRule?: string;
 
   constructor(data: ClassOptionsInput) {
     Object.assign(this, data);
@@ -167,28 +105,96 @@ class ClassOptions implements ClassOptionsData {
     return requirements;
   }
 
+  /* Parse an XP bonus rule string into a list of additive clauses.
+     Throws if any clause cannot be parsed.
+
+     Format:  "<N>% if <condition>[, <N>% if <condition>]*"
+
+     Supported condition forms:
+       "either A or B is N or more"
+       "both A and B are N or more"
+       "A is N or more and B is M or more"
+       "either A or B is N or more and the other is M or more"
+  */
+  static parseXpBonusRule(rule: string | null): XpClause[] {
+    if (!rule) return [];
+
+    const clauses: XpClause[] = [];
+
+    const EITHER = /^either (\w+) or (\w+) is (\d+) or more$/;
+    const BOTH   = /^both (\w+) and (\w+) are (\d+) or more$/;
+    const PAIR   = /^(\w+) is (\d+) or more and (\w+) is (\d+) or more$/;
+    const SYMM   = /^either (\w+) or (\w+) is (\d+) or more and the other is (\d+) or more$/;
+
+    for (const raw of rule.split('; ')) {
+      const top = raw.match(/^(\d+)% if (.+)$/);
+      if (!top) throw new Error(`Invalid XP bonus clause: "${raw}"`);
+
+      const percent = parseInt(top[1], 10);
+      const cond    = top[2];
+      let   m: RegExpMatchArray | null;
+
+      if ((m = cond.match(SYMM))) {
+        clauses.push({ percent, condition: { type: 'symmetric', ability1: m[1], ability2: m[2], threshold1: parseInt(m[3], 10), threshold2: parseInt(m[4], 10) } });
+      } else if ((m = cond.match(EITHER))) {
+        clauses.push({ percent, condition: { type: 'either', ability1: m[1], ability2: m[2], threshold: parseInt(m[3], 10) } });
+      } else if ((m = cond.match(BOTH))) {
+        clauses.push({ percent, condition: { type: 'both', ability1: m[1], ability2: m[2], threshold: parseInt(m[3], 10) } });
+      } else if ((m = cond.match(PAIR))) {
+        clauses.push({ percent, condition: { type: 'pair', ability1: m[1], threshold1: parseInt(m[2], 10), ability2: m[3], threshold2: parseInt(m[4], 10) } });
+      } else {
+        throw new Error(`Unknown XP bonus condition: "${cond}"`);
+      }
+    }
+
+    return clauses;
+  }
+
+  /* Evaluate parsed XP clauses against ability scores.
+     Clauses are checked in order (highest tier first); returns the percent
+     of the first matching clause, or 0 if none match. */
+  static evaluateXpClauses(clauses: XpClause[], scores: AbilityScores): number {
+    for (const { percent, condition } of clauses) {
+      let met = false;
+      if (condition.type === 'either') {
+        met = (scores[condition.ability1] ?? 0) >= condition.threshold
+           || (scores[condition.ability2] ?? 0) >= condition.threshold;
+      } else if (condition.type === 'both') {
+        met = (scores[condition.ability1] ?? 0) >= condition.threshold
+           && (scores[condition.ability2] ?? 0) >= condition.threshold;
+      } else if (condition.type === 'pair') {
+        met = (scores[condition.ability1] ?? 0) >= condition.threshold1
+           && (scores[condition.ability2] ?? 0) >= condition.threshold2;
+      } else if (condition.type === 'symmetric') {
+        const a = scores[condition.ability1] ?? 0;
+        const b = scores[condition.ability2] ?? 0;
+        met = (a >= condition.threshold1 && b >= condition.threshold2)
+           || (a >= condition.threshold2 && b >= condition.threshold1);
+      }
+      if (met) return percent;
+    }
+    return 0;
+  }
+
   /* Calculate the XP modifier percentage from prime requisites for the given ability scores. */
   xpModifierPercentage(abilityScoreValues: AbilityScores): string {
-    const firstAbilityName = this.primeReqs[0];
-    const firstAbilityScoreValue = abilityScoreValues[firstAbilityName] ?? 0;
-
     if (this.primeReqs.length === 0) {
       return '0%';
-    } else if (this.primeReqs.length === 1) {
+    }
+
+    if (this.primeReqs.length === 1) {
+      const firstAbilityScoreValue = abilityScoreValues[this.primeReqs[0]] ?? 0;
       const primeReqValue = primeRequisiteModifiers[firstAbilityScoreValue];
       return `${primeReqValue ?? 0}%`;
-    } else if (this.primeReqs.length === 2) {
-      const secondAbilityName = this.primeReqs[1];
-      const secondAbilityScoreValue = abilityScoreValues[secondAbilityName] ?? 0;
-      const primeReqPercentage = this.xpBonusFromPrimeRequirements?.(
-        firstAbilityScoreValue,
-        secondAbilityScoreValue
-      );
-      return (primeReqPercentage || 0) + '%';
-    } else {
-      console.log(`Error: Class ${this.name} has more than 2 prime requisites, which is not currently supported.`);
-      return 'unknown%';
     }
+
+    if (this.primeReqs.length === 2) {
+      const clauses = ClassOptions.parseXpBonusRule(this.xpBonusRule ?? null);
+      return ClassOptions.evaluateXpClauses(clauses, abilityScoreValues) + '%';
+    }
+
+    console.log(`Error: Class ${this.name} has more than 2 prime requisites, which is not currently supported.`);
+    return 'unknown%';
   }
 
   /* Check if ability scores meet the requirements for this class. */
@@ -324,7 +330,7 @@ const classOptionsData = [
     category: "basic",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["intelligence", "strength"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if intelligence is 16 or more and strength is 13 or more; 5% if both intelligence and strength are 13 or more",
     hd: 6,
     maxLevel: 10,
     armour: "any leather, chainmail, plate, shields",
@@ -352,7 +358,7 @@ const classOptionsData = [
     category: "basic",
     requirements: "Minimum 9 constitution, minimum 9 dexterity",
     primeReqs: ["dexterity", "strength"],
-    xpBonusFromPrimeRequirements: xpBonus_Both13_Or_Either13,
+    xpBonusRule: "10% if both dexterity and strength are 13 or more; 5% if either dexterity or strength is 13 or more",
     hd: 6,
     maxLevel: 8,
     armour: "any leather, chainmail, plate, shields",
@@ -443,7 +449,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 dexterity",
     primeReqs: ["constitution", "strength"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Either_13,
+    xpBonusRule: "10% if constitution is 16 or more and strength is 13 or more; 5% if either constitution or strength is 13 or more",
     hd: 8,
     maxLevel: 14,
     armour: "leather, chainmail, shields",
@@ -500,7 +506,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["wisdom", "strength"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if wisdom is 16 or more and strength is 13 or more; 5% if both wisdom and strength are 13 or more",
     hd: 6,
     maxLevel: 14,
     armour: "any leather, chainmail, plate, shields",
@@ -589,7 +595,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 constitution",
     primeReqs: ["intelligence", "dexterity"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if intelligence is 16 or more and dexterity is 13 or more; 5% if both intelligence and dexterity are 13 or more",
     hd: 4,
     maxLevel: 8,
     armour: "leather, shields",
@@ -619,7 +625,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 charisma, minimum 9 constitution",
     primeReqs: ["intelligence", "strength"],
-    xpBonusFromPrimeRequirements: xpBonus_Any16_13_Or_Both13,
+    xpBonusRule: "10% if either intelligence or strength is 16 or more and the other is 13 or more; 5% if both intelligence and strength are 13 or more",
     hd: 6,
     maxLevel: 12,
     armour: "any leather, chainmail, plate, shields",
@@ -640,7 +646,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: null,
     primeReqs: ["dexterity", "strength"],
-    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Both13,
+    xpBonusRule: "10% if both dexterity and strength are 16 or more; 5% if both dexterity and strength are 13 or more",
     hd: 6,
     maxLevel: 8,
     armour: "leather, chainmail, shields",
@@ -737,7 +743,7 @@ const classOptionsData = [
     category: "advanced",
     requirements: "Minimum 9 charisma",
     primeReqs: ["strength", "wisdom"],
-    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
+    xpBonusRule: "10% if both strength and wisdom are 16 or more; 5% if either strength or wisdom is 13 or more",
     hd: 8,
     maxLevel: 14,
     armour: "any leather, chainmail, plate, shields",
@@ -852,7 +858,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 constitution, minimum 9 strength",
     primeReqs: ["strength", "constitution"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if strength is 16 or more and constitution is 13 or more; 5% if both strength and constitution are 13 or more",
     hd: 10,
     maxLevel: 10,
     armour: "any leather, chainmail, plate, shields",
@@ -873,7 +879,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 dexterity",
     primeReqs: ["dexterity", "strength"],
-    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
+    xpBonusRule: "10% if both dexterity and strength are 16 or more; 5% if either dexterity or strength is 13 or more",
     hd: 6,
     maxLevel: 8,
     armour: "any leather, chainmail, plate, shields",
@@ -900,7 +906,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 charisma, minimum 9 constitution",
     primeReqs: ["intelligence", "wisdom"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if intelligence is 16 or more and wisdom is 13 or more; 5% if both intelligence and wisdom are 13 or more",
     hd: 6,
     maxLevel: 10,
     armour: "leather, chainmail, shields",
@@ -925,7 +931,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: null,
     primeReqs: ["dexterity", "wisdom"],
-    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Both13,
+    xpBonusRule: "10% if both dexterity and wisdom are 16 or more; 5% if both dexterity and wisdom are 13 or more",
     hd: 6,
     maxLevel: 14,
     armour: "none",
@@ -950,7 +956,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: null,
     primeReqs: ["intelligence", "wisdom"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if intelligence is 16 or more and wisdom is 13 or more; 5% if both intelligence and wisdom are 13 or more",
     hd: 6,
     maxLevel: 14,
     armour: "none",
@@ -983,7 +989,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["intelligence", "strength"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if intelligence is 16 or more and strength is 13 or more; 5% if both intelligence and strength are 13 or more",
     hd: 6,
     maxLevel: 10,
     armour: "any leather, chainmail, plate, shields / none",
@@ -1012,7 +1018,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 dexterity, minimum 9 intelligence",
     primeReqs: ["dexterity", "wisdom"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if dexterity is 16 or more and wisdom is 13 or more; 5% if both dexterity and wisdom are 13 or more",
     hd: 6,
     maxLevel: 10,
     armour: "leather, shields",
@@ -1044,7 +1050,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: null,
     primeReqs: ["strength", "wisdom"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if strength is 16 or more and wisdom is 13 or more; 5% if both strength and wisdom are 13 or more",
     hd: 6,
     maxLevel: 14,
     armour: "leather, chainmail, shields",
@@ -1155,7 +1161,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["charisma", "dexterity"],
-    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
+    xpBonusRule: "10% if both charisma and dexterity are 16 or more; 5% if either charisma or dexterity is 13 or more",
     hd: 6,
     maxLevel: 10,
     armour: "leather, chainmail, shields",
@@ -1182,7 +1188,7 @@ const classOptionsData = [
     requirements:
       "Minimum 9 charisma, minimum 9 constitution, minimum 9 dexterity",
     primeReqs: ["charisma", "constitution"],
-    xpBonusFromPrimeRequirements: xpBonus_Both13_Or_Either13,
+    xpBonusRule: "10% if both charisma and constitution are 13 or more; 5% if either charisma or constitution is 13 or more",
     hd: 6,
     maxLevel: 8,
     armour: "leather, shields",
@@ -1210,7 +1216,7 @@ const classOptionsData = [
     requirements:
       "minimum 9 constitution, minimum 9 dexterity, minimum 9 wisdom",
     primeReqs: ["constitution", "wisdom"],
-    xpBonusFromPrimeRequirements: xpBonus_Both13_Or_Either13,
+    xpBonusRule: "10% if both constitution and wisdom are 13 or more; 5% if either constitution or wisdom is 13 or more",
     hd: 6,
     maxLevel: 8,
     armour: "leather, shields",
@@ -1239,7 +1245,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 dexterity, minimum 9 intelligence",
     primeReqs: ["charisma", "dexterity"],
-    xpBonusFromPrimeRequirements: xpBonus_Any13_16_Or_Either13,
+    xpBonusRule: "10% if either charisma or dexterity is 16 or more and the other is 13 or more; 5% if either charisma or dexterity is 13 or more",
     hd: 6,
     maxLevel: 14,
     armour: "leather, chainmail",
@@ -1294,7 +1300,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 intelligence",
     primeReqs: ["charisma", "dexterity"],
-    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
+    xpBonusRule: "10% if both charisma and dexterity are 16 or more; 5% if either charisma or dexterity is 13 or more",
     hd: 6,
     maxLevel: 10,
     armour: "leather, shields",
@@ -1320,7 +1326,7 @@ const classOptionsData = [
     // TODO: This does not look like it's coded anywhere, and the check is just for percentage.
     requirements: "Minimum 9 constitution",
     primeReqs: ["constitution", "strength"],
-    xpBonusFromPrimeRequirements: xpBonus_Both16_Or_Either13,
+    xpBonusRule: "10% if both constitution and strength are 16 or more; 5% if either constitution or strength is 13 or more",
     hd: 8,
     maxLevel: 10,
     armour: "leather, chainmail, shields",
@@ -1356,7 +1362,7 @@ const classOptionsData = [
     category: "carcass",
     requirements: "Minimum 9 constitution, minimum 9 intelligence",
     primeReqs: ["strength", "intelligence"],
-    xpBonusFromPrimeRequirements: xpBonus_16_13_Or_Both_13,
+    xpBonusRule: "10% if strength is 16 or more and intelligence is 13 or more; 5% if both strength and intelligence are 13 or more",
     hd: 8,
     maxLevel: 10,
     armour: "any leather, chainmail, plate, shields",

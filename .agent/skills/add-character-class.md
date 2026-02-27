@@ -24,20 +24,38 @@ Check `reference/OSE.SRD.Wiki/2. Classes/` for the authoritative class descripti
 - Special abilities list
 - Spell lists (if any)
 
-### 2. Choose the correct `xpBonus_*` helper
+### 2. Write the `xpBonusRule` string (two-prime-req classes only)
 
-Helpers are defined at the top of `classOptionsData.tsx`:
+Classes with **two** prime requisites need an `xpBonusRule` string. The format mirrors OSE rulebook phrasing: the **10% condition comes first**, the **5% condition second**, separated by `; `.
 
-| Rule text | Helper |
+```
+"10% if <condition>; 5% if <condition>"
+```
+
+Evaluation is first-match: the result is the percent of the first clause whose condition is satisfied, or 0%. Omit `xpBonusRule` entirely for single-prime-req classes.
+
+**Supported condition forms** (ability names must be lowercase, matching `abilityScoreNames`):
+
+| Condition in rule text | DSL form |
 |---|---|
-| "16/13 or both 13" | `xpBonus_16_13_Or_Both_13` |
-| "16/13 or either 13" | `xpBonus_16_13_Or_Either_13` |
-| "Any 16/13 or both 13" | `xpBonus_Any16_13_Or_Both13` |
-| "Both 16 or both 13" | `xpBonus_Both16_Or_Both13` |
-| "Both 16 or either 13" | `xpBonus_Both16_Or_Either13` |
-| "Both 13 or either 13" | `xpBonus_Both13_Or_Either13` |
+| Either ability ≥ N | `either A or B is N or more` |
+| Both abilities ≥ N | `both A and B are N or more` |
+| First ≥ N and second ≥ M | `A is N or more and B is M or more` |
+| (A≥N and B≥M) or (A≥M and B≥N) | `either A or B is N or more and the other is M or more` |
 
-If none fits, add a new helper following the same `(a, b) => number` signature returning `0 | 5 | 10`.
+**Common class patterns** (A = first prime req, B = second prime req):
+
+| OSE rule text | `xpBonusRule` |
+|---|---|
+| +10% if A≥16 and B≥13; +5% if both ≥13 | `"10% if A is 16 or more and B is 13 or more; 5% if both A and B are 13 or more"` |
+| +10% if A≥16 and B≥13; +5% if either ≥13 | `"10% if A is 16 or more and B is 13 or more; 5% if either A or B is 13 or more"` |
+| +10% if either ≥16 and other ≥13; +5% if both ≥13 | `"10% if either A or B is 16 or more and the other is 13 or more; 5% if both A and B are 13 or more"` |
+| +10% if both ≥16; +5% if both ≥13 | `"10% if both A and B are 16 or more; 5% if both A and B are 13 or more"` |
+| +10% if both ≥16; +5% if either ≥13 | `"10% if both A and B are 16 or more; 5% if either A or B is 13 or more"` |
+| +10% if both ≥13; +5% if either ≥13 | `"10% if both A and B are 13 or more; 5% if either A or B is 13 or more"` |
+| +10% if either ≥16 and other ≥13; +5% if either ≥13 | `"10% if either A or B is 16 or more and the other is 13 or more; 5% if either A or B is 13 or more"` |
+
+The format is validated at test time by `ClassOptions.parseXpBonusRule` — if the string does not parse, tests will fail.
 
 ### 3. Create the class entry
 
@@ -62,17 +80,10 @@ Minimum shape:
   link: 'https://oldschoolessentials.necroticgnome.com/srd/…',
   arcane: false,
   divine: false,
-  xpModifierPercentage: (abilityScores) => {
-    const bonus = xpBonus_16_13_Or_Both_13(
-      abilityScores.strength, abilityScores.intelligence
-    )
-    return bonus === 0 ? '0%' : `+${bonus}%`
-  },
-  checkAbilityScoreRequirements: makeAbilityRequirementsChecker([]),
+  xpBonusRule: "10% if strength is 16 or more and intelligence is 13 or more; 5% if both strength and intelligence are 13 or more",
+  // omit xpBonusRule entirely for classes with a single prime req
 }
 ```
-
-`makeAbilityRequirementsChecker` is a factory in `classOptionsData.tsx` that takes an array of `AbilityRequirement` objects.
 
 ### 4. Add spell flags if needed
 

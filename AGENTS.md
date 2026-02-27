@@ -170,7 +170,7 @@ Understanding these is required to make sensible changes to game-rule code.
 | Concept | Explanation |
 |---|---|
 | **Ability scores** | STR, INT, WIS, DEX, CON, CHA — each 3–18, rolled 3d6. Scores drive modifiers looked up in `src/data/abilityScoreMods.tsx`. |
-| **Prime Requisites** | One or two ability scores specific to each class. Thresholds (13 / 16) unlock +5% or +10% XP bonuses. The exact rule varies per class; see the `xpBonus_*` helper functions in `classOptionsData.tsx`. |
+| **Prime Requisites** | One or two ability scores specific to each class. Thresholds (13 / 16) unlock +5% or +10% XP bonuses. The exact rule is stored as a declarative `xpBonusRule` string on each class and evaluated by `ClassOptions.parseXpBonusRule` / `evaluateXpClauses`. |
 | **Hit Die (HD)** | The die type rolled for HP (e.g., d6 for Fighter). HP = roll + CON modifier, minimum 1. Re-rolling is allowed (tracked via `hpRolls`). |
 | **Saving throws** | Five categories (Death/Poison, Wands, Paralysis/Petrify, Breath, Spells). Values come from the `savingThrows` array on each class object (indexed 0–4). |
 | **Armour Class (AC)** | Traditional descending AC (lower = better). Unarmoured AC is tracked separately (`unarmouredAC`) for some class abilities. A "DAC" (Descending AC) character sheet variant exists. |
