@@ -11,6 +11,9 @@ async function rollAbilitiesAndPickFighter(page) {
   await expect(page.getByRole('heading', { name: /Ability Scores/i })).toBeVisible();
   await page.getByRole('button', { name: /Roll All/i }).click();
   await page.getByRole('button', { name: /^Fighter$/i }).click();
+  // Wait for React's auto-save useEffect to commit the partial to localStorage
+  // before the caller navigates away, avoiding a race that makes partialCharacter null.
+  await page.waitForFunction(() => !!localStorage.getItem('partialCharacter'));
 }
 
 test.describe('Partial character persistence', () => {
@@ -199,6 +202,8 @@ test.describe('Tavern button visibility and modal when partial is in progress', 
     await page.getByRole('button', { name: /Start/i }).click();
     await page.getByRole('button', { name: /Roll All/i }).click();
     await page.getByRole('button', { name: /^Fighter$/i }).click();
+    // Wait for auto-save useEffect to commit partial before navigating
+    await page.waitForFunction(() => !!localStorage.getItem('partialCharacter'));
     // Navigate to tavern
     await page.goto('/#/tavern');
     // Click the saved (complete) character
@@ -214,6 +219,7 @@ test.describe('Tavern button visibility and modal when partial is in progress', 
     await page.getByRole('button', { name: /Start/i }).click();
     await page.getByRole('button', { name: /Roll All/i }).click();
     await page.getByRole('button', { name: /^Fighter$/i }).click();
+    await page.waitForFunction(() => !!localStorage.getItem('partialCharacter'));
     await page.goto('/#/tavern');
     await page.getByText(/Confirmed Hero/i).click();
     await expect(page.getByRole('dialog')).toBeVisible();
@@ -232,6 +238,7 @@ test.describe('Tavern button visibility and modal when partial is in progress', 
     await page.getByRole('button', { name: /Start/i }).click();
     await page.getByRole('button', { name: /Roll All/i }).click();
     await page.getByRole('button', { name: /^Fighter$/i }).click();
+    await page.waitForFunction(() => !!localStorage.getItem('partialCharacter'));
     await page.goto('/#/tavern');
     const partialBefore = await page.evaluate((key) => localStorage.getItem(key), PARTIAL_KEY);
     await page.getByText(/Cancel Hero/i).click();
