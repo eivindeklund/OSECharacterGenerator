@@ -207,27 +207,6 @@
   html is set to 62.5% so that all the REM measurements are based on 10px sizing. */
 html {
   font-size: 62.5%;
-  /* --main-bg-color: #6343ff; */
-  --main-bg-color: #2f4f4f;
-  --secondary-bg-color: #376659;
-  --tertiary-bg-color: #375a66;
-  --light-bg-color: #375a6652;
-  --arrow-color: #2f4f4f79;
-  --arrow-color-hover: #325c44;
-  --dark-bg-color: #141414;
-  --main-text-color: #101726;
-  --secondary-text-color: #32465c;
-  --main-bg-white: rgb(255, 255, 255);
-  --primary-bg-hover: #0f0a2b;
-  --button-bg-color: rgba(49, 116, 81, 0.2);
-  --light-green: rgba(49, 116, 81, 0.1);
-  /* --button-default-bg: #2f4f4f; */
-  /* --main-bg-color: #5f6175;
-  --secondary-bg-color: #41404b;
-  --tertiary-bg-color: #aeaec4;
-  --main-text-color: #101726;
-  --secondary-text-color: #9a9cac;
-  --main-bg-white: rgb(255, 255, 255); */
 }
 
 body {

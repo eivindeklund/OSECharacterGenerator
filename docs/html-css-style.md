@@ -10,7 +10,7 @@ OSE Character Generator — last updated 2026-02-26
 2. **CSS custom properties for every design token.** No bare hex values, magic pixel numbers, or hard-coded colours outside the token definitions.
 3. **Consistent naming via the project's BEM-lite convention.** Class names are the contract between HTML and CSS; keep them predictable.
 4. **Specificity stays low.** Avoid context-selector chains longer than two tokens; almost never use `!important`.
-5. **`skeleton.css` and `normalize.css` are third-party files — never edit them.** All project tokens live in the `html {}` block of `skeleton.css` currently; the plan is to migrate them to a first-party `src/css/tokens.css` file.
+5. **`skeleton.css` and `normalize.css` are third-party files — never edit them.** 
 
 ---
 
@@ -19,8 +19,8 @@ OSE Character Generator — last updated 2026-02-26
 ```
 src/css/
   normalize.css     ← third-party, do not touch
-  skeleton.css      ← third-party base + app design tokens (html block); do not add rules here
-  tokens.css        ← (to create) canonical CSS variable definitions extracted from skeleton.css
+  skeleton.css      ← third-party base styles; token declarations here are now superseded by tokens.css
+  tokens.css        ← canonical CSS custom-property definitions; all semantic comments live here
   App.css           ← all project rules; sectioned, see below
   PackOptions.css   ← example of an acceptable per-feature file for larger new subsystems
 ```
@@ -47,10 +47,20 @@ New CSS for a larger, self-contained subsystem (like the pack-options UI) **may*
 
 ## 3. Design Tokens (CSS Custom Properties)
 
-All tokens are defined once, on the `html` element, so they are inherited everywhere.  
+All tokens are defined on the `html` element in **`src/css/tokens.css`**, so they are inherited everywhere.  
 **Do not re-declare tokens on descended elements** (the current `.wrapper {}` re-declaration is a known issue to remove).
 
+### Token comment format
+
+Every token in `tokens.css` **must** be immediately preceded by a `/* Usage: … */` comment describing where the token should be applied.  The exact format specification — including the required `Usage:` keyword, multi-line note rules, and exemptions for one-off values in rule files — is defined as a meta-comment at the top of `tokens.css` itself.
+
+An automated test in `src/css/tokens.test.ts` verifies:
+- Every `--custom-property` declaration in `tokens.css` has a preceding `Usage:` comment.
+- No bare hex/rgb colour value appears in `App.css` or `PackOptions.css` without either a CSS custom-property definition context or an inline `/* one-off: <reason> */` annotation.
+
 ### Current token set
+
+All tokens below are declared in `src/css/tokens.css` with full `Usage:` comments.
 
 | Variable | Value | Semantic meaning |
 |---|---|---|
@@ -67,28 +77,22 @@ All tokens are defined once, on the `html` element, so they are inherited everyw
 | `--arrow-color` | `#2f4f4f79` | Arrow icon fill |
 | `--arrow-color-hover` | `#325c44` | Arrow icon hover |
 | `--light-green` | `rgba(49,116,81,0.1)` | Subtle light accent |
-
-### Tokens to add
-
-Add these to `tokens.css` (future) and reference via `var()` everywhere:
-
-| Variable | Suggested value | Replaces |
-|---|---|---|
-| `--gold-color` | `#d99e30` | Hard-coded `#d99e30` in `PackOptions.css` and inline styles |
-| `--gold-color-bg` | `rgba(255,217,0,0.8)` | `.gold` background in App.css |
-| `--danger-color` | `#b10909` | `.requirement-message` colour |
-| `--border-radius-sm` | `4px` | Repeated `border-radius: 4px` |
-| `--border-radius-md` | `8px` | Repeated `border-radius: 8px` |
-| `--border-radius-lg` | `10px` | Repeated `border-radius: 10px` |
-| `--chip-bg` | `#f0f0f0` | Inline weapon quality chip backgrounds |
-| `--chip-bg-active` | `#2c5f8a` | Inline active chip background |
-| `--chip-bg-active-engaged` | `#4a7c59` | Inline class-filter chip |
+| `--gold-color` | `#d99e30` | Gold/amber for GP labels and pack-options tabs |
+| `--gold-color-bg` | `rgba(255,217,0,0.8)` | Semi-transparent gold for the sticky GP badge |
+| `--danger-color` | `#b10909` | Error/failure text (`.requirement-message`) |
+| `--border-radius-sm` | `4px` | Small radius — buttons, pills, compact cards |
+| `--border-radius-md` | `8px` | Medium radius — modals, panels |
+| `--border-radius-lg` | `10px` | Large radius — ability-score / HP cells |
+| `--chip-bg` | `#f0f0f0` | Inactive quality-filter chip background |
+| `--chip-bg-active` | `#2c5f8a` | Active weapon quality filter chip |
+| `--chip-bg-active-engaged` | `#4a7c59` | Active class-filter chip |
 
 ### Rules for using tokens
 
 - Always use `var(--token-name)` — no bare hex or rgb values in rules.
-- One exception: truly unique one-off things inside a `transition` value target may use a literal value with a comment.
-- When adding a new colour or spacing constant used in more than one place, define a token first.
+- If a value is truly unique and cannot be expressed with an existing token, annotate it with an inline `/* one-off: <reason> */` comment on the same line. This makes it discoverable and auditable.
+- When adding a new colour or spacing constant used in more than one place, define a token in `tokens.css` first (with the required `Usage:` comment).
+- The automated tests in `src/css/tokens.test.ts` enforce these rules for `App.css` and `PackOptions.css`. Any new CSS file added to the project should also be added to those tests.
 
 ---
 

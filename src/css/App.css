@@ -72,13 +72,13 @@ a {
   text-transform: uppercase;
   font-size: 2.2rem;
   letter-spacing: 0.4rem;
-  color: rgba(0, 0, 0, 0.95);
+  color: rgba(0, 0, 0, 0.95); /* one-off: near-black heading text on light/card backgrounds */
   margin-left: auto;
   margin-right: auto;
 }
 
 .header--initial {
-  background-color: #03001444;
+  background-color: #03001444; /* one-off: near-opaque very-dark tint for the initial landing header overlay */
   border-radius: 10%;
   padding: 2rem 2rem;
   margin-top: 10vh;
@@ -122,7 +122,7 @@ a {
   align-self: center;
   text-align: center;
   border-radius: 10px;
-  background-color: rgba(167, 166, 189, 0.22);
+  background-color: rgba(167, 166, 189, 0.22); /* one-off: subtle lavender tint for ability-score cell tile */
   height: 5rem;
   width: 5rem;
   padding: 0;
@@ -262,7 +262,7 @@ a {
   width: 100%;
   font-size: 1.3rem;
   max-width: 180px;
-  color: rgb(63, 63, 63);
+  color: rgb(63, 63, 63); /* one-off: dark-grey for equipment restriction italic note */
   font-style: italic;
 }
 
@@ -364,7 +364,7 @@ a {
 .backpack-item > .button--equipment:hover {
   box-sizing: border-box;
   position: absolute;
-  color: #fff;
+  color: #fff; /* one-off: white hover text on dark equipment-slot button */
   font-size: 1.4rem;
   font-weight: 600;
   letter-spacing: 0.1rem;
@@ -502,7 +502,7 @@ a {
 
 .button--alignment:hover {
   /* color: var(--tertiary-bg-color) !important; */
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: rgba(0, 0, 0, 0.05) !important; /* one-off: barely-visible hover tint on alignment buttons */
 }
 
 .gender-button-container {
@@ -521,7 +521,7 @@ a {
 }
 
 .button--gender:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: rgba(0, 0, 0, 0.05) !important; /* one-off: barely-visible hover tint on gender buttons */
 }
 
 .ability-score-roll-all-container {
@@ -691,13 +691,13 @@ a {
 .character-container > .charsheet-value-name {
   width: 38%;
   text-align: left;
-  border-bottom: 1px solid rgba(101, 138, 110, 0.274);
+  border-bottom: 1px solid rgba(101, 138, 110, 0.274); /* one-off: faint forest-green tinted divider on character-sheet rows */
   font-weight: bold;
   color: black;
 }
 .character-container > .charsheet-value {
   margin: 0px;
-  border-bottom: 1px solid rgba(101, 138, 110, 0.274);
+  border-bottom: 1px solid rgba(101, 138, 110, 0.274); /* one-off: faint forest-green tinted divider on character-sheet rows */
   text-align: left;
   max-width: 62%;
   padding-left: 40px;
@@ -797,16 +797,16 @@ a {
 .character-button > .character-button--delete {
   height: 20px;
   width: 20px;
-  background-color: rgba(167, 0, 0, 0);
+  background-color: rgba(167, 0, 0, 0); /* one-off: fully-transparent base; red is revealed only on hover */
   padding: 0;
   border-radius: 2px;
-  border: solid 2px #fff;
+  border: solid 2px #fff; /* one-off: white border ring on delete button icon */
   position: absolute;
   line-height: 0;
   top: 0;
   right: 0;
   margin: 0;
-  border: solid 5px rgba(255, 255, 255, 0);
+  border: solid 5px rgba(255, 255, 255, 0); /* one-off: invisible wide border expands tap target on delete icon */
   font-size: 10px;
   display: flex;
   justify-content: center;
@@ -824,7 +824,7 @@ a {
 }
 
 .character-button > .character-button--delete:hover {
-  color: #ff0000;
+  color: #ff0000; /* one-off: pure red danger signal on delete button hover */
 }
 
 .character-button--ability-scores {
@@ -837,14 +837,14 @@ a {
 }
 
 .character-button--partial {
-  border: 2px dashed #888 !important;
+  border: 2px dashed #888 !important; /* one-off: grey dashed outline marks incomplete/partial character cards */
   opacity: 0.85;
 }
 
 .character-button--partial-badge {
   font-size: 0.9rem;
   font-style: italic;
-  color: #888;
+  color: #888; /* one-off: medium-grey for the "partial" state label below character name */
   margin-bottom: 4px;
   text-transform: none;
   letter-spacing: 0;
@@ -855,7 +855,7 @@ a {
   display: flex;
   flex-flow: column;
   align-items: center;
-  background-color: rgba(245, 245, 245, 0.92);
+  background-color: rgba(245, 245, 245, 0.92); /* one-off: near-white translucent bg for floating storage panel */
   width: 50%;
   top: 80%;
   font-size: 3rem;
@@ -931,12 +931,12 @@ a {
 }
 
 .details-result--description > textarea.details-result--data:hover {
-  border-color: rgba(101, 138, 110, 0.4);
+  border-color: rgba(101, 138, 110, 0.4); /* one-off: low-opacity forest-green hover outline on description textarea */
 }
 
 .details-result--description > textarea.details-result--data:focus {
-  border-color: rgba(101, 138, 110, 0.7);
-  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(101, 138, 110, 0.7); /* one-off: stronger green outline on focus for description textarea */
+  background: rgba(255, 255, 255, 0.5); /* one-off: half-transparent white focus background for description textarea */
   outline: none;
 }
 
@@ -968,7 +968,7 @@ a {
 .class-ability-menu > .class-ability-menu--header {
   margin-top: 2rem;
   font-size: 1.8rem;
-  color: rgb(34, 34, 34);
+  color: rgb(34, 34, 34); /* one-off: near-black overriding body text colour for ability-menu headings */
   font-weight: bold;
 }
 
@@ -976,7 +976,7 @@ a {
   margin-top: 2rem;
   font-size: 1.8rem;
   font-weight: bold;
-  color: rgb(34, 34, 34);
+  color: rgb(34, 34, 34); /* one-off: near-black overriding body text colour for ability-menu headings */
 }
 
 .class-ability-menu > .class-ability-menu--abilities {
@@ -1025,7 +1025,7 @@ a {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.7); /* one-off: dark semi-transparent modal backdrop */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1042,7 +1042,7 @@ a {
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* one-off: drop shadow on modal card */
   display: flex;
   flex-direction: column;
 }
@@ -1052,7 +1052,7 @@ a {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eee; /* one-off: very-light grey divider under modal header */
   padding-bottom: 1rem;
 }
 
@@ -1068,12 +1068,12 @@ a {
   font-size: 3rem;
   cursor: pointer;
   line-height: 1;
-  color: #666;
+  color: #666; /* one-off: medium-grey for modal close × button */
   padding: 0 0.5rem;
 }
 
 .modal-close-button:hover {
-  color: #000;
+  color: #000; /* one-off: full black on modal close-button hover */
 }
 
 .modal-body {
@@ -1166,8 +1166,8 @@ div.character-menu {
   text-align: left;
   font-size: 1rem;
   max-width: 100%;
-  border-top: 1px solid rgba(0, 0, 0, 0.501);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.501);
+  border-top: 1px solid rgba(0, 0, 0, 0.501); /* one-off: semi-transparent black divider around sticky spell-count header */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.501); /* one-off: semi-transparent black divider around sticky spell-count header */
   border-radius: 15px;
 }
 
@@ -1227,8 +1227,8 @@ div > .button-class-option {
   width: auto;
   padding: 0;
   margin: 0;
-  color: #ff0000;
-  background-color: rgba(0, 0, 0, 0.025) !important;
+  color: #ff0000; /* one-off: red hover text on deprecated class-option buttons (pending refactor) */
+  background-color: rgba(0, 0, 0, 0.025) !important; /* one-off: near-transparent disabled bg on hovered class-option */
 }
 
 .class-options-container > .button-class-option:focus,
@@ -1237,8 +1237,8 @@ div > .button-class-option {
   width: auto;
   padding: 0;
   margin: 0;
-  color: #ff0000;
-  background-color: rgba(0, 0, 0, 0.025) !important;
+  color: #ff0000; /* one-off: red focused/selected text on deprecated class-option buttons (pending refactor) */
+  background-color: rgba(0, 0, 0, 0.025) !important; /* one-off: near-transparent bg on focused/selected class-option */
 }
 
 .ability-screen > .class-options-container {
@@ -1261,7 +1261,7 @@ div > .button-class-option {
 .class-option-wrapper {
   display: flex;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(0, 0, 0, 0.03); /* one-off: barely-visible dark tint on class-option row bg */
   border-radius: 4px;
   padding-right: 4px;
   margin: 0.2rem;
@@ -1269,16 +1269,16 @@ div > .button-class-option {
 
 .class-container > .button:disabled,
 .class-option-wrapper > .button:disabled {
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(0, 0, 0, 0.4); /* one-off: faded text on disabled class-option button */
   cursor: not-allowed;
   background-image: repeating-linear-gradient(
     45deg,
-    rgba(255, 0, 0, 0.05),
-    rgba(255, 0, 0, 0.05) 10px,
-    rgba(255, 255, 255, 0.05) 10px,
-    rgba(255, 255, 255, 0.05) 20px
+    rgba(255, 0, 0, 0.05), /* one-off: red stripe in disabled class-option hatch pattern */
+    rgba(255, 0, 0, 0.05) 10px, /* one-off: red stripe in disabled class-option hatch pattern */
+    rgba(255, 255, 255, 0.05) 10px, /* one-off: white stripe in disabled class-option hatch pattern */
+    rgba(255, 255, 255, 0.05) 20px /* one-off: white stripe in disabled class-option hatch pattern */
   );
-  border: 1px solid rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.1); /* one-off: faint red border on disabled class-option */
 }
 
 .advanced-class-container {
@@ -1365,8 +1365,8 @@ div > .button-class-option {
   height: 38px;
   width: 120px;
   z-index: 3;
-  background-color: rgba(255, 217, 0, 0.8);
-  color: #2a2a2d;
+  background-color: var(--gold-color-bg);
+  color: #2a2a2d; /* one-off: near-black for readable text on gold coin badge */
   border-radius: 4px;
   text-align: center;
   display: flex;
@@ -1421,8 +1421,8 @@ div > .button-class-option {
     font-size: 1.7rem;
     background-image: linear-gradient(
             to right bottom,
-            rgba(12, 12, 12, 0.75),
-            rgba(0, 0, 0, 0.95)
+            rgba(12, 12, 12, 0.75), /* one-off: near-black top-left corner for .wrapper dark gradient */
+            rgba(0, 0, 0, 0.95) /* one-off: near-opaque black bottom-right for .wrapper dark gradient */
     ),
     url(../img/header.svg);
     background-size: cover;
@@ -1439,8 +1439,8 @@ div > .button-class-option {
   background-color: var(--light-bg-color);
   background-image: linear-gradient(
       to right bottom,
-      rgba(150, 150, 42, 0.34),
-      rgba(55, 3, 136, 0.4)
+      rgba(150, 150, 42, 0.34), /* one-off: olive-yellow tint in alternate .wrapper gradient */
+      rgba(55, 3, 136, 0.4) /* one-off: deep-purple tint in alternate .wrapper gradient */
     ),
     url(../img/header.svg);
 }
@@ -1494,7 +1494,7 @@ div > .button-class-option {
 .header > .button--roll:hover.button {
   margin-bottom: 0.5rem;
   padding: 0;
-  color: rgb(255, 255, 255) !important;
+  color: rgb(255, 255, 255) !important; /* one-off: white hover text on dark header roll button */
 }
 
 .partial-character-resume {
@@ -1508,7 +1508,7 @@ div > .button-class-option {
 .partial-character-resume--info {
   font-size: 1.2rem;
   font-style: italic;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255,255,255,0.75); /* one-off: translucent white info text over dark header bg */
   margin-bottom: 0.25rem;
 }
 
@@ -1556,7 +1556,7 @@ div > .button-class-option {
 }
 
 .hp-container > div {
-  background-color: rgba(167, 166, 189, 0.22);
+  background-color: rgba(167, 166, 189, 0.22); /* one-off: subtle lavender tint for HP/saving-throw display cells (matches ability-score tile) */
   border-radius: 10px;
   display: flex;
   justify-content: center;
@@ -1586,19 +1586,19 @@ div > .button-class-option {
 }
 
 .hp-container > .hp-container--hit-die {
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2); /* one-off: faint border on HP hit-die cell */
 }
 
 .hp-container > .hp-container--hit-points {
   font-size: 3rem;
   background-color: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2); /* one-off: faint border on HP hit-points cell */
 }
 
 .hp-container > .hp-container--con-mod {
   font-size: 3rem;
   background-color: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2); /* one-off: faint border on HP CON-mod cell */
 }
 
 .hp-container > div > div {
@@ -1828,7 +1828,7 @@ div > .button-class-option {
 }
 
 .requirement-message {
-  color: #b10909;
+  color: var(--danger-color);
   font-size: 1.4rem;
   font-weight: bold;
   margin-bottom: 4px;

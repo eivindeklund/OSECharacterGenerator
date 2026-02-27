@@ -1,0 +1,170 @@
+/**
+ * TOKEN COMMENT FORMAT — READ BEFORE EDITING
+ * ===========================================
+ *
+ * Every CSS custom property (--variable-name) declared in this file MUST be
+ * immediately preceded by a comment whose text includes the keyword "Usage:"
+ * followed by a description of the token's semantic purpose and guidance on
+ * where in the codebase it should be applied.
+ *
+ * Required format (single-line usage note):
+ *
+ *   /* Usage: <semantic description and usage guidance> * /
+ *   --token-name: value;
+ *
+ * Multi-line usage notes are accepted; the "Usage:" keyword just needs to
+ * appear somewhere in the preceding comment block:
+ *
+ *   /* Usage: Short description.
+ *    *        Additional guidance for a second context. * /
+ *   --token-name: value;
+ *
+ * Automated tests in src/css/tokens.test.ts verify this contract.
+ * Any --custom-property declaration without a preceding Usage: comment
+ * will fail the test suite.
+ *
+ * ---
+ *
+ * ONE-OFF EXEMPTIONS IN RULE FILES
+ *
+ * In App.css, PackOptions.css, and any other rule file, raw hex / rgb / rgba
+ * colour values are forbidden in rule declarations.  Two exemptions exist:
+ *
+ *   1. Lines that are CSS custom-property definitions (--name: value) —
+ *      e.g. a wrapper-scoped re-declaration — are allowed to contain raw values.
+ *   2. Lines bearing an inline  /* one-off: <reason> * /  comment document a
+ *      deliberately unique value that was judged unworthy of a dedicated token.
+ *
+ * See docs/html-css-style.md §3 for the full design-token rationale.
+ */
+
+/*
+ * All tokens are declared on `html` so they are inherited everywhere.
+ * Do not re-declare tokens on descendant elements (the .wrapper block in
+ * App.css does this today — it is a known issue to remove, see §9 of the
+ * style guide).
+ *
+ * === MIGRATION NOTE ===
+ * skeleton.css (third-party, do not edit) contains the canonical definitions
+ * for the brand / layout tokens listed below.  This file re-declares them so
+ * that they are documented here and so that tokens.css can eventually replace
+ * the html block in skeleton.css entirely.  Until that migration is complete,
+ * tokens.css is loaded after skeleton.css in App.tsx, and the declarations
+ * below override skeleton.css with identical values.
+ */
+
+html {
+  /* ── Brand / background palette ──────────────────────────────────── */
+
+  /* Usage: Primary brand colour (dark forest teal).  Use for main button
+   *        backgrounds, active indicator borders, and section headings. */
+  --main-bg-color: #2f4f4f;
+
+  /* Usage: Secondary panel and hover-state backgrounds.  Use for hover
+   *        overlays on primary surfaces and secondary card backgrounds. */
+  --secondary-bg-color: #376659;
+
+  /* Usage: Tertiary accent colour.  Use for subtle highlights, borders on
+   *        secondary elements, and alternate card tints. */
+  --tertiary-bg-color: #375a66;
+
+  /* Usage: Hover-highlight and selected-state background (semi-transparent
+   *        teal).  Use for button --selected states and keyboard-focused items. */
+  --light-bg-color: #375a6652;
+
+  /* Usage: Dark inverted surface.  Use as the background for fully inverted
+   *        elements (e.g. full-page overlays or dark header bands). */
+  --dark-bg-color: #141414;
+
+  /* Usage: White card surface.  Use as the background for modal dialogs,
+   *        information cards, and any element that sits on top of a dark bg. */
+  --main-bg-white: rgb(255, 255, 255);
+
+  /* ── Text colours ─────────────────────────────────────────────────── */
+
+  /* Usage: Primary body text colour.  Use for all default readable text on
+   *        light backgrounds (cards, form fields, character sheet data). */
+  --main-text-color: #101726;
+
+  /* Usage: Dimmed / meta text colour.  Use for subtitles, supporting copy,
+   *        disabled-state labels, and secondary information. */
+  --secondary-text-color: #32465c;
+
+  /* ── Interactive / button colours ────────────────────────────────── */
+
+  /* Usage: Default (unfilled / ghost) button background.  Applied to all
+   *        buttons that do not carry a --primary or other explicit variant. */
+  --button-bg-color: rgba(49, 116, 81, 0.2);
+
+  /* Usage: Dark hover colour for primary interactive elements (buttons,
+   *        links) when the base is already dark.  Use for :hover states on
+   *        .button--primary and similar. */
+  --primary-bg-hover: #0f0a2b;
+
+  /* ── Arrow / icon colours ─────────────────────────────────────────── */
+
+  /* Usage: Default fill colour for SVG/CSS arrow icons.  Apply to arrow
+   *        indicator shapes (::before / ::after triangles, SVG fill). */
+  --arrow-color: #2f4f4f79;
+
+  /* Usage: Hover fill colour for arrow icons.  Use on :hover / :focus of
+   *        the parent element that contains the arrow indicator. */
+  --arrow-color-hover: #325c44;
+
+  /* ── Accent colours ───────────────────────────────────────────────── */
+
+  /* Usage: Very subtle light-green tint.  Use for barely-visible background
+   *        tints on interactive containers (e.g. hover highlight on class
+   *        list rows). */
+  --light-green: rgba(49, 116, 81, 0.1);
+
+  /* ── Gold / monetary palette ──────────────────────────────────────── */
+
+  /* Usage: Saturated gold / amber for monetary values and gold-themed UI.
+   *        Use for gold-piece labels, coin icons, and "gold" tab accents in
+   *        PackOptions.  Do NOT use as a general accent. */
+  --gold-color: #d99e30;
+
+  /* Usage: Semi-transparent gold for the sticky GP coin badge background.
+   *        Use only for the .gold strip that shows the current gold total
+   *        during equipment purchase. */
+  --gold-color-bg: rgba(255, 217, 0, 0.8);
+
+  /* ── Danger / error colours ───────────────────────────────────────── */
+
+  /* Usage: Error / failure text colour.  Use for validation messages,
+   *        requirement-not-met indicators (.requirement-message), and any text
+   *        that communicates a blocking error.  Do not use for decorative red. */
+  --danger-color: #b10909;
+
+  /* ── Border-radius scale ──────────────────────────────────────────── */
+
+  /* Usage: Small border radius (4 px).  Use for buttons, pill badges,
+   *        small list rows, input fields, and compact cards. */
+  --border-radius-sm: 4px;
+
+  /* Usage: Medium border radius (8 px).  Use for modals, larger panels,
+   *        and section cards that need a softer look than --border-radius-sm. */
+  --border-radius-md: 8px;
+
+  /* Usage: Large border radius (10 px).  Use for ability-score cells,
+   *        larger interactive tiles, and prominent display cards. */
+  --border-radius-lg: 10px;
+
+  /* ── Chip / filter-chip colours ───────────────────────────────────── */
+
+  /* Usage: Inactive weapon-quality chip background.  Use for filter chips
+   *        (quality badges, weapon tags) when they are in the default /
+   *        unselected state.  Pair with a dark text colour for contrast. */
+  --chip-bg: #f0f0f0;
+
+  /* Usage: Active weapon-quality filter chip background (muted blue).
+   *        Use when a quality filter chip is toggled on.  Pair with white
+   *        (#fff) text for legibility. */
+  --chip-bg-active: #2c5f8a;
+
+  /* Usage: Active "class-appropriate" filter chip background (muted green).
+   *        Use when the class-filter toggle is engaged.  Pair with white
+   *        (#fff) text for legibility. */
+  --chip-bg-active-engaged: #4a7c59;
+}

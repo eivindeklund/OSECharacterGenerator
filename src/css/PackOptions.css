@@ -1,6 +1,6 @@
 .pack-options-container {
   margin-top: 2rem;
-  border: 1px solid #ddd;
+  border: 1px solid #ddd; /* one-off: light-grey border framing the pack-options container */
   padding: 1rem;
   border-radius: 4px;
 }
@@ -8,7 +8,7 @@
 .pack-tabs {
   display: flex;
   margin-bottom: 1rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #ddd; /* one-off: light-grey underline separating tabs from tab content */
 }
 
 .pack-tab-button {
@@ -17,18 +17,18 @@
   padding: 0.5rem 1rem;
   cursor: pointer;
   font-size: 1rem;
-  color: #666;
+  color: #666; /* one-off: medium-grey for inactive pack tab labels */
   border-bottom: 2px solid transparent;
   transition: all 0.2s;
 }
 
 .pack-tab-button:hover {
-  color: #333;
+  color: #333; /* one-off: dark-grey for hovered pack tab label */
 }
 
 .pack-tab-button.active {
-  color: #d99e30; /* Using gold theme color found in store */
-  border-bottom: 2px solid #d99e30;
+  color: var(--gold-color);
+  border-bottom: 2px solid var(--gold-color);
   font-weight: bold;
 }
 
@@ -38,7 +38,7 @@
   align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px dashed #eee;
+  border-bottom: 1px dashed #eee; /* one-off: very-light grey dashed divider within pack header */
 }
 
 .pack-name {
@@ -48,7 +48,7 @@
 
 .pack-price {
   font-weight: bold;
-  color: #d99e30;
+  color: var(--gold-color);
 }
 
 .pack-contents-list {
