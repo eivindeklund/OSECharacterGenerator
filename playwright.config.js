@@ -15,7 +15,7 @@ module.exports = defineConfig({
         /* Opt out of parallel tests on CI. */
         workers: process.env.CI ? 1 : undefined,
         /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-        reporter: 'list',
+        reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
         /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
         use: {
                 /* Base URL to use in actions like `await page.goto('/')`. */
@@ -30,16 +30,30 @@ module.exports = defineConfig({
                 {
                         name: 'chromium',
                         use: { ...devices['Desktop Chrome'] },
+                        testIgnore: /visual\.spec/,
                 },
 
                 {
                         name: 'firefox',
                         use: { ...devices['Desktop Firefox'] },
+                        testIgnore: /visual\.spec/,
                 },
 
                 {
                         name: 'webkit',
                         use: { ...devices['Desktop Safari'] },
+                        testIgnore: /visual\.spec/,
+                },
+
+                {
+                        // Visual regression tests run on a single browser with a fixed
+                        // viewport so screenshots are stable across machines.
+                        name: 'visual',
+                        use: {
+                                ...devices['Desktop Chrome'],
+                                viewport: { width: 1280, height: 800 },
+                        },
+                        testMatch: /visual\.spec/,
                 },
         ],
 
