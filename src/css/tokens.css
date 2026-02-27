@@ -130,6 +130,23 @@ html {
    *        during equipment purchase. */
   --gold-color-bg: rgba(255, 217, 0, 0.8);
 
+  /* ── XP modifier indicator colours ──────────────────────────────── */
+
+  /* Usage: Positive XP modifier indicator (forest green).  Use as the
+   *        border/shadow colour on class-option wrappers when the class
+   *        grants a positive XP bonus for the current ability scores. */
+  --xp-positive-color: #2e7d32;
+
+  /* Usage: Zero XP modifier indicator (neutral grey).  Use as the
+   *        border/shadow colour on class-option wrappers when the class
+   *        grants no XP bonus or penalty for the current ability scores. */
+  --xp-zero-color: #aaa;
+
+  /* Usage: Negative XP modifier indicator (dark red).  Use as the border/
+   *        shadow colour on class-option wrappers when the class imposes a
+   *        negative XP penalty for the current ability scores. */
+  --xp-negative-color: #c62828;
+
   /* ── Danger / error colours ───────────────────────────────────────── */
 
   /* Usage: Error / failure text colour.  Use for validation messages,

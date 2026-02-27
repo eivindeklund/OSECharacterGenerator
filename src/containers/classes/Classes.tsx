@@ -14,6 +14,25 @@ interface ClassOptionsProps {
   changeCharacterClass: React.MouseEventHandler<HTMLButtonElement>;
 }
 
+/** Returns the CSS modifier class for the wrapper border based on the XP value. */
+function xpWrapperClass(selectable: boolean, xpMod: string | null, scoresRolled: boolean): string {
+  if (!scoresRolled) return '';
+  if (!selectable) return 'class-option-wrapper--xp-zero';
+  const value = xpMod !== null ? parseInt(xpMod, 10) : 0;
+  if (value > 0) return 'class-option-wrapper--xp-positive';
+  if (value < 0) return 'class-option-wrapper--xp-negative';
+  return '';
+}
+
+/** Returns the visible XP badge text, or a non-breaking space to hold layout. */
+export function xpBadgeLabel(xpMod: string | null): string {
+  if (xpMod === null) return '\u00A0';
+  const value = parseInt(xpMod, 10);
+  if (value > 0) return `+${xpMod} XP`;
+  if (value < 0) return `${xpMod} XP`;
+  return '\u00A0';
+}
+
 export default function ClassOptions(props: ClassOptionsProps) {
   const { characterClass, abilityScores, changeCharacterClass } = props;
 
@@ -22,27 +41,34 @@ export default function ClassOptions(props: ClassOptionsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalClass, setModalClass] = useState<ClassOptionsData | null>(null);
 
+  const scoresRolled = Object.values(abilityScores).every((v) => v !== null);
+
   const openModal = (cls) => {
     setModalClass(cls);
     setIsModalOpen(true);
   };
 
   const listClassOptions = (classType) => {
-    const classData = classOptionsData.filter((characterClass) => {
-      return characterClass.category === classType;
-    });
+    const classData = classOptionsData.filter((item) => item.category === classType);
 
-    const classOptions = classData.map((item) => {
+    return classData.map((item) => {
+      const selectable = item.checkAbilityScoreRequirements(abilityScores);
+      const xpMod = scoresRolled && selectable ? item.xpModifierPercentage(abilityScores) : null;
+      const wrapperClass = xpWrapperClass(selectable, xpMod, scoresRolled);
+
       return (
-        <div key={item.name} className="class-option-wrapper">
+        <div key={item.name} className={`class-option-wrapper ${wrapperClass}`}>
           <ClassOptionsButton
             characterClass={item}
             abilityScores={abilityScores}
             changeCharacterClass={changeCharacterClass}
             selected={characterClass.name === item.name}
           ></ClassOptionsButton>
-          <button 
-            className="button button--info-icon" 
+          <span className="class-option-xp-badge">
+            {xpBadgeLabel(xpMod)}
+          </span>
+          <button
+            className="button button--info-icon"
             onClick={(e) => {
               openModal(item);
               e.currentTarget.blur();
@@ -54,7 +80,6 @@ export default function ClassOptions(props: ClassOptionsProps) {
         </div>
       );
     });
-    return classOptions;
   };
 
   return (
