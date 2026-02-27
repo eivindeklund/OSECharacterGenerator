@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     }),
     ViteFonts({
       google: {
-        families: ['Crimson Text']
+        families: [{ name: 'Crimson Text', styles: 'wght@400;700' }]
       }
     })
   ],

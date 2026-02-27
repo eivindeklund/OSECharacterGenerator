@@ -138,7 +138,7 @@ export default function ClassOptions(props: ClassOptionsProps) {
         onClose={() => setIsModalOpen(false)} 
         title={modalClass ? `${modalClass.name} Details` : "Class Details"}
       >
-        {modalClass && <ClassDescription characterClass={modalClass} />}
+        {modalClass && <ClassDescription characterClass={modalClass} abilityScores={abilityScores} />}
       </Modal>
     </div>
   );

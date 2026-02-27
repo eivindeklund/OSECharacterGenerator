@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Montserrat");
-@import url("https://fonts.googleapis.com/css?family=Crimson+Text");
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap");
 
 * {
   margin: 0;
@@ -1163,6 +1163,10 @@ div > .button--info-icon {
 .class-description-list-item {
   margin-bottom: 1rem;
   list-style: none;
+}
+
+.class-description--xp-bonus-rule strong {
+  font-weight: 700;
 }
 
 .dice-enabled-container {

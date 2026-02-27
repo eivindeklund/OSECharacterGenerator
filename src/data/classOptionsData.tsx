@@ -34,12 +34,12 @@ type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' 
 //   "either A or B is N or more and the other is M or more"
 //       → (score[A] >= N AND score[B] >= M) OR (score[A] >= M AND score[B] >= N)
 
-type XpConditionEither    = { type: 'either';    ability1: string; ability2: string; threshold: number };
-type XpConditionBoth      = { type: 'both';       ability1: string; ability2: string; threshold: number };
-type XpConditionPair      = { type: 'pair';       ability1: string; threshold1: number; ability2: string; threshold2: number };
-type XpConditionSymmetric = { type: 'symmetric';  ability1: string; ability2: string; threshold1: number; threshold2: number };
-type XpCondition = XpConditionEither | XpConditionBoth | XpConditionPair | XpConditionSymmetric;
-type XpClause = { percent: number; condition: XpCondition };
+export type XpConditionEither    = { type: 'either';    ability1: string; ability2: string; threshold: number };
+export type XpConditionBoth      = { type: 'both';       ability1: string; ability2: string; threshold: number };
+export type XpConditionPair      = { type: 'pair';       ability1: string; threshold1: number; ability2: string; threshold2: number };
+export type XpConditionSymmetric = { type: 'symmetric';  ability1: string; ability2: string; threshold1: number; threshold2: number };
+export type XpCondition = XpConditionEither | XpConditionBoth | XpConditionPair | XpConditionSymmetric;
+export type XpClause = { percent: number; condition: XpCondition };
 
 
 
@@ -1406,6 +1406,6 @@ const emptyClassOptions = new ClassOptions({
   divine: false,
 });
 
-export { classOptionsData, emptyClassOptions };
+export { ClassOptions, classOptionsData, emptyClassOptions };
 
 export default classOptionsData;

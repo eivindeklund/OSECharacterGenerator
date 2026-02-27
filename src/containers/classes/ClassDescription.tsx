@@ -1,12 +1,22 @@
-import type { ClassOptionsData } from '../../types';
+import React from 'react';
 import ListItem from '../../components/general/ListItem';
+import type { AbilityScores, ClassOptionsData } from '../../types';
+import { formatXpBonusRuleClauses, type XpBonusClauseDisplay } from '../../utilities/XpBonusFormatter';
 
 type ClassDescriptionProps = {
-  characterClass: ClassOptionsData
+  characterClass: ClassOptionsData;
+  abilityScores?: AbilityScores | null;
+}
+
+/** Renders a single XP bonus clause, bolding it if active. */
+function XpClauseSpan({ clause }: { clause: XpBonusClauseDisplay }) {
+  return clause.active
+    ? <strong>{clause.text}</strong>
+    : <span>{clause.text}</span>;
 }
 
 export default function ClassDescription(props: ClassDescriptionProps) {
-  const { characterClass } = props
+  const { characterClass, abilityScores } = props
 
   const primeReqString = characterClass.primeReqs.join(', ')
   const langString = ['Alignment', 'Common'].concat(characterClass.languages).join(', ');
@@ -42,6 +52,25 @@ export default function ClassDescription(props: ClassDescriptionProps) {
             ></ListItem>
           )
         })}
+        {characterClass.xpBonusRule && (() => {
+          const clauses = formatXpBonusRuleClauses(
+            characterClass.xpBonusRule,
+            abilityScores ?? null,
+          );
+          return (
+            <li className='class-description-list-item'>
+              <b>XP Bonus Rule:</b>
+              <p className='class-description--xp-bonus-rule'>
+                {clauses.map((clause, i) => (
+                  <React.Fragment key={clause.text}>
+                    {i > 0 && '; '}
+                    <XpClauseSpan clause={clause} />
+                  </React.Fragment>
+                ))}
+              </p>
+            </li>
+          );
+        })()}
         <li className='class-description-list-item'>
           <b>
             <a
