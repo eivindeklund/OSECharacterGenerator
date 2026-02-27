@@ -87,7 +87,7 @@ a {
 .header--hover {
   border-radius: 10%;
   padding: 2rem 2rem;
-  background-color: transparent !important;
+  background-color: transparent;
 }
 
 .container > .ability-score-container {
@@ -210,7 +210,7 @@ a {
 
 .ability-score > .button--ability--decrease,
 .ability-score > .button--ability--increase {
-  background-color: transparent !important;
+  background-color: transparent;
 }
 
 .armour-container,
@@ -495,14 +495,18 @@ a {
   padding: 0;
 }
 
-.button--alignment--selected {
-  /* color: var(--secondary-text-color) !important; */
-  background-color: var(--light-bg-color) !important;
+.button.button--alignment--selected {
+  /* color: var(--secondary-text-color); */
+  background-color: var(--light-bg-color);
+}
+
+.button.button--alignment--selected:hover {
+  background-color: var(--light-bg-color);
 }
 
 .button--alignment:hover {
-  /* color: var(--tertiary-bg-color) !important; */
-  background-color: rgba(0, 0, 0, 0.05) !important; /* one-off: barely-visible hover tint on alignment buttons */
+  /* color: var(--tertiary-bg-color); */
+  background-color: rgba(0, 0, 0, 0.05); /* one-off: barely-visible hover tint on alignment buttons */
 }
 
 .gender-button-container {
@@ -516,12 +520,16 @@ a {
   padding: 0 8px;
 }
 
-.button--gender--selected {
-  background-color: var(--light-bg-color) !important;
+.button.button--gender--selected {
+  background-color: var(--light-bg-color);
+}
+
+.button.button--gender--selected:hover {
+  background-color: var(--light-bg-color);
 }
 
 .button--gender:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important; /* one-off: barely-visible hover tint on gender buttons */
+  background-color: rgba(0, 0, 0, 0.05); /* one-off: barely-visible hover tint on gender buttons */
 }
 
 .ability-score-roll-all-container {
@@ -837,7 +845,7 @@ a {
 }
 
 .character-button--partial {
-  border: 2px dashed #888 !important; /* one-off: grey dashed outline marks incomplete/partial character cards */
+  border: 2px dashed #888; /* one-off: grey dashed outline marks incomplete/partial character cards */
   opacity: 0.85;
 }
 
@@ -1196,18 +1204,24 @@ div > .button-class-option {
   border: none;
 }
 
+.class-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  position: relative;
+  max-width: 800px;
+}
+
 @media screen and (min-width: 450px) {
   .class-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 95% !important;
-    max-width: 1200px !important;
+    width: 95%;
+    max-width: 1200px;
   }
 
-  .button-class-option {
-    max-height: 80px !important;
+  div > .button-class-option {
+    max-height: 80px;
   }
 }
 
@@ -1228,7 +1242,7 @@ div > .button-class-option {
   padding: 0;
   margin: 0;
   color: #ff0000; /* one-off: red hover text on deprecated class-option buttons (pending refactor) */
-  background-color: rgba(0, 0, 0, 0.025) !important; /* one-off: near-transparent disabled bg on hovered class-option */
+  background-color: rgba(0, 0, 0, 0.025); /* one-off: near-transparent disabled bg on hovered class-option */
 }
 
 .class-options-container > .button-class-option:focus,
@@ -1238,7 +1252,7 @@ div > .button-class-option {
   padding: 0;
   margin: 0;
   color: #ff0000; /* one-off: red focused/selected text on deprecated class-option buttons (pending refactor) */
-  background-color: rgba(0, 0, 0, 0.025) !important; /* one-off: near-transparent bg on focused/selected class-option */
+  background-color: rgba(0, 0, 0, 0.025); /* one-off: near-transparent bg on focused/selected class-option */
 }
 
 .ability-screen > .class-options-container {
@@ -1246,16 +1260,6 @@ div > .button-class-option {
   flex-flow: column;
   width: 100%;
   align-items: center;
-}
-
-.class-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  position: relative;
-  max-width: 800px;
 }
 
 .class-option-wrapper {
@@ -1494,7 +1498,7 @@ div > .button-class-option {
 .header > .button--roll:hover.button {
   margin-bottom: 0.5rem;
   padding: 0;
-  color: rgb(255, 255, 255) !important; /* one-off: white hover text on dark header roll button */
+  color: rgb(255, 255, 255); /* one-off: white hover text on dark header roll button */
 }
 
 .partial-character-resume {
@@ -1624,7 +1628,8 @@ div > .button-class-option {
 }
 
 .opacity-0 {
-  opacity: 0 !important;
+  opacity: 0;
+  animation: none;
 }
 
 .prime-req {
@@ -1653,7 +1658,7 @@ div > .button-class-option {
 }
 
 .saving-throws.container {
-  position: relative !important;
+  position: relative;
   background-color: transparent;
   width: 100px;
   height: 100px;
