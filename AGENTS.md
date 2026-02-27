@@ -32,6 +32,9 @@ npm run test           # Vitest unit tests (single run)
 npm run test:ui        # Vitest interactive UI
 npm run test:e2e       # Playwright e2e (Chrome + Firefox + WebKit)
 npm run test:e2e-ui    # Playwright interactive UI
+npm run test:visual          # Visual regression: compare against baselines
+npm run test:visual-update   # Visual regression: re-capture baselines
+npm run test:e2e-report      # Open HTML report (shows screenshot diffs)
 npm run test:all       # Vitest + Playwright combined
 npm run find-duplicate-code  # jscpd duplicate detection (excludes test files)
 ```
@@ -58,6 +61,67 @@ reference/OSE.SRD.Wiki/       # Markdown copy of OSE SRD — game reference only
 temp/                         # Scribus .sla files for character sheet design — not code
 public/assets/dice-box/       # Web-worker assets required by @3d-dice/dice-box
 ```
+
+---
+
+## Visual Regression Tests
+
+Golden-image screenshot tests live in `e2e/visual.spec.js` and run exclusively under the `visual` Playwright project (Chromium, 1280×800). They are excluded from the normal `test:e2e` run so they do not add noise to functional CI.
+
+### Workflow
+
+```bash
+# First time, or after an intentional visual change — capture new baselines:
+npm run test:visual-update
+
+# On every subsequent run — compare against baselines:
+npm run test:visual
+
+# After a failure, open the HTML report to inspect diffs:
+npm run test:e2e-report
+```
+
+### Viewing diffs
+
+When `test:visual` fails, Playwright writes files to a subdirectory of `test-results/` named after the project, a truncated/hashed form of the test title, and the project name again — e.g. `test-results/visual-Visual-regression-—-<hash>-<slug>-visual/`. Inside each folder:
+
+| File | Contents |
+|---|---|
+| `<snapshot-name>-expected.png` | The stored baseline |
+| `<snapshot-name>-actual.png` | What the browser rendered this run |
+| `<snapshot-name>-diff.png` | Pixels that differ, highlighted in magenta |
+| `error-context.md` | Playwright error message and stack trace for the failure |
+
+`npm run test:e2e-report` opens a browser with the HTML report, which includes a side-by-side diff slider for each failing screenshot.
+
+Example file names from real tests:
+
+```text
+test-results
+test-results/.last-run.json
+test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual
+test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual/ability-rolled-actual.png
+test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual/ability-rolled-diff.png
+test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual/ability-rolled-expected.png
+test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual/error-context.md
+test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual
+test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual/ability-fighter-selected-expected.png
+test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual/ability-fighter-selected-diff.png
+test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual/error-context.md
+test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual/ability-fighter-selected-actual.png
+```
+
+
+### Baseline files
+
+Baselines are stored in `e2e/visual.spec.js-snapshots/` as `<name>-visual-<platform>.png`. **Commit these files to git** — they are the ground truth that all future runs compare against. When a design change is intentional, run `test:visual-update` and commit the updated images together with the code change.
+
+### How screenshots are kept stable
+
+- **Deterministic dice rolls** — `Math.random` is replaced at page-init time with a seeded LCG so every roll produces the same values on every run.
+- **Animations disabled** — a `<style>` tag is injected that sets `animation-duration` and `transition-duration` to `0s`, preventing mid-animation frames.
+- **Fixed viewport** — the `visual` project uses 1280×800 so layout never reflows between runs.
+- **1 % pixel tolerance** — `maxDiffPixelRatio: 0.01` absorbs sub-pixel rendering noise without hiding real regressions.
 
 ---
 
