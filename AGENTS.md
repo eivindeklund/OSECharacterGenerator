@@ -213,3 +213,14 @@ Understanding these is required to make sensible changes to game-rule code.
 8. **`emptyClassOptions`** is an exported sentinel object from `classOptionsData.tsx`. It is used as the initial `characterClass` state. Its functions return safe defaults. Never replace it with `null`.
 
 9. **`hpRolls` counter** tracks how many times HP has been re-rolled; it resets only on class change. The UI uses this to decide whether to show "re-roll" affordances.
+---
+
+## Skills
+
+Domain-specific checklists and guidance for common task categories.
+
+Skills are stored in `.agent/skills/`; there's an index file in `.agent/skills/INDEX.md`
+
+| Task category | Skill document |
+|---|---|
+| Any change to UI, CSS, or component structure | [`.agent/skills/visual-changes.md`](.agent/skills/visual-changes.md) |
