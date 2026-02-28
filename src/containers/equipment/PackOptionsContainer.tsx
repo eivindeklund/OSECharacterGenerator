@@ -51,7 +51,10 @@ const PackOptionsContainer: React.FC<PackOptionsContainerProps> = ({
   purchaseLedger = {},
 }) => {
   const [activeTab, setActiveTab] = useState<number>(OPTIMAL_TAB_INDEX);
-  const [rollSeed, setRollSeed] = useState<number>(() => Date.now());
+  // Initialise with Math.random() so the visual regression tests (which replace
+  // Math.random with a seeded LCG before the page loads) get a deterministic
+  // first pack, while production runs still get genuine variety on each mount.
+  const [rollSeed, setRollSeed] = useState<number>(() => Math.random());
 
   const className = characterClass ? characterClass.name : "";
 
