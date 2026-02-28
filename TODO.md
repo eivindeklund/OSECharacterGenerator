@@ -133,30 +133,4 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 
 ## Planned prompts
 
-### Scrolling during navigation
-
 The code is for a D&D character generation wizard.
-
-After navigation, what the user wants to do will typically not be in the same
-position on the page as they were on the previous page.
-
-The following rules applies:
-
-* When navigating to a page in the character generation wizard, if the "next button" can't be
-  clicked, it makes sense to scroll to the topmost place in the page where there
-  is a thing that needs to be fixed to be able to proceed.
-  E.g, if the user comes to the Character Details page for the first time, they
-  need to see the empty name and the button to roll the name.
-
-* When navigating backwards in the character generation wizard, it is most
-  useful to scroll so the prev page / next page buttons are at the bottom of the
-  page, so the user can quickly get to the earlier pages again.  Since the user
-  is navigating backwards, all the required fields must already be set.
-
-* When navigating from the `/sheet` route to `/tavern`, it's most useful
-  to scroll so the character the user has just worked on is visible in the
-  frame.
-
-* When navigating to the `/` (landing) route, we need to scroll to the top
-
-Can you fix the scrolling logic?  If possible, use red/green TDD during development.

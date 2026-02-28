@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { useCharacterManager } from "../hooks/useCharacterManager";
 import type { ClassOptionsData } from "../types";
 import { Dice } from "../utilities/DiceBox";
@@ -12,6 +12,14 @@ import DetailsScreen from "./DetailsScreen";
 import EquipmentScreen from "./EquipmentScreen";
 import ImportCharacterScreen from "./ImportCharacterScreen";
 import LandingScreen from "./LandingScreen";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 // TODO: Add typescript types to all props and state in this file, likely need
 // to refactor some of the state management to make it more manageable and type
@@ -101,6 +109,7 @@ export default function CharacterGenerator() {
 
   return (
     <div className={"layout"}>
+      <ScrollToTop />
       <div className={`wrapper-container`}>
         <div className={`wrapper ${rollButtonHover ? "wrapper-alt" : ""}`}>
           <LandingScreen
@@ -117,6 +126,7 @@ export default function CharacterGenerator() {
             discardPartialCharacter={discardPartialCharacter}
             loadCharacter={loadCharacter}
           />
+          <ScrollToTop />
           <div
             className={"character-menu container"}
             style={characterMenuStyle}
