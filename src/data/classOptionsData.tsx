@@ -1323,7 +1323,6 @@ const classOptionsData = [
   {
     name: "Dwarf Brewmaster",
     category: "carcass",
-    // TODO: This does not look like it's coded anywhere, and the check is just for percentage.
     requirements: "Minimum 9 constitution",
     primeReqs: ["constitution", "strength"],
     xpBonusRule: "10% if both constitution and strength are 16 or more; 5% if either constitution or strength is 13 or more",
