@@ -506,9 +506,11 @@ describe('getOptimalEquipmentPack — budget tier detail', () => {
     }
   });
 
-  test('Cleric includes iron_spikes or rope_50 at ≥ 60 gp (secondary dungeoneering)', () => {
+  test('Cleric includes iron_spikes or rope_50 at ≥ 90 gp (secondary dungeoneering)', () => {
+    // At 60 gp: leather(20) + holy_symbol_silver(25) + essentials(15) = 60 gp exactly,
+    // leaving 0 gp for expansion items. 90 gp is the minimum where budget opens up.
     const c = getClass('Cleric');
-    for (const gold of [60, 90, 120, 150, 180]) {
+    for (const gold of [90, 120, 150, 180]) {
       const pack = getOptimalEquipmentPack(c, gold);
       expect(hasAnyItem(pack, ['iron_spikes', 'rope_50'])).toBe(true);
     }
@@ -612,23 +614,27 @@ describe('getOptimalEquipmentPack — variety / randomisation', () => {
     expect(distinctExpansion.size).toBeGreaterThanOrEqual(3);
   });
 
-  test('weapon choice varies across 20 runs — Cleric at 60 gp', () => {
-    const packs = varietyPacks(getClass('Cleric'), 60);
+  test('weapon choice varies across 20 runs — Cleric at 90 gp', () => {
+    // At 60 gp: leather(20) + holy_symbol_silver(25) + essentials(15) = 60 gp exactly;
+    // weaponBudget=0 so no weapon is purchased. 90 gp is the minimum with weapon budget.
+    const packs = varietyPacks(getClass('Cleric'), 90);
     const meleeWeapons = packs
       .map(p => p.find(i => MELEE_WEAPON_IDS.includes(i.id))?.id)
       .filter(Boolean);
     const distinctWeapons = new Set(meleeWeapons);
-    // Cleric eligible weapons at 60 gp: warhammer, mace
+    // Cleric eligible weapons at 90 gp: warhammer, mace
     expect(distinctWeapons.size).toBeGreaterThanOrEqual(2);
   });
 
-  test('weapon choice varies across 20 runs — Thief at 60 gp', () => {
-    const packs = varietyPacks(getClass('Thief'), 60);
+  test('weapon choice varies across 20 runs — Thief at 90 gp', () => {
+    // At 60 gp: leather(20) + thieves_tools(25) + essentials(15) = 60 gp exactly;
+    // weaponBudget=0 so no weapon is purchased. 90 gp is the minimum with weapon budget.
+    const packs = varietyPacks(getClass('Thief'), 90);
     const meleeWeapons = packs
       .map(p => p.find(i => MELEE_WEAPON_IDS.includes(i.id))?.id)
       .filter(Boolean);
     const distinctWeapons = new Set(meleeWeapons);
-    // Thief eligible weapons at 60 gp: short_sword, hand_axe, dagger
+    // Thief eligible weapons at 90 gp: sword, short_sword, hand_axe, dagger
     expect(distinctWeapons.size).toBeGreaterThanOrEqual(2);
   });
 
