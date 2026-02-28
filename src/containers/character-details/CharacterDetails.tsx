@@ -108,7 +108,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
     }
   }, [characterName, gender, descriptionTemplate]);
 
-  const handleName = (event) => {
+  const handleNameChange = (event) => {
     const newName = event.currentTarget.value;
     setCharacterName(newName);
     if (!genderManuallySet) {
@@ -120,7 +120,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
     setAlignment(event.currentTarget.value);
   };
 
-  const getName = () => {
+  const rollName = () => {
     const fullName = `${chooseRandomItem(firstNames)} ${chooseRandomItem(
       lastNames,
     )}`;
@@ -130,7 +130,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
     }
   };
 
-  const getAppearance = () => {
+  const rollAppearance = () => {
     let appearanceArray = [...appearances];
     const num = 2;
     const selectedAppearances = [];
@@ -143,7 +143,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
     setAppearance(selectedAppearances.join(", "));
   };
 
-  const getBackground = () => {
+  const rollBackground = () => {
     const listLength = 100;
 
     if (isMobile || !diceEnabled || !diceService) {
@@ -207,7 +207,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
     }
   };
 
-  const getPersonality = () => {
+  const rollPersonality = () => {
     const num = 2;
     const selectedPersonalities = [];
     for (let i = 0; i < num; i++) {
@@ -218,7 +218,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
     setPersonality(selectedPersonalities.join(", "));
   };
 
-  const getMisfortune = () => {
+  const rollMisfortune = () => {
     const randomMisfortune = chooseRandomItem(misfortunes);
     setMisfortune(randomMisfortune);
   };
@@ -243,7 +243,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
     setDescriptionUserEdited(false);
   };
 
-  const getDescription = () => {
+  const generateDescription = () => {
     if (!characterName) return;
     descriptionUserEditedRef.current = false;
     setDescriptionUserEdited(false);
@@ -299,11 +299,11 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
             className="form-input"
             type="text"
             value={characterName}
-            onChange={handleName}
+            onChange={handleNameChange}
           />
           <button
             className="button button--random-name"
-            onClick={getName}
+            onClick={rollName}
             type="button"
           >
             Random Name
@@ -425,7 +425,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
           {!description && (
             <Button
               name="optional-details"
-              callback={getDescription}
+              callback={generateDescription}
               text={"Description"}
             ></Button>
           )}
@@ -436,7 +436,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
               <button
                 type="button"
                 className="button button--details-reroll"
-                onClick={descriptionUserEdited ? handleDescriptionRevert : getDescription}
+                onClick={descriptionUserEdited ? handleDescriptionRevert : generateDescription}
               >
                 {descriptionUserEdited ? "Revert" : "Reroll"}
               </button>
@@ -452,7 +452,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
           {!background && (
             <Button
               name="optional-details"
-              callback={getBackground}
+              callback={rollBackground}
               text={"Background (d100)"}
             ></Button>
           )}
@@ -461,14 +461,14 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
             <DetailsResult
               name="Background Skill"
               value={background}
-              callback={getBackground}
+              callback={rollBackground}
             ></DetailsResult>
           )}
 
           {!appearance && (
             <Button
               name="optional-details"
-              callback={getAppearance}
+              callback={rollAppearance}
               text={"Appearance"}
             ></Button>
           )}
@@ -477,14 +477,14 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
             <DetailsResult
               name="Appearance"
               value={appearance}
-              callback={getAppearance}
+              callback={rollAppearance}
             ></DetailsResult>
           )}
 
           {!personality && (
             <Button
               name="optional-details"
-              callback={getPersonality}
+              callback={rollPersonality}
               text={"Personality"}
             ></Button>
           )}
@@ -493,14 +493,14 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
             <DetailsResult
               name="Personality"
               value={personality}
-              callback={getPersonality}
+              callback={rollPersonality}
             ></DetailsResult>
           )}
 
           {!misfortune && (
             <Button
               name="optional-details"
-              callback={getMisfortune}
+              callback={rollMisfortune}
               text={"Misfortune"}
             ></Button>
           )}
@@ -509,7 +509,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
             <DetailsResult
               name="Misfortune"
               value={misfortune}
-              callback={getMisfortune}
+              callback={rollMisfortune}
             ></DetailsResult>
           )}
         </div>

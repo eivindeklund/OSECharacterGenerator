@@ -8,7 +8,7 @@ import type {
   CharacterStatistics,
   ClassOptionsData,
 } from '../../types';
-import { joinDuplicates } from '../../utilities/utilities';
+import { consolidateDuplicates } from '../../utilities/utilities';
 
 interface CharacterSheetProps {
   abilityScores: AbilityScores;
@@ -221,7 +221,7 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
             <span className='charsheet-value-name'>Weapons</span>
 
             <span className='charsheet-value charsheet--weapons'>
-              {joinDuplicates(characterEquipment.weapons).map((item, index) => {
+              {consolidateDuplicates(characterEquipment.weapons).map((item, index) => {
                 return (
                   <span key={index} className='charsheet--weapon-item'>
                     {' '}
@@ -251,7 +251,7 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
             <span className='charsheet-value-name'>Gear</span>
 
             <span className='charsheet-value charsheet--gear'>
-              {joinDuplicates(characterEquipment.adventuringGear).map(
+              {consolidateDuplicates(characterEquipment.adventuringGear).map(
                 (item, index) => {
                   return (
                     <span key={index} className='charsheet--gear-item'>

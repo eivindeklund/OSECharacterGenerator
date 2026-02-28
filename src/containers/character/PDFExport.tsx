@@ -12,7 +12,7 @@ import type {
   CharacterStatistics,
   ClassOptionsData,
 } from '../../types'
-import { joinDuplicates } from '../../utilities/utilities'
+import { consolidateDuplicates } from '../../utilities/utilities'
 
 type PDFExportProps = {
   character: Character
@@ -49,16 +49,16 @@ export default function PDFExport(props: PDFExportProps) {
     : `${alignmentCapitalized}, Common`
 
   const abilitiesInfo = `
-    Weapons: ${joinDuplicates(characterEquipment.weapons).join(', ') || ''}
+    Weapons: ${consolidateDuplicates(characterEquipment.weapons).join(', ') || ''}
     Abilities: ${characterClass.abilities.join(', ')}`
 
   const weaponsInfo = `
-    Weapons: ${joinDuplicates(characterEquipment.weapons).join(', ') || ''}
+    Weapons: ${consolidateDuplicates(characterEquipment.weapons).join(', ') || ''}
     Armour: ${characterEquipment.armour.join(', ') || ''}
     `
 
   const equipmentInfo = `
-    ${joinDuplicates(characterEquipment.adventuringGear).join(', ') || ''}
+    ${consolidateDuplicates(characterEquipment.adventuringGear).join(', ') || ''}
     `
 
   const spellText = characterStatistics.hasSpells ? `Spells: ${characterStatistics.spell}` : ''

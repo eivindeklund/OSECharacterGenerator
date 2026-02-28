@@ -191,18 +191,18 @@ export const useCharacterManager = (
     const animateDice = diceEnabled && diceService;
 
     if (!animateDice) {
-      const HPResult = d(1, characterHitDie);
+      const hpResult = d(1, characterHitDie);
       const totalHP = Math.max(
         1,
-        HPResult + parseInt(characterModifiers.constitutionMod)
+        hpResult + parseInt(characterModifiers.constitutionMod)
       );
-      const HPRollsNew = characterStatistics.hpRolls + 1;
+      const newHpRolls = characterStatistics.hpRolls + 1;
 
       setCharacterStatistics((prev) => ({
         ...prev,
         hitPoints: totalHP,
-        hpRolls: HPRollsNew,
-        hpResult: HPResult,
+        hpRolls: newHpRolls,
+        hpResult: hpResult,
       }));
       return;
     }
@@ -248,17 +248,17 @@ export const useCharacterManager = (
         });
         setPointBuy(0);
       } else if (pendingRoll === "hp") {
-        const HPResult = rollResults[0].value;
+        const hpResult = rollResults[0].value;
         const totalHP = Math.max(
           1,
-          HPResult + parseInt(characterModifiers.constitutionMod)
+          hpResult + parseInt(characterModifiers.constitutionMod)
         );
-        const HPRollsNew = characterStatistics.hpRolls + 1;
+        const newHpRolls = characterStatistics.hpRolls + 1;
         setCharacterStatistics((prev) => ({
           ...prev,
           hitPoints: totalHP,
-          hpRolls: HPRollsNew,
-          hpResult: HPResult,
+          hpRolls: newHpRolls,
+          hpResult: hpResult,
         }));
       } else if (pendingRoll === "gold") {
         let goldResult = 0;

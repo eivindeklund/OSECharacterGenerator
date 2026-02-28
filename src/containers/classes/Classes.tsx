@@ -36,8 +36,8 @@ export function xpBadgeLabel(xpMod: string | null): string {
 export default function ClassOptions(props: ClassOptionsProps) {
   const { characterClass, abilityScores, changeCharacterClass } = props;
 
-  const [advancedClassesDisplay, setAdvancedClassesDisplay] = useState(false);
-  const [carcassClassesDisplay, setCarcassClassesDisplay] = useState(false);
+  const [showAdvancedClasses, setShowAdvancedClasses] = useState(false);
+  const [showCarcassClasses, setShowCarcassClasses] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalClass, setModalClass] = useState<ClassOptionsData | null>(null);
 
@@ -105,28 +105,28 @@ export default function ClassOptions(props: ClassOptionsProps) {
           <span>Advanced Classes</span>
           <Checkbox
             value="Advanced Classes"
-            checkedCondition={advancedClassesDisplay}
-            callback={() => setAdvancedClassesDisplay(!advancedClassesDisplay)}
+            checkedCondition={showAdvancedClasses}
+            callback={() => setShowAdvancedClasses(!showAdvancedClasses)}
           />
         </div>
         <div className="advanced-class-item">
           <span>Carcass Crawler Classes</span>
           <Checkbox
             value="Carcass Crawler Classes"
-            checkedCondition={carcassClassesDisplay}
-            callback={() => setCarcassClassesDisplay(!carcassClassesDisplay)}
+            checkedCondition={showCarcassClasses}
+            callback={() => setShowCarcassClasses(!showCarcassClasses)}
           />
         </div>
       </div>
 
-      {advancedClassesDisplay && (
+      {showAdvancedClasses && (
         <CharacterClasses
           classType="advanced"
           callback={listClassOptions}
         ></CharacterClasses>
       )}
 
-      {carcassClassesDisplay && (
+      {showCarcassClasses && (
         <CharacterClasses
           classType="carcass"
           callback={listClassOptions}

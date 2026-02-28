@@ -62,20 +62,20 @@ export const getWeightedValue = (weightedList, diceResult, listLength) => {
   }
 }
 
-export const joinDuplicates = (array) => {
-  const stuff = {}
+export const consolidateDuplicates = (array) => {
+  const itemCounts = {}
   for (let i = 0; i < array.length; i++) {
-    if (Object.prototype.hasOwnProperty.call(stuff, array[i])) {
-      stuff[array[i]] += 1
+    if (Object.prototype.hasOwnProperty.call(itemCounts, array[i])) {
+      itemCounts[array[i]] += 1
     } else {
-      stuff[array[i]] = 1
+      itemCounts[array[i]] = 1
     }
   }
   const consolidated = []
-  const keys = Object.keys(stuff)
+  const keys = Object.keys(itemCounts)
   for (const key of keys) {
-    if (stuff[key] > 1) {
-      consolidated.push(`${key} (x${stuff[key]})`)
+    if (itemCounts[key] > 1) {
+      consolidated.push(`${key} (x${itemCounts[key]})`)
     } else {
       consolidated.push(key)
     }

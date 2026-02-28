@@ -2,7 +2,7 @@ import {
   calculateArmourClass,
   deriveCharacterModifiers,
   getWeightedValue,
-  joinDuplicates,
+  consolidateDuplicates,
 } from "./utilities";
 
 describe("Utility Functions", () => {
@@ -65,10 +65,10 @@ describe("Utility Functions", () => {
     });
   });
 
-  describe("joinDuplicates", () => {
+  describe("consolidateDuplicates", () => {
     test("should consolidate duplicates", () => {
       const items = ["Rope", "Torch", "Torch", "Torch"];
-      const result = joinDuplicates(items);
+      const result = consolidateDuplicates(items);
       expect(result).toContain("Rope");
       expect(result).toContain("Torch (x3)");
     });

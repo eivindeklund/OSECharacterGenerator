@@ -6,11 +6,11 @@ type InventoryProps = {
   weapons: string[]
   adventuringGear: string[]
   armour: string[]
-  storeHandler: (item: string, action: string, itemType: string) => void
+  onItemAction: (item: string, action: string, itemType: string) => void
 }
 
 export default function Inventory(props: InventoryProps) {
-  const { weapons, adventuringGear, armour, storeHandler } = props
+  const { weapons, adventuringGear, armour, onItemAction } = props
   return (
     <div className='inventory'>
       <h3 className='header-default'>
@@ -20,19 +20,19 @@ export default function Inventory(props: InventoryProps) {
         <Backpack
           itemType={'armour'}
           items={armour}
-          storeHandler={storeHandler}
+          onItemAction={onItemAction}
         ></Backpack>
 
         <Backpack
           itemType={'weapon'}
           items={weapons}
-          storeHandler={storeHandler}
+          onItemAction={onItemAction}
         ></Backpack>
 
         <Backpack
           itemType={'gear'}
           items={adventuringGear}
-          storeHandler={storeHandler}
+          onItemAction={onItemAction}
         ></Backpack>
       </div>
     </div>

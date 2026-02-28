@@ -118,7 +118,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     ));
   };
 
-  const weaponsOptions = (item) => {
+  const renderWeaponOption = (item) => {
     return (
       <option
         value={item.name}
@@ -130,18 +130,18 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   };
 
   const weaponsList = () => {
-    return weaponsData.map((item) => weaponsOptions(item));
+    return weaponsData.map((item) => renderWeaponOption(item));
   };
 
-  const updateSelectedAdventuringGear = (event) => {
+  const handleAdventuringGearChange = (event) => {
     setAdventuringGearSelected(event.target.value);
   };
 
-  const updateSelectedWeapon = (event) => {
+  const handleWeaponChange = (event) => {
     setWeaponSelected(event.target.value);
   };
 
-  const handleOptionChange = (event) => {
+  const handleArmourChange = (event) => {
     setArmourSelected(event.target.value);
   };
 
@@ -153,7 +153,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     }
   };
 
-  const storeHandler = (selectedItem, action, type) => {
+  const handleItemAction = (selectedItem, action, type) => {
     if (
       type !== "pack" &&
       typeof selectedItem === "string" &&
@@ -469,7 +469,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
             weapons={weapons}
             adventuringGear={adventuringGear}
             armour={armour}
-            storeHandler={storeHandler}
+            onItemAction={handleItemAction}
           ></Inventory>
         </div>
       )}

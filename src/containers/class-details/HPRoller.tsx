@@ -24,11 +24,11 @@ export default function HPRoller(props: HPRollerProps) {
   } = props;
 
   const hitPoints = characterStatistics.hitPoints;
-  const HPResult = characterStatistics.hpResult;
-  const HPRolls = characterStatistics.hpRolls || 0;
+  const hpResult = characterStatistics.hpResult;
+  const hpRolls = characterStatistics.hpRolls || 0;
 
   const canReroll =
-    HPRolls < 2 && (HPResult === null || HPResult <= 2);
+    hpRolls < 2 && (hpResult === null || hpResult <= 2);
 
 
   return (
@@ -43,13 +43,13 @@ export default function HPRoller(props: HPRollerProps) {
           fontSize: canReroll ? "" : "4rem",
         }}
       >
-        {canReroll && `${HPRolls === 0 ? "Roll HP" : "Reroll?"}`}
+        {canReroll && `${hpRolls === 0 ? "Roll HP" : "Reroll?"}`}
         {!canReroll && hitPoints}
       </button>
 
       <div className="hp-container container">
         <div className="hp-container--hit-die">
-          {hitPoints && <span>{HPResult}</span>}
+          {hitPoints && <span>{hpResult}</span>}
           {!hitPoints && <span>d{characterClass.hd}</span>}
 
           {!hitPoints && (
