@@ -1,4 +1,3 @@
-import React from 'react'
 import { consolidateDuplicates } from '../../utilities/utilities'
 
 type BackpackProps = {

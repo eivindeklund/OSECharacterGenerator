@@ -1,8 +1,8 @@
 import {
   calculateArmourClass,
+  consolidateDuplicates,
   deriveCharacterModifiers,
   getWeightedValue,
-  consolidateDuplicates,
 } from "./utilities";
 
 describe("Utility Functions", () => {
