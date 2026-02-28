@@ -113,6 +113,32 @@ test.describe('Visual regression — wizard screens', () => {
     await snap(page, 'ability-fighter-selected');
   });
 
+  test('ClassDescription — Fighter details modal', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: /Start/i }).click();
+    await expect(page.getByRole('heading', { name: /Ability Scores/i })).toBeVisible();
+
+    await page.getByRole('button', { name: /Roll All/i }).click();
+    await expect(page.getByRole('button', { name: /^Fighter$/i })).toBeVisible();
+    await page.getByTitle('Fighter Details').click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    await snap(page, 'class-description-fighter');
+  });
+
+  test('ClassDescription — Elf details modal (XP bonus rule)', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: /Start/i }).click();
+    await expect(page.getByRole('heading', { name: /Ability Scores/i })).toBeVisible();
+
+    await page.getByRole('button', { name: /Roll All/i }).click();
+    await expect(page.getByRole('button', { name: /^Elf$/i })).toBeVisible();
+    await page.getByTitle('Elf Details').click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    await snap(page, 'class-description-elf');
+  });
+
   test('Class screen — after rolling HP', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: /Start/i }).click();
