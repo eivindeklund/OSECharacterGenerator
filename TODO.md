@@ -9,11 +9,18 @@ TODO-list for maintainer work on OSECharacterGenerator.  Tracked here instead of
     same as the filters for the weapons visually.  Current implementation is the
     minimum I could have to get the filter.  Should also find out if OSE has
     exactly the same equipment.
-[ ] Tavern navigation to character does not work
 [ ] Auto gen equipment w/Elf 120GP doesn't spend all the gold, same w/Magic-User
     120 gold (total "optimal" pack is 21 gold).  Pack C is 47GP, so at least
     that should be in there.
 [ ] Thieves' tools need lower pri compared to adventuring gear
+[ ] If HP is rolled and the user change character class, the HP from the old
+    roll is kept.  It needs a new roll with the new HD, or a scaling of the old
+    roll to fit the new HD.  Ideal: HD has to be a d4, d6, d8, d10, d12 or d20
+    (d12 and d20 are not currently used).  Every number can be represented with
+    the factors 2 * 2 * 2 * 3 * 5.  So get a random number N from 1-120 and
+    store it, and get the dice by d4 = N/30, d6 = N/20, d8=N/15, d10=N/12,
+    d12=N/10, and d20=N/6.  This allows us to re-scale dice if the user change
+    the class.
 
 ## Necessary to get the fork to "completion" for handback to matthewfee
 
@@ -23,9 +30,6 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 
 [ ] Check all implementation details against official class descriptions, at
     least for the main classes
-      [X] Import the OSE SRE as Markdown so we can check against the class
-          descriptions.
-      [ ] XP bonus descriptions are missing from the SRD; add them manually.
       [ ] Use Carcass Crawler PDFs to check the Carcass Crawler classes
 
 ### Unregress
@@ -36,31 +40,25 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 ### Code status
 
 [ ] Finish TS migration
-  [X] All files migrated
   [ ] Clean up interfaces
 [ ] Get rid of dupe code
-  [X] Merge checkBox / checkBoxStyled
-  [X] Merge different classOptionsData XP modifiers calculation implementations
 [ ] Clean up classOptionsData
-  [X] Clean up the XP bonus calculations
+  [ ] Rename to characterClasses.ts, and look over for cleanup opportunities
 [ ] Full sync with changes matthewfee has done since the original fork
-[X] Remove all use of randomNumbers (the ones that we previously got from api.random.org)
-[ ] Add a document with architecture information, so the agents don't have to
+[X] Add a document with architecture information, so the agents don't have to
     read all the code each time to understand what is going on.
+[ ] Clean up general naming
 
 ### Abilities page
 
-[ ] Add description of the XP bonus system for that class to the class description
+[X] Add description of the XP bonus system for that class to the class description
 
 ### Equipemnt page
 
-[X] Weapon Categories, showing grayed-out or similar if there are no weapons
-    in that category that can be used by the current class
-[X] Stop the use of the separate ledger, just have next page
-[X] Show cost in gold for currently selected items
-[ ] Auto-include holy symbol for cleric
+[X] Auto-include holy symbol for cleric
 [ ] No armor selection for magic-user
-[ ] Automatic "best" equipment pack based on class & available gold.
+[X] Automatic "best" equipment pack based on class & available gold.
+   [ ] Fix so this fills ~the full gold
 
 ### Character Details (page)
 
@@ -93,7 +91,7 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 [ ] Count weight
 [ ] Also fill in alternate sheet (slot encumberance)
    [ ] Shade out the slots the character does not have strength to use without penalty
-[ ] Fill in missing bits
+[ ] Fill in missing fields
 [ ] Fix formatting so the 1-of-6 etc boxes have the same font throughout
 [ ] Fill in complete information for special abilities; e.g, description of
     first spell, complete list of thief's abilities w/percentages
@@ -102,6 +100,14 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
     inventory, and one part for gold/gems/etc, and one part for magic items.
 [ ] Weapon list: Weapon / Lvl / Damage / Defence / Range / Special ?  Encumberance?
 
+### Overall UI
+
+[ ] Move forward/back navigation buttons to the bottom of the screen, so people
+    can navigate back without scrolling.
+[ ] Have Gemini go through the UI to see what should be fixed CSS/HTML-wise to get a
+    "nice styling".  Claude Sonnet can't look at images.
+[ ] Have Gemini go through the UI to come with suggestion for improvements
+    functionality-wise.
 
 ## Large features (wishlist)
 
@@ -111,10 +117,15 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 [ ] GM can set what requirements they want for e.g. rerolls, what languages are
     available, etc.
 [X] Generate full description, w/quirks
-[ ] Auto-generate equipment list based on gold & class
+[X] Auto-generate equipment list based on gold & class
 [ ] Auto-character - go through the entire build, rolling stats, selecting one
     of the best classes, random spell, best equipment, random name, random
     alignment, description
+[ ] Have Claude/Gemini go through the system and look for what user journeys we
+    should support.  Maybe not even look through the system?
+    [ ] Migrate user journeys already found in Gemini into git
+[ ] Migrate storage to Supabase w/authentication through federated login
+    (Discord, Google, ++?)
 
 ## Planned prompts
 
