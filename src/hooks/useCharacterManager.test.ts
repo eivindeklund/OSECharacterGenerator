@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useCharacterManager } from "./useCharacterManager";
 import { hpSeedToRoll } from "../utilities/utilities";
+import { useCharacterManager } from "./useCharacterManager";
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", () => ({
