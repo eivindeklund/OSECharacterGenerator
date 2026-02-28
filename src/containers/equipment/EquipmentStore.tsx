@@ -429,6 +429,17 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
         <div className="equipment-purchase-container">
           <div className="equipment-options">
             {
+              <PackOptionsContainer
+                characterClass={characterClass}
+                gold={gold}
+                bxOnly={bxOnly}
+                onBxOnlyChange={setBxOnly}
+                handleAddToLedger={handleBuyPack}
+                purchaseLedger={inventoryCounts}
+              />
+            }
+
+            {
               <ArmourOptionsContainer
                 characterClass={characterClass}
                 purchaseLedger={inventoryCounts}
@@ -442,16 +453,6 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
                 purchaseLedger={inventoryCounts}
                 handleUpdateLedger={handleUpdateInventory}
               ></WeaponOptionsContainer>
-            }
-
-            {
-              <PackOptionsContainer
-                characterClass={characterClass}
-                gold={gold}
-                bxOnly={bxOnly}
-                onBxOnlyChange={setBxOnly}
-                handleAddToLedger={handleBuyPack}
-              />
             }
 
             {

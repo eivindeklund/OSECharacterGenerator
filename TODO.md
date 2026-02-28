@@ -9,10 +9,6 @@ TODO-list for maintainer work on OSECharacterGenerator.  Tracked here instead of
     same as the filters for the weapons visually.  Current implementation is the
     minimum I could have to get the filter.  Should also find out if OSE has
     exactly the same equipment.
-[ ] Auto gen equipment w/Elf 120GP doesn't spend all the gold, same w/Magic-User
-    120 gold (total "optimal" pack is 21 gold).  Pack C is 47GP, so at least
-    that should be in there.
-[ ] Thieves' tools need lower pri compared to adventuring gear
 [ ] If HP is rolled and the user change character class, the HP from the old
     roll is kept.  It needs a new roll with the new HD, or a scaling of the old
     roll to fit the new HD.  Ideal: HD has to be a d4, d6, d8, d10, d12 or d20
@@ -48,6 +44,11 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 [X] Add a document with architecture information, so the agents don't have to
     read all the code each time to understand what is going on.
 [ ] Clean up general naming
+[ ] Check whether the code for suggested packs has lots of duplication of the
+    equipment data; it shouldn't have any, but had previously
+[ ] Check for overall data duplication
+[ ] Clean up the ledger code in the equipmentscreen - it uses the item names
+    rather than the item ids to be able to deal with holy water/oil/torches being in both weapons and equipment.  They have to be in weapons for the purposes of having damage data, but should maybe be hidden on the equipment page?
 
 ### Abilities page
 
@@ -58,7 +59,10 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 [X] Auto-include holy symbol for cleric
 [ ] No armor selection for magic-user
 [X] Automatic "best" equipment pack based on class & available gold.
-   [ ] Fix so this fills ~the full gold
+   [X] Fix so this fills ~the full gold is used
+[ ] Give the auto-packs "Elf" and "Dwarf" and etc flavor
+[ ] Suggested equipment pack should look at what items already exists in the
+    user's inventory and not include those in the pack.
 
 ### Character Details (page)
 
