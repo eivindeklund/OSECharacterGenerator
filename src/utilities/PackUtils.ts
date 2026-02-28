@@ -285,7 +285,11 @@ export function getOptimalEquipmentPack(
     : 0;
   let meleeTwoHanded = false;
   {
-    const weaponBudget = remainingGold - classItemCost - essentialsMinCost;
+    // Weapons priority: reserve only essential-gear budget before weapon selection,
+    // NOT class-specific item cost (holy symbol, thieves' tools).  This ensures
+    // that tight-budget characters always get a weapon first; class-specific items
+    // are attempted afterward and may be deferred or skipped if gold runs out.
+    const weaponBudget = remainingGold - essentialsMinCost;
     const affordable = MELEE_WEAPON_PRIORITY.filter(id => {
       const weapon = allItems[id];
       if (!weapon) return false;

@@ -228,6 +228,47 @@ describe('getOptimalEquipmentPack — category coverage', () => {
   });
 });
 
+// ─── Weapons Priority Tests ───────────────────────────────────────────────────
+//
+// When the budget is insufficient for a full kit, having *some* weapon takes
+// priority over all other mandatory categories — including class-specific items
+// such as holy symbol (Cleric) and thieves' tools (Thief).  The weapon budget
+// is reserved BEFORE those class-specific items so that tight-budget characters
+// are never left weaponless.
+
+describe('getOptimalEquipmentPack — weapons priority', () => {
+  /**
+   * Universal: every class at every standard gold level must include a melee
+   * weapon.  All classes can use at least one weapon costing ≤ 5 gp, and even
+   * at the lowest (30 gp) budget there is enough headroom after setting aside
+   * 15 gp for essential gear.
+   */
+  test.each(
+    ALL_CLASSES.flatMap(cls => GOLD_LEVELS.map(gold => [cls, gold] as [string, number]))
+  )('%s at %d gp: pack includes a melee weapon', (cls, gold) => {
+    const clsData = getClass(cls);
+    const pack = getOptimalEquipmentPack(clsData, gold);
+    expect(hasMeleeWeapon(pack, clsData)).toBe(true);
+  });
+
+  test('Cleric at 30 gp: has a melee weapon (weapon priority over holy symbol)', () => {
+    // Min full kit for Cleric = 41 gp; at 30 gp all mandatory categories cannot
+    // be filled.  Weapons priority means the weapon is purchased BEFORE trying
+    // to buy the holy symbol, so the character is never weaponless.
+    const c = getClass('Cleric');
+    const pack = getOptimalEquipmentPack(c, 30);
+    expect(hasMeleeWeapon(pack, c)).toBe(true);
+  });
+
+  test('Thief at 30 gp: has a melee weapon (weapon priority over thieves tools)', () => {
+    // Min full kit for Thief ≈ 39 gp; at 30 gp full coverage is not possible.
+    // Weapons priority means a weapon is purchased before thieves' tools.
+    const t = getClass('Thief');
+    const pack = getOptimalEquipmentPack(t, 30);
+    expect(hasMeleeWeapon(pack, t)).toBe(true);
+  });
+});
+
 // ─── Redundancy / Category-Balance Rules ─────────────────────────────────────
 
 describe('getOptimalEquipmentPack — redundancy rules', () => {
@@ -282,6 +323,11 @@ describe('getOptimalEquipmentPack — redundancy rules', () => {
    * Class-specific items (holy symbol, thieves' tools) may legitimately
    * exhaust a low budget before these categories are reached, so they are
    * not included in this rule's missing-category check.
+   *
+   * Weapons Priority amendment: the first (cheapest) melee weapon in the pack
+   * is exempt from this rule — it is the mandatory weapon guaranteed by the
+   * "Weapons priority" criterion.  Only REDUNDANT weapon spending beyond that
+   * first weapon is required to stay within the cheapest-fix threshold.
    */
   test.each(
     ALL_CLASSES.flatMap(cls => GOLD_LEVELS.map(gold => [cls, gold] as [string, number]))
@@ -302,8 +348,19 @@ describe('getOptimalEquipmentPack — redundancy rules', () => {
       .filter(item => [...MELEE_WEAPON_IDS, ...RANGED_WEAPON_IDS, ...AMMO_IDS].includes(item.id))
       .reduce((sum, item) => sum + (allItems[item.id]?.price as number ?? 0) * item.quantity, 0);
 
+    // Per Weapons Priority: deduct the cheapest melee weapon in the pack so that
+    // the mandatory first weapon is never blamed for crowding out survival gear.
+    // Only spending on additional (redundant) weapons is checked against the
+    // cheapest-fix threshold.
+    const cheapestMandatoryMelee = pack
+      .filter(i => MELEE_WEAPON_IDS.includes(i.id))
+      .reduce((min, i) => Math.min(min, (allItems[i.id]?.price as number ?? 0)), Infinity);
+    const redundantWeaponSpend = cheapestMandatoryMelee === Infinity
+      ? weaponSpend
+      : Math.max(0, weaponSpend - cheapestMandatoryMelee);
+
     const cheapestFix = Math.min(...missingUniversal);
-    expect(weaponSpend).toBeLessThanOrEqual(cheapestFix);
+    expect(redundantWeaponSpend).toBeLessThanOrEqual(cheapestFix);
   });
 });
 
@@ -343,10 +400,10 @@ describe('getOptimalEquipmentPack — oracle / reference kernels', () => {
     expect(hasAnyItem(pack, ['rations_standard', 'rations_iron'])).toBe(true);
   });
 
-  test('Magic-User at 60 gp: staff, dagger or staff, backpack, waterskin, light, tinder, rations', () => {
+  test('Magic-User at 60 gp: melee weapon, backpack, waterskin, light, tinder, rations', () => {
     const mu = getClass('Magic-User');
     const pack = getOptimalEquipmentPack(mu, 60);
-    expect(hasAnyItem(pack, ['staff', 'dagger'])).toBe(true);
+    expect(hasMeleeWeapon(pack, mu)).toBe(true);
     expect(hasContainer(pack)).toBe(true);
     expect(hasItem(pack, 'waterskin')).toBe(true);
     expect(hasLightSource(pack)).toBe(true);
@@ -458,17 +515,18 @@ describe('getOptimalEquipmentPack — oracle / reference kernels', () => {
     expect(hasAnyItem(pack, ['rations_standard', 'rations_iron'])).toBe(true);
   });
 
-  test('Cleric at 80 gp: chainmail (or better), holy_symbol_silver, container, waterskin, rations', () => {
+  test('Cleric at 80 gp: chainmail, weapon, holy_symbol_silver, container, waterskin, tinder_box', () => {
     const c = getClass('Cleric');
     const pack = getOptimalEquipmentPack(c, 80, true, noTierDrop);
-    // At 80 gp: chainmail(40) + symbol(25) + essentials(15) = 80 gp exactly.
-    // No budget remains for a weapon; category coverage allows missing weapon
-    // when the cheapest option (2 gp staff) costs more than remaining gold (0).
+    // Weapons priority: chainmail(40) + weapon(5) + holy_symbol(25) + partial essentials(10) = 80 gp.
+    // Rations(5 gp) can no longer fit because the weapon purchase takes priority;
+    // remaining gold = 0 after tinder_box, so the missing rations category is acceptable.
     expect(hasAnyItem(pack, ['chainmail', 'plate_mail'])).toBe(true);
+    expect(hasMeleeWeapon(pack, c)).toBe(true);
     expect(hasItem(pack, 'holy_symbol_silver')).toBe(true);
     expect(hasContainer(pack)).toBe(true);
     expect(hasItem(pack, 'waterskin')).toBe(true);
-    expect(hasAnyItem(pack, ['rations_standard', 'rations_iron'])).toBe(true);
+    expect(hasItem(pack, 'tinder_box')).toBe(true);
   });
 
   test('Cleric at 180 gp: plate_mail, shield, blunt weapon, holy_symbol_silver, lantern, oil_flask, container, water, rations', () => {
@@ -506,13 +564,15 @@ describe('getOptimalEquipmentPack — budget tier detail', () => {
     }
   });
 
-  test('Cleric includes iron_spikes or rope_50 at ≥ 90 gp (secondary dungeoneering)', () => {
-    // At 60 gp: leather(20) + holy_symbol_silver(25) + essentials(15) = 60 gp exactly,
-    // leaving 0 gp for expansion items. 90 gp is the minimum where budget opens up.
+  test('Cleric includes dungeoneering gear at ≥ 90 gp', () => {
+    // Weapons priority shifts some budget from expansion to the weapon purchase
+    // at tight levels, but enough budget remains for cheap dungeoneering items.
+    // noTierDrop ensures a deterministic expansion-list shuffle so this test
+    // is stable across runs.
     const c = getClass('Cleric');
     for (const gold of [90, 120, 150, 180]) {
-      const pack = getOptimalEquipmentPack(c, gold);
-      expect(hasAnyItem(pack, ['iron_spikes', 'rope_50'])).toBe(true);
+      const pack = getOptimalEquipmentPack(c, gold, true, noTierDrop);
+      expect(hasAnyItem(pack, ['iron_spikes', 'pole_10_wooden', 'mirror_hand_steel', 'rope_50'])).toBe(true);
     }
   });
 });

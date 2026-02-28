@@ -34,6 +34,7 @@ A pack is acceptable when it satisfies **all** of the following criteria:
 | **Scaling monotonicity**: higher gold → same or more total items (or higher-value items) | A character with 180 gp should never receive an identical or strictly inferior pack to one with 30 gp |
 | **No intra-category redundancy before inter-category coverage**: the pack must not hold multiple items serving the same combat role (two melee weapons, two ranged options) while any essential non-combat category is unfilled | Spending 17 gp on a sword + warhammer when the character has no light source or no rations is objectively worse than buying a sword then filling the other categories first |
 | **Output variety**: repeated calls with the same class and gold must be capable of producing different packs; weapon choice, armour tier, and expansion gear should all vary across characters, as long as this is possible under the mandatory category coverage and class restriction compliance | Two fighters rolling the same gold should not necessarily be identically equipped — variety makes characters feel individual and matches the reference packs, which offer multiple valid loadouts at every budget level |
+| **Weapons priority**: In the case budget shortfalls, having *some* weapon has priority over other mandatory categories. | Characters almost always have to participate in fights, and weapons makes this possible. |
 
 ---
 
