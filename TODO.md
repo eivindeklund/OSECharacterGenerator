@@ -9,14 +9,15 @@ TODO-list for maintainer work on OSECharacterGenerator.  Tracked here instead of
     same as the filters for the weapons visually.  Current implementation is the
     minimum I could have to get the filter.  Should also find out if OSE has
     exactly the same equipment.
-[ ] If HP is rolled and the user change character class, the HP from the old
-    roll is kept.  It needs a new roll with the new HD, or a scaling of the old
-    roll to fit the new HD.  Ideal: HD has to be a d4, d6, d8, d10, d12 or d20
+[X] If HP is rolled and the user change character class, the HP from the old
+    roll is kept.  It needs or a scaling of the old roll to fit the new hit
+    dice.  Hit Dice has to be a d4, d6, d8, d10, d12 or d20
     (d12 and d20 are not currently used).  Every number can be represented with
     the factors 2 * 2 * 2 * 3 * 5.  So get a random number N from 1-120 and
     store it, and get the dice by d4 = N/30, d6 = N/20, d8=N/15, d10=N/12,
-    d12=N/10, and d20=N/6.  This allows us to re-scale dice if the user change
-    the class.
+    d12=N/10, and d20=N/6.
+[ ] When we navigate back to the Ability Scores page, it is not visible which
+    class has been selected, apart from the "XXX details" button appearing.
 
 ## Necessary to get the fork to "completion" for handback to matthewfee
 

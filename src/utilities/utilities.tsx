@@ -49,7 +49,48 @@ export const d = (howMany: number, sides: number): number => {
   }
   return total
 }
-  
+
+/**
+ * Generate a canonical HP seed in the range [1, 120].
+ * 120 = 2² × 2 × 3 × 5 is divisible by every valid hit-die size
+ * (d4, d6, d8, d10, d12, d20), so the seed can be converted to any
+ * die result without rounding error.
+ */
+export const generateHpSeed = (): number => getRndInteger(1, 120);
+
+/**
+ * Convert a canonical HP seed to a die roll result for the given hit die.
+ *
+ * Formula: ⌈seed / (120 / hd)⌉
+ *   d4  = ⌈seed / 30⌉   (range 1–4)
+ *   d6  = ⌈seed / 20⌉   (range 1–6)
+ *   d8  = ⌈seed / 15⌉   (range 1–8)
+ *   d10 = ⌈seed / 12⌉   (range 1–10)
+ *   d12 = ⌈seed / 10⌉   (range 1–12)
+ *   d20 = ⌈seed /  6⌉   (range 1–20)
+ *
+ * @param seed - integer in [1, 120] produced by generateHpSeed()
+ * @param hd   - hit die size (4 | 6 | 8 | 10 | 12 | 20)
+ */
+export const hpSeedToRoll = (seed: number, hd: number): number =>
+  Math.ceil(seed / (120 / hd));
+
+/**
+ * Reverse of hpSeedToRoll — compute the canonical seed for a known die result.
+ *
+ * Given a die result r on a hd-sided die, the canonical seed is the smallest
+ * value that maps to r: (r − 1) × (120 / hd) + 1
+ *
+ * Used by the animated-dice path to store a seed so that later class changes
+ * can rescale the roll consistently.
+ *
+ * @param result - die roll result in [1, hd]
+ * @param hd     - hit die size (4 | 6 | 8 | 10 | 12 | 20)
+ */
+export const hpRollToSeed = (result: number, hd: number): number =>
+  (result - 1) * (120 / hd) + 1;
+
+
 export const chooseRandomItem = (array) => {
   return array[Math.floor(Math.random() * array.length)]
 }

@@ -50,6 +50,8 @@ export interface CharacterStatistics {
   hitPoints: number | null;
   hpRolls: number;
   hpResult: number | null;
+  /** Canonical seed (1–120) used to derive hpResult for any hit die size. */
+  hpSeed: number | null;
   armourClass: number | null;
   spell: string | null;
   hasSpells: boolean;

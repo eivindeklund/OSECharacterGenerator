@@ -3,6 +3,8 @@ import {
   consolidateDuplicates,
   deriveCharacterModifiers,
   getWeightedValue,
+  hpRollToSeed,
+  hpSeedToRoll,
 } from "./utilities";
 
 describe("Utility Functions", () => {
@@ -84,6 +86,87 @@ describe("Utility Functions", () => {
       expect(getWeightedValue(list, 5, 100)).toBe("Result A");
       expect(getWeightedValue(list, 25, 100)).toBe("Result B");
       expect(getWeightedValue(list, 95, 100)).toBe("Result C");
+    });
+  });
+
+  describe("hpSeedToRoll", () => {
+    test("seed 1 gives 1 for every die size", () => {
+      expect(hpSeedToRoll(1, 4)).toBe(1);
+      expect(hpSeedToRoll(1, 6)).toBe(1);
+      expect(hpSeedToRoll(1, 8)).toBe(1);
+      expect(hpSeedToRoll(1, 10)).toBe(1);
+      expect(hpSeedToRoll(1, 12)).toBe(1);
+      expect(hpSeedToRoll(1, 20)).toBe(1);
+    });
+
+    test("seed 120 gives the maximum face for every die size", () => {
+      expect(hpSeedToRoll(120, 4)).toBe(4);
+      expect(hpSeedToRoll(120, 6)).toBe(6);
+      expect(hpSeedToRoll(120, 8)).toBe(8);
+      expect(hpSeedToRoll(120, 10)).toBe(10);
+      expect(hpSeedToRoll(120, 12)).toBe(12);
+      expect(hpSeedToRoll(120, 20)).toBe(20);
+    });
+
+    test("d4 boundary: seed 30 → 1, seed 31 → 2", () => {
+      expect(hpSeedToRoll(30, 4)).toBe(1);
+      expect(hpSeedToRoll(31, 4)).toBe(2);
+    });
+
+    test("d6 boundary: seed 20 → 1, seed 21 → 2", () => {
+      expect(hpSeedToRoll(20, 6)).toBe(1);
+      expect(hpSeedToRoll(21, 6)).toBe(2);
+    });
+
+    test("d8 boundary: seed 15 → 1, seed 16 → 2", () => {
+      expect(hpSeedToRoll(15, 8)).toBe(1);
+      expect(hpSeedToRoll(16, 8)).toBe(2);
+    });
+
+    test("d10 boundary: seed 12 → 1, seed 13 → 2", () => {
+      expect(hpSeedToRoll(12, 10)).toBe(1);
+      expect(hpSeedToRoll(13, 10)).toBe(2);
+    });
+
+    test("d12 boundary: seed 10 → 1, seed 11 → 2", () => {
+      expect(hpSeedToRoll(10, 12)).toBe(1);
+      expect(hpSeedToRoll(11, 12)).toBe(2);
+    });
+
+    test("d20 boundary: seed 6 → 1, seed 7 → 2", () => {
+      expect(hpSeedToRoll(6, 20)).toBe(1);
+      expect(hpSeedToRoll(7, 20)).toBe(2);
+    });
+
+    test("same seed scales proportionally across die sizes", () => {
+      // seed 60 is the midpoint: d4→2, d6→3, d8→4, d10→5, d12→6, d20→10
+      expect(hpSeedToRoll(60, 4)).toBe(2);
+      expect(hpSeedToRoll(60, 6)).toBe(3);
+      expect(hpSeedToRoll(60, 8)).toBe(4);
+      expect(hpSeedToRoll(60, 10)).toBe(5);
+      expect(hpSeedToRoll(60, 12)).toBe(6);
+      expect(hpSeedToRoll(60, 20)).toBe(10);
+    });
+  });
+
+  describe("hpRollToSeed", () => {
+    test("hpRollToSeed is the left-inverse of hpSeedToRoll for all die sizes", () => {
+      for (const hd of [4, 6, 8, 10, 12, 20]) {
+        for (let result = 1; result <= hd; result++) {
+          const seed = hpRollToSeed(result, hd);
+          expect(hpSeedToRoll(seed, hd)).toBe(result);
+        }
+      }
+    });
+
+    test("seed from hpRollToSeed is always in [1, 120]", () => {
+      for (const hd of [4, 6, 8, 10, 12, 20]) {
+        for (let result = 1; result <= hd; result++) {
+          const seed = hpRollToSeed(result, hd);
+          expect(seed).toBeGreaterThanOrEqual(1);
+          expect(seed).toBeLessThanOrEqual(120);
+        }
+      }
     });
   });
 });

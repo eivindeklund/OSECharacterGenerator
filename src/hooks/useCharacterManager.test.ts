@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useCharacterManager } from "./useCharacterManager";
+import { hpSeedToRoll } from "../utilities/utilities";
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", () => ({
@@ -170,6 +171,79 @@ describe("useCharacterManager", () => {
 
     expect(result.current.characterStatistics.hitPoints).not.toBeNull();
     expect(result.current.characterStatistics.hpRolls).toBe(1);
+  });
+
+  it("should store hpSeed (1–120) when HP is rolled", () => {
+    const { result } = renderHook(() =>
+      useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+    );
+
+    act(() => {
+      result.current.rollCharacter();
+      const event = { target: { value: "Fighter" } };
+      result.current.changeCharacterClass(event);
+    });
+
+    act(() => {
+      result.current.rollHP();
+    });
+
+    const seed = result.current.characterStatistics.hpSeed;
+    expect(seed).not.toBeNull();
+    expect(seed).toBeGreaterThanOrEqual(1);
+    expect(seed).toBeLessThanOrEqual(120);
+  });
+
+  it("should rescale hpResult and hitPoints to new class hit die when class changes", () => {
+    const { result } = renderHook(() =>
+      useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+    );
+
+    // Roll as Fighter (hd: 8)
+    act(() => {
+      result.current.rollCharacter();
+      const event = { target: { value: "Fighter" } };
+      result.current.changeCharacterClass(event);
+    });
+
+    act(() => {
+      result.current.rollHP();
+    });
+
+    const seed = result.current.characterStatistics.hpSeed as number;
+    const expectedClericHpResult = hpSeedToRoll(seed, 6); // Cleric hd: 6
+    const expectedClericHP = Math.max(1, expectedClericHpResult);
+
+    // Change to Cleric (hd: 6)
+    act(() => {
+      const event = { target: { value: "Cleric" } };
+      result.current.changeCharacterClass(event);
+    });
+
+    expect(result.current.characterStatistics.hpResult).toBe(expectedClericHpResult);
+    expect(result.current.characterStatistics.hitPoints).toBe(expectedClericHP);
+  });
+
+  it("should not rescale HP when class changes before HP is rolled", () => {
+    const { result } = renderHook(() =>
+      useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+    );
+
+    act(() => {
+      result.current.rollCharacter();
+      const event = { target: { value: "Fighter" } };
+      result.current.changeCharacterClass(event);
+    });
+
+    // No rollHP() call — hpSeed is null
+
+    act(() => {
+      const event = { target: { value: "Cleric" } };
+      result.current.changeCharacterClass(event);
+    });
+
+    expect(result.current.characterStatistics.hitPoints).toBeNull();
+    expect(result.current.characterStatistics.hpSeed).toBeNull();
   });
 
   it("should roll gold correctly", () => {

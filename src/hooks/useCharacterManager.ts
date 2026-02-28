@@ -12,7 +12,10 @@ import { DeviceService as DefaultDeviceService } from "../utilities/DeviceServic
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
   d,
-  deriveCharacterModifiers
+  deriveCharacterModifiers,
+  generateHpSeed,
+  hpRollToSeed,
+  hpSeedToRoll,
 } from "../utilities/utilities";
 
 /** Returns the furthest wizard route that is valid for the given (possibly partial) character data. */
@@ -68,6 +71,7 @@ export const useCharacterManager = (
     hitPoints: null,
     hpRolls: 0,
     hpResult: null,
+    hpSeed: null,
     armourClass: null,
     spell: null,
     hasSpells: false,
@@ -191,7 +195,8 @@ export const useCharacterManager = (
     const animateDice = diceEnabled && diceService;
 
     if (!animateDice) {
-      const hpResult = d(1, characterHitDie);
+      const seed = generateHpSeed();
+      const hpResult = hpSeedToRoll(seed, characterHitDie);
       const totalHP = Math.max(
         1,
         hpResult + parseInt(characterModifiers.constitutionMod)
@@ -203,6 +208,7 @@ export const useCharacterManager = (
         hitPoints: totalHP,
         hpRolls: newHpRolls,
         hpResult: hpResult,
+        hpSeed: seed,
       }));
       return;
     }
@@ -249,6 +255,7 @@ export const useCharacterManager = (
         setPointBuy(0);
       } else if (pendingRoll === "hp") {
         const hpResult = rollResults[0].value;
+        const seed = hpRollToSeed(hpResult, characterClass.hd);
         const totalHP = Math.max(
           1,
           hpResult + parseInt(characterModifiers.constitutionMod)
@@ -259,6 +266,7 @@ export const useCharacterManager = (
           hitPoints: totalHP,
           hpRolls: newHpRolls,
           hpResult: hpResult,
+          hpSeed: seed,
         }));
       } else if (pendingRoll === "gold") {
         let goldResult = 0;
@@ -286,6 +294,7 @@ export const useCharacterManager = (
     },
     [
       pendingRoll,
+      characterClass.hd,
       characterModifiers.constitutionMod,
       characterStatistics.hpRolls,
     ]
@@ -321,6 +330,7 @@ export const useCharacterManager = (
       hitPoints: null,
       hpRolls: 0,
       hpResult: null,
+      hpSeed: null,
       armourClass: null,
       spell: null,
       hasSpells: false,
@@ -344,6 +354,15 @@ export const useCharacterManager = (
     }
 
     setCharacterClass(newClass);
+
+    // Rescale any previously rolled HP to the new class's hit die.
+    setCharacterStatistics((prev) => {
+      if (prev.hpSeed == null) return prev;
+      const newHpResult = hpSeedToRoll(prev.hpSeed, newClass.hd);
+      const conMod = parseInt(characterModifiers.constitutionMod) || 0;
+      const newHP = Math.max(1, newHpResult + conMod);
+      return { ...prev, hpResult: newHpResult, hitPoints: newHP };
+    });
   };
 
   const scoreIncrease = (key) => {
