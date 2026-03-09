@@ -6,7 +6,7 @@ export const greenSuccess = "#09b341";
 // URLS
 
 export const CHARACTER_SHEET_PURIST_URL =
-  "https://matthewfee.github.io/OSECharacterServer/public/CharacterSheetTemplate7.pdf";
+  "/OSE-purist-fixed.pdf";
 
 export const CHARACTER_SHEET_PURIST_DAC_URL = "/DAC.pdf";
 

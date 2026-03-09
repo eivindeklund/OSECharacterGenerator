@@ -2,8 +2,11 @@ import { PDFDocument } from 'pdf-lib'
 import {
   CHARACTER_SHEET_PURIST_DAC_URL,
   CHARACTER_SHEET_PURIST_URL,
-  CHARACTER_SHEET_UNDERGROUND_URL
+  CHARACTER_SHEET_UNDERGROUND_URL,
+  armourTypes
 } from '../../constants/constants'
+import armourData from '../../data/armourData'
+import weaponsData from '../../data/weaponsData'
 import type {
   AbilityScores,
   Character,
@@ -63,6 +66,29 @@ export default function PDFExport(props: PDFExportProps) {
 
   const spellText = characterStatistics.hasSpells ? `Spells: ${characterStatistics.spell}` : ''
 
+  const baseMovement = (() => {
+    const armour = characterEquipment.armour
+    if (armour.some(a => a === armourTypes.plateMail || a === armourTypes.chainMail)) return 60
+    if (armour.some(a => a === armourTypes.leather)) return 90
+    return 120
+  })()
+
+  const listenAtDoor = characterClass.abilities.some(a => a.includes('Listening at Doors')) ? '2-in-6' : '1-in-6'
+  const findSecretDoor = characterClass.abilities.some(a => a.includes('Detect Secret Doors')) ? '2-in-6' : '1-in-6'
+  const findRoomTrap = characterClass.abilities.some(a => a.includes('Detect Room Traps')) ? '2-in-6' : '1-in-6'
+
+  const equipmentEncumbrance = (() => {
+    const armourWeight = characterEquipment.armour.reduce((sum, name) => {
+      const entry = armourData.find(a => a.name === name)
+      return sum + (entry?.weight ?? 0)
+    }, 0)
+    const weaponWeight = consolidateDuplicates(characterEquipment.weapons).reduce((sum, name) => {
+      const entry = weaponsData.find(w => w.name === name)
+      return sum + (entry?.weight ?? 0)
+    }, 0)
+    return armourWeight + weaponWeight + 80
+  })()
+
   const descriptionInfo = `
     ${character.description && `${character.description}`}
     ${character.appearance && `Appearance: ${character.appearance}`}
@@ -108,18 +134,44 @@ export default function PDFExport(props: PDFExportProps) {
       'DEX AC Mod 2': characterModifiers.dexterityModAC,
       'STR Melee Mod': characterModifiers.strengthModMelee,
       'DEX Missile Mod': characterModifiers.dexterityModMissiles,
+      // TODO: Improve formatting
       'Abilities, Skills, Weapons 2': abilitiesInfo,
       'Reactions CHA Mod 2': characterModifiers.charismaModNPCReactions,
+      // TODO: Improve formatting
       Equipment: equipmentInfo,
       'Weapons and Armour': weaponsInfo,
       GP: characterEquipment.gold,
+      // TODO: Improve formatting
       Description: descriptionInfo,
       'XP for Next Level': characterClass.nextLevel,
       'PR XP Bonus': characterModifiers.primeReqMod,
       'Attack Bonus': '0',
       Notes: spellText,
-      'Languages 2': languageText
-    }
+      'Languages 2': languageText,
+      'Initiative DEX Mod 2': characterModifiers.dexterityModInitiative,
+      'Listen at Door 2': listenAtDoor,
+      'Open Stuck Door 2': characterModifiers.strengthModDoors,
+      'Find Secret Door 2': findSecretDoor,
+      'Find Room Trap 2': findRoomTrap,
+      'Overland Travel 2': String(baseMovement / 5),
+      'Exploration Movement 2': String(baseMovement),
+      'Encounter Movement 2': String(baseMovement / 3),
+      'Equipment Encumbrance': String(equipmentEncumbrance)
+   }
+   //
+   // Fields for use during play, doesn't need filling per now (since we're only doing L1 characters.)
+   //
+   // (Title 2)
+   // (Magic Items)
+   // (Treasure)  -- Doesn't need filling, as it's for in-game use rather than character info
+   // (PP)
+   // (EP)
+   // (SP)
+   // (CP)
+   // (XP)
+   // (Treasure Encumbrance)  -- Always zero at start
+   // (Total Encumbrance)
+
 
     for (const key in formFieldKeysOfficialSheet) {
       let value = formFieldKeysOfficialSheet[key]
