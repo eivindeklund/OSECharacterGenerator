@@ -11,7 +11,7 @@ export const CHARACTER_SHEET_PURIST_URL =
 export const CHARACTER_SHEET_PURIST_DAC_URL = "/DAC.pdf";
 
 export const CHARACTER_SHEET_UNDERGROUND_URL =
-  "https://matthewfee.github.io/OSECharacterServer/public/Underground10.pdf";
+  "/OSE-underground.pdf";
 
 // default states
 
