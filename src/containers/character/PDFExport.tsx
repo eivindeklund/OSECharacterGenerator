@@ -1,4 +1,4 @@
-import { PDFDocument } from 'pdf-lib'
+import { PDFDocument, PDFField, PDFForm } from 'pdf-lib'
 import {
   CHARACTER_SHEET_PURIST_DAC_URL,
   CHARACTER_SHEET_PURIST_URL,
@@ -24,6 +24,70 @@ type PDFExportProps = {
   characterEquipment: CharacterEquipment
   characterModifiers: CharacterModifiers
   abilityScores: AbilityScores
+}
+
+const INITIAL_LEVEL = '1'
+const INITIAL_ATTACK_BONUS = '0'
+const DAC_BASE = 19
+
+const THAC_AT_LEVEL_1: Record<string, string> = {
+  'THAC9': '10',
+  'THAC8': '11',
+  'THAC7': '12',
+  'THAC6': '13',
+  'THAC5': '14',
+  'THAC4': '15',
+  'THAC3': '16',
+  'THAC2': '17',
+  'THAC1': '18',
+  'THAC0': '19',
+}
+
+type FieldData = Record<string, string | number | boolean | null | undefined>
+type AliasMap = Record<string, string | null>
+
+/**
+ * Fill PDF form fields by iterating all fields in the PDF.
+ * For each PDF field name, check the aliasMap:
+ *   - null  → skip (ignore this field)
+ *   - string → use as the key into fieldData instead of the PDF field name
+ *   - absent → use PDF field name directly as the key into fieldData
+ * If the resolved key is not present in fieldData, the field is logged to the console.
+ * Boolean values are written to checkboxes; all other values are written to text fields.
+ */
+function applyFieldData(
+  form: PDFForm,
+  pdfFields: PDFField[],
+  data: FieldData,
+  aliases: AliasMap = {}
+): void {
+  for (const field of pdfFields) {
+    const pdfName = field.getName()
+
+    let dataKey: string | null
+    if (pdfName in aliases) {
+      dataKey = aliases[pdfName]
+    } else {
+      dataKey = pdfName
+    }
+
+    if (dataKey === null) continue
+
+    if (!(dataKey in data)) {
+      console.log(`PDF field "${pdfName}" has no data mapping (looked up "${dataKey}")`)
+      continue
+    }
+
+    const value = data[dataKey];
+    if (value === null) continue
+
+    if (typeof value === 'boolean') {
+      const checkbox = form.getCheckBox(pdfName)
+      if (value) checkbox.check()
+    } else {
+      form.getTextField(pdfName).setText(value != null ? String(value) : '')
+    }
+  }
 }
 
 function openPdfInBrowser(pdfBytes: Uint8Array, fileName: string) {
@@ -97,260 +161,130 @@ export default function PDFExport(props: PDFExportProps) {
     ${character.misfortune && `Misfortune: ${character.misfortune}`}
     `
 
+  // Central field data shared by all page builders.
+  // Keys match the canonical PDF field names used by the purist sheets.
+  // Variant values (e.g. DAC AC) live alongside the originals for use via aliases.
+  const fieldData: FieldData = {
+    'Name': character.name,
+    'Alignment': alignmentCapitalized,
+    'Character Class': characterClass.name,
+    'Level': INITIAL_LEVEL,
+    'STR': abilityScores.strength,
+    'INT': abilityScores.intelligence,
+    'DEX': abilityScores.dexterity,
+    'WIS': abilityScores.wisdom,
+    'CON': abilityScores.constitution,
+    'CHA': abilityScores.charisma,
+
+    'Death Save': characterClass.savingThrows[0],
+    'Wands Save': characterClass.savingThrows[1],
+    'Paralysis Save': characterClass.savingThrows[2],
+    'Breath Save': characterClass.savingThrows[3],
+    'Spells Save': characterClass.savingThrows[4],
+
+    'Magic Save Mod': characterModifiers.wisdomMod,
+    'HP': characterStatistics.hitPoints,
+    'Current HP': characterStatistics.hitPoints,
+    'Max HP': characterStatistics.hitPoints,
+    'AC': characterStatistics.armourClass,
+    'CON HP Mod': characterModifiers.constitutionMod,
+    'Unarmoured AC': characterStatistics.unarmouredAC,
+    'DEX AC Mod': characterModifiers.dexterityModAC,
+    'STR Melee Mod': characterModifiers.strengthModMelee,
+    'DEX Missile Mod': characterModifiers.dexterityModMissiles,
+    // TODO: Improve formatting
+    'Abilities, Skills, Weapons': abilitiesInfo,
+    'Abilities': abilitiesInfo,
+    'Reactions CHA Mod': characterModifiers.charismaModNPCReactions,
+    // TODO: Improve formatting
+    'Equipment': equipmentInfo,
+    'Weapons and Armour': weaponsInfo,
+    'GP': characterEquipment.gold,
+    // TODO: Improve formatting
+    'Description': descriptionInfo,
+    'XP for Next Level': characterClass.nextLevel,
+    'PR XP Bonus': characterModifiers.primeReqMod,
+    'Attack Bonus': INITIAL_ATTACK_BONUS,
+    'Notes': spellText,
+    'Languages': languageText,
+    'Initiative DEX Mod': characterModifiers.dexterityModInitiative,
+    'Listen at Door': listenAtDoor,
+    'Open Stuck Door': characterModifiers.strengthModDoors,
+    'Find Secret Door': findSecretDoor,
+    'Find Room Trap': findRoomTrap,
+    'Overland Movement': String(baseMovement / 5),
+    'Exploration Movement': String(baseMovement),
+    'Encounter Movement': String(baseMovement / 3),
+    'Equipment Encumbrance': String(equipmentEncumbrance),
+    'Portrait': character.appearance,
+    'Literacy': abilityScores.intelligence > 8,
+    ...THAC_AT_LEVEL_1,
+    // Descending AC variants: DAC = 19 - ascending AC; used by DAC sheet via aliases
+    'DAC AC': DAC_BASE - characterStatistics.armourClass,
+    'DAC Unarmoured AC': DAC_BASE - characterStatistics.unarmouredAC,
+    // Fields for use during play — not filled at character creation (level 1).
+    'Title': null,
+    'Magic Items': null,
+    'Treasure': null,
+    'PP': null,
+    'EP': null,
+    'SP': null,
+    'CP': null,
+    'XP': null,
+    'Treasure Encumbrance': null,
+    'Total Encumbrance': null,
+  }
+
   async function fillForm() {
-    const formUrl = CHARACTER_SHEET_PURIST_URL
-    const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer())
-
+    const formPdfBytes = await fetch(CHARACTER_SHEET_PURIST_URL).then(res => res.arrayBuffer())
     const pdfDoc = await PDFDocument.load(formPdfBytes)
-
     const form = pdfDoc.getForm()
+    const pdfFields = form.getFields()
 
-    const formFieldKeysOfficialSheet = {
-      // matches the PDF Form labels with correct data
+    const aliasMap: AliasMap = {}
 
-      'Name': character.name,
-      'Alignment': alignmentCapitalized,
-      'Character Class': characterClass.name,
-      'Level': '1',
-      'STR': abilityScores.strength,
-      'INT': abilityScores.intelligence,
-      'DEX': abilityScores.dexterity,
-      'WIS': abilityScores.wisdom,
-      'CON': abilityScores.constitution,
-      'CHA': abilityScores.charisma,
-
-      'Death Save': characterClass.savingThrows[0],
-      'Wands Save': characterClass.savingThrows[1],
-      'Paralysis Save': characterClass.savingThrows[2],
-      'Breath Save': characterClass.savingThrows[3],
-      'Spells Save': characterClass.savingThrows[4],
-
-      'Magic Save Mod': characterModifiers.wisdomMod,
-      'HP': characterStatistics.hitPoints,
-      'Max HP': characterStatistics.hitPoints,
-      'AC': characterStatistics.armourClass,
-      'CON HP Mod': characterModifiers.constitutionMod,
-      'Unarmoured AC': characterStatistics.unarmouredAC,
-      'DEX AC Mod': characterModifiers.dexterityModAC,
-      'STR Melee Mod': characterModifiers.strengthModMelee,
-      'DEX Missile Mod': characterModifiers.dexterityModMissiles,
-      // TODO: Improve formatting
-      'Abilities, Skills, Weapons': abilitiesInfo,
-      'Reactions CHA Mod': characterModifiers.charismaModNPCReactions,
-      // TODO: Improve formatting
-      Equipment: equipmentInfo,
-      'Weapons and Armour': weaponsInfo,
-      GP: characterEquipment.gold,
-      // TODO: Improve formatting
-      Description: descriptionInfo,
-      'XP for Next Level': characterClass.nextLevel,
-      'PR XP Bonus': characterModifiers.primeReqMod,
-      'Attack Bonus': '0',
-      Notes: spellText,
-      'Languages': languageText,
-      'Initiative DEX Mod': characterModifiers.dexterityModInitiative,
-      'Listen at Door': listenAtDoor,
-      'Open Stuck Door': characterModifiers.strengthModDoors,
-      'Find Secret Door': findSecretDoor,
-      'Find Room Trap': findRoomTrap,
-      'Overland Travel': String(baseMovement / 5),
-      'Exploration Movement': String(baseMovement),
-      'Encounter Movement': String(baseMovement / 3),
-      'Equipment Encumbrance': String(equipmentEncumbrance)
-   }
-   //
-   // Fields for use during play, doesn't need filling per now (since we're only doing L1 characters.)
-   //
-   // (Title)
-   // (Magic Items)
-   // (Treasure)  -- Doesn't need filling, as it's for in-game use rather than character info
-   // (PP)
-   // (EP)
-   // (SP)
-   // (CP)
-   // (XP)
-   // (Treasure Encumbrance)  -- Always zero at start
-   // (Total Encumbrance)
-
-
-    for (const key in formFieldKeysOfficialSheet) {
-      let value = formFieldKeysOfficialSheet[key]
-
-      if (value != null) {
-        value = value.toString()
-      } else {
-        value = ''
-      }
-
-      form.getTextField(key).setText(value)
-    }
-
-    const literacyField = form.getCheckBox('Literacy')
-    if (abilityScores.intelligence > 8) {
-      literacyField.check()
-    }
+    applyFieldData(form, pdfFields, fieldData, aliasMap)
 
     const pdfBytes = await pdfDoc.save()
-
-    const fileName = `${character.name} the ${characterClass.name}.pdf`
-
-    openPdfInBrowser(pdfBytes, fileName)
+    openPdfInBrowser(pdfBytes, `${character.name} the ${characterClass.name}.pdf`)
   }
 
   async function fillFormDAC() {
-    const formUrl = CHARACTER_SHEET_PURIST_DAC_URL
-    const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer())
-
+    const formPdfBytes = await fetch(CHARACTER_SHEET_PURIST_DAC_URL).then(res => res.arrayBuffer())
     const pdfDoc = await PDFDocument.load(formPdfBytes)
-
     const form = pdfDoc.getForm()
+    const pdfFields = form.getFields()
 
-	const fields = form.getFields()
-	fields.forEach(field => {
-		const type = field.constructor.name
-		const name = field.getName()
-		console.log(`${type}: ${name}`)
-	})
-
-    const formFieldKeysOfficialSheet = {
-      // matches the PDF Form labels with correct data
-
-      'Name': character.name,
-      'Alignment': alignmentCapitalized,
-      'Character Class': characterClass.name,
-      'Level': '1',
-      'STR': abilityScores.strength,
-      'INT': abilityScores.intelligence,
-      'DEX': abilityScores.dexterity,
-      'WIS': abilityScores.wisdom,
-      'CON': abilityScores.constitution,
-      'CHA': abilityScores.charisma,
-
-      'Death Save': characterClass.savingThrows[0],
-      'Wands Save': characterClass.savingThrows[1],
-      'Paralysis Save': characterClass.savingThrows[2],
-      'Breath Save': characterClass.savingThrows[3],
-      'Spells Save': characterClass.savingThrows[4],
-
-      'Magic Save Mod': characterModifiers.wisdomMod,
-      'HP': characterStatistics.hitPoints,
-      'Max HP': characterStatistics.hitPoints,
-      'AC': 19 - characterStatistics.armourClass,
-      'CON HP Mod': characterModifiers.constitutionMod,
-      'Unarmoured AC': 19 - characterStatistics.unarmouredAC,
-      'DEX AC Mod': characterModifiers.dexterityModAC,
-      'STR Melee Mod': characterModifiers.strengthModMelee,
-      'Dex Missile Mod': characterModifiers.dexterityModMissiles,
-      'Abilities, Skills, Weapons': abilitiesInfo,
-      'Reactions CHA Mod': characterModifiers.charismaModNPCReactions,
-      Equipment: equipmentInfo,
-      'Weapons and Armour': weaponsInfo,
-      GP: characterEquipment.gold,
-      // Description: descriptionInfo,
-      'XP for Next Level': characterClass.nextLevel,
-      'PR XP Bonus': characterModifiers.primeReqMod,
- 	  'THAC9': '10',
- 	  'THAC8': '11',
- 	  'THAC7': '12',
- 	  'THAC6': '13',
- 	  'THAC5': '14',
- 	  'THAC4': '15',
- 	  'THAC3': '16',
- 	  'THAC2': '17',
- 	  'THAC1': '18',
- 	  'THAC0': '19',
-      Notes: spellText,
-      'Languages': languageText
+    // DAC sheet uses descending AC (higher = better); redirect to pre-computed DAC values
+    const aliasMap: AliasMap = {
+      'AC': 'DAC AC',
+      'Unarmoured AC': 'DAC Unarmoured AC',
     }
 
-    for (const key in formFieldKeysOfficialSheet) {
-      let value = formFieldKeysOfficialSheet[key]
-
-      if (value != null) {
-        value = value.toString()
-      } else {
-        value = ''
-      }
-
-      form.getTextField(key).setText(value)
-    }
-
-    const literacyField = form.getCheckBox('Literacy')
-    if (abilityScores.intelligence > 8) {
-      literacyField.check()
-    }
+    applyFieldData(form, pdfFields, fieldData, aliasMap)
 
     const pdfBytes = await pdfDoc.save()
-
-    const fileName = `${character.name} the ${characterClass.name}.pdf`
-
-    openPdfInBrowser(pdfBytes, fileName)
+    openPdfInBrowser(pdfBytes, `${character.name} the ${characterClass.name}.pdf`)
   }
 
   async function fillFormUnderground() {
-    const formUrl = CHARACTER_SHEET_UNDERGROUND_URL
-
-    const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer())
-
+    const formPdfBytes = await fetch(CHARACTER_SHEET_UNDERGROUND_URL).then(res => res.arrayBuffer())
     const pdfDoc = await PDFDocument.load(formPdfBytes)
-
     const form = pdfDoc.getForm()
+    const pdfFields = form.getFields()
 
-    const formFieldKeysUndergroundSheet = {
-      // matches the PDF Form labels with correct data
-      Name: character.name,
-      Alignment: alignmentCapitalized,
-      'Character Class': characterClass.name,
-      Level: '1',
-      STR: abilityScores.strength,
-      INT: abilityScores.intelligence,
-      DEX: abilityScores.dexterity,
-      WIS: abilityScores.wisdom,
-      CON: abilityScores.constitution,
-      CHA: abilityScores.charisma,
-
-      'Death Save': characterClass.savingThrows[0],
-      'Wands Save': characterClass.savingThrows[1],
-      'Paralysis Save': characterClass.savingThrows[2],
-      'Breath Save': characterClass.savingThrows[3],
-      'Spells Save': characterClass.savingThrows[4],
-
-      'Magic Save Mod': characterModifiers.wisdomMod,
-      'Current HP': characterStatistics.hitPoints,
-      'Max HP': characterStatistics.hitPoints,
-      AC: characterStatistics.armourClass,
-      'CON HP Mod': characterModifiers.constitutionMod,
-
-      'STR Melee Mod': characterModifiers.strengthModMelee,
-      'STR Melee Mod 2': characterModifiers.strengthModMelee,
-      'DEX Missile Mod': characterModifiers.dexterityModMissiles,
-      'Dex Missile Mod 2': characterModifiers.dexterityModMissiles,
-      Abilities: abilitiesInfo,
-      'Reactions CHA Mod': characterModifiers.charismaModNPCReactions,
-      Equipment: equipmentInfo,
-      'Weapons and Armour': weaponsInfo,
-      GP: characterEquipment.gold,
-      Description: descriptionInfo,
-      'Attack Bonus': '0',
-      Portrait: character.appearance
+    // The underground sheet duplicates some values in different places on the sheet
+    const aliasMap: AliasMap = {
+      'Dex Missile Mod 2': 'DEX Missile Mod',
+      'STR Melee Mod 2': 'STR Melee Mod',
+      'Move': 'Exploration Movement',
+      'untitled6': null,  // unnamed field — ignore
     }
 
-    for (const key in formFieldKeysUndergroundSheet) {
-      let value = formFieldKeysUndergroundSheet[key]
-      if (value != null) {
-        value = value.toString()
-      } else {
-        value = ''
-      }
-
-      form.getTextField(key).setText(value)
-    }
+    applyFieldData(form, pdfFields, fieldData, aliasMap)
 
     const pdfBytes = await pdfDoc.save()
-
-    const fileName = `${character.name} the ${characterClass.name}.pdf`
-
-    openPdfInBrowser(pdfBytes, fileName)
+    openPdfInBrowser(pdfBytes, `${character.name} the ${characterClass.name}.pdf`)
   }
 
   return (
