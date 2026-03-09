@@ -108,35 +108,35 @@ export default function PDFExport(props: PDFExportProps) {
     const formFieldKeysOfficialSheet = {
       // matches the PDF Form labels with correct data
 
-      'Name 2': character.name,
-      'Alignment 2': alignmentCapitalized,
-      'Character Class 2': characterClass.name,
-      'Level 2': '1',
-      'STR 2': abilityScores.strength,
-      'INT 2': abilityScores.intelligence,
-      'DEX 2': abilityScores.dexterity,
-      'WIS 2': abilityScores.wisdom,
-      'CON 2': abilityScores.constitution,
-      'CHA 2': abilityScores.charisma,
+      'Name': character.name,
+      'Alignment': alignmentCapitalized,
+      'Character Class': characterClass.name,
+      'Level': '1',
+      'STR': abilityScores.strength,
+      'INT': abilityScores.intelligence,
+      'DEX': abilityScores.dexterity,
+      'WIS': abilityScores.wisdom,
+      'CON': abilityScores.constitution,
+      'CHA': abilityScores.charisma,
 
-      'Death Save 2': characterClass.savingThrows[0],
-      'Wands Save 2': characterClass.savingThrows[1],
-      'Paralysis Save 2': characterClass.savingThrows[2],
-      'Breath Save 2': characterClass.savingThrows[3],
-      'Spells Save 2': characterClass.savingThrows[4],
+      'Death Save': characterClass.savingThrows[0],
+      'Wands Save': characterClass.savingThrows[1],
+      'Paralysis Save': characterClass.savingThrows[2],
+      'Breath Save': characterClass.savingThrows[3],
+      'Spells Save': characterClass.savingThrows[4],
 
-      'Magic Save Mod 2': characterModifiers.wisdomMod,
-      'HP 2': characterStatistics.hitPoints,
-      'Max HP 2': characterStatistics.hitPoints,
-      'AC 2': characterStatistics.armourClass,
-      'CON HP Mod 2': characterModifiers.constitutionMod,
-      'Unarmoured AC 2': characterStatistics.unarmouredAC,
-      'DEX AC Mod 2': characterModifiers.dexterityModAC,
+      'Magic Save Mod': characterModifiers.wisdomMod,
+      'HP': characterStatistics.hitPoints,
+      'Max HP': characterStatistics.hitPoints,
+      'AC': characterStatistics.armourClass,
+      'CON HP Mod': characterModifiers.constitutionMod,
+      'Unarmoured AC': characterStatistics.unarmouredAC,
+      'DEX AC Mod': characterModifiers.dexterityModAC,
       'STR Melee Mod': characterModifiers.strengthModMelee,
       'DEX Missile Mod': characterModifiers.dexterityModMissiles,
       // TODO: Improve formatting
-      'Abilities, Skills, Weapons 2': abilitiesInfo,
-      'Reactions CHA Mod 2': characterModifiers.charismaModNPCReactions,
+      'Abilities, Skills, Weapons': abilitiesInfo,
+      'Reactions CHA Mod': characterModifiers.charismaModNPCReactions,
       // TODO: Improve formatting
       Equipment: equipmentInfo,
       'Weapons and Armour': weaponsInfo,
@@ -147,21 +147,21 @@ export default function PDFExport(props: PDFExportProps) {
       'PR XP Bonus': characterModifiers.primeReqMod,
       'Attack Bonus': '0',
       Notes: spellText,
-      'Languages 2': languageText,
-      'Initiative DEX Mod 2': characterModifiers.dexterityModInitiative,
-      'Listen at Door 2': listenAtDoor,
-      'Open Stuck Door 2': characterModifiers.strengthModDoors,
-      'Find Secret Door 2': findSecretDoor,
-      'Find Room Trap 2': findRoomTrap,
-      'Overland Travel 2': String(baseMovement / 5),
-      'Exploration Movement 2': String(baseMovement),
-      'Encounter Movement 2': String(baseMovement / 3),
+      'Languages': languageText,
+      'Initiative DEX Mod': characterModifiers.dexterityModInitiative,
+      'Listen at Door': listenAtDoor,
+      'Open Stuck Door': characterModifiers.strengthModDoors,
+      'Find Secret Door': findSecretDoor,
+      'Find Room Trap': findRoomTrap,
+      'Overland Travel': String(baseMovement / 5),
+      'Exploration Movement': String(baseMovement),
+      'Encounter Movement': String(baseMovement / 3),
       'Equipment Encumbrance': String(equipmentEncumbrance)
    }
    //
    // Fields for use during play, doesn't need filling per now (since we're only doing L1 characters.)
    //
-   // (Title 2)
+   // (Title)
    // (Magic Items)
    // (Treasure)  -- Doesn't need filling, as it's for in-game use rather than character info
    // (PP)
@@ -185,7 +185,7 @@ export default function PDFExport(props: PDFExportProps) {
       form.getTextField(key).setText(value)
     }
 
-    const literacyField = form.getCheckBox('Literacy 2')
+    const literacyField = form.getCheckBox('Literacy')
     if (abilityScores.intelligence > 8) {
       literacyField.check()
     }
