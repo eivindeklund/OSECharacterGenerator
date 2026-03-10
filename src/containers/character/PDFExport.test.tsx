@@ -128,8 +128,8 @@ describe('applyFieldData', () => {
   it('uses alias to look up value under a different key', () => {
     const form = makeForm()
     const fields = [makeField('AC')]
-    const data: FieldData = { 'AC': 14, 'DAC AC': 5 }
-    const aliases: AliasMap = { 'AC': 'DAC AC' }
+    const data: FieldData = { 'AC': 14, 'Descending AC': 5 }
+    const aliases: AliasMap = { 'AC': 'Descending AC' }
 
     applyFieldData(form as unknown as PDFForm, fields, data, aliases)
 
@@ -282,16 +282,16 @@ describe('buildFieldData', () => {
     expect(buildFieldData(props)['Equipment Encumbrance']).toBe('80')
   })
 
-  // ── DAC (descending AC) values ────────────────────────────────────────────────
+  // ──Descending AC values ────────────────────────────────────────────────
 
-  it('computes DAC AC as 19 minus armour class', () => {
+  it('computes Descending AC as 19 minus armour class', () => {
     const props = { ...baseProps, characterStatistics: { ...baseProps.characterStatistics, armourClass: 14 } }
-    expect(buildFieldData(props)['DAC AC']).toBe(5)
+    expect(buildFieldData(props)['Descending AC']).toBe(5)
   })
 
   it('computes DAC Unarmoured AC as 19 minus unarmoured AC', () => {
     const props = { ...baseProps, characterStatistics: { ...baseProps.characterStatistics, unarmouredAC: 10 } }
-    expect(buildFieldData(props)['DAC Unarmoured AC']).toBe(9)
+    expect(buildFieldData(props)['Descending Unarmoured AC']).toBe(9)
   })
 
   // ── literacy ──────────────────────────────────────────────────────────────────
@@ -384,8 +384,8 @@ describe('buildFieldData', () => {
 describe('PDFExport component', () => {
   it('renders the three export buttons', () => {
     render(<PDFExport {...baseProps} />)
-    expect(screen.getByRole('button', { name: 'Purist' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Purist (AAC)' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Purist (DAC)' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Underground' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Underground (AAC)' })).toBeInTheDocument()
   })
 })

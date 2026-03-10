@@ -261,13 +261,13 @@ export default function PDFExport(props: PDFExportProps) {
         // Can be removed by changing the names in the PDF
         'AC': 'Ascending AC',
         'Unarmoured AC': 'Ascending Unarmoured AC',
-      })}>Purist (Ascending AC)</button>
+      })}>Purist (AAC)</button>
 
       <button onClick={() => fillForm(CHARACTER_SHEET_PURIST_DAC_URL, {
         // Can be removed by changing the names in the PDF
         'AC': 'Descending AC',
         'Unarmoured AC': 'Descending Unarmoured AC',
-      })}>Purist (Descending AC)</button>
+      })}>Purist (DAC)</button>
 
       <button onClick={() => fillForm(CHARACTER_SHEET_UNDERGROUND_URL, {
         // Structurally necessary
@@ -278,7 +278,7 @@ export default function PDFExport(props: PDFExportProps) {
         'Move': 'Exploration Movement',
         'AC': 'Ascending AC',
         'Unarmoured AC': 'Ascending Unarmoured AC',
-      })}>Underground (Ascending AC)</button>
+      })}>Underground (AAC)</button>
     </div>
   )
 }
