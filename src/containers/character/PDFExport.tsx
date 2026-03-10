@@ -17,7 +17,7 @@ import type {
 } from '../../types'
 import { consolidateDuplicates } from '../../utilities/utilities'
 
-type PDFExportProps = {
+export type PDFExportProps = {
   character: Character
   characterStatistics: CharacterStatistics
   characterClass: ClassOptionsData
@@ -43,8 +43,8 @@ const THAC_AT_LEVEL_1: Record<string, string> = {
   'THAC0': '19',
 }
 
-type FieldData = Record<string, string | number | boolean | null | undefined>
-type AliasMap = Record<string, string | null>
+export type FieldData = Record<string, string | number | boolean | null | undefined>
+export type AliasMap = Record<string, string | null>
 
 /**
  * Fill PDF form fields by iterating all fields in the PDF.
@@ -55,7 +55,7 @@ type AliasMap = Record<string, string | null>
  * If the resolved key is not present in fieldData, the field is logged to the console.
  * Boolean values are written to checkboxes; all other values are written to text fields.
  */
-function applyFieldData(
+export function applyFieldData(
   form: PDFForm,
   pdfFields: PDFField[],
   data: FieldData,
@@ -97,7 +97,8 @@ function openPdfInBrowser(pdfBytes: Uint8Array, fileName: string) {
   setTimeout(() => URL.revokeObjectURL(url), 60000)
 }
 
-export default function PDFExport(props: PDFExportProps) {
+/** Derives all PDF field values from character state. Pure — no side effects. */
+export function buildFieldData(props: PDFExportProps): FieldData {
   const {
     character,
     characterStatistics,
@@ -164,7 +165,7 @@ export default function PDFExport(props: PDFExportProps) {
   // Central field data shared by all page builders.
   // Keys match the canonical PDF field names used by the purist sheets.
   // Variant values (e.g. DAC AC) live alongside the originals for use via aliases.
-  const fieldData: FieldData = {
+  return {
     'Name': character.name,
     'Alignment': alignmentCapitalized,
     'Character Class': characterClass.name,
@@ -234,6 +235,11 @@ export default function PDFExport(props: PDFExportProps) {
     'Treasure Encumbrance': null,
     'Total Encumbrance': null,
   }
+}
+
+export default function PDFExport(props: PDFExportProps) {
+  const { character, characterClass } = props
+  const fieldData = buildFieldData(props)
 
   async function fillForm() {
     const formPdfBytes = await fetch(CHARACTER_SHEET_PURIST_URL).then(res => res.arrayBuffer())
