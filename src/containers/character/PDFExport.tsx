@@ -187,9 +187,7 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     'HP': characterStatistics.hitPoints,
     'Current HP': characterStatistics.hitPoints,
     'Max HP': characterStatistics.hitPoints,
-    'AC': characterStatistics.armourClass,
     'CON HP Mod': characterModifiers.constitutionMod,
-    'Unarmoured AC': characterStatistics.unarmouredAC,
     'DEX AC Mod': characterModifiers.dexterityModAC,
     'STR Melee Mod': characterModifiers.strengthModMelee,
     'DEX Missile Mod': characterModifiers.dexterityModMissiles,
@@ -220,9 +218,12 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     'Portrait': character.appearance,
     'Literacy': abilityScores.intelligence > 8,
     ...THAC_AT_LEVEL_1,
+    // Ascending AC variants; used in the purist & underground sheets via aliases
+    'Ascending AC': characterStatistics.armourClass,
+    'Ascending Unarmoured AC': characterStatistics.unarmouredAC,
     // Descending AC variants: DAC = 19 - ascending AC; used by DAC sheet via aliases
-    'DAC AC': DAC_BASE - characterStatistics.armourClass,
-    'DAC Unarmoured AC': DAC_BASE - characterStatistics.unarmouredAC,
+    'Descending AC': DAC_BASE - characterStatistics.armourClass,
+    'Descending Unarmoured AC': DAC_BASE - characterStatistics.unarmouredAC,
     // Fields for use during play — not filled at character creation (level 1).
     'Title': null,
     'Magic Items': null,
@@ -241,65 +242,43 @@ export default function PDFExport(props: PDFExportProps) {
   const { character, characterClass } = props
   const fieldData = buildFieldData(props)
 
-  async function fillForm() {
-    const formPdfBytes = await fetch(CHARACTER_SHEET_PURIST_URL).then(res => res.arrayBuffer())
+  async function fillForm(url: string, aliases: AliasMap) {
+    const formPdfBytes = await fetch(url).then(res => res.arrayBuffer())
     const pdfDoc = await PDFDocument.load(formPdfBytes)
     const form = pdfDoc.getForm()
-    const pdfFields = form.getFields()
-
-    const aliasMap: AliasMap = {}
-
-    applyFieldData(form, pdfFields, fieldData, aliasMap)
-
+    applyFieldData(form, form.getFields(), fieldData, aliases)
     const pdfBytes = await pdfDoc.save()
     openPdfInBrowser(pdfBytes, `${character.name} the ${characterClass.name}.pdf`)
   }
 
-  async function fillFormDAC() {
-    const formPdfBytes = await fetch(CHARACTER_SHEET_PURIST_DAC_URL).then(res => res.arrayBuffer())
-    const pdfDoc = await PDFDocument.load(formPdfBytes)
-    const form = pdfDoc.getForm()
-    const pdfFields = form.getFields()
-
-    // DAC sheet uses descending AC (higher = better); redirect to pre-computed DAC values
-    const aliasMap: AliasMap = {
-      'AC': 'DAC AC',
-      'Unarmoured AC': 'DAC Unarmoured AC',
-    }
-
-    applyFieldData(form, pdfFields, fieldData, aliasMap)
-
-    const pdfBytes = await pdfDoc.save()
-    openPdfInBrowser(pdfBytes, `${character.name} the ${characterClass.name}.pdf`)
-  }
-
-  async function fillFormUnderground() {
-    const formPdfBytes = await fetch(CHARACTER_SHEET_UNDERGROUND_URL).then(res => res.arrayBuffer())
-    const pdfDoc = await PDFDocument.load(formPdfBytes)
-    const form = pdfDoc.getForm()
-    const pdfFields = form.getFields()
-
-    // The underground sheet duplicates some values in different places on the sheet
-    const aliasMap: AliasMap = {
-      'Dex Missile Mod 2': 'DEX Missile Mod',
-      'STR Melee Mod 2': 'STR Melee Mod',
-      'Move': 'Exploration Movement',
-      'untitled6': null,  // unnamed field — ignore
-    }
-
-    applyFieldData(form, pdfFields, fieldData, aliasMap)
-
-    const pdfBytes = await pdfDoc.save()
-    openPdfInBrowser(pdfBytes, `${character.name} the ${characterClass.name}.pdf`)
-  }
-
+  // TODO: Each of these could in principle be used with ascending or descending
+  // AC; consider allowing the user to choose which variant(s) to use with each
+  // sheet, rather than hardcoding it per sheet and relying on aliases to swap
+  // between them.
   return (
     <div className='pdf-export-container'>
-      <button onClick={() => fillForm()}>Purist</button>
+      <button onClick={() => fillForm(CHARACTER_SHEET_PURIST_URL, {
+        // Can be removed by changing the names in the PDF
+        'AC': 'Ascending AC',
+        'Unarmoured AC': 'Ascending Unarmoured AC',
+      })}>Purist (Ascending AC)</button>
 
-      <button onClick={() => fillFormDAC()}>Purist (DAC)</button>
+      <button onClick={() => fillForm(CHARACTER_SHEET_PURIST_DAC_URL, {
+        // Can be removed by changing the names in the PDF
+        'AC': 'Descending AC',
+        'Unarmoured AC': 'Descending Unarmoured AC',
+      })}>Purist (Descending AC)</button>
 
-      <button onClick={() => fillFormUnderground()}>Underground</button>
+      <button onClick={() => fillForm(CHARACTER_SHEET_UNDERGROUND_URL, {
+        // Structurally necessary
+        'Dex Missile Mod 2': 'DEX Missile Mod',
+        'STR Melee Mod 2': 'STR Melee Mod',
+        'untitled6': null,  // unnamed field — ignore
+        // Can be removed by changing the names in the PDF
+        'Move': 'Exploration Movement',
+        'AC': 'Ascending AC',
+        'Unarmoured AC': 'Ascending Unarmoured AC',
+      })}>Underground (Ascending AC)</button>
     </div>
   )
 }
