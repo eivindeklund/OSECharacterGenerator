@@ -82,6 +82,19 @@ export interface AbilityRequirement {
   minimum: number;
 }
 
+// ── Class Ability ─────────────────────────────────────────────────────────────
+
+export interface ClassAbility {
+  name: string;
+  description?: string;
+  /** Level-aware description; overrides `description` when present. */
+  getDescription?: (level: number) => string;
+  /** Only show this ability at or above this level (default: 1). */
+  minLevel?: number;
+  /** Set to false to keep in data for logic checks (e.g. PDF export) but hide from displayed lists. Default: true. */
+  shownInList?: boolean;
+}
+
 // ── Class Options ─────────────────────────────────────────────────────────────
 
 export interface ClassOptionsData {
@@ -99,7 +112,7 @@ export interface ClassOptionsData {
   description: string;
   savingThrows: number[];
   nextLevel: number;
-  abilities: string[];
+  abilities: ClassAbility[];
   link: string;
   arcane: boolean;
   divine: boolean;

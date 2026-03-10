@@ -25,7 +25,7 @@ export default function ClassDescription(props: ClassDescriptionProps) {
     'Hit Dice': `d${characterClass.hd}`,
     Armour: characterClass.armour,
     Weapons: characterClass.weapons,
-    'Special Abilities': `${characterClass.abilities.join(', ')}`,
+    'Special Abilities': characterClass.abilities.map((a) => a.name).join(', '),
     Languages: langString,
     'XP to level 2': characterClass.nextLevel,
     'Maximum Level': characterClass.maxLevel,

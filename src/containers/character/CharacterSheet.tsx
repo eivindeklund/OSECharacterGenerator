@@ -8,6 +8,7 @@ import type {
   CharacterStatistics,
   ClassOptionsData,
 } from '../../types';
+import { getAbilitiesForLevel } from '../../utilities/classAbilities';
 import { consolidateDuplicates } from '../../utilities/utilities';
 
 interface CharacterSheetProps {
@@ -182,11 +183,13 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
             <span className='charsheet-value-name'>Abilities</span>
             <span className='charsheet-value character-sheet--class-ability'>
               <ul>
-                {characterClass.abilities.map((item, index) => {
+                {getAbilitiesForLevel(characterClass.abilities, 1).map((ability) => {
                   return (
-                    <li key={index} className='character-sheet--class-ability'>
+                    <li key={ability.name} className='character-sheet--class-ability'>
                       {' '}
-                      {item}{' '}
+                      <strong>{ability.name}</strong>
+                      {ability.description && `: ${ability.description}`}
+                      {' '}
                     </li>
                   )
                 })}

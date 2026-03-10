@@ -118,7 +118,7 @@ export function buildFieldData(props: PDFExportProps): FieldData {
 
   const abilitiesInfo = `
     Weapons: ${consolidateDuplicates(characterEquipment.weapons).join(', ') || ''}
-    Abilities: ${characterClass.abilities.join(', ')}`
+    Abilities: ${characterClass.abilities.map((a) => a.name).join(', ')}`
 
   const weaponsInfo = `
     Weapons: ${consolidateDuplicates(characterEquipment.weapons).join(', ') || ''}
@@ -138,9 +138,9 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     return 120
   })()
 
-  const listenAtDoor = characterClass.abilities.some(a => a.includes('Listening at Doors')) ? '2-in-6' : '1-in-6'
-  const findSecretDoor = characterClass.abilities.some(a => a.includes('Detect Secret Doors')) ? '2-in-6' : '1-in-6'
-  const findRoomTrap = characterClass.abilities.some(a => a.includes('Detect Room Traps')) ? '2-in-6' : '1-in-6'
+  const listenAtDoor = characterClass.abilities.some((a) => a.name.includes('Listening at Doors')) ? '2-in-6' : '1-in-6'
+  const findSecretDoor = characterClass.abilities.some((a) => a.name.includes('Detect Secret Doors')) ? '2-in-6' : '1-in-6'
+  const findRoomTrap = characterClass.abilities.some((a) => a.name.includes('Detect Room Traps')) ? '2-in-6' : '1-in-6'
 
   const equipmentEncumbrance = (() => {
     const armourWeight = characterEquipment.armour.reduce((sum, name) => {

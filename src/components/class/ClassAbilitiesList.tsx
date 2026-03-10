@@ -1,18 +1,22 @@
 import React from 'react'
 import type { ClassOptionsData } from '../../types'
+import { getAbilitiesForLevel } from '../../utilities/classAbilities'
 
 type ClassAbilitiesListProps = {
   characterClass: ClassOptionsData
+  level?: number
 }
 
-export default function ClassAbilitiesList({ characterClass }: ClassAbilitiesListProps) {
+export default function ClassAbilitiesList({ characterClass, level = 1 }: ClassAbilitiesListProps) {
+  const abilities = getAbilitiesForLevel(characterClass.abilities, level)
   return (
     <div className='class-ability-menu--abilities'>
       <ul className='class-ability-list'>
-        {characterClass.abilities.map((item) => {
+        {abilities.map((ability) => {
           return (
-            <li key={item} className='class-ability'>
-              {item}
+            <li key={ability.name} className='class-ability'>
+              <strong>{ability.name}</strong>
+              {ability.description && `: ${ability.description}`}
             </li>
           )
         })}

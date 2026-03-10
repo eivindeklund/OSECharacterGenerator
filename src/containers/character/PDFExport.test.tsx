@@ -243,7 +243,7 @@ describe('buildFieldData', () => {
   // ── door / trap detection ─────────────────────────────────────────────────────
 
   it('gives 2-in-6 listen chance when class has Listening at Doors ability', () => {
-    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: ['Listening at Doors (2-in-6)'] } }
+    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: [{ name: 'Listening at Doors (2-in-6)' }] } }
     expect(buildFieldData(props)['Listen at Door']).toBe('2-in-6')
   })
 
@@ -252,7 +252,7 @@ describe('buildFieldData', () => {
   })
 
   it('gives 2-in-6 secret door chance when class has Detect Secret Doors ability', () => {
-    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: ['Detect Secret Doors'] } }
+    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: [{ name: 'Detect Secret Doors' }] } }
     expect(buildFieldData(props)['Find Secret Door']).toBe('2-in-6')
   })
 
@@ -261,7 +261,7 @@ describe('buildFieldData', () => {
   })
 
   it('gives 2-in-6 room trap chance when class has Detect Room Traps ability', () => {
-    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: ['Detect Room Traps'] } }
+    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: [{ name: 'Detect Room Traps' }] } }
     expect(buildFieldData(props)['Find Room Trap']).toBe('2-in-6')
   })
 

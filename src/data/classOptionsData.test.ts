@@ -1,6 +1,7 @@
 import { abilityScoreNames } from "../constants/constants";
 import type { AbilityScores } from "../types";
-import classOptionsData from "./classOptionsData";
+import { getAbilitiesForLevel } from "../utilities/classAbilities";
+import classOptionsData, { thiefSkillTable } from "./classOptionsData";
 
 // Get the ClassOptions class from the first item in the array
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -667,6 +668,192 @@ describe("ClassOptions", () => {
       });
       if (failures.length > 0) console.error("Not 0% at 8/8:", failures);
       expect(failures).toEqual([]);
+    });
+  });
+});
+
+// ── Thief Skill Table ─────────────────────────────────────────────────────────
+
+describe("thiefSkillTable", () => {
+  test("has exactly 14 rows (one per level)", () => {
+    expect(thiefSkillTable).toHaveLength(14);
+  });
+
+  test("rows are indexed by level (thiefSkillTable[0].level === 1)", () => {
+    expect(thiefSkillTable[0].level).toBe(1);
+    expect(thiefSkillTable[13].level).toBe(14);
+  });
+
+  test("level 1 row matches SRD values", () => {
+    const row = thiefSkillTable[0];
+    expect(row.CS).toBe(87);
+    expect(row.TR).toBe(10);
+    expect(row.HN).toBe("1-2");
+    expect(row.HS).toBe(10);
+    expect(row.MS).toBe(20);
+    expect(row.OL).toBe(15);
+    expect(row.PP).toBe(20);
+  });
+
+  test("level 7 row matches SRD values", () => {
+    const row = thiefSkillTable[6];
+    expect(row.CS).toBe(93);
+    expect(row.TR).toBe(50);
+    expect(row.HN).toBe("1-4");
+    expect(row.HS).toBe(45);
+    expect(row.MS).toBe(55);
+    expect(row.OL).toBe(55);
+    expect(row.PP).toBe(55);
+  });
+
+  test("level 11 row has HN '1-5'", () => {
+    expect(thiefSkillTable[10].HN).toBe("1-5");
+  });
+
+  test("level 14 row matches SRD values", () => {
+    const row = thiefSkillTable[13];
+    expect(row.CS).toBe(99);
+    expect(row.TR).toBe(99);
+    expect(row.HN).toBe("1-5");
+    expect(row.HS).toBe(99);
+    expect(row.MS).toBe(99);
+    expect(row.OL).toBe(99);
+    expect(row.PP).toBe(125);
+  });
+});
+
+describe("ClassOptions.getThiefSkillAtLevel", () => {
+  const ClassOptions = classOptionsData[0].constructor as any;
+
+  test("CS at level 1 is 87", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("CS", 1)).toBe(87);
+  });
+
+  test("CS at level 14 is 99", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("CS", 14)).toBe(99);
+  });
+
+  test("TR at level 6 is 40", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("TR", 6)).toBe(40);
+  });
+
+  test("HN at level 1 is '1-2'", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("HN", 1)).toBe("1-2");
+  });
+
+  test("HN at level 4 is '1-3'", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("HN", 4)).toBe("1-3");
+  });
+
+  test("HN at level 7 is '1-4'", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("HN", 7)).toBe("1-4");
+  });
+
+  test("HN at level 11 is '1-5'", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("HN", 11)).toBe("1-5");
+  });
+
+  test("PP at level 14 is 125", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("PP", 14)).toBe(125);
+  });
+
+  test("clamps to level 1 for level 0", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("CS", 0)).toBe(87);
+  });
+
+  test("clamps to level 14 for level 99", () => {
+    expect(ClassOptions.getThiefSkillAtLevel("PP", 99)).toBe(125);
+  });
+});
+
+describe("Thief abilities: level-based descriptions via getAbilitiesForLevel", () => {
+  const thief = classOptionsData.find((c) => c.name === "Thief")!;
+
+  function abilityAt(name: string, level: number) {
+    return getAbilitiesForLevel(thief.abilities, level).find((a) => a.name === name);
+  }
+
+  describe("Climb Sheer Surfaces", () => {
+    test("contains '87%' at level 1", () => {
+      expect(abilityAt("Climb Sheer Surfaces", 1)?.description).toContain("87%");
+    });
+    test("contains '93%' at level 7", () => {
+      expect(abilityAt("Climb Sheer Surfaces", 7)?.description).toContain("93%");
+    });
+    test("contains '99%' at level 14", () => {
+      expect(abilityAt("Climb Sheer Surfaces", 14)?.description).toContain("99%");
+    });
+  });
+
+  describe("Find/Remove Treasure Traps", () => {
+    test("contains '10%' at level 1", () => {
+      expect(abilityAt("Find/Remove Treasure Traps", 1)?.description).toContain("10%");
+    });
+    test("contains '50%' at level 7", () => {
+      expect(abilityAt("Find/Remove Treasure Traps", 7)?.description).toContain("50%");
+    });
+    test("contains '99%' at level 14", () => {
+      expect(abilityAt("Find/Remove Treasure Traps", 14)?.description).toContain("99%");
+    });
+  });
+
+  describe("Hear Noise", () => {
+    test("contains '1-2' at level 1", () => {
+      expect(abilityAt("Hear Noise", 1)?.description).toContain("1-2");
+    });
+    test("contains '1-4' at level 7", () => {
+      expect(abilityAt("Hear Noise", 7)?.description).toContain("1-4");
+    });
+    test("contains '1-5' at level 11", () => {
+      expect(abilityAt("Hear Noise", 11)?.description).toContain("1-5");
+    });
+  });
+
+  describe("Hide in Shadows", () => {
+    test("contains '10%' at level 1", () => {
+      expect(abilityAt("Hide in Shadows", 1)?.description).toContain("10%");
+    });
+    test("contains '45%' at level 7", () => {
+      expect(abilityAt("Hide in Shadows", 7)?.description).toContain("45%");
+    });
+    test("contains '99%' at level 14", () => {
+      expect(abilityAt("Hide in Shadows", 14)?.description).toContain("99%");
+    });
+  });
+
+  describe("Move Silently", () => {
+    test("contains '20%' at level 1", () => {
+      expect(abilityAt("Move Silently", 1)?.description).toContain("20%");
+    });
+    test("contains '55%' at level 7", () => {
+      expect(abilityAt("Move Silently", 7)?.description).toContain("55%");
+    });
+    test("contains '99%' at level 14", () => {
+      expect(abilityAt("Move Silently", 14)?.description).toContain("99%");
+    });
+  });
+
+  describe("Open Locks", () => {
+    test("contains '15%' at level 1", () => {
+      expect(abilityAt("Open Locks", 1)?.description).toContain("15%");
+    });
+    test("contains '55%' at level 7", () => {
+      expect(abilityAt("Open Locks", 7)?.description).toContain("55%");
+    });
+    test("contains '99%' at level 14", () => {
+      expect(abilityAt("Open Locks", 14)?.description).toContain("99%");
+    });
+  });
+
+  describe("Pick Pockets", () => {
+    test("contains '20%' at level 1", () => {
+      expect(abilityAt("Pick Pockets", 1)?.description).toContain("20%");
+    });
+    test("contains '55%' at level 7", () => {
+      expect(abilityAt("Pick Pockets", 7)?.description).toContain("55%");
+    });
+    test("contains '125%' at level 14", () => {
+      expect(abilityAt("Pick Pockets", 14)?.description).toContain("125%");
     });
   });
 });
