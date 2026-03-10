@@ -292,7 +292,7 @@ const classOptionsData = [
     abilities: [
       "Backstab",
       "Thief Skills (climb sheer surfaces, find or remove treasure traps, hear noise, hide in shadows, move silently, open locks, pick pockets)",
-      "Read Lanuages (level 4)",
+      "Read Languages (level 4)",
       "Scroll Use (level 10)",
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Thief",
@@ -434,7 +434,7 @@ const classOptionsData = [
     savingThrows: [13, 14, 13, 16, 15],
     nextLevel: 1500,
     abilities: [
-      "Assassin Skills (assassination, climb sheer suraces, hear noise, hide in shadows, move silently)",
+      "Assassin Skills (assassination, climb sheer surfaces, hear noise, hide in shadows, move silently)",
       "Disguise",
       "Poison",
       "Assassin Hirelings (level 4)",
@@ -583,7 +583,7 @@ const classOptionsData = [
       "Detect Room Traps",
       "Infravision",
       "Light-Sensitivity",
-      "Mental Powers (enlargment, invisibility, shrinking, heat)",
+      "Mental Powers (enlargement, invisibility, shrinking, heat)",
       "Stealth",
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
@@ -704,7 +704,7 @@ const classOptionsData = [
     savingThrows: [12, 13, 14, 15, 16],
     nextLevel: 2500,
     abilities: [
-      "Chivalic Code",
+      "Chivalric Code",
       "Horsemanship",
       "Mounted Combat",
       "Strength of Will",
@@ -1148,7 +1148,7 @@ const classOptionsData = [
       "Natural Armour Class",
       "Infravision",
       "Light Sensitivity",
-      "Rest and Sustenence",
+      "Rest and Sustenance",
       "Telepathic Communication",
       "Fungal Reanimation (level 6)",
     ],
@@ -1176,7 +1176,7 @@ const classOptionsData = [
       "Fiendish Heritage (roll on tables)",
       "Holy Water Vulnerability",
       "Infravision",
-      "Tiefling Skills (Beguile, hear noise, hide in shadows, move silently",
+      "Tiefling Skills (Beguile, hear noise, hide in shadows, move silently)",
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
     arcane: false,
@@ -1281,7 +1281,7 @@ const classOptionsData = [
     isStandardWeapon: () => true,
     languages: "the secret language of rats",
     description:
-      "Ratlings are fur-covered, rat-like, bipedal humanoids. They stand 4′ to 5′ tall and have 3′-long prehensile tails, large ears, and sensitive noses. Though industrious and adaptable, their association with ver- min tends to place them in the fringes of human settlements. Ratlings are born in broods of 3–5, reach maturity around age 7 or 8, and rarely live past 40. Naturally gregarious, their relatively short lifespans lend the species a certain devil-may-care outlook that other races find amusive",
+      "Ratlings are fur-covered, rat-like, bipedal humanoids. They stand 4′ to 5′ tall and have 3′-long prehensile tails, large ears, and sensitive noses. Though industrious and adaptable, their association with vermin tends to place them in the fringes of human settlements. Ratlings are born in broods of 3–5, reach maturity around age 7 or 8, and rarely live past 40. Naturally gregarious, their relatively short lifespans lend the species a certain devil-may-care outlook that other races find amusing",
     savingThrows: [8, 9, 10, 13, 12],
     nextLevel: 2000,
     abilities: [
@@ -1342,7 +1342,7 @@ const classOptionsData = [
       ].includes(w.id),
     languages: "Dwarvish, Gnomish, Goblin, Kobold",
     description:
-      "Brewmasters are dwarves who dedicate their lives to the craft of brewing alcohol. In combat, they are unpredictable brawl- ers who fight with drunken fury. Dwarf brewmasters are driven to adventure in search of rare ingredients, secret recipes, and ever-stronger drinks.",
+      "Brewmasters are dwarves who dedicate their lives to the craft of brewing alcohol. In combat, they are unpredictable brawlers who fight with drunken fury. Dwarf brewmasters are driven to adventure in search of rare ingredients, secret recipes, and ever-stronger drinks.",
     savingThrows: [8, 9, 10, 13, 12],
     nextLevel: 2500,
     abilities: [

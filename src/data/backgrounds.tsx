@@ -29,6 +29,6 @@ export const characterBackgrounds = {
   90: "Tanner",
   93: "Thatcher",
   96: "Lumberjack",
-  98: "Vinter",
+  98: "Vintner",
   100: "Roll for two skills"
 };

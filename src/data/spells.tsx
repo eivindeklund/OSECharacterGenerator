@@ -21,7 +21,7 @@ export const druidSpells = [
   "Invisibility to Animals",
   "Locate Plant or Animal",
   "Predict Weather",
-  "Speak with Aniamls"
+  "Speak with Animals"
 ];
 
 export const illusionistSpells = [
