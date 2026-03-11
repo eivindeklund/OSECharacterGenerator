@@ -43,6 +43,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   const navigate = useNavigate();
 
   const [gold, setGold] = useState<number | null>(characterEquipment.gold);
+  const [rolledGold, setRolledGold] = useState<number | null>(characterEquipment.gold);
   const [goldRolled, setGoldRolled] = useState(
     characterEquipment.gold !== null,
   );
@@ -90,6 +91,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     setWeapons([]);
     setArmour([]);
     setAdventuringGear([]);
+    setGold(rolledGold);
   };
 
   const calculateAC = () => {
@@ -184,6 +186,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   useEffect(() => {
     if (characterEquipment.gold !== null && gold === null) {
       setGold(characterEquipment.gold);
+      setRolledGold(characterEquipment.gold);
       setGoldRolled(true);
       setShowGoldInfo(true);
     }

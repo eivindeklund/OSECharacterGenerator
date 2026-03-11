@@ -18,7 +18,7 @@ TODO-list for maintainer work on OSECharacterGenerator.  Tracked here instead of
     d12=N/10, and d20=N/6.
 [X] When we navigate back to the Ability Scores page, it is not visible which
     class has been selected, apart from the "XXX details" button appearing.
-[ ] "Reset equipment" does not return the spent gold
+[X] "Reset equipment" does not return the spent gold
 
 ## Necessary to get the fork to "completion" for handback to matthewfee
 
