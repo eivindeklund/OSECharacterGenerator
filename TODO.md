@@ -49,7 +49,7 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 [ ] Check whether the code for suggested packs has lots of duplication of the
     equipment data; it shouldn't have any, but had previously
 [ ] Check for overall data duplication
-[ ] Clean up the ledger code in the equipmentscreen - it uses the item names
+[X] Clean up the ledger code in the equipmentscreen - it uses the item names
     rather than the item ids to be able to deal with holy water/oil/torches being in both weapons and equipment.  They have to be in weapons for the purposes of having damage data, but should maybe be hidden on the equipment page?
 [X] Lots of stuff uses risky aspects of display strings to determine behavior; e.g. the exact same name of an item between Weapons and Equipment, a.name.includes('Listening at Doors').
    [X] Change to using ids and better data structures rather than looking inside strings
@@ -69,15 +69,14 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
         classOptionsData that can take any armour.
    [X] `return Object.entries(itemCounts).map(([id, count]) => ({ id, count }))` in consolidateItems looks like a useless map.  Remove if useless.
 
-   [ ] Add a test that checks that the ids in equipmentList are unique, and one
+   [X] Add a test that checks that the ids in equipmentList are unique, and one
        that checks that the ids in weaponsList are unique.
-    [ ] Remove the access pattern `name = allItemsById[id]?.name ?? id`; replace with a getter that logs an error + stacktrace if the id is not available, and fails if the item is not available and we are running a unit or integration test or in dev.   Incorrect ids are bugs and should not be papered over automatically, especially not in test conditions.  Note TODO in the getter for making the failure notify some monitoring system.
-    [ ] Scrub missing ids on load (with a warning) rather than having "safety" throughout the code.  The code should "fail" (log an error + notify monitoring) if enountering missing ids in prod, and plain fail if encountering them unit tests/integration tests/dev.
-    [ ] Rename isThiefEquivalent to canUseThiefTools
+   [ ] Remove the access pattern `name = allItemsById[id]?.name ?? id`; replace with a getter that logs an error + stacktrace if the id is not available, and fails if the item is not available and we are running a unit or integration test or in dev.   Incorrect ids are bugs and should not be papered over automatically, especially not in test conditions.  Note TODO in the getter for making the failure notify some monitoring system.
+   [ ] Scrub missing ids on load (with a warning) rather than having "safety" throughout the code.  The code should "fail" (log an error + notify monitoring) if enountering missing ids in prod, and plain fail if encountering them unit tests/integration tests/dev.
+   [X] Rename isThiefEquivalent to canUseThiefTools
 
 [ ] We've removed the access pattern `name = allItemsById[id]?.name ?? id`, replacing it with a getter that logs an error + stacktrace and notifies monitoring if the id is not available in prod, and failing if the item is not available and we are running a unit or integration test or in dev.   Incorrect ids are bugs and should not be papered over automatically, especially not in test conditions.  See if there are other use of similar patterns (`foo = bar[baz]?.quz ?? some_default`) elsewhere in the codebase that also are just "work if we have bugs", and replace them with getters a la the one described for item id -> item name.  
 [ ] Remove dead code
-
 
 ### Abilities page
 
@@ -86,7 +85,7 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 ### Equipemnt page
 
 [X] Auto-include holy symbol for cleric
-[ ] No armor selection for magic-user
+[X] No armor selection for magic-user
 [X] Automatic "best" equipment pack based on class & available gold.
    [X] Fix so this fills ~the full gold is used
 [ ] Give the auto-packs "Elf" and "Dwarf" and etc flavor
@@ -127,7 +126,8 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 [ ] Fill in missing fields
 [ ] Fix formatting so the 1-of-6 etc boxes have the same font throughout
 [ ] Fill in complete information for special abilities; e.g, description of
-    first spell, complete list of thief's abilities w/percentages
+    first spell, complete list of thief's abilities w/percentages.  We already
+    have this for abilities in the web page; it should go into the PDF fill
 [ ] Encumberance sums per different parts of our list of stuff, so it's easy to
     get to a final sum if something update.  One part per column in the
     inventory, and one part for gold/gems/etc, and one part for magic items.

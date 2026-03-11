@@ -2029,3 +2029,8 @@ div > .button-class-option {
   align-items: center;
   gap: 4px;
 }
+
+.equipment-warning {
+  color: red;
+  margin-top: 5px;
+}

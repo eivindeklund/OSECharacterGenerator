@@ -259,14 +259,14 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
         </div>
       )}
 
-      {/* TODO: Change the formatting here to a shared CSS style & maybe look nicer */}
+      {/* TODO: Change the formatting here to look nicer */}
       {goldRolled && weapons.length == 0 && (
-        <div style={{ color: "red", marginTop: "5px" }}>
+        <div className="equipment-warning">
           Warning: You have no weapons!
         </div>
       )}
       {goldRolled && armour.length == 0 && characterClass.allowedArmour.length > 0 && (
-        <div style={{ color: "red", marginTop: "5px" }}>
+        <div className="equipment-warning">
           Warning: You have no armour!
         </div>
       )}

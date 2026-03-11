@@ -118,8 +118,7 @@ export const calculateArmourClass = (dexMod: string, armour: string | string[]) 
   let baseArmour = 10
   let armourClass = baseArmour
 
-  /* TODO: Should this be startWith rather than includes? */
-  if (dexMod.includes('+')) {
+  if (dexMod.startsWith('+')) {
     dexMod = dexMod.substring(1)
   }
   baseArmour += parseInt(dexMod)

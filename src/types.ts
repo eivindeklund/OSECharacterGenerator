@@ -109,7 +109,7 @@ export interface ClassOptionsData {
   // TODO: This should be typed in a way that only allow the appropriate armour ids.
   allowedArmour: string[];
   weapons: string;
-  isThiefEquivalent?: boolean;
+  canUseThiefTools?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   isStandardWeapon: (w?: any) => boolean;
   languages: string;

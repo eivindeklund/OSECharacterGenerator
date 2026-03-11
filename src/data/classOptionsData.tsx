@@ -92,7 +92,7 @@ class ClassOptions implements ClassOptionsData {
   maxLevel!: number;
   armour!: string;
   weapons!: string;
-  isThiefEquivalent?: boolean;
+  canUseThiefTools?: boolean;
   isStandardWeapon!: (w?: any) => boolean;
   languages!: string;
   description!: string;
@@ -422,7 +422,7 @@ const classOptionsData = [
     hd: 4,
     maxLevel: 0,
     armour: "leather",
-    isThiefEquivalent: true,
+    canUseThiefTools: true,
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "",
@@ -536,7 +536,7 @@ const classOptionsData = [
     hd: 4,
     maxLevel: 14,
     armour: "leather",
-    isThiefEquivalent: true,
+    canUseThiefTools: true,
     weapons:
       "missile weapons, dagger, sword, short sword, polearm, spear, staff",
     isStandardWeapon: (w) =>
@@ -574,7 +574,7 @@ const classOptionsData = [
     hd: 4,
     maxLevel: 14,
     armour: "leather, shields",
-    isThiefEquivalent: true,
+    canUseThiefTools: true,
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "",

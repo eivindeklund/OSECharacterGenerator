@@ -4,6 +4,11 @@ import { validateQualitySchema } from '../utilities/WeaponUtils';
 import weaponsData from './weaponsData';
 
 describe('weaponsData', () => {
+  it('should have unique ids', () => {
+    const ids = weaponsData.map(w => w.id);
+    expect(ids.length).toBe(new Set(ids).size);
+  });
+
   it('should have valid qualities for all weapons', () => {
     weaponsData.forEach(weapon => {
       // Check that qualities exist and is array

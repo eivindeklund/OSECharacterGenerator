@@ -30,6 +30,8 @@ export type PDFExportProps = {
 const INITIAL_LEVEL = '1'
 const INITIAL_ATTACK_BONUS = '0'
 const DAC_BASE = 19
+// B/X rule: miscellaneous adventuring gear counts as 80 gp weight
+const MISC_GEAR_WEIGHT_GP = 80
 
 const THAC_AT_LEVEL_1: Record<string, string> = {
   'THAC9': '10',
@@ -163,9 +165,7 @@ export function buildFieldData(props: PDFExportProps): FieldData {
       const entry = weaponsData.find(w => w.id === id)
       return sum + (entry?.weight ?? 0) * count
     }, 0)
-    // 80 comes from the rule in B/X that miscellaneous adventuring gear counts as 80 gp weight
-    // TODO Extract to a constant with a more descriptive name
-    return armourWeight + weaponWeight + 80
+    return armourWeight + weaponWeight + MISC_GEAR_WEIGHT_GP
   })()
 
   const descriptionInfo = `

@@ -279,7 +279,7 @@ export function getOptimalEquipmentPack(
   const classItemCost =
     (characterClass.divine && bxOnly) ? 25
     : (characterClass.divine && !bxOnly) ? 1
-    : (characterClass.isThiefEquivalent ?? false) ? 25
+    : (characterClass.canUseThiefTools ?? false) ? 25
     : 0;
   let meleeTwoHanded = false;
   {
@@ -318,7 +318,7 @@ export function getOptimalEquipmentPack(
         buyGearItem('holy_symbol_wooden', 1);
       }
     }
-    if (characterClass.isThiefEquivalent ?? false) {
+    if (characterClass.canUseThiefTools ?? false) {
       buyGearItem('thieves_tools', 25);
     }
   }
@@ -332,7 +332,7 @@ export function getOptimalEquipmentPack(
   if (characterClass.divine && bxOnly && !hasItemId('holy_symbol_silver')) {
     buyGearItem('holy_symbol_silver', 25);
   }
-  if ((characterClass.isThiefEquivalent ?? false) && !hasItemId('thieves_tools')) {
+  if ((characterClass.canUseThiefTools ?? false) && !hasItemId('thieves_tools')) {
     buyGearItem('thieves_tools', 25);
   }
 
