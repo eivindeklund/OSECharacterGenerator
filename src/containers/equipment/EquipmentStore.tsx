@@ -10,10 +10,10 @@ import armourData from "../../data/armourData";
 import equipmentData from "../../data/equipmentData";
 import weaponsData from "../../data/weaponsData";
 import type {
-    CharacterEquipment,
-    CharacterModifiers,
-    CharacterStatistics,
-    ClassOptionsData,
+  CharacterEquipment,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
 } from "../../types";
 import {
   calculateArmourClass
@@ -224,13 +224,13 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
               />
             }
 
-            {
+            {characterClass.allowedArmour.length > 0 && (
               <ArmourOptionsContainer
                 characterClass={characterClass}
                 purchaseLedger={inventoryCounts}
                 handleUpdateLedger={handleUpdateInventory}
               ></ArmourOptionsContainer>
-            }
+            )}
 
             {
               <WeaponOptionsContainer
@@ -259,12 +259,13 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
         </div>
       )}
 
-      {/* This should be part of the button conditional, but I don't know how
-      that works syntactically. */}
-      {/* TODO: Make this part of the button conditional */}
-      {/* TODO: Do not show this for the Magic user class, and remove "unarmoured" as a purchase option */}
-      {/* TODO: Add a warning for not buying a weapon */}
-      {goldRolled && armour.length == 0 && (
+      {/* TODO: Change the formatting here to a shared CSS style & maybe look nicer */}
+      {goldRolled && weapons.length == 0 && (
+        <div style={{ color: "red", marginTop: "5px" }}>
+          Warning: You have no weapons!
+        </div>
+      )}
+      {goldRolled && armour.length == 0 && characterClass.allowedArmour.length > 0 && (
         <div style={{ color: "red", marginTop: "5px" }}>
           Warning: You have no armour!
         </div>
