@@ -9,6 +9,7 @@ import type {
   ClassOptionsData,
 } from '../../types';
 import { getAbilitiesForLevel } from '../../utilities/classAbilities';
+import { allItemsById } from '../../utilities/PackUtils';
 import { consolidateDuplicates } from '../../utilities/utilities';
 
 interface CharacterSheetProps {
@@ -224,11 +225,18 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
             <span className='charsheet-value-name'>Weapons</span>
 
             <span className='charsheet-value charsheet--weapons'>
-              {consolidateDuplicates(characterEquipment.weapons).map((item, index) => {
+              {consolidateDuplicates(characterEquipment.weapons).map(({ id, count }, index) => {
+                // TODO: If id does not exist, that should ideally be reported to some kind of monitoring service
+                // TODO: The only non-bug case where an id might not exist is if
+                // the data was loaded and our available ids has changed.  We
+                // should scrub the data on load rather than being tolerant
+                // here.
+                const name = allItemsById[id]?.name ?? id
+                const label = count > 1 ? `${name} (x${count})` : name
                 return (
                   <span key={index} className='charsheet--weapon-item'>
                     {' '}
-                    {item}{' '}
+                    {label}{' '}
                   </span>
                 )
               })}
@@ -239,11 +247,17 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
             <span className='charsheet-value-name'>Armour</span>
 
             <span className='charsheet-value charsheet--armour'>
-              {characterEquipment.armour.map((item, index) => {
+              {characterEquipment.armour.map((id, index) => {
+                // TODO: If id does not exist, that should ideally be reported to some kind of monitoring service
+                // TODO: The only non-bug case where an id might not exist is if
+                // the data was loaded and our available ids has changed.  We
+                // should scrub the data on load rather than being tolerant
+                // here.
+                const name = allItemsById[id]?.name ?? id
                 return (
                   <span key={index} className='charsheet--armour-item'>
                     {' '}
-                    {item}{' '}
+                    {name}{' '}
                   </span>
                 )
               })}
@@ -255,11 +269,18 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
 
             <span className='charsheet-value charsheet--gear'>
               {consolidateDuplicates(characterEquipment.adventuringGear).map(
-                (item, index) => {
+                ({ id, count }, index) => {
+                  // TODO: If id does not exist, that should ideally be reported to some kind of monitoring service
+                  // TODO: The only non-bug case where an id might not exist is if
+                  // the data was loaded and our available ids has changed.  We
+                  // should scrub the data on load rather than being tolerant
+                  // here.
+                  const name = allItemsById[id]?.name ?? id
+                  const label = count > 1 ? `${name} (x${count})` : name
                   return (
                     <span key={index} className='charsheet--gear-item'>
                       {' '}
-                      {item}{' '}
+                      {label}{' '}
                     </span>
                   )
                 }

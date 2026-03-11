@@ -30,17 +30,13 @@ const specialCheckers = {
   'Missile': (quality) => /^Missile \(.*\)$/.test(quality)
 };
 
-/* TODO: Replace this with ids, and possibly make these just import from the equipment list instead of being separately listed as weapons */
-const universalWeapons = [
-  'Holy water vial',
-  'Oil flask, burning',
-  'Torch (6)'
-];
+/* Universal weapon IDs — these items can be used by any class regardless of weapon restrictions */
+const universalWeaponIds = ['holy_water_vial', 'oil_flask_burning', 'torches'];
 
 /**
  * Checks if a weapon is a universal item that anyone can use (e.g. equipment-weapons).
  */
-export const isUniversalWeapon = (weapon) => universalWeapons.includes(weapon.name);
+export const isUniversalWeapon = (weapon) => universalWeaponIds.includes(weapon.id);
 
 /**
  * Checks if a weapon has a specific quality.

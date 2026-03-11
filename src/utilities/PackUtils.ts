@@ -21,6 +21,8 @@ const allItems = {
         ...processItems(armourData, 'armour')
 }
 
+export const allItemsById = allItems
+
 /**
  * Resolves a pack's items into a list of displayable objects.
  * Handles conditional logic based on character class.
@@ -150,9 +152,6 @@ const EXPANSION_GEAR_BASE = [
   { id: 'garlic',             price:  5, group: 'consumables' },
 ];
 
-/** Classes that benefit from thieves' tools. */
-const THIEF_CLASSES = ['Thief', 'Acrobat', 'Assassin'];
-
 /**
  * Generates an optimal equipment pack for a character based on class restrictions
  * and available gold.
@@ -194,8 +193,7 @@ export function getOptimalEquipmentPack(
   const items: Array<{ id: string; quantity: number }> = [];
   let remainingGold = gold;
 
-  const armourString = characterClass.armour ?? '';
-  const canUseShield = () => armourString.includes('shield');
+  const canUseShield = () => (characterClass.allowedArmour ?? []).includes('shield');
 
   const isItemBxEligible = (id: string): boolean => {
     if (!bxOnly) return true;
@@ -229,18 +227,18 @@ export function getOptimalEquipmentPack(
   //    Budget is capped at floor(gold / 2) so weapons and gear are not crowded out.
   //    With ~30 % probability (when a random source is provided), drop one tier
   //    so freed gold can be spent on expansion gear — this creates variety.
-  if (armourString !== 'none') {
+  if ((characterClass.allowedArmour ?? []).length > 0) {
     const armourBudget = Math.floor(gold / 2);
     const armourTiers = [
-      { id: 'plate_mail', keyword: 'plate',     price: 60 },
-      { id: 'chainmail',  keyword: 'chainmail', price: 40 },
-      { id: 'leather',    keyword: 'leather',   price: 20 },
+      { id: 'plate_mail', price: 60 },
+      { id: 'chainmail',  price: 40 },
+      { id: 'leather',    price: 20 },
     ];
 
     // Find the best affordable tier index
     const bestIdx = armourTiers.findIndex(
       tier =>
-        armourString.includes(tier.keyword) &&
+        (characterClass.allowedArmour ?? []).includes(tier.id) &&
         tier.price <= armourBudget &&
         tier.price <= remainingGold
     );
@@ -281,7 +279,7 @@ export function getOptimalEquipmentPack(
   const classItemCost =
     (characterClass.divine && bxOnly) ? 25
     : (characterClass.divine && !bxOnly) ? 1
-    : THIEF_CLASSES.includes(characterClass.name) ? 25
+    : (characterClass.isThiefEquivalent ?? false) ? 25
     : 0;
   let meleeTwoHanded = false;
   {
@@ -320,7 +318,7 @@ export function getOptimalEquipmentPack(
         buyGearItem('holy_symbol_wooden', 1);
       }
     }
-    if (THIEF_CLASSES.includes(characterClass.name)) {
+    if (characterClass.isThiefEquivalent ?? false) {
       buyGearItem('thieves_tools', 25);
     }
   }
@@ -334,7 +332,7 @@ export function getOptimalEquipmentPack(
   if (characterClass.divine && bxOnly && !hasItemId('holy_symbol_silver')) {
     buyGearItem('holy_symbol_silver', 25);
   }
-  if (THIEF_CLASSES.includes(characterClass.name) && !hasItemId('thieves_tools')) {
+  if ((characterClass.isThiefEquivalent ?? false) && !hasItemId('thieves_tools')) {
     buyGearItem('thieves_tools', 25);
   }
 

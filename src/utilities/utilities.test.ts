@@ -1,10 +1,10 @@
 import {
-  calculateArmourClass,
-  consolidateDuplicates,
-  deriveCharacterModifiers,
-  getWeightedValue,
-  hpRollToSeed,
-  hpSeedToRoll,
+    calculateArmourClass,
+    consolidateDuplicates,
+    deriveCharacterModifiers,
+    getWeightedValue,
+    hpRollToSeed,
+    hpSeedToRoll,
 } from "./utilities";
 
 describe("Utility Functions", () => {
@@ -57,22 +57,22 @@ describe("Utility Functions", () => {
     });
 
     test("should include armour (Leather)", () => {
-      const [base, total] = calculateArmourClass("0", ["Leather"]);
+      const [base, total] = calculateArmourClass("0", ["leather"]);
       expect(total).toBe(12); // 10 + 2
     });
 
     test("should include Shield", () => {
-      const [base, total] = calculateArmourClass("0", ["Leather", "Shield"]);
+      const [base, total] = calculateArmourClass("0", ["leather", "shield"]);
       expect(total).toBe(13); // 10 + 2 + 1
     });
   });
 
   describe("consolidateDuplicates", () => {
     test("should consolidate duplicates", () => {
-      const items = ["Rope", "Torch", "Torch", "Torch"];
+      const items = ["rope", "torch", "torch", "torch"];
       const result = consolidateDuplicates(items);
-      expect(result).toContain("Rope");
-      expect(result).toContain("Torch (x3)");
+      expect(result).toContainEqual({ id: "rope", count: 1 });
+      expect(result).toContainEqual({ id: "torch", count: 3 });
     });
   });
 

@@ -1,11 +1,19 @@
 import { primeRequisiteModifiers } from "../constants/constants";
 import type { AbilityRequirement, AbilityScores, ClassAbility, ClassOptionsData } from "../types";
 import { checkWeaponQuality } from "../utilities/WeaponUtils";
+import { ALL_ARMOUR, ARMOUR_ID } from "./armourData";
 
 const large_weapons = ["long_bow", "two_handed_sword", "polearm"];
 const magic_user_weapons = ["dagger", "staff", "silver_dagger"];
 
-type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage'>;
+type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage' | 'allowedArmour'>;
+
+/** Canonical ability IDs for abilities that appear on more than one class — use these instead of magic strings. */
+export const ABILITY_ID = {
+  listeningAtDoors:   'listening_at_doors',
+  detectSecretDoors:  'detect_secret_doors',
+  detectRoomTraps:    'detect_room_traps',
+} as const;
 
 // ── Thief Skill Table (OSE B/X, levels 1–14) ──────────────────────────────────
 // Source: OSE SRD, Thief class. HN (Hear Noise) is a 1d6 range; all others are d% roll-under.
@@ -84,6 +92,7 @@ class ClassOptions implements ClassOptionsData {
   maxLevel!: number;
   armour!: string;
   weapons!: string;
+  isThiefEquivalent?: boolean;
   isStandardWeapon!: (w?: any) => boolean;
   languages!: string;
   description!: string;
@@ -102,6 +111,92 @@ class ClassOptions implements ClassOptionsData {
 
   constructor(data: ClassOptionsInput) {
     Object.assign(this, data);
+  }
+
+  // TODO: Normalize to "none" instead of empty string for no armour in the source data
+  // TODO: Overall make this as strict as we can, so the source data will be
+  // forced to be consistent and clean, and users can read the descriptions without seeing random differences.
+  // TODO: Make sure we run this parsing logic for all classes as part of our tests.
+
+  /**
+   * Parse the human-readable `armour` string into an array of canonical armour IDs.
+   * Returns the same result as the old `allowedArmour` data field.
+   * Throws if any armour token is unrecognised.
+   *
+   * Supported tokens (comma-separated, optional leading "any "):
+   *   "none"           → []
+   *   "any"            → ALL_ARMOUR (leather, chainmail, plate mail, shield)
+   *   "leather"        → leather
+   *   "chainmail"      → chainmail
+   *   "plate mail"     → plate_mail
+   *   "shields" or "wooden shields" → shield
+   *
+   * If the string contains multiple lists separated by " / ", all are validated
+   * independently, and the return value is the union of all the lists
+   * (duplicates removed). This allows for classes that have different armour
+   * options in different phases, still allowing the user to buy all the types
+   * of armour that they are allowed to use.
+   */
+  static parseArmourString(armour: string): string[] {
+    // Enforce no leading/trailing whitespace
+    if (armour !== armour.trim()) {
+      throw new Error(`Armour string has leading or trailing whitespace: "${armour}"`);
+    }
+
+    // Split on ' / ' (with spaces) to allow multiple valid lists, recurse for each
+    const splits = armour.split(' / ');
+    if (splits.length === 0) throw new Error(`Empty armour string`);
+
+    // Helper to parse a single list (no recursion)
+    function parseSingle(list: string): string[] {
+      if (list.toLowerCase() === 'none') return [];
+      if (list.toLowerCase() === 'any') return [...ALL_ARMOUR];
+      const tokens = list.split(',').map(s => s.trim());
+      const allowedTokens = [
+        { names: ['leather'], id: ARMOUR_ID.leather },
+        { names: ['chainmail'], id: ARMOUR_ID.chainmail },
+        { names: ['plate mail'], id: ARMOUR_ID.plateMail },
+        { names: ['shields', 'wooden shields'], id: ARMOUR_ID.shield },
+      ];
+      const ids: string[] = [];
+      let lastIndex = -1;
+      for (const raw of tokens) {
+        let found = false;
+        for (let i = 0; i < allowedTokens.length; ++i) {
+          if (allowedTokens[i].names.includes(raw.toLowerCase())) {
+            if (i < lastIndex) {
+              throw new Error(`Armour components out of order: "${list}"`);
+            }
+            lastIndex = i;
+            ids.push(allowedTokens[i].id);
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          throw new Error(`Unknown armour token "${raw}" in armour string "${list}"`);
+        }
+      }
+      return ids;
+    }
+
+    // Parse all splits, validate all, and union results (no duplicates, correct order)
+    const allIds: string[] = [];
+    for (const split of splits) {
+      const ids = parseSingle(split);
+      for (const id of ids) {
+        if (!allIds.includes(id)) {
+          allIds.push(id);
+        }
+      }
+    }
+    // Maintain canonical order: leather, chainmail, plate mail, shield
+    const canonicalOrder = [ARMOUR_ID.leather, ARMOUR_ID.chainmail, ARMOUR_ID.plateMail, ARMOUR_ID.shield];
+    return canonicalOrder.filter(id => allIds.includes(id));
+  }
+
+  get allowedArmour(): string[] {
+    return ClassOptions.parseArmourString(this.armour);
   }
 
   /* Parse ability score requirements string.
@@ -260,7 +355,7 @@ const classOptionsData = [
     primeReqs: ["strength"],
     hd: 8,
     maxLevel: 14,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "",
@@ -280,7 +375,7 @@ const classOptionsData = [
     primeReqs: ["wisdom"],
     hd: 6,
     maxLevel: 14,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "only blunt weapons",
     isStandardWeapon: (w) => checkWeaponQuality(w, "Blunt"),
     languages: "",
@@ -327,6 +422,7 @@ const classOptionsData = [
     hd: 4,
     maxLevel: 0,
     armour: "leather",
+    isThiefEquivalent: true,
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "",
@@ -357,7 +453,7 @@ const classOptionsData = [
     primeReqs: ["strength"],
     hd: 8,
     maxLevel: 12,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons:
       "any small or normal sized, but cannot use longbows or two-handed swords",
     isStandardWeapon: (w) => !["long_bow", "two_handed_sword"].includes(w.id),
@@ -368,9 +464,9 @@ const classOptionsData = [
     nextLevel: 2200,
     abilities: [
       { name: "Detect Construction Tricks", description: "2-in-6 chance to detect new construction, sliding walls, or sloping passages when searching" },
-      { name: "Detect Room Traps", description: "2-in-6 chance to detect non-magical room traps when searching", shownInList: false },
+      { id: "detect_room_traps", name: "Detect Room Traps", description: "2-in-6 chance to detect non-magical room traps when searching", shownInList: false },
       { name: "Infravision", description: "60'" },
-      { name: "Listening at Doors", description: "2-in-6 chance of hearing noises", shownInList: false },
+      { id: "listening_at_doors", name: "Listening at Doors", description: "2-in-6 chance of hearing noises", shownInList: false },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Dwarf",
     arcane: false,
@@ -384,7 +480,7 @@ const classOptionsData = [
     xpBonusRule: "10% if intelligence is 16 or more and strength is 13 or more; 5% if both intelligence and strength are 13 or more",
     hd: 6,
     maxLevel: 10,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "Elvish, Gnoll, Hobgoblin, Orcish",
@@ -394,9 +490,9 @@ const classOptionsData = [
     nextLevel: 4000,
     abilities: [
       { name: "Arcane Magic", description: "Cast arcane spells from spell book; use arcane magic scrolls; use arcane magic items (wands, etc.)" },
-      { name: "Detect Secret Doors", description: "2-in-6 chance to locate secret or hidden doors when searching", shownInList: false },
+      { id: "detect_secret_doors", name: "Detect Secret Doors", description: "2-in-6 chance to locate secret or hidden doors when searching", shownInList: false },
       { name: "Infravision", description: "60'" },
-      { name: "Listening at Doors", description: "2-in-6 chance of hearing noises", shownInList: false },
+      { id: "listening_at_doors", name: "Listening at Doors", description: "2-in-6 chance of hearing noises", shownInList: false },
       { name: "Immunity to Ghoul Paralysis", description: "Immune to the paralyzing effect of ghouls" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Elf",
@@ -412,7 +508,7 @@ const classOptionsData = [
     xpBonusRule: "10% if both dexterity and strength are 13 or more; 5% if either dexterity or strength is 13 or more",
     hd: 6,
     maxLevel: 8,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any appropriate to size",
     isStandardWeapon: (w) => !large_weapons.includes(w.id),
     languages: "Halfling",
@@ -423,7 +519,7 @@ const classOptionsData = [
     abilities: [
       { name: "Defensive Bonus", description: "AC +2 against large opponents (greater than human-sized)" },
       { name: "Hiding", description: "90% in woods or undergrowth; 2-in-6 in dungeons with cover (must be motionless)" },
-      { name: "Listening at Doors", description: "2-in-6 chance of hearing noises", shownInList: false },
+      { id: "listening_at_doors", name: "Listening at Doors", description: "2-in-6 chance of hearing noises", shownInList: false },
       { name: "Missile Attack Bonus", description: "+1 to attack rolls with all missile weapons" },
       { name: "Initiative Bonus", description: "+1 to individual initiative rolls (if used; optional rule)" },
       { name: "Stronghold", description: "May build a halfling Shire any time sufficient funds are available" },
@@ -440,6 +536,7 @@ const classOptionsData = [
     hd: 4,
     maxLevel: 14,
     armour: "leather",
+    isThiefEquivalent: true,
     weapons:
       "missile weapons, dagger, sword, short sword, polearm, spear, staff",
     isStandardWeapon: (w) =>
@@ -477,6 +574,7 @@ const classOptionsData = [
     hd: 4,
     maxLevel: 14,
     armour: "leather, shields",
+    isThiefEquivalent: true,
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "",
@@ -560,7 +658,7 @@ const classOptionsData = [
     xpBonusRule: "10% if wisdom is 16 or more and strength is 13 or more; 5% if both wisdom and strength are 13 or more",
     hd: 6,
     maxLevel: 14,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "Deepcommon, Elvish, Gnomish, the secret language of spiders",
@@ -569,8 +667,8 @@ const classOptionsData = [
     savingThrows: [12, 13, 13, 15, 12],
     nextLevel: 4000,
     abilities: [
-      { name: "Detect Secret Doors" },
-      { name: "Listening at Doors" },
+      { id: "detect_secret_doors", name: "Detect Secret Doors" },
+      { id: "listening_at_doors", name: "Listening at Doors" },
       { name: "Divine Magic" },
       { name: "Infravision" },
       { name: "Light Sensitivity" },
@@ -621,7 +719,7 @@ const classOptionsData = [
     primeReqs: ["strength"],
     hd: 6,
     maxLevel: 10,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "small or normal sized",
     isStandardWeapon: (w) => !large_weapons.includes(w.id),
     languages: "Deepcommon, Dwarvish, Gnomish, Goblin, Kobold",
@@ -631,7 +729,7 @@ const classOptionsData = [
     nextLevel: 2800,
     abilities: [
       { name: "Detect Construction Tricks" },
-      { name: "Detect Room Traps" },
+      { id: "detect_room_traps", name: "Detect Room Traps" },
       { name: "Infravision" },
       { name: "Light-Sensitivity" },
       { name: "Mental Powers (enlargement, invisibility, shrinking, heat)" },
@@ -663,7 +761,7 @@ const classOptionsData = [
       { name: "Detect Construction Tricks" },
       { name: "Hiding" },
       { name: "Infravision" },
-      { name: "Listening at Doors" },
+      { id: "listening_at_doors", name: "Listening at Doors" },
       { name: "Speak with Burrowing Mammals" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
@@ -679,7 +777,7 @@ const classOptionsData = [
     xpBonusRule: "10% if either intelligence or strength is 16 or more and the other is 13 or more; 5% if both intelligence and strength are 13 or more",
     hd: 6,
     maxLevel: 12,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "Elvish",
@@ -687,7 +785,7 @@ const classOptionsData = [
       "Half-elves are the rare offspring of elves and humans. Physically, they tend to combine the best features of the robust physique of humans. They are human-like in stature but always have a feature that marks their elven heritage (e.g. pointed ears or unusually bright eyes). Half-elves are skilled fighters and dabble with magic, though they lack their elvish parents’ mastery of the arcane.",
     savingThrows: [12, 13, 13, 15, 15],
     nextLevel: 2500,
-    abilities: [{ name: "Arcane Magic" }, { name: "Detect Secret Doors" }, { name: "Infravision" }],
+    abilities: [{ name: "Arcane Magic" }, { id: "detect_secret_doors", name: "Detect Secret Doors" }, { name: "Infravision" }],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
     arcane: true,
     divine: false,
@@ -746,7 +844,7 @@ const classOptionsData = [
     primeReqs: ["strength"],
     hd: 8,
     maxLevel: 14,
-    armour: "any chainmail, plate mail, shields",
+    armour: "chainmail, plate mail, shields",
     weapons: "melee weapons",
     isStandardWeapon: (w) => checkWeaponQuality(w, "Melee"),
     languages: "",
@@ -797,7 +895,7 @@ const classOptionsData = [
     xpBonusRule: "10% if both strength and wisdom are 16 or more; 5% if either strength or wisdom is 13 or more",
     hd: 8,
     maxLevel: 14,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "",
@@ -852,7 +950,7 @@ const classOptionsData = [
     primeReqs: ["strength"],
     hd: 6,
     maxLevel: 8,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any",
     isStandardWeapon: () => true,
     languages:
@@ -883,7 +981,7 @@ const classOptionsData = [
     primeReqs: ["wisdom"],
     hd: 6,
     maxLevel: 14,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "only blunt weapons",
     isStandardWeapon: (w) => checkWeaponQuality(w, "Blunt"),
     languages: "",
@@ -912,7 +1010,7 @@ const classOptionsData = [
     xpBonusRule: "10% if strength is 16 or more and constitution is 13 or more; 5% if both strength and constitution are 13 or more",
     hd: 10,
     maxLevel: 10,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any, can wield two-handed melee weapon with one hand",
     isStandardWeapon: () => true,
     languages: "",
@@ -933,7 +1031,7 @@ const classOptionsData = [
     xpBonusRule: "10% if both dexterity and strength are 16 or more; 5% if either dexterity or strength is 13 or more",
     hd: 6,
     maxLevel: 8,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any appropriate to size",
     isStandardWeapon: (w) => !large_weapons.includes(w.id),
     languages: "Goblin, the language of wolves",
@@ -969,7 +1067,7 @@ const classOptionsData = [
     savingThrows: [12, 13, 13, 15, 15],
     nextLevel: 3000,
     abilities: [
-      { name: "Listening at Doors" },
+      { id: "listening_at_doors", name: "Listening at Doors" },
       { name: "Mental Powers (ESP, gestalt, healing trance, mind control, mind shield, telepathy)" },
       { name: "Neuropressure" },
     ],
@@ -1043,7 +1141,7 @@ const classOptionsData = [
     xpBonusRule: "10% if intelligence is 16 or more and strength is 13 or more; 5% if both intelligence and strength are 13 or more",
     hd: 6,
     maxLevel: 10,
-    armour: "any leather, chainmail, plate, shields / none",
+    armour: "any / none",
     weapons: "any / dagger",
     isStandardWeapon: (w) => true,
     languages: "Elvish, Doppelgänger, Dragon, Pixie",
@@ -1053,11 +1151,11 @@ const classOptionsData = [
     nextLevel: 2800,
     abilities: [
       { name: "Arcane Magic" },
-      { name: "Detect Secret Doors" },
+      { id: "detect_secret_doors", name: "Detect Secret Doors" },
       { name: "Dual Persona" },
       { name: "Immunity to Ghoul Paralysis" },
       { name: "Infravision" },
-      { name: "Listening at Doors" },
+      { id: "listening_at_doors", name: "Listening at Doors" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-2",
     arcane: true,
@@ -1082,13 +1180,13 @@ const classOptionsData = [
     nextLevel: 3000,
     abilities: [
       { name: "Awareness" },
-      { name: "Detect Secret Doors" },
+      { id: "detect_secret_doors", name: "Detect Secret Doors" },
       { name: "Divine Magic" },
       { name: "Foraging and Hunting" },
       { name: "Hiding" },
       { name: "Immunity to Ghoul Paralysis" },
       { name: "Infravision" },
-      { name: "Listening at Doors" },
+      { id: "listening_at_doors", name: "Listening at Doors" },
       { name: "Missile Attack Bonus" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-2",
@@ -1130,7 +1228,7 @@ const classOptionsData = [
     primeReqs: ["strength"],
     hd: 8,
     maxLevel: 10,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "any",
     isStandardWeapon: () => true,
     languages: "Dragon",
@@ -1401,7 +1499,7 @@ const classOptionsData = [
       { name: "Drunken Fighting" },
       { name: "Infravision" },
       { name: "Ingested Poison Resistance" },
-      { name: "Listening at Doors" },
+      { id: "listening_at_doors", name: "Listening at Doors" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-6",
     arcane: false,
@@ -1415,7 +1513,7 @@ const classOptionsData = [
     xpBonusRule: "10% if strength is 16 or more and intelligence is 13 or more; 5% if both strength and intelligence are 13 or more",
     hd: 8,
     maxLevel: 10,
-    armour: "any leather, chainmail, plate, shields",
+    armour: "any",
     weapons: "small or normal-sized",
     isStandardWeapon: (w) => !large_weapons.includes(w.id),
     languages: "Dwarvish, Gnomish, Goblin, Kobold",
@@ -1426,7 +1524,7 @@ const classOptionsData = [
     abilities: [
       { name: "Forge-Craft" },
       { name: "Infravision" },
-      { name: "Listening at Doors" },
+      { id: "listening_at_doors", name: "Listening at Doors" },
       { name: "Rune Magic" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-6",

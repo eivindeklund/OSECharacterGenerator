@@ -1,11 +1,11 @@
-import type { ClassOptionsData } from "../../types";
 import { useState } from "react";
-import armourData from "../../data/armourData";
+import armourData, { ARMOUR_ID } from "../../data/armourData";
+import type { ClassOptionsData } from "../../types";
 
 type ArmourOptionsContainerProps = {
   characterClass: ClassOptionsData
   purchaseLedger: Record<string, number>
-  handleUpdateLedger: (name: string, quantity: number) => void
+  handleUpdateLedger: (id: string, quantity: number) => void
 }
 
 export default function ArmourOptionsContainer(props: ArmourOptionsContainerProps) {
@@ -15,30 +15,32 @@ export default function ArmourOptionsContainer(props: ArmourOptionsContainerProp
 
   const toggleOpen = () => setIsOpen(!isOpen);
 
-  const handleArmourSelect = (armourName) => {
-    // Get list of all main armour names (excluding shield)
-    const allArmours = armourData
-      .filter((a) => a.id !== "shield")
-      .map((a) => a.name);
+  const handleArmourSelect = (armourId: string) => {
+    // Get list of all main armour IDs (excluding shield)
+    const allArmourIds = armourData
+      .filter((a) => a.id !== ARMOUR_ID.shield)
+      .map((a) => a.id);
 
     // Remove all existing armour from ledger
-    allArmours.forEach((name) => {
-      if (purchaseLedger[name]) handleUpdateLedger(name, 0);
+    allArmourIds.forEach((id) => {
+      if (purchaseLedger[id]) handleUpdateLedger(id, 0);
     });
-    // Add new armour to ledger
-    handleUpdateLedger(armourName, 1);
+    // Add new armour to ledger (empty string = unarmoured, clears selection)
+    if (armourId) {
+      handleUpdateLedger(armourId, 1);
+    }
   };
 
   const handleShieldToggle = (e) => {
-    handleUpdateLedger("Shield", e.target.checked ? 1 : 0);
+    handleUpdateLedger(ARMOUR_ID.shield, e.target.checked ? 1 : 0);
   };
 
-  const currentArmour = armourData.find(
-    (a) => a.id !== "shield" && purchaseLedger[a.name] > 0,
+  const currentArmourEntry = armourData.find(
+    (a) => a.id !== "shield" && a.id !== "unarmoured" && (purchaseLedger[a.id] || 0) > 0,
   );
-  const selectedArmourName = currentArmour ? currentArmour.name : "Unarmoured";
+  const selectedArmourId = currentArmourEntry ? currentArmourEntry.id : "unarmoured";
 
-  const hasShield = purchaseLedger["Shield"] > 0;
+  const hasShield = (purchaseLedger[ARMOUR_ID.shield] || 0) > 0;
 
   return (
     <div className="armour-container-parent">
@@ -67,26 +69,22 @@ export default function ArmourOptionsContainer(props: ArmourOptionsContainerProp
               <label className="armour-radio">
                 <input
                   type="radio"
-                  value="Unarmoured"
+                  value="unarmoured"
                   className="form-check-input"
-                  onChange={() => handleArmourSelect("Unarmoured")} // Unarmoured means AC 10, no item. We should clear ledger.
-                  // Actually "Unarmoured" is not an item in ledger usually.
-                  // If "Unarmoured" is selected, we just ensure no other armour is in ledger.
-                  checked={
-                    selectedArmourName === "Unarmoured" || !selectedArmourName
-                  }
+                  onChange={() => handleArmourSelect("")}
+                  checked={selectedArmourId === "unarmoured"}
                 />
                 Unarmoured - AC 9 [10] - 0 gp
               </label>
 
-              {characterClass.armour.includes("leather") && (
+              {characterClass.allowedArmour.includes(ARMOUR_ID.leather) && (
                 <label className="armour-radio">
                   <input
                     type="radio"
-                    value="Leather"
+                    value={ARMOUR_ID.leather}
                     className="form-check-input"
-                    checked={selectedArmourName === "Leather"}
-                    onChange={() => handleArmourSelect("Leather")}
+                    checked={selectedArmourId === ARMOUR_ID.leather}
+                    onChange={() => handleArmourSelect(ARMOUR_ID.leather)}
                   />
                   <span className="radio--label">
                     Leather - AC 7 [12] - 20 gp
@@ -94,14 +92,14 @@ export default function ArmourOptionsContainer(props: ArmourOptionsContainerProp
                 </label>
               )}
 
-              {characterClass.armour.includes("chainmail") && (
+              {characterClass.allowedArmour.includes(ARMOUR_ID.chainmail) && (
                 <label className="armour-radio">
                   <input
                     type="radio"
-                    value="Chainmail"
+                    value={ARMOUR_ID.chainmail}
                     className="form-check-input"
-                    checked={selectedArmourName === "Chainmail"}
-                    onChange={() => handleArmourSelect("Chainmail")}
+                    checked={selectedArmourId === ARMOUR_ID.chainmail}
+                    onChange={() => handleArmourSelect(ARMOUR_ID.chainmail)}
                   />
                   <span className="radio--label">
                     Chainmail - AC 5 [14] - 40 gp
@@ -109,14 +107,14 @@ export default function ArmourOptionsContainer(props: ArmourOptionsContainerProp
                 </label>
               )}
 
-              {characterClass.armour.includes("plate") && (
+              {characterClass.allowedArmour.includes(ARMOUR_ID.plateMail) && (
                 <label className="armour-radio">
                   <input
                     type="radio"
-                    value="Plate mail"
+                    value={ARMOUR_ID.plateMail}
                     className="form-check-input"
-                    checked={selectedArmourName === "Plate mail"}
-                    onChange={() => handleArmourSelect("Plate mail")}
+                    checked={selectedArmourId === ARMOUR_ID.plateMail}
+                    onChange={() => handleArmourSelect(ARMOUR_ID.plateMail)}
                   />
                   <span className="radio--label">
                     Plate mail - AC 3 [16] - 60 gp
@@ -124,11 +122,11 @@ export default function ArmourOptionsContainer(props: ArmourOptionsContainerProp
                 </label>
               )}
 
-              {characterClass.armour.includes("shield") && (
+              {characterClass.allowedArmour.includes(ARMOUR_ID.shield) && (
                 <label className="armour-radio">
                   <input
                     type="checkbox"
-                    value="Shield"
+                    value={ARMOUR_ID.shield}
                     className="form-check-input"
                     checked={hasShield}
                     onChange={handleShieldToggle}

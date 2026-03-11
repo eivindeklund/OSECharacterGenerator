@@ -8,6 +8,24 @@ import classOptionsData, { thiefSkillTable } from "./classOptionsData";
 const ClassOptions = classOptionsData[0].constructor as any;
 
 describe("ClassOptions", () => {
+    describe("Armour String Validation", () => {
+      test("all class armour strings should be valid", () => {
+        const invalidClasses: Array<{ name: string; armour: string; error: string }> = [];
+        const ClassOptions = classOptionsData[0].constructor as any;
+        classOptionsData.forEach((classOption) => {
+          try {
+            // This will throw if the armour string is invalid
+            ClassOptions.parseArmourString(classOption.armour);
+          } catch (e) {
+            invalidClasses.push({ name: classOption.name, armour: classOption.armour, error: String(e) });
+          }
+        });
+        if (invalidClasses.length > 0) {
+          console.error("Invalid armour strings found:", invalidClasses);
+        }
+        expect(invalidClasses).toEqual([]);
+      });
+    });
   describe("xpModifierPercentage", () => {
     test("should return correct prime req mod for Fighter (Strength)", () => {
       const scores = { strength: 15 } as AbilityScores;
@@ -855,5 +873,79 @@ describe("Thief abilities: level-based descriptions via getAbilitiesForLevel", (
     test("contains '125%' at level 14", () => {
       expect(abilityAt("Pick Pockets", 14)?.description).toContain("125%");
     });
+  });
+});
+
+describe("parseArmourString (TDD)", () => {
+  test("parses 'leather, chainmail, plate mail, shields' in correct order", () => {
+    expect(ClassOptions.parseArmourString("leather, chainmail, plate mail, shields")).toEqual([
+      "leather", "chainmail", "plate_mail", "shield"
+    ]);
+  });
+  test("parses 'leather, plate mail' (missing chainmail, shields)", () => {
+    expect(ClassOptions.parseArmourString("leather, plate mail")).toEqual([
+      "leather", "plate_mail"
+    ]);
+  });
+  test("parses 'any' as all armour types", () => {
+    expect(ClassOptions.parseArmourString("any")).toEqual([
+      "leather", "chainmail", "plate_mail", "shield"
+    ]);
+  });
+  test("parses 'none' as empty array", () => {
+    expect(ClassOptions.parseArmourString("none")).toEqual([]);
+  });
+  test("throws on whitespace at start", () => {
+    expect(() => ClassOptions.parseArmourString(" leather, chainmail")).toThrow();
+  });
+  test("throws on whitespace at end", () => {
+    expect(() => ClassOptions.parseArmourString("leather, chainmail ")).toThrow();
+  });
+  test("throws on invalid token", () => {
+    expect(() => ClassOptions.parseArmourString("leather, foo")).toThrow();
+  });
+  test("parses 'leather, shields' in correct order", () => {
+    expect(ClassOptions.parseArmourString("leather, shields")).toEqual([
+      "leather", "shield"
+    ]);
+  });
+  test("parses 'wooden shields' as 'shield'", () => {
+    expect(ClassOptions.parseArmourString("wooden shields")).toEqual([
+      "shield"
+    ]);
+  });
+  test("throws if order is wrong (shields before leather)", () => {
+    expect(() => ClassOptions.parseArmourString("shields, leather")).toThrow();
+  });
+});
+
+describe("parseArmourString (union of splits)", () => {
+  test("returns union of all splits: 'leather / chainmail'", () => {
+    expect(ClassOptions.parseArmourString("leather / chainmail")).toEqual([
+      "leather", "chainmail"
+    ]);
+  });
+  test("returns union, no duplicates: 'leather, shields / leather'", () => {
+    expect(ClassOptions.parseArmourString("leather, shields / leather")).toEqual([
+      "leather", "shield"
+    ]);
+  });
+  test("returns union for three splits: 'leather / chainmail / plate mail'", () => {
+    expect(ClassOptions.parseArmourString("leather / chainmail / plate mail")).toEqual([
+      "leather", "chainmail", "plate_mail"
+    ]);
+  });
+  test("throws if any split is invalid", () => {
+    expect(() => ClassOptions.parseArmourString("leather / foo")).toThrow();
+    expect(() => ClassOptions.parseArmourString("foo / leather")).toThrow();
+    expect(() => ClassOptions.parseArmourString("leather / chainmail, foo")).toThrow();
+  });
+  test("returns union for 'any / none' (should be all armour)", () => {
+    expect(ClassOptions.parseArmourString("any / none")).toEqual([
+      "leather", "chainmail", "plate_mail", "shield"
+    ]);
+  });
+  test("returns empty for 'none / none'", () => {
+    expect(ClassOptions.parseArmourString("none / none")).toEqual([]);
   });
 });

@@ -40,7 +40,7 @@ const ItemRow = ({
     }}
     onClick={() => {
       if (qty === 0) {
-        handleUpdateLedger(item.name, 1);
+        handleUpdateLedger(item.id, 1);
         onSelect?.();
       }
     }}
@@ -78,7 +78,7 @@ const ItemRow = ({
       <button
         className="button button-small"
         style={{ padding: "0 5px", width: "25px" }}
-        onClick={() => handleUpdateLedger(item.name, qty - 1)}
+        onClick={() => handleUpdateLedger(item.id, qty - 1)}
         disabled={qty === 0}
       >
         -
@@ -87,7 +87,7 @@ const ItemRow = ({
       <button
         className="button button-small"
         style={{ padding: "0 5px", width: "25px" }}
-        onClick={() => handleUpdateLedger(item.name, qty + 1)}
+        onClick={() => handleUpdateLedger(item.id, qty + 1)}
       >
         +
       </button>
@@ -151,7 +151,7 @@ export default function ItemOptionsContainer({
           const isOpen = !!openCategories[category];
           const itemsToRender = isOpen
             ? catItems
-            : catItems.filter((item) => (purchaseLedger[item.name] || 0) > 0);
+            : catItems.filter((item) => (purchaseLedger[item.id] || 0) > 0);
 
           const handleSelect = autoCloseOnSelect
             ? () =>
@@ -193,7 +193,7 @@ export default function ItemOptionsContainer({
                     <ItemRow
                       key={item.id}
                       item={item}
-                      qty={purchaseLedger[item.name] || 0}
+                      qty={purchaseLedger[item.id] || 0}
                       handleUpdateLedger={handleUpdateLedger}
                       onSelect={handleSelect}
                       isUsable={isItemUsable ? isItemUsable(item) : true}

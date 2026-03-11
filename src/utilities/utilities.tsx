@@ -1,9 +1,7 @@
 // generates the appropriate modifier for an ability value
 import React from 'react';
-import {
-  armourTypes,
-} from '../constants/constants';
 import abilityScoreMods from '../data/abilityScoreMods';
+import { ARMOUR_ID } from '../data/armourData';
 import type { AbilityScores, CharacterModifiers } from '../types';
 
 interface LinkTextProps {
@@ -103,8 +101,8 @@ export const getWeightedValue = (weightedList, diceResult, listLength) => {
   }
 }
 
-export const consolidateDuplicates = (array) => {
-  const itemCounts = {}
+export const consolidateDuplicates = (array: string[]): { id: string; count: number }[] => {
+  const itemCounts: Record<string, number> = {}
   for (let i = 0; i < array.length; i++) {
     if (Object.prototype.hasOwnProperty.call(itemCounts, array[i])) {
       itemCounts[array[i]] += 1
@@ -112,17 +110,7 @@ export const consolidateDuplicates = (array) => {
       itemCounts[array[i]] = 1
     }
   }
-  const consolidated = []
-  const keys = Object.keys(itemCounts)
-  for (const key of keys) {
-    if (itemCounts[key] > 1) {
-      consolidated.push(`${key} (x${itemCounts[key]})`)
-    } else {
-      consolidated.push(key)
-    }
-  }
-
-  return consolidated
+  return Object.entries(itemCounts).map(([id, count]) => ({ id, count }))
 }
 
 // TODO: The types passed to this should be cleaned up.
@@ -140,16 +128,16 @@ export const calculateArmourClass = (dexMod: string, armour: string | string[]) 
     return [baseArmour, armourClass]
   }
 
-  if (armour.includes(armourTypes.leather)) {
+  if (armour.includes(ARMOUR_ID.leather)) {
     armourClass = baseArmour + 2
   }
-  if (armour.includes(armourTypes.chainMail)) {
+  if (armour.includes(ARMOUR_ID.chainmail)) {
     armourClass = baseArmour + 4
   }
-  if (armour.includes(armourTypes.plateMail)) {
+  if (armour.includes(ARMOUR_ID.plateMail)) {
     armourClass = baseArmour + 6
   }
-  if (armour.includes(armourTypes.shield)) {
+  if (armour.includes(ARMOUR_ID.shield)) {
     armourClass += 1
   }
 

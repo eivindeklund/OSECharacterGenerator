@@ -75,16 +75,6 @@ export const Halfling = "Halfling";
 export const MagicUser = "Magic-User";
 export const Thief = "Thief";
 
-// strings for armour
-
-export const armourTypes = {
-  leather: "Leather",
-  chainMail: "Chainmail",
-  plateMail: "Plate mail",
-  shield: "Shield",
-  unarmoured: "Unarmoured",
-};
-
 // strings for first names
 
 export const firstNames = [

@@ -82,7 +82,7 @@ describe("ItemOptionsContainer", () => {
       render(
         <ItemOptionsContainer
           {...defaultProps}
-          purchaseLedger={{ Sword: 1 }}
+          purchaseLedger={{ sword: 1 }}
         />,
       );
       expect(screen.getByText("Sword")).toBeInTheDocument();
@@ -93,7 +93,7 @@ describe("ItemOptionsContainer", () => {
       render(
         <ItemOptionsContainer
           {...defaultProps}
-          purchaseLedger={{ Sword: 1 }}
+          purchaseLedger={{ sword: 1 }}
         />,
       );
       expect(screen.getByText(/1 more/)).toBeInTheDocument();
@@ -145,7 +145,7 @@ describe("ItemOptionsContainer", () => {
         <ItemOptionsContainer
           {...defaultProps}
           defaultOpen={true}
-          purchaseLedger={{ Sword: 1 }}
+          purchaseLedger={{ sword: 1 }}
           handleUpdateLedger={handleUpdateLedger}
         />,
       );
@@ -153,7 +153,7 @@ describe("ItemOptionsContainer", () => {
       const plusButtons = screen.getAllByText("+");
       fireEvent.click(plusButtons[0]); // first item in Blades = Sword
 
-      expect(handleUpdateLedger).toHaveBeenCalledWith("Sword", 2);
+      expect(handleUpdateLedger).toHaveBeenCalledWith("sword", 2);
     });
 
     it("clicking - decrements qty", () => {
@@ -162,7 +162,7 @@ describe("ItemOptionsContainer", () => {
         <ItemOptionsContainer
           {...defaultProps}
           defaultOpen={true}
-          purchaseLedger={{ Sword: 2 }}
+          purchaseLedger={{ sword: 2 }}
           handleUpdateLedger={handleUpdateLedger}
         />,
       );
@@ -170,7 +170,7 @@ describe("ItemOptionsContainer", () => {
       const minusButtons = screen.getAllByText("-");
       fireEvent.click(minusButtons[0]); // Sword
 
-      expect(handleUpdateLedger).toHaveBeenCalledWith("Sword", 1);
+      expect(handleUpdateLedger).toHaveBeenCalledWith("sword", 1);
     });
 
     it("- button is disabled when qty is 0", () => {
@@ -200,7 +200,7 @@ describe("ItemOptionsContainer", () => {
 
       fireEvent.click(screen.getByText("Sword").closest("li")!);
 
-      expect(handleUpdateLedger).toHaveBeenCalledWith("Sword", 1);
+      expect(handleUpdateLedger).toHaveBeenCalledWith("sword", 1);
     });
 
     it("clicking a row with qty>0 does not add the item again", () => {
@@ -209,7 +209,7 @@ describe("ItemOptionsContainer", () => {
         <ItemOptionsContainer
           {...defaultProps}
           defaultOpen={true}
-          purchaseLedger={{ Sword: 1 }}
+          purchaseLedger={{ sword: 1 }}
           handleUpdateLedger={handleUpdateLedger}
         />,
       );

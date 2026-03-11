@@ -211,7 +211,7 @@ describe('buildFieldData', () => {
   // ── base movement ────────────────────────────────────────────────────────────
 
   it('sets movement to 60 when wearing plate mail', () => {
-    const props = { ...baseProps, characterEquipment: { ...baseProps.characterEquipment, armour: ['Plate mail'] } }
+    const props = { ...baseProps, characterEquipment: { ...baseProps.characterEquipment, armour: ['plate_mail'] } }
     const data = buildFieldData(props)
     expect(data['Exploration Movement']).toBe('60')
     expect(data['Overland Movement']).toBe('12')
@@ -219,13 +219,13 @@ describe('buildFieldData', () => {
   })
 
   it('sets movement to 60 when wearing chain mail', () => {
-    const props = { ...baseProps, characterEquipment: { ...baseProps.characterEquipment, armour: ['Chainmail'] } }
+    const props = { ...baseProps, characterEquipment: { ...baseProps.characterEquipment, armour: ['chainmail'] } }
     const data = buildFieldData(props)
     expect(data['Exploration Movement']).toBe('60')
   })
 
   it('sets movement to 90 when wearing leather armour', () => {
-    const props = { ...baseProps, characterEquipment: { ...baseProps.characterEquipment, armour: ['Leather'] } }
+    const props = { ...baseProps, characterEquipment: { ...baseProps.characterEquipment, armour: ['leather'] } }
     const data = buildFieldData(props)
     expect(data['Exploration Movement']).toBe('90')
     expect(data['Overland Movement']).toBe('18')
@@ -243,7 +243,7 @@ describe('buildFieldData', () => {
   // ── door / trap detection ─────────────────────────────────────────────────────
 
   it('gives 2-in-6 listen chance when class has Listening at Doors ability', () => {
-    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: [{ name: 'Listening at Doors (2-in-6)' }] } }
+    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: [{ id: 'listening_at_doors', name: 'Listening at Doors (2-in-6)' }] } }
     expect(buildFieldData(props)['Listen at Door']).toBe('2-in-6')
   })
 
@@ -252,7 +252,7 @@ describe('buildFieldData', () => {
   })
 
   it('gives 2-in-6 secret door chance when class has Detect Secret Doors ability', () => {
-    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: [{ name: 'Detect Secret Doors' }] } }
+    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: [{ id: 'detect_secret_doors', name: 'Detect Secret Doors' }] } }
     expect(buildFieldData(props)['Find Secret Door']).toBe('2-in-6')
   })
 
@@ -261,7 +261,7 @@ describe('buildFieldData', () => {
   })
 
   it('gives 2-in-6 room trap chance when class has Detect Room Traps ability', () => {
-    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: [{ name: 'Detect Room Traps' }] } }
+    const props = { ...baseProps, characterClass: { ...baseProps.characterClass, abilities: [{ id: 'detect_room_traps', name: 'Detect Room Traps' }] } }
     expect(buildFieldData(props)['Find Room Trap']).toBe('2-in-6')
   })
 
@@ -273,7 +273,7 @@ describe('buildFieldData', () => {
 
   it('calculates encumbrance as armour weight + weapon weight + 80 base', () => {
     // Leather = 200 cn, no weapons → 200 + 0 + 80 = 280
-    const props = { ...baseProps, characterEquipment: { ...baseProps.characterEquipment, armour: ['Leather'], weapons: [] } }
+    const props = { ...baseProps, characterEquipment: { ...baseProps.characterEquipment, armour: ['leather'], weapons: [] } }
     expect(buildFieldData(props)['Equipment Encumbrance']).toBe('280')
   })
 

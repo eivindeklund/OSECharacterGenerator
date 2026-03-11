@@ -3,32 +3,28 @@ import { useNavigate } from "react-router-dom";
 import Inventory from "../../components/equipment/Inventory";
 import ScreenNavigation from "../../components/general/ScreenNavigation";
 import {
-  Cleric,
-  Dwarf,
-  Elf,
-  Fighter,
-  Halfling,
+    Cleric,
+    Dwarf,
+    Elf,
+    Fighter,
+    Halfling,
 } from "../../constants/constants";
 import ArmourOptionsContainer from "../../containers/equipment/ArmourOptionsContainer";
 import GearOptionsContainer from "../../containers/equipment/GearOptionsContainer";
 import PackOptionsContainer from "../../containers/equipment/PackOptionsContainer";
 import WeaponOptionsContainer from "../../containers/equipment/WeaponOptionsContainer";
-import armourData from "../../data/armourData";
+import armourData, { ARMOUR_ID } from "../../data/armourData";
 import equipmentData from "../../data/equipmentData";
 import weaponsData from "../../data/weaponsData";
 import type {
-  CharacterEquipment,
-  CharacterModifiers,
-  CharacterStatistics,
-  ClassOptionsData,
+    CharacterEquipment,
+    CharacterModifiers,
+    CharacterStatistics,
+    ClassOptionsData,
 } from "../../types";
 import {
-  calculatePackPrice,
-  resolvePackItems,
-} from "../../utilities/PackUtils";
-import {
-  calculateArmourClass,
-  chooseRandomItem
+    calculateArmourClass,
+    chooseRandomItem
 } from "../../utilities/utilities";
 
 interface EquipmentStoreProps {
@@ -85,23 +81,23 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     // update default selectedWeapon to one appropriate for class
 
     if (characterClass.name === Cleric) {
-      setWeaponSelected("Mace");
+      setWeaponSelected("mace");
     }
 
     if (characterClass.name === Fighter) {
-      setWeaponSelected("Sword");
+      setWeaponSelected("sword");
     }
 
     if (characterClass.name === Elf) {
-      setWeaponSelected("Long bow");
+      setWeaponSelected("long_bow");
     }
 
     if (characterClass.name === Dwarf) {
-      setWeaponSelected("Battle axe");
+      setWeaponSelected("battle_axe");
     }
 
     if (characterClass.name === Halfling) {
-      setWeaponSelected("Sling");
+      setWeaponSelected("sling");
     }
   }, []);
 
@@ -112,7 +108,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
 
   const adventuringGearList = () => {
     return equipmentData.map((item) => (
-      <option value={item.name} key={item.name}>
+      <option value={item.id} key={item.id}>
         {item.name} - {item.price} gp
       </option>
     ));
@@ -121,8 +117,8 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   const renderWeaponOption = (item) => {
     return (
       <option
-        value={item.name}
-        key={item.name}
+        value={item.id}
+        key={item.id}
       >
         {item.name} ({item.damage}) - {item.price} gp
       </option>
@@ -154,15 +150,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   };
 
   const handleItemAction = (selectedItem, action, type) => {
-    if (
-      type !== "pack" &&
-      typeof selectedItem === "string" &&
-      selectedItem.includes(" (x")
-    ) {
-      const itemNameNonConsolidated = selectedItem.split(" (x");
-      selectedItem = itemNameNonConsolidated[0];
-    }
-
+    // selectedItem is now always an item ID (Backpack passes item.id directly)
     let storeCollection;
 
     switch (type) {
@@ -175,57 +163,13 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
       case "gear":
         storeCollection = equipmentData;
         break;
-      case "pack":
-        // No consolidation collection needed for packs as they are handled differently
-        break;
     }
 
-    if (type === "pack") {
-      const pack = selectedItem;
-      const price = calculatePackPrice(pack.items, characterClass.name);
-
-      if (action === "buy") {
-        if (price > (gold ?? 0)) {
-          return;
-        }
-
-        const resolvedItems = resolvePackItems(pack.items, characterClass.name);
-
-        let newGold = (gold ?? 0) - price;
-        let newWeapons = [...weapons];
-        let newArmour = [...armour];
-        let newGear = [...adventuringGear];
-
-        resolvedItems.forEach((item) => {
-          // Add item multiple times based on quantity
-          for (let i = 0; i < item.quantity; i++) {
-            if (item.category === "weapon") {
-              newWeapons.push(item.name);
-            } else if (item.category === "armour") {
-              newArmour.push(item.name);
-            } else {
-              newGear.push(item.name);
-            }
-          }
-        });
-
-        setGold(newGold);
-        setWeapons(newWeapons);
-        setArmour(newArmour);
-        setAdventuringGear(newGear);
-      }
-      return;
-    }
-
-    const findItem = (object) => {
-      return object.name === selectedItem;
-    };
-
-    const item = storeCollection.find(findItem);
+    const item = storeCollection?.find((object) => object.id === selectedItem);
 
     if (type === "weapon") {
       const index = weapons.findIndex((x) => {
-        return x === item.name;
+        return x === item.id;
       });
       const newWeaponsArray = [...weapons];
       switch (action) {
@@ -234,7 +178,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
             return;
           }
           setGold((gold ?? 0) - item.price);
-          setWeapons((oldItems) => [...oldItems, item.name]);
+          setWeapons((oldItems) => [...oldItems, item.id]);
           break;
         case "sell":
           newWeaponsArray.splice(index, 1);
@@ -246,7 +190,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     if (type === "armour") {
       const shieldCost = shieldSelected ? 10 : 0;
       const index = armour.findIndex((x) => {
-        return x === item.name;
+        return x === item.id;
       });
       const newArmourArray = [...armour];
       switch (action) {
@@ -256,10 +200,10 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
           }
           if (shieldSelected) {
             setGold((gold ?? 0) - item.price - shieldCost);
-            setArmour((oldArmour) => [...oldArmour, item.name, "Shield"]);
+            setArmour((oldArmour) => [...oldArmour, item.id, ARMOUR_ID.shield]);
           } else {
             setGold((gold ?? 0) - item.price);
-            setArmour((oldArmour) => [...oldArmour, item.name]);
+            setArmour((oldArmour) => [...oldArmour, item.id]);
           }
           break;
         case "sell":
@@ -271,7 +215,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
 
     if (type === "gear") {
       const index = adventuringGear.findIndex((x) => {
-        return x === item.name;
+        return x === item.id;
       });
       const newGearArray = [...adventuringGear];
 
@@ -281,7 +225,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
             return;
           }
           setGold((gold ?? 0) - item.price);
-          setAdventuringGear((oldGear) => [...oldGear, item.name]);
+          setAdventuringGear((oldGear) => [...oldGear, item.id]);
           break;
         case "sell":
           newGearArray.splice(index, 1);
@@ -308,23 +252,23 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
 
   const selectRandomWeapon = () => {
     const randomWeapon = chooseRandomItem(weaponsData);
-    setWeaponSelected(randomWeapon.name);
+    setWeaponSelected(randomWeapon.id);
   };
 
   const selectRandomGear = () => {
     const randomGear = chooseRandomItem(equipmentData);
-    setAdventuringGearSelected(randomGear.name);
+    setAdventuringGearSelected(randomGear.id);
   };
 
-  const getItemPrice = (itemName) => {
+  const getItemPrice = (itemId: string) => {
     const allItems = [...equipmentData, ...weaponsData, ...armourData];
-    const item = allItems.find((i) => i.name === itemName);
+    const item = allItems.find((i) => i.id === itemId);
     return item ? item.price : 0;
   };
 
-  const getItemCategory = (itemName) => {
-    if (weaponsData.find((i) => i.name === itemName)) return "weapon";
-    if (armourData.find((i) => i.name === itemName)) return "armour";
+  const getItemCategory = (itemId: string) => {
+    if (weaponsData.find((i) => i.id === itemId)) return "weapon";
+    if (armourData.find((i) => i.id === itemId)) return "armour";
     return "gear";
   };
 
@@ -348,31 +292,31 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     });
   };
 
-  const handleUpdateInventory = (itemName: string, newQty: number) => {
-    const currentQty = inventoryCounts[itemName] || 0;
+  const handleUpdateInventory = (itemId: string, newQty: number) => {
+    const currentQty = inventoryCounts[itemId] || 0;
     const diff = newQty - currentQty;
     if (diff === 0) return;
 
-    const price = getItemPrice(itemName);
-    const category = getItemCategory(itemName);
+    const price = getItemPrice(itemId);
+    const category = getItemCategory(itemId);
 
     if (diff > 0) {
       if (price * diff > (gold ?? 0)) return; // not enough gold
       setGold((g) => (g ?? 0) - price * diff);
-      const additions = Array(diff).fill(itemName);
+      const additions = Array(diff).fill(itemId);
       if (category === "weapon") setWeapons((w) => [...w, ...additions]);
       else if (category === "armour") setArmour((a) => [...a, ...additions]);
       else setAdventuringGear((g) => [...g, ...additions]);
     } else {
       const refundCount = Math.abs(diff);
       setGold((g) => (g ?? 0) + price * refundCount);
-      if (category === "weapon") setWeapons((w) => removeItemsFromArray(w, itemName, refundCount));
-      else if (category === "armour") setArmour((a) => removeItemsFromArray(a, itemName, refundCount));
-      else setAdventuringGear((g) => removeItemsFromArray(g, itemName, refundCount));
+      if (category === "weapon") setWeapons((w) => removeItemsFromArray(w, itemId, refundCount));
+      else if (category === "armour") setArmour((a) => removeItemsFromArray(a, itemId, refundCount));
+      else setAdventuringGear((g) => removeItemsFromArray(g, itemId, refundCount));
     }
   };
 
-  const handleBuyPack = (items: Array<{ name: string; price: number; quantity: number }>) => {
+  const handleBuyPack = (items: Array<{ id: string; name: string; price: number; quantity: number; category?: string }>) => {
     const totalCost = items.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
     if (totalCost > (gold ?? 0)) return;
 
@@ -381,12 +325,12 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     const newGear = [...adventuringGear];
 
     items.forEach((item) => {
-      const category = getItemCategory(item.name);
+      const category = item.category ?? getItemCategory(item.id);
       const qty = item.quantity || 1;
       for (let i = 0; i < qty; i++) {
-        if (category === "weapon") newWeapons.push(item.name);
-        else if (category === "armour") newArmour.push(item.name);
-        else newGear.push(item.name);
+        if (category === "weapon") newWeapons.push(item.id);
+        else if (category === "armour") newArmour.push(item.id);
+        else newGear.push(item.id);
       }
     });
 

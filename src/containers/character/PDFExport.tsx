@@ -3,9 +3,9 @@ import {
   CHARACTER_SHEET_PURIST_DAC_URL,
   CHARACTER_SHEET_PURIST_URL,
   CHARACTER_SHEET_UNDERGROUND_URL,
-  armourTypes
 } from '../../constants/constants'
-import armourData from '../../data/armourData'
+import armourData, { ARMOUR_ID } from '../../data/armourData'
+import { ABILITY_ID } from '../../data/classOptionsData'
 import weaponsData from '../../data/weaponsData'
 import type {
   AbilityScores,
@@ -15,6 +15,7 @@ import type {
   CharacterStatistics,
   ClassOptionsData,
 } from '../../types'
+import { allItemsById } from '../../utilities/PackUtils'
 import { consolidateDuplicates } from '../../utilities/utilities'
 
 export type PDFExportProps = {
@@ -117,40 +118,53 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     : `${alignmentCapitalized}, Common`
 
   const abilitiesInfo = `
-    Weapons: ${consolidateDuplicates(characterEquipment.weapons).join(', ') || ''}
+    Weapons: ${consolidateDuplicates(characterEquipment.weapons).map(({ id, count }) => {
+      const name = allItemsById[id]?.name ?? id
+      return count > 1 ? `${name} (x${count})` : name
+    }).join(', ') || ''}
     Abilities: ${characterClass.abilities.map((a) => a.name).join(', ')}`
 
   const weaponsInfo = `
-    Weapons: ${consolidateDuplicates(characterEquipment.weapons).join(', ') || ''}
-    Armour: ${characterEquipment.armour.join(', ') || ''}
+    Weapons: ${consolidateDuplicates(characterEquipment.weapons).map(({ id, count }) => {
+      const name = allItemsById[id]?.name ?? id
+      return count > 1 ? `${name} (x${count})` : name
+    }).join(', ') || ''}
+    Armour: ${characterEquipment.armour.map(id => allItemsById[id]?.name ?? id).join(', ') || ''}
     `
 
   const equipmentInfo = `
-    ${consolidateDuplicates(characterEquipment.adventuringGear).join(', ') || ''}
+    ${consolidateDuplicates(characterEquipment.adventuringGear).map(({ id, count }) => {
+      const name = allItemsById[id]?.name ?? id
+      return count > 1 ? `${name} (x${count})` : name
+    }).join(', ') || ''}
     `
 
   const spellText = characterStatistics.hasSpells ? `Spells: ${characterStatistics.spell}` : ''
 
   const baseMovement = (() => {
     const armour = characterEquipment.armour
-    if (armour.some(a => a === armourTypes.plateMail || a === armourTypes.chainMail)) return 60
-    if (armour.some(a => a === armourTypes.leather)) return 90
+    if (armour.some(a => a === ARMOUR_ID.plateMail || a === ARMOUR_ID.chainmail)) return 60
+    if (armour.some(a => a === ARMOUR_ID.leather)) return 90
     return 120
   })()
 
-  const listenAtDoor = characterClass.abilities.some((a) => a.name.includes('Listening at Doors')) ? '2-in-6' : '1-in-6'
-  const findSecretDoor = characterClass.abilities.some((a) => a.name.includes('Detect Secret Doors')) ? '2-in-6' : '1-in-6'
-  const findRoomTrap = characterClass.abilities.some((a) => a.name.includes('Detect Room Traps')) ? '2-in-6' : '1-in-6'
+  const listenAtDoor = characterClass.abilities.some((a) => a.id === ABILITY_ID.listeningAtDoors) ? '2-in-6' : '1-in-6'
+  const findSecretDoor = characterClass.abilities.some((a) => a.id === ABILITY_ID.detectSecretDoors) ? '2-in-6' : '1-in-6'
+  const findRoomTrap = characterClass.abilities.some((a) => a.id === ABILITY_ID.detectRoomTraps) ? '2-in-6' : '1-in-6'
 
   const equipmentEncumbrance = (() => {
-    const armourWeight = characterEquipment.armour.reduce((sum, name) => {
-      const entry = armourData.find(a => a.name === name)
+    // TODO: This does not check for missing ids; missing ids are errors.
+    const armourWeight = characterEquipment.armour.reduce((sum, id) => {
+      const entry = armourData.find(a => a.id === id)
       return sum + (entry?.weight ?? 0)
     }, 0)
-    const weaponWeight = consolidateDuplicates(characterEquipment.weapons).reduce((sum, name) => {
-      const entry = weaponsData.find(w => w.name === name)
-      return sum + (entry?.weight ?? 0)
+    // TODO: This does not check for missing ids; missing ids are errors.
+    const weaponWeight = consolidateDuplicates(characterEquipment.weapons).reduce((sum, { id, count }) => {
+      const entry = weaponsData.find(w => w.id === id)
+      return sum + (entry?.weight ?? 0) * count
     }, 0)
+    // 80 comes from the rule in B/X that miscellaneous adventuring gear counts as 80 gp weight
+    // TODO Extract to a constant with a more descriptive name
     return armourWeight + weaponWeight + 80
   })()
 
