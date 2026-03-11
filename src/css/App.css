@@ -1274,23 +1274,14 @@ div > .button-class-option {
   margin-bottom: 2rem;
 }
 
-.class-options-container > .button-class-option:hover {
-  height: auto;
-  width: auto;
-  padding: 0;
-  margin: 0;
-  color: #ff0000; /* one-off: red hover text on deprecated class-option buttons (pending refactor) */
-  background-color: rgba(0, 0, 0, 0.025); /* one-off: near-transparent disabled bg on hovered class-option */
+.button-class-option.button--selected {
+  background-color: var(--chip-bg-active-engaged);
+  color: var(--main-bg-white);
+  border: 1px solid var(--chip-bg-active-engaged);
 }
 
-.class-options-container > .button-class-option:focus,
-.class-options-container > .button-class-option.button--selected {
-  height: auto;
-  width: auto;
-  padding: 0;
-  margin: 0;
-  color: #ff0000; /* one-off: red focused/selected text on deprecated class-option buttons (pending refactor) */
-  background-color: rgba(0, 0, 0, 0.025); /* one-off: near-transparent bg on focused/selected class-option */
+.class-option-wrapper:has(> .button--selected) {
+  box-shadow: 0 0 0 2px var(--chip-bg-active-engaged);
 }
 
 .ability-screen > .class-options-container {
@@ -1903,4 +1894,138 @@ div > .button-class-option {
 .navigation-buttons .button {
   min-width: 150px;
   margin: 0;
+}
+
+/* === Filter Chips === */
+.filter-chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.filter-chip {
+  background-color: var(--chip-bg);
+  color: var(--secondary-text-color);
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-lg);
+  padding: 2px 10px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  filter: brightness(0.95);
+}
+
+.filter-chip--active {
+  background-color: var(--chip-bg-active);
+  color: var(--main-bg-white);
+  border: 1px solid var(--chip-bg-active);
+  font-weight: 600;
+}
+
+.filter-chip--engaged {
+  background-color: var(--chip-bg-active-engaged);
+  color: var(--main-bg-white);
+  border: 1px solid var(--chip-bg-active-engaged);
+  font-weight: 600;
+}
+
+.filter-chip-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* === Filter Chips === */
+.filter-chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.filter-chip {
+  background-color: var(--chip-bg);
+  color: var(--secondary-text-color);
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-lg);
+  padding: 2px 10px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: normal;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  filter: brightness(0.95);
+}
+
+.filter-chip--active {
+  background-color: var(--chip-bg-active);
+  color: var(--main-bg-white);
+  border: 1px solid var(--chip-bg-active);
+  font-weight: 600;
+}
+
+.filter-chip--engaged {
+  background-color: var(--chip-bg-active-engaged);
+  color: var(--main-bg-white);
+  border: 1px solid var(--chip-bg-active-engaged);
+  font-weight: 600;
+}
+
+.filter-chip-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* === Filter Chips === */
+.filter-chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.filter-chip {
+  background-color: var(--chip-bg);
+  color: var(--secondary-text-color);
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-lg);
+  padding: 2px 10px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: normal;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  filter: brightness(0.95);
+}
+
+.filter-chip--active {
+  background-color: var(--chip-bg-active);
+  color: var(--main-bg-white);
+  border: 1px solid var(--chip-bg-active);
+  font-weight: 600;
+}
+
+.filter-chip--engaged {
+  background-color: var(--chip-bg-active-engaged);
+  color: var(--main-bg-white);
+  border: 1px solid var(--chip-bg-active-engaged);
+  font-weight: 600;
+}
+
+.filter-chip-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
