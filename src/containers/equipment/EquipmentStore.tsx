@@ -6,7 +6,7 @@ import ArmourOptionsContainer from "../../containers/equipment/ArmourOptionsCont
 import GearOptionsContainer from "../../containers/equipment/GearOptionsContainer";
 import PackOptionsContainer from "../../containers/equipment/PackOptionsContainer";
 import WeaponOptionsContainer from "../../containers/equipment/WeaponOptionsContainer";
-import armourData, { ARMOUR_ID } from "../../data/armourData";
+import armourData from "../../data/armourData";
 import equipmentData from "../../data/equipmentData";
 import weaponsData from "../../data/weaponsData";
 import type {
@@ -26,7 +26,6 @@ interface EquipmentStoreProps {
   setCharacterStatistics: React.Dispatch<React.SetStateAction<CharacterStatistics>>;
   characterEquipment: CharacterEquipment;
   setCharacterEquipment: React.Dispatch<React.SetStateAction<CharacterEquipment>>;
-  diceEnabled: boolean;
   rollGold: () => void;
 }
 
@@ -38,7 +37,6 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     setCharacterStatistics,
     characterEquipment,
     setCharacterEquipment,
-    diceEnabled,
     rollGold,
   } = props;
 
@@ -54,11 +52,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   const [adventuringGear, setAdventuringGear] = useState(
     characterEquipment.adventuringGear || [],
   );
-  const [adventuringGearSelected, setAdventuringGearSelected] =
-    useState("Backpack");
   const [armour, setArmour] = useState(characterEquipment.armour || []);
-  const [armourSelected, setArmourSelected] = useState(null);
-  const [shieldSelected, setShieldSelected] = useState(false);
   const [weapons, setWeapons] = useState(characterEquipment.weapons || []);
   const [armourClass, setArmourClass] = useState<number | null>(null);
   const [unarmouredAC, setUnarmouredAC] = useState<number | null>(null);
@@ -76,7 +70,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
 
   const handleItemAction = (selectedItem, action, type) => {
     // selectedItem is now always an item ID (Backpack passes item.id directly)
-    let storeCollection;
+    let storeCollection: any[];
 
     switch (type) {
       case "armour":
@@ -89,75 +83,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
         storeCollection = equipmentData;
         break;
     }
-
-    const item = storeCollection?.find((object) => object.id === selectedItem);
-
-    if (type === "weapon") {
-      const index = weapons.findIndex((x) => {
-        return x === item.id;
-      });
-      const newWeaponsArray = [...weapons];
-      switch (action) {
-        case "buy":
-          if (item.price > (gold ?? 0)) {
-            return;
-          }
-          setGold((gold ?? 0) - item.price);
-          setWeapons((oldItems) => [...oldItems, item.id]);
-          break;
-        case "sell":
-          newWeaponsArray.splice(index, 1);
-          setWeapons(newWeaponsArray);
-          setGold((gold ?? 0) + item.price);
-      }
-    }
-
-    if (type === "armour") {
-      const shieldCost = shieldSelected ? 10 : 0;
-      const index = armour.findIndex((x) => {
-        return x === item.id;
-      });
-      const newArmourArray = [...armour];
-      switch (action) {
-        case "buy":
-          if (item.price + shieldCost > (gold ?? 0)) {
-            return;
-          }
-          if (shieldSelected) {
-            setGold((gold ?? 0) - item.price - shieldCost);
-            setArmour((oldArmour) => [...oldArmour, item.id, ARMOUR_ID.shield]);
-          } else {
-            setGold((gold ?? 0) - item.price);
-            setArmour((oldArmour) => [...oldArmour, item.id]);
-          }
-          break;
-        case "sell":
-          newArmourArray.splice(index, 1);
-          setArmour(newArmourArray);
-          setGold((gold ?? 0) + item.price);
-      }
-    }
-
-    if (type === "gear") {
-      const index = adventuringGear.findIndex((x) => {
-        return x === item.id;
-      });
-      const newGearArray = [...adventuringGear];
-
-      switch (action) {
-        case "buy":
-          if (item.price > (gold ?? 0)) {
-            return;
-          }
-          setGold((gold ?? 0) - item.price);
-          setAdventuringGear((oldGear) => [...oldGear, item.id]);
-          break;
-        case "sell":
-          newGearArray.splice(index, 1);
-          setAdventuringGear(newGearArray);
-          setGold((gold ?? 0) + item.price);
-      }
-    }
+    throw new Error("Invalid type in handleItemAction: " + type);
   };
 
   const handleResetEquipment = () => {

@@ -32,13 +32,11 @@ export default function CharacterGenerator() {
     setAbilityScores,
     originalAbilityScores,
     characterModifiers,
-    setCharacterModifiers,
     characterStatistics,
     setCharacterStatistics,
     pointBuy,
     setPointBuy,
     characterClass,
-    setCharacterClass,
     characterEquipment,
     setCharacterEquipment,
     diceEnabled,
@@ -146,7 +144,6 @@ export default function CharacterGenerator() {
                     pointBuy={pointBuy}
                     setPointBuy={setPointBuy}
                     characterModifiers={characterModifiers}
-                    rollCharacter={rollCharacter}
                     scoreActions={{ rollAttribute, scoreIncrease, scoreDecrease }}
                     abilityScoresThatCanDecrease={abilityScoresThatCanDecrease}
                   />
@@ -162,7 +159,6 @@ export default function CharacterGenerator() {
                     characterModifiers={characterModifiers}
                     characterStatistics={characterStatistics}
                     setCharacterStatistics={setCharacterStatistics}
-                    diceEnabled={diceEnabled}
                     rollHP={rollHP}
                   />
                 }
@@ -177,7 +173,6 @@ export default function CharacterGenerator() {
                     setCharacterStatistics={setCharacterStatistics}
                     characterEquipment={characterEquipment}
                     setCharacterEquipment={setCharacterEquipment}
-                    diceEnabled={diceEnabled}
                     rollGold={rollGold}
                   />
                 }

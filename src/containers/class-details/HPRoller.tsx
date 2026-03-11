@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from "react";
 import React from "react";
 import type {
   CharacterModifiers,
@@ -11,8 +10,6 @@ type HPRollerProps = {
   characterStatistics: Pick<CharacterStatistics, 'hitPoints' | 'hpResult' | 'hpRolls'>
   characterModifiers: Pick<CharacterModifiers, 'constitutionMod'>
   rollHP: () => void
-  diceEnabled?: boolean
-  setCharacterStatistics?: Dispatch<SetStateAction<CharacterStatistics>>
 }
 
 export default function HPRoller(props: HPRollerProps) {

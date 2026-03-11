@@ -42,6 +42,7 @@ const baseProps: PDFExportProps = {
     armour: 'Any',
     weapons: 'Any',
     isStandardWeapon: () => true,
+    allowedArmour: [],
     languages: '',
     description: '',
     savingThrows: [12, 13, 14, 15, 16],

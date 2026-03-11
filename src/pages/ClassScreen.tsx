@@ -14,7 +14,6 @@ import type {
 } from "../types";
 
 type ClassScreenProps = {
-  diceEnabled?: boolean
   characterClass: ClassOptionsData
   character?: Character
   setCharacter?: Dispatch<SetStateAction<Character>>
@@ -30,7 +29,6 @@ export default function ClassScreen(props: ClassScreenProps) {
     characterStatistics,
     setCharacterStatistics,
     characterModifiers,
-    diceEnabled,
     rollHP,
   } = props;
 
@@ -43,9 +41,7 @@ export default function ClassScreen(props: ClassScreenProps) {
       <HPRoller
         characterClass={characterClass}
         characterStatistics={characterStatistics}
-        setCharacterStatistics={setCharacterStatistics}
         characterModifiers={characterModifiers}
-        diceEnabled={diceEnabled}
         rollHP={rollHP}
       ></HPRoller>
 

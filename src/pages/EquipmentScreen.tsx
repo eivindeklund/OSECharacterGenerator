@@ -9,7 +9,6 @@ import type {
 } from "../types";
 
 type EquipmentScreenProps = {
-  diceEnabled?: boolean
   characterClass: ClassOptionsData
   characterModifiers: CharacterModifiers
   characterStatistics: CharacterStatistics
@@ -27,7 +26,6 @@ export default function EquipmentScreen(props: EquipmentScreenProps) {
     setCharacterStatistics,
     characterEquipment,
     setCharacterEquipment,
-    diceEnabled,
     rollGold,
   } = props;
 
@@ -42,7 +40,6 @@ export default function EquipmentScreen(props: EquipmentScreenProps) {
         setCharacterStatistics={setCharacterStatistics}
         characterEquipment={characterEquipment}
         setCharacterEquipment={setCharacterEquipment}
-        diceEnabled={diceEnabled}
         rollGold={rollGold}
       ></EquipmentStore>
     </div>

@@ -23,7 +23,6 @@ interface AbilityScreenProps {
   pointBuy: number;
   setPointBuy: Dispatch<SetStateAction<number>>;
   characterModifiers: CharacterModifiers;
-  rollCharacter: () => void;
   scoreActions: ScoreActions;
   diceEnabled: boolean;
   abilityScoresThatCanDecrease: AbilityScoresThatCanDecrease;
@@ -39,7 +38,6 @@ export default function AbilityScreen(props: AbilityScreenProps) {
     pointBuy,
     setPointBuy,
     characterModifiers,
-    rollCharacter,
     scoreActions,
     diceEnabled,
     abilityScoresThatCanDecrease
@@ -47,11 +45,14 @@ export default function AbilityScreen(props: AbilityScreenProps) {
 
   const navigate = useNavigate();
 
-  const { rollAttribute, scoreIncrease, scoreDecrease } = scoreActions;
+  const { rollAttribute } = scoreActions;
 
   useEffect(() => {
     console.log("Loaded");
 
+    // TODO: Find out why we no longer auto-roll ability scores on load when
+    // dice rolls are disabled, this was working before and seems to have been
+    // broken by a recent change
     if (!diceEnabled && abilityScores.strength === null) {
       rollAttribute("e", "all");
     }
