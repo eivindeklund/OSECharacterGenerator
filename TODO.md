@@ -16,8 +16,9 @@ TODO-list for maintainer work on OSECharacterGenerator.  Tracked here instead of
     the factors 2 * 2 * 2 * 3 * 5.  So get a random number N from 1-120 and
     store it, and get the dice by d4 = N/30, d6 = N/20, d8=N/15, d10=N/12,
     d12=N/10, and d20=N/6.
-[ ] When we navigate back to the Ability Scores page, it is not visible which
+[X] When we navigate back to the Ability Scores page, it is not visible which
     class has been selected, apart from the "XXX details" button appearing.
+[ ] "Reset equipment" does not return the spent gold
 
 ## Necessary to get the fork to "completion" for handback to matthewfee
 
@@ -50,6 +51,33 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 [ ] Check for overall data duplication
 [ ] Clean up the ledger code in the equipmentscreen - it uses the item names
     rather than the item ids to be able to deal with holy water/oil/torches being in both weapons and equipment.  They have to be in weapons for the purposes of having damage data, but should maybe be hidden on the equipment page?
+[X] Lots of stuff uses risky aspects of display strings to determine behavior; e.g. the exact same name of an item between Weapons and Equipment, a.name.includes('Listening at Doors').
+   [X] Change to using ids and better data structures rather than looking inside strings
+   [X] remove selectedWeapon and setters and things that call the setters unless
+       it still is used in a way that affects the UI / what the user sees; if it
+       still is used migrate into classOptionsData instead of having the series of ifs.
+   [X] Replace the literal string based ids like 'leather', 'chainmail',
+       'plate_mail', 'shield', 'listening_at_doors', 'detect_secret_doors',
+       'detect_room_traps', with references to constant strings defined in
+       constant.tsx.  Ids where the literal is only used in one place outside
+       tests (typically, the weapon or equipment list) can keep using a literal
+       string there.
+   [X] add an accessor that generate the equivalent of classOptionsData.armour
+        from allowedArmour, rather than having repeated data
+   [X] create a constant that means 'any armour' instead of repeating
+        ["leather","chainmail","plate_mail","shield"] for every class in
+        classOptionsData that can take any armour.
+   [X] `return Object.entries(itemCounts).map(([id, count]) => ({ id, count }))` in consolidateItems looks like a useless map.  Remove if useless.
+
+   [ ] Add a test that checks that the ids in equipmentList are unique, and one
+       that checks that the ids in weaponsList are unique.
+    [ ] Remove the access pattern `name = allItemsById[id]?.name ?? id`; replace with a getter that logs an error + stacktrace if the id is not available, and fails if the item is not available and we are running a unit or integration test or in dev.   Incorrect ids are bugs and should not be papered over automatically, especially not in test conditions.  Note TODO in the getter for making the failure notify some monitoring system.
+    [ ] Scrub missing ids on load (with a warning) rather than having "safety" throughout the code.  The code should "fail" (log an error + notify monitoring) if enountering missing ids in prod, and plain fail if encountering them unit tests/integration tests/dev.
+    [ ] Rename isThiefEquivalent to canUseThiefTools
+
+[ ] We've removed the access pattern `name = allItemsById[id]?.name ?? id`, replacing it with a getter that logs an error + stacktrace and notifies monitoring if the id is not available in prod, and failing if the item is not available and we are running a unit or integration test or in dev.   Incorrect ids are bugs and should not be papered over automatically, especially not in test conditions.  See if there are other use of similar patterns (`foo = bar[baz]?.quz ?? some_default`) elsewhere in the codebase that also are just "work if we have bugs", and replace them with getters a la the one described for item id -> item name.  
+[ ] Remove dead code
+
 
 ### Abilities page
 
