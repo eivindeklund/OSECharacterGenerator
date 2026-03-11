@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
   abilityScoreNames,
-  defaultAbilityScoresState,
-  Thief,
+  defaultAbilityScoresState
 } from "../constants/constants";
 import classOptionsData, { emptyClassOptions } from "../data/classOptionsData";
 import { CharacterModifiers, ClassOptionsData, StoredCharacterData } from "../types";
@@ -460,7 +459,10 @@ export const useCharacterManager = (
   };
 
   const abilityScoresThatCanDecrease = {
-    strength: characterClass.name !== Thief,
+    // TODO: Verify that this is correct compared to the class requirements in
+    // the SRD.  Also, check if this applies to any of the advanced or Carcass
+    // Crawler classes.
+    strength: characterClass.name !== "Thief",
     intelligence: true,
     wisdom: true,
     dexterity: false,

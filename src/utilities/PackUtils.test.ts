@@ -1,4 +1,3 @@
-import { Cleric, Fighter } from '../constants/constants';
 import classOptionsData from '../data/classOptionsData';
 import weaponsData from '../data/weaponsData';
 import { calculatePackPrice, getOptimalEquipmentPack, resolvePackItems } from './PackUtils';
@@ -18,8 +17,8 @@ describe('PackUtils', () => {
       id: 'special_class_item',
       quantity: 1,
       options: [
-        { class: Cleric, id: 'holy_symbol_wooden' },
-        { class: Fighter, id: 'sword' },
+        { class: "Cleric", id: 'holy_symbol_wooden' },
+        { class: "Fighter", id: 'sword' },
         { default: true, id: 'tinder_box' }
       ]
     }
@@ -32,12 +31,12 @@ describe('PackUtils', () => {
     });
 
     test('should resolve special class items for Cleric', () => {
-      const resolved = resolvePackItems(mockPackItems, Cleric);
+      const resolved = resolvePackItems(mockPackItems, "Cleric");
       expect(resolved.find(i => i.id === 'holy_symbol_wooden')).toBeDefined();
     });
 
     test('should resolve special class items for Fighter', () => {
-      const resolved = resolvePackItems(mockPackItems, Fighter);
+      const resolved = resolvePackItems(mockPackItems, "Fighter");
       expect(resolved.find(i => i.id === 'sword')).toBeDefined();
     });
 

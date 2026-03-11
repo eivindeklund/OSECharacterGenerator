@@ -2,13 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Inventory from "../../components/equipment/Inventory";
 import ScreenNavigation from "../../components/general/ScreenNavigation";
-import {
-    Cleric,
-    Dwarf,
-    Elf,
-    Fighter,
-    Halfling,
-} from "../../constants/constants";
 import ArmourOptionsContainer from "../../containers/equipment/ArmourOptionsContainer";
 import GearOptionsContainer from "../../containers/equipment/GearOptionsContainer";
 import PackOptionsContainer from "../../containers/equipment/PackOptionsContainer";
@@ -23,8 +16,7 @@ import type {
     ClassOptionsData,
 } from "../../types";
 import {
-    calculateArmourClass,
-    chooseRandomItem
+  calculateArmourClass
 } from "../../utilities/utilities";
 
 interface EquipmentStoreProps {
@@ -68,37 +60,12 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   const [armourSelected, setArmourSelected] = useState(null);
   const [shieldSelected, setShieldSelected] = useState(false);
   const [weapons, setWeapons] = useState(characterEquipment.weapons || []);
-  const [weaponSelected, setWeaponSelected] = useState("Dagger");
   const [armourClass, setArmourClass] = useState<number | null>(null);
   const [unarmouredAC, setUnarmouredAC] = useState<number | null>(null);
   const [bxOnly, setBxOnly] = useState(true);
 
   useEffect(() => {
-    // calculate base armour class
-
     calculateAC();
-
-    // update default selectedWeapon to one appropriate for class
-
-    if (characterClass.name === Cleric) {
-      setWeaponSelected("mace");
-    }
-
-    if (characterClass.name === Fighter) {
-      setWeaponSelected("sword");
-    }
-
-    if (characterClass.name === Elf) {
-      setWeaponSelected("long_bow");
-    }
-
-    if (characterClass.name === Dwarf) {
-      setWeaponSelected("battle_axe");
-    }
-
-    if (characterClass.name === Halfling) {
-      setWeaponSelected("sling");
-    }
   }, []);
 
   useEffect(() => {
@@ -106,48 +73,6 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   }, [armour]);
 
 
-  const adventuringGearList = () => {
-    return equipmentData.map((item) => (
-      <option value={item.id} key={item.id}>
-        {item.name} - {item.price} gp
-      </option>
-    ));
-  };
-
-  const renderWeaponOption = (item) => {
-    return (
-      <option
-        value={item.id}
-        key={item.id}
-      >
-        {item.name} ({item.damage}) - {item.price} gp
-      </option>
-    );
-  };
-
-  const weaponsList = () => {
-    return weaponsData.map((item) => renderWeaponOption(item));
-  };
-
-  const handleAdventuringGearChange = (event) => {
-    setAdventuringGearSelected(event.target.value);
-  };
-
-  const handleWeaponChange = (event) => {
-    setWeaponSelected(event.target.value);
-  };
-
-  const handleArmourChange = (event) => {
-    setArmourSelected(event.target.value);
-  };
-
-  const handleShieldChange = () => {
-    if (!shieldSelected === true) {
-      setShieldSelected(true);
-    } else {
-      setShieldSelected(false);
-    }
-  };
 
   const handleItemAction = (selectedItem, action, type) => {
     // selectedItem is now always an item ID (Backpack passes item.id directly)
@@ -248,16 +173,6 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
     );
     setUnarmouredAC(baseArmour);
     setArmourClass(armourClass);
-  };
-
-  const selectRandomWeapon = () => {
-    const randomWeapon = chooseRandomItem(weaponsData);
-    setWeaponSelected(randomWeapon.id);
-  };
-
-  const selectRandomGear = () => {
-    const randomGear = chooseRandomItem(equipmentData);
-    setAdventuringGearSelected(randomGear.id);
   };
 
   const getItemPrice = (itemId: string) => {
