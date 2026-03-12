@@ -1,20 +1,20 @@
-import { useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
-  abilityScoreNames,
-  defaultAbilityScoresState
+    abilityScoreNames,
+    defaultAbilityScoresState
 } from "../constants/constants";
 import classOptionsData, { emptyClassOptions } from "../data/classOptionsData";
 import { CharacterModifiers, ClassOptionsData, StoredCharacterData } from "../types";
 import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
-  d,
-  deriveCharacterModifiers,
-  generateHpSeed,
-  hpRollToSeed,
-  hpSeedToRoll,
+    d,
+    deriveCharacterModifiers,
+    generateHpSeed,
+    hpRollToSeed,
+    hpSeedToRoll,
 } from "../utilities/utilities";
 
 /** Returns the furthest wizard route that is valid for the given (possibly partial) character data. */
@@ -146,7 +146,7 @@ export const useCharacterManager = (
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [character, abilityScores, characterModifiers, characterStatistics, characterClass, characterEquipment, characterRolled]);
 
-  const rollAttribute = (attributeOrEvent, optionalInput) => {
+  const rollAttribute = (attributeOrEvent: string | ChangeEvent<HTMLInputElement>, optionalInput?: string) => {
     const attribute =
       typeof attributeOrEvent === "string"
         ? attributeOrEvent
@@ -367,7 +367,7 @@ export const useCharacterManager = (
     });
   };
 
-  const scoreIncrease = (key) => {
+  const scoreIncrease = (key: string) => {
     const value = abilityScores[key];
     const increment = value < originalAbilityScores[key] ? 2 : 1;
 
@@ -379,7 +379,7 @@ export const useCharacterManager = (
     setPointBuy((prev) => prev - 1);
   };
 
-  const scoreDecrease = (key) => {
+  const scoreDecrease = (key: string) => {
     const value = abilityScores[key];
     const decrement = value > originalAbilityScores[key] ? -1 : -2;
 
@@ -406,12 +406,12 @@ export const useCharacterManager = (
     setPartialCharacter(null);
   };
 
-  const deleteStoredCharacter = (id) => {
+  const deleteStoredCharacter = (id: string) => {
     const updated = storageService.deleteCharacter(id);
     setStoredCharacters(updated);
   };
 
-  const importCharacter = (data) => {
+  const importCharacter = (data: StoredCharacterData) => {
     if (!data) return;
 
     setCharacter(data.character);
@@ -432,7 +432,7 @@ export const useCharacterManager = (
     navigate('/sheet');
   };
 
-  const loadCharacter = (data) => {
+  const loadCharacter = (data: StoredCharacterData) => {
     if (!data) return;
 
     setCharacter(data.character);

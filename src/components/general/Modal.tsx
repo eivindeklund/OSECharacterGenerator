@@ -9,7 +9,7 @@ type ModalProps = {
 
 export default function Modal({ isOpen, onClose, children, title }: ModalProps) {
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
       }

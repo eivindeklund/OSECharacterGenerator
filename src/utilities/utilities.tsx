@@ -89,11 +89,11 @@ export const hpRollToSeed = (result: number, hd: number): number =>
   (result - 1) * (120 / hd) + 1;
 
 
-export const chooseRandomItem = (array) => {
+export const chooseRandomItem = <T,>(array: T[]): T => {
   return array[Math.floor(Math.random() * array.length)]
 }
 
-export const getWeightedValue = (weightedList, diceResult, listLength) => {
+export const getWeightedValue = (weightedList: Record<number, string>, diceResult: number, listLength: number): string | undefined => {
   for (let i = diceResult; i <= listLength; i++) {
     if (Object.prototype.hasOwnProperty.call(weightedList, i)) {
       return weightedList[i]

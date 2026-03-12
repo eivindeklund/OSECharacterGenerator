@@ -2,7 +2,7 @@
 /**
  * Custom assert that logs in the browser but throws in Vitest.
  */
-export function assert(condition, message) {
+export function assert(condition: boolean, message: string): void {
   if (!condition) {
     // Check if we are running in Vitest (typically MODE === 'test')
     if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {

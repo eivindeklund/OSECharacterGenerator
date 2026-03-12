@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { StoredCharacterData } from "../types";
 import { hpSeedToRoll } from "../utilities/utilities";
 import { useCharacterManager } from "./useCharacterManager";
 
@@ -342,7 +343,7 @@ describe("useCharacterManager", () => {
     };
 
     act(() => {
-      result.current.importCharacter(mockData);
+      result.current.importCharacter(mockData as unknown as StoredCharacterData);
     });
 
     expect(result.current.character.name).toBe("Test Import");
@@ -379,7 +380,7 @@ describe("useCharacterManager", () => {
     };
 
     act(() => {
-      result.current.loadCharacter(storedCharacter);
+      result.current.loadCharacter(storedCharacter as unknown as StoredCharacterData);
     });
 
     expect(result.current.character.name).toBe("Conan");
