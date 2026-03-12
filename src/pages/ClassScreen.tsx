@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 import ClassAbilitiesList from "../components/class/ClassAbilitiesList";
 import SavingThrows from "../components/class/SavingThrows";
@@ -6,31 +5,16 @@ import Header from "../components/general/Header";
 import ScreenNavigation from "../components/general/ScreenNavigation";
 import HPRoller from "../containers/class-details/HPRoller";
 import SpellSelection from "../containers/class-details/SpellSelection";
-import type {
-  Character,
-  CharacterModifiers,
-  CharacterStatistics,
-  ClassOptionsData,
-} from "../types";
+import { useCharacter } from "../contexts/CharacterContext";
 
-type ClassScreenProps = {
-  characterClass: ClassOptionsData
-  character?: Character
-  setCharacter?: Dispatch<SetStateAction<Character>>
-  characterStatistics: CharacterStatistics
-  setCharacterStatistics: Dispatch<SetStateAction<CharacterStatistics>>
-  characterModifiers: CharacterModifiers
-  rollHP: () => void
-}
-
-export default function ClassScreen(props: ClassScreenProps) {
+export default function ClassScreen() {
   const {
     characterClass,
     characterStatistics,
     setCharacterStatistics,
     characterModifiers,
     rollHP,
-  } = props;
+  } = useCharacter();
 
   const navigate = useNavigate();
 

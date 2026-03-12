@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
+import { CharacterProvider } from '../contexts/CharacterContext';
 import i18n from '../utilities/i18n';
 import AbilityScreen from './AbilityScreen';
 
@@ -15,7 +16,7 @@ vi.mock('../containers/classes/Classes', () => ({
 }));
 
 describe('AbilityScreen', () => {
-  const defaultProps = {
+  const mockContextValue = {
     characterClass: { name: 'Fighter', primeReqs: ['strength'] },
     abilityScores: { strength: 10, intelligence: 10, wisdom: 10, dexterity: 10, constitution: 10, charisma: 10 },
     originalAbilityScores: { strength: 10, intelligence: 10, wisdom: 10, dexterity: 10, constitution: 10, charisma: 10 },
@@ -24,34 +25,33 @@ describe('AbilityScreen', () => {
     pointBuy: 0,
     setPointBuy: vi.fn(),
     characterModifiers: {},
-    rollCharacter: vi.fn(),
-    scoreActions: {
-      rollAttribute: vi.fn(),
-      scoreIncrease: vi.fn(),
-      scoreDecrease: vi.fn(),
-    },
+    rollAttribute: vi.fn(),
+    scoreIncrease: vi.fn(),
+    scoreDecrease: vi.fn(),
     diceEnabled: false,
     abilityScoresThatCanDecrease: { strength: true, intelligence: true, wisdom: true, dexterity: false, constitution: false, charisma: false }
-  };
+  } as any;
 
-  const renderWithI18n = (props) => {
+  const renderWithI18n = () => {
     return render(
       <MemoryRouter>
-        <I18nextProvider i18n={i18n}>
-          <AbilityScreen {...props} />
-        </I18nextProvider>
+        <CharacterProvider value={mockContextValue}>
+          <I18nextProvider i18n={i18n}>
+            <AbilityScreen />
+          </I18nextProvider>
+        </CharacterProvider>
       </MemoryRouter>
     );
   };
 
   it('renders the Class and Ability Scores sections', () => {
-    renderWithI18n(defaultProps);
+    renderWithI18n();
     expect(screen.getByTestId('classes')).toBeInTheDocument();
     expect(screen.getByTestId('ability-scores')).toBeInTheDocument();
   });
 
   it('renders navigation buttons', () => {
-    renderWithI18n(defaultProps);
+    renderWithI18n();
     expect(screen.getByText(/Class Options/i)).toBeInTheDocument();
   });
 });

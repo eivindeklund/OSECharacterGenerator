@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
+import { CharacterProvider } from '../contexts/CharacterContext';
 import i18n from '../utilities/i18n';
 import ClassScreen from './ClassScreen';
 
@@ -21,27 +22,29 @@ vi.mock('../containers/class-details/SpellSelection', () => ({
 }));
 
 describe('ClassScreen', () => {
-  const defaultProps = {
+  const mockContextValue = {
     characterClass: { name: 'Fighter', primeReqs: ['strength'], hd: 8 },
     characterStatistics: { hitPoints: 8 },
     setCharacterStatistics: vi.fn(),
     characterModifiers: { constitutionMod: '0' },
     diceEnabled: false,
     rollHP: vi.fn(),
-  };
+  } as any;
 
-  const renderWithI18n = (props) => {
+  const renderWithI18n = () => {
     return render(
       <MemoryRouter>
-        <I18nextProvider i18n={i18n}>
-          <ClassScreen {...props} />
-        </I18nextProvider>
+        <CharacterProvider value={mockContextValue}>
+          <I18nextProvider i18n={i18n}>
+            <ClassScreen />
+          </I18nextProvider>
+        </CharacterProvider>
       </MemoryRouter>
     );
   };
 
   it('renders all class-specific sections', () => {
-    renderWithI18n(defaultProps);
+    renderWithI18n();
     expect(screen.getByTestId('hp-roller')).toBeInTheDocument();
     expect(screen.getByTestId('saving-throws')).toBeInTheDocument();
     expect(screen.getByTestId('abilities-list')).toBeInTheDocument();
@@ -49,7 +52,7 @@ describe('ClassScreen', () => {
   });
 
   it('renders navigation buttons', () => {
-    renderWithI18n(defaultProps);
+    renderWithI18n();
     expect(screen.getByText(/Character Class/i)).toBeInTheDocument();
     expect(screen.getByText(/Equipment/i)).toBeInTheDocument();
   });

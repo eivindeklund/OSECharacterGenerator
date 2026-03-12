@@ -3,23 +3,13 @@ import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import CheckBox from "../components/general/Checkbox";
 import { lngs } from "../constants/constants";
+import { useCharacter } from "../contexts/CharacterContext";
 import designed from "../img/designed.png";
-import type { StoredCharacterData } from "../types";
 import { LinkText } from "../utilities/utilities";
 
 interface LandingScreenProps {
-  diceEnabled: boolean;
-  setDiceEnabled: Dispatch<SetStateAction<boolean>>;
-  characterRolled: boolean;
-  setCharacterRolled: Dispatch<SetStateAction<boolean>>;
   rollButtonHover: boolean;
   setRollButtonHover: Dispatch<SetStateAction<boolean>>;
-  rollCharacter: () => void;
-  isMobile: boolean;
-  storedCharacters: StoredCharacterData[];
-  partialCharacter: StoredCharacterData | null;
-  discardPartialCharacter: () => void;
-  loadCharacter: (data: StoredCharacterData) => void;
 }
 
 export default function LandingScreen(props: LandingScreenProps) {
@@ -27,20 +17,20 @@ export default function LandingScreen(props: LandingScreenProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { rollButtonHover, setRollButtonHover } = props;
+
   const {
     diceEnabled,
     setDiceEnabled,
     characterRolled,
     setCharacterRolled,
-    rollButtonHover,
-    setRollButtonHover,
     rollCharacter,
     isMobile,
     storedCharacters,
     partialCharacter,
     discardPartialCharacter,
     loadCharacter,
-  } = props;
+  } = useCharacter();
 
   const override = {
     display: "block",

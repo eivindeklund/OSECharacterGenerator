@@ -1,34 +1,12 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/general/Header";
 import ScreenNavigation from "../components/general/ScreenNavigation";
 import AbilityScores from "../containers/abilties/AbilityScores";
 import Classes from "../containers/classes/Classes";
-import type {
-  AbilityScoresThatCanDecrease,
-  AbilityScores as AbilityScoresType,
-  CharacterModifiers,
-  ClassOptionsData,
-  ScoreActions,
-} from "../types";
+import { useCharacter } from "../contexts/CharacterContext";
 
-import { Dispatch, SetStateAction, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
-interface AbilityScreenProps {
-  characterRolled?: boolean;
-  characterClass: Pick<ClassOptionsData, 'name' | 'primeReqs'>;
-  abilityScores: AbilityScoresType;
-  originalAbilityScores: AbilityScoresType;
-  changeCharacterClass: React.MouseEventHandler<HTMLButtonElement>;
-  setAbilityScores: Dispatch<SetStateAction<AbilityScoresType>>;
-  pointBuy: number;
-  setPointBuy: Dispatch<SetStateAction<number>>;
-  characterModifiers: CharacterModifiers;
-  scoreActions: ScoreActions;
-  diceEnabled: boolean;
-  abilityScoresThatCanDecrease: AbilityScoresThatCanDecrease;
-}
-
-export default function AbilityScreen(props: AbilityScreenProps) {
+export default function AbilityScreen() {
   const {
     characterClass,
     abilityScores,
@@ -38,14 +16,16 @@ export default function AbilityScreen(props: AbilityScreenProps) {
     pointBuy,
     setPointBuy,
     characterModifiers,
-    scoreActions,
+    rollAttribute,
+    scoreIncrease,
+    scoreDecrease,
     diceEnabled,
-    abilityScoresThatCanDecrease
-  } = props;
+    abilityScoresThatCanDecrease,
+  } = useCharacter();
+
+  const scoreActions = { rollAttribute, scoreIncrease, scoreDecrease };
 
   const navigate = useNavigate();
-
-  const { rollAttribute } = scoreActions;
 
   useEffect(() => {
     console.log("Loaded");

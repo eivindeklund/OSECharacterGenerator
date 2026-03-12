@@ -1,21 +1,9 @@
-import type { Dispatch, SetStateAction } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/general/Header'
 import CharacterStorage from '../containers/storage/CharacterStorage'
-import type {
-  StoredCharacterData,
-} from '../types'
+import { useCharacter } from '../contexts/CharacterContext'
 
-type CharacterStorageScreenProps = {
-  loadCharacter: (data: StoredCharacterData) => void
-  setCharacterRolled: Dispatch<SetStateAction<boolean>>
-  storedCharacters: StoredCharacterData[]
-  deleteStoredCharacter: (id: string) => void
-  partialCharacter: StoredCharacterData | null
-  clearPartialCharacter: () => void
-}
-
-export default function CharacterStorageScreen (props: CharacterStorageScreenProps) {
+export default function CharacterStorageScreen () {
   const {
     loadCharacter,
     setCharacterRolled,
@@ -23,7 +11,7 @@ export default function CharacterStorageScreen (props: CharacterStorageScreenPro
     deleteStoredCharacter,
     partialCharacter,
     clearPartialCharacter,
-  } = props
+  } = useCharacter()
 
   const navigate = useNavigate()
 

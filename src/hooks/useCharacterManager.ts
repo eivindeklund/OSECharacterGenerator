@@ -116,6 +116,9 @@ export const useCharacterManager = (
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageService]);
 
+  /* TODO: This is used to conditionally render the dice roller, but should really
+   * depend on the screen width instead of being a separate "isMobile" variable.
+   * And it could presumably go into the diceEnabled variable for now, too. */
   const isMobile = deviceService.getIsMobile();
 
   useEffect(() => {

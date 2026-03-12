@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import { CharacterProvider } from "../contexts/CharacterContext";
 import { useCharacterManager } from "../hooks/useCharacterManager";
-import type { ClassOptionsData } from "../types";
 import { Dice } from "../utilities/DiceBox";
 import ShareService from "../utilities/ShareService";
 import AbilityScreen from "./AbilityScreen";
@@ -25,42 +25,8 @@ function ScrollToTop() {
 // to refactor some of the state management to make it more manageable and type
 // safe. This is a large task and should be done in a separate branch.
 export default function CharacterGenerator() {
-  const {
-    character,
-    setCharacter,
-    abilityScores,
-    setAbilityScores,
-    originalAbilityScores,
-    characterModifiers,
-    characterStatistics,
-    setCharacterStatistics,
-    pointBuy,
-    setPointBuy,
-    characterClass,
-    characterEquipment,
-    setCharacterEquipment,
-    diceEnabled,
-    setDiceEnabled,
-    characterRolled,
-    setCharacterRolled,
-    rollAttribute,
-    rollCharacter,
-    changeCharacterClass,
-    rollHP,
-    rollGold,
-    scoreIncrease,
-    scoreDecrease,
-    saveCharacter,
-    deleteStoredCharacter,
-    importCharacter,
-    loadCharacter,
-    storedCharacters,
-    isMobile,
-    abilityScoresThatCanDecrease,
-    partialCharacter,
-    discardPartialCharacter,
-    clearPartialCharacter,
-  } = useCharacterManager(Dice);
+  const characterContext = useCharacterManager(Dice);
+  const { importCharacter, diceEnabled, setDiceEnabled } = characterContext;
 
   const [rollButtonHover, setRollButtonHover] = useState(false);
   const [pendingImport, setPendingImport] = useState(null);
@@ -103,126 +69,35 @@ export default function CharacterGenerator() {
     );
   }
 
-  let characterMenuStyle = characterRolled ? {} : { display: "none" };
+  let characterMenuStyle = characterContext.characterRolled ? {} : { display: "none" };
 
   return (
-    <div className={"layout"}>
-      <ScrollToTop />
-      <div className={`wrapper-container`}>
-        <div className={`wrapper ${rollButtonHover ? "wrapper-alt" : ""}`}>
-          <LandingScreen
-            diceEnabled={diceEnabled}
-            setDiceEnabled={setDiceEnabled}
-            rollButtonHover={rollButtonHover}
-            setRollButtonHover={setRollButtonHover}
-            characterRolled={characterRolled}
-            setCharacterRolled={setCharacterRolled}
-            rollCharacter={rollCharacter}
-            isMobile={isMobile}
-            storedCharacters={storedCharacters}
-            partialCharacter={partialCharacter}
-            discardPartialCharacter={discardPartialCharacter}
-            loadCharacter={loadCharacter}
-          />
-          <ScrollToTop />
-          <div
-            className={"character-menu container"}
-            style={characterMenuStyle}
-          >
-            <Routes>
-              <Route
-                path="/ability"
-                element={
-                  <AbilityScreen
-                    diceEnabled={diceEnabled}
-                    characterRolled={characterRolled}
-                    characterClass={characterClass}
-                    abilityScores={abilityScores}
-                    changeCharacterClass={changeCharacterClass}
-                    setAbilityScores={setAbilityScores}
-                    originalAbilityScores={originalAbilityScores}
-                    pointBuy={pointBuy}
-                    setPointBuy={setPointBuy}
-                    characterModifiers={characterModifiers}
-                    scoreActions={{ rollAttribute, scoreIncrease, scoreDecrease }}
-                    abilityScoresThatCanDecrease={abilityScoresThatCanDecrease}
-                  />
-                }
-              />
-              <Route
-                path="/class"
-                element={
-                  <ClassScreen
-                    characterClass={characterClass as ClassOptionsData}
-                    character={character}
-                    setCharacter={setCharacter}
-                    characterModifiers={characterModifiers}
-                    characterStatistics={characterStatistics}
-                    setCharacterStatistics={setCharacterStatistics}
-                    rollHP={rollHP}
-                  />
-                }
-              />
-              <Route
-                path="/equipment"
-                element={
-                  <EquipmentScreen
-                    characterClass={characterClass as ClassOptionsData}
-                    characterModifiers={characterModifiers}
-                    characterStatistics={characterStatistics}
-                    setCharacterStatistics={setCharacterStatistics}
-                    characterEquipment={characterEquipment}
-                    setCharacterEquipment={setCharacterEquipment}
-                    rollGold={rollGold}
-                  />
-                }
-              />
-              <Route
-                path="/details"
-                element={
-                  <DetailsScreen
-                    character={character}
-                    setCharacter={setCharacter}
-                    characterClass={characterClass as ClassOptionsData}
-                    characterModifiers={characterModifiers}
-                    abilityScores={abilityScores}
-                    dice={{ diceEnabled, diceService: Dice }}
-                    isMobile={isMobile}
-                  />
-                }
-              />
-              <Route
-                path="/sheet"
-                element={
-                  <CharacterSheetScreen
-                    character={character}
-                    characterStatistics={characterStatistics}
-                    characterClass={characterClass as ClassOptionsData}
-                    characterEquipment={characterEquipment}
-                    characterModifiers={characterModifiers}
-                    abilityScores={abilityScores}
-                    setCharacterRolled={setCharacterRolled}
-                    saveCharacter={saveCharacter}
-                  />
-                }
-              />
-              <Route
-                path="/tavern"
-                element={
-                  <CharacterStorageScreen
-                    loadCharacter={loadCharacter}
-                    setCharacterRolled={setCharacterRolled}
-                    storedCharacters={storedCharacters}
-                    deleteStoredCharacter={deleteStoredCharacter}
-                    partialCharacter={partialCharacter}
-                    clearPartialCharacter={clearPartialCharacter}
-                  />
-                }
-              />
-            </Routes>
+    <CharacterProvider value={characterContext}>
+      <div className={"layout"}>
+        <ScrollToTop />
+        <div className={`wrapper-container`}>
+          <div className={`wrapper ${rollButtonHover ? "wrapper-alt" : ""}`}>
+            <LandingScreen
+              rollButtonHover={rollButtonHover}
+              setRollButtonHover={setRollButtonHover}
+            />
+            <ScrollToTop />
+            <div
+              className={"character-menu container"}
+              style={characterMenuStyle}
+            >
+              <Routes>
+                <Route path="/ability" element={<AbilityScreen />} />
+                <Route path="/class" element={<ClassScreen />} />
+                <Route path="/equipment" element={<EquipmentScreen />} />
+                <Route path="/details" element={<DetailsScreen />} />
+                <Route path="/sheet" element={<CharacterSheetScreen />} />
+                <Route path="/tavern" element={<CharacterStorageScreen />} />
+              </Routes>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </CharacterProvider>
   );
 }

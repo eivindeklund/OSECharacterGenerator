@@ -1,30 +1,12 @@
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Trans } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import ScreenNavigation from "../components/general/ScreenNavigation";
 import CharacterSheet from "../containers/character/CharacterSheet";
 import PDFExport from "../containers/character/PDFExport";
-import type {
-  AbilityScores,
-  Character,
-  CharacterEquipment,
-  CharacterModifiers,
-  CharacterStatistics,
-  ClassOptionsData,
-} from "../types";
+import { useCharacter } from "../contexts/CharacterContext";
 
-interface CharacterSheetScreenProps {
-  character: Character;
-  characterStatistics: CharacterStatistics;
-  characterClass: ClassOptionsData;
-  characterEquipment: CharacterEquipment;
-  characterModifiers: CharacterModifiers;
-  abilityScores: AbilityScores;
-  setCharacterRolled: Dispatch<SetStateAction<boolean>>;
-  saveCharacter: () => void;
-}
-
-export default function CharacterSheetScreen(props: CharacterSheetScreenProps) {
+export default function CharacterSheetScreen() {
   const {
     character,
     characterStatistics,
@@ -34,7 +16,7 @@ export default function CharacterSheetScreen(props: CharacterSheetScreenProps) {
     abilityScores,
     setCharacterRolled,
     saveCharacter,
-  } = props;
+  } = useCharacter();
 
   const componentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();

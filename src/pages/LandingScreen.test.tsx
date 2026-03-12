@@ -3,74 +3,85 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
+import { CharacterProvider } from '../contexts/CharacterContext';
 import i18n from '../utilities/i18n';
 import LandingScreen from './LandingScreen';
 
 describe('LandingScreen', () => {
-  const defaultProps = {
+  const defaultContextValue = {
     diceEnabled: true,
     setDiceEnabled: vi.fn(),
     characterRolled: false,
     setCharacterRolled: vi.fn(),
-    rollButtonHover: false,
-    setRollButtonHover: vi.fn(),
     rollCharacter: vi.fn(),
     isMobile: false,
     storedCharacters: [],
     partialCharacter: null,
     discardPartialCharacter: vi.fn(),
     loadCharacter: vi.fn(),
+  } as any;
+
+  const defaultProps = {
+    rollButtonHover: false,
+    setRollButtonHover: vi.fn(),
   };
 
-  const renderWithI18n = (props) => {
+  const renderWithContext = (contextValue = defaultContextValue, props = defaultProps) => {
     return render(
       <MemoryRouter>
-        <I18nextProvider i18n={i18n}>
-          <LandingScreen {...props} />
-        </I18nextProvider>
+        <CharacterProvider value={contextValue}>
+          <I18nextProvider i18n={i18n}>
+            <LandingScreen {...props} />
+          </I18nextProvider>
+        </CharacterProvider>
       </MemoryRouter>
     );
   };
 
   it('should render the app title', () => {
-    renderWithI18n(defaultProps);
+    renderWithContext();
     expect(screen.getByText(/OSE Character Generator/i)).toBeInTheDocument();
   });
 
   it('should show Tavern button only if characters are stored', () => {
-    const { rerender } = renderWithI18n(defaultProps);
+    const { rerender } = renderWithContext();
     expect(screen.queryByRole('button', { name: /Tavern/i })).not.toBeInTheDocument();
 
-    const propsWithChars = { ...defaultProps, storedCharacters: [{ id: '1' }] as any };
+    const ctxWithChars = { ...defaultContextValue, storedCharacters: [{ id: '1' }] as any };
     rerender(
       <MemoryRouter>
-        <I18nextProvider i18n={i18n}>
-          <LandingScreen {...propsWithChars} />
-        </I18nextProvider>
+        <CharacterProvider value={ctxWithChars}>
+          <I18nextProvider i18n={i18n}>
+            <LandingScreen {...defaultProps} />
+          </I18nextProvider>
+        </CharacterProvider>
       </MemoryRouter>
     );
     expect(screen.getByRole('button', { name: /Tavern/i })).toBeInTheDocument();
   });
 
   it('should show Dice Animations checkbox only on desktop', () => {
-    const { rerender } = renderWithI18n(defaultProps);
+    const { rerender } = renderWithContext();
     expect(screen.getByText(/Dice Animations/i)).toBeInTheDocument();
 
-    const propsMobile = { ...defaultProps, isMobile: true };
+    const ctxMobile = { ...defaultContextValue, isMobile: true };
     rerender(
       <MemoryRouter>
-        <I18nextProvider i18n={i18n}>
-          <LandingScreen {...propsMobile} />
-        </I18nextProvider>
+        <CharacterProvider value={ctxMobile}>
+          <I18nextProvider i18n={i18n}>
+            <LandingScreen {...defaultProps} />
+          </I18nextProvider>
+        </CharacterProvider>
       </MemoryRouter>
     );
     expect(screen.queryByText(/Dice Animations/i)).not.toBeInTheDocument();
   });
 
   it('should call rollCharacter when Start button is clicked', () => {
-    renderWithI18n(defaultProps);
+    renderWithContext();
     const startButton = screen.getByRole('button', { name: /Start/i });
     fireEvent.click(startButton);
-    expect(defaultProps.rollCharacter).toHaveBeenCalled();
+    expect(defaultContextValue.rollCharacter).toHaveBeenCalled();
   });
 });
+

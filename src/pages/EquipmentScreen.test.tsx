@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { describe, expect, it, vi } from 'vitest';
+import { CharacterProvider } from '../contexts/CharacterContext';
 import i18n from '../utilities/i18n';
 import EquipmentScreen from './EquipmentScreen';
 
@@ -11,10 +12,8 @@ vi.mock('../containers/equipment/EquipmentStore', () => ({
 }));
 
 describe('EquipmentScreen', () => {
-  const defaultProps = {
+  const mockContextValue = {
     characterClass: { name: 'Fighter' },
-    screen: { equipmentScreen: true },
-    setScreen: vi.fn(),
     characterModifiers: { strengthModMelee: '0' },
     characterStatistics: { hitPoints: 8 },
     setCharacterStatistics: vi.fn(),
@@ -22,18 +21,20 @@ describe('EquipmentScreen', () => {
     setCharacterEquipment: vi.fn(),
     diceEnabled: false,
     rollGold: vi.fn(),
-  };
+  } as any;
 
-  const renderWithI18n = (props) => {
+  const renderWithI18n = () => {
     return render(
-      <I18nextProvider i18n={i18n}>
-        <EquipmentScreen {...props} />
-      </I18nextProvider>
+      <CharacterProvider value={mockContextValue}>
+        <I18nextProvider i18n={i18n}>
+          <EquipmentScreen />
+        </I18nextProvider>
+      </CharacterProvider>
     );
   };
 
   it('renders the EquipmentStore component', () => {
-    renderWithI18n(defaultProps);
+    renderWithI18n();
     expect(screen.getByTestId('equipment-store')).toBeInTheDocument();
   });
 });

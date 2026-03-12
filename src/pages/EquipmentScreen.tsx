@@ -1,24 +1,8 @@
-import type { Dispatch, SetStateAction } from "react";
 import Header from "../components/general/Header";
 import EquipmentStore from "../containers/equipment/EquipmentStore";
-import type {
-  CharacterEquipment,
-  CharacterModifiers,
-  CharacterStatistics,
-  ClassOptionsData,
-} from "../types";
+import { useCharacter } from "../contexts/CharacterContext";
 
-type EquipmentScreenProps = {
-  characterClass: ClassOptionsData
-  characterModifiers: CharacterModifiers
-  characterStatistics: CharacterStatistics
-  setCharacterStatistics: Dispatch<SetStateAction<CharacterStatistics>>
-  characterEquipment: CharacterEquipment
-  setCharacterEquipment: Dispatch<SetStateAction<CharacterEquipment>>
-  rollGold: () => void
-}
-
-export default function EquipmentScreen(props: EquipmentScreenProps) {
+export default function EquipmentScreen() {
   const {
     characterClass,
     characterModifiers,
@@ -27,7 +11,7 @@ export default function EquipmentScreen(props: EquipmentScreenProps) {
     characterEquipment,
     setCharacterEquipment,
     rollGold,
-  } = props;
+  } = useCharacter();
 
   return (
     <div className="equipment-screen">

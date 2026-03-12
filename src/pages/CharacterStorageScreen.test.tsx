@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { CharacterProvider } from '../contexts/CharacterContext';
 import type { StoredCharacterData } from '../types';
 import CharacterStorageScreen from './CharacterStorageScreen';
 
@@ -28,26 +29,35 @@ vi.mock('../components/general/Header', () => {
 
 describe('CharacterStorageScreen', () => {
   const mockDeleteStoredCharacter = vi.fn();
-  const mockProps = {
+  const mockContextValue = {
     loadCharacter: vi.fn(),
     setCharacterRolled: vi.fn(),
     storedCharacters: [{ id: 1 }, { id: 2 }] as unknown as StoredCharacterData[],
     deleteStoredCharacter: mockDeleteStoredCharacter,
     partialCharacter: null,
     clearPartialCharacter: vi.fn(),
-  };
+  } as any;
+
+  const renderWithContext = () =>
+    render(
+      <MemoryRouter>
+        <CharacterProvider value={mockContextValue}>
+          <CharacterStorageScreen />
+        </CharacterProvider>
+      </MemoryRouter>
+    );
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('passes storedCharacters to CharacterStorage', () => {
-    render(<MemoryRouter><CharacterStorageScreen {...mockProps} /></MemoryRouter>);
+    renderWithContext();
     expect(screen.getByTestId('mock-storage')).toHaveTextContent('2 characters');
   });
 
   it('passes deleteStoredCharacter to CharacterStorage', () => {
-    render(<MemoryRouter><CharacterStorageScreen {...mockProps} /></MemoryRouter>);
+    renderWithContext();
     fireEvent.click(screen.getByText('Delete'));
     expect(mockDeleteStoredCharacter).toHaveBeenCalled();
   });
