@@ -26,7 +26,7 @@ function ScrollToTop() {
 // safe. This is a large task and should be done in a separate branch.
 export default function CharacterGenerator() {
   const characterContext = useCharacterManager(Dice);
-  const { importCharacter, diceEnabled, setDiceEnabled } = characterContext;
+  const { importCharacter } = characterContext;
 
   const [rollButtonHover, setRollButtonHover] = useState(false);
   const [pendingImport, setPendingImport] = useState(null);
