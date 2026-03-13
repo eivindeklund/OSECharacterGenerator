@@ -9,45 +9,6 @@ vi.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock("../data/classOptionsData", () => ({
-  default: [
-    { 
-      name: "Fighter", 
-      primeReqs: ["strength"], 
-      hd: 8,
-      checkAbilityScoreRequirements: () => true,
-      xpModifierPercentage: () => '0%',
-    },
-    { 
-      name: "Cleric", 
-      primeReqs: ["wisdom"], 
-      hd: 6,
-      checkAbilityScoreRequirements: () => true,
-      xpModifierPercentage: () => '0%',
-    },
-  ],
-  emptyClassOptions: {
-    name: "",
-    category: "",
-    requirements: null,
-    primeReqs: [],
-    hd: 0,
-    maxLevel: 0,
-    armour: "",
-    weapons: "",
-    isStandardWeapon: () => false,
-    languages: "",
-    description: "",
-    savingThrows: [0, 0, 0, 0, 0],
-    nextLevel: 0,
-    abilities: [],
-    link: "",
-    arcane: false,
-    divine: false,
-    xpModifierPercentage: () => '0%',
-  },
-}));
-
 describe("useCharacterManager", () => {
   const mockDiceService = {
     show: vi.fn().mockReturnThis(),
