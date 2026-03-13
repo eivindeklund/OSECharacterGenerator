@@ -108,6 +108,19 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
     the physical description template.  In particular, there's a bunch of details that describe the eyes of a character, and the eye color is typically the last bit of the physical description table.  It ends up a bit weird if those two sentences aren't merged, and I suspect there's a bunch of nice things that could be done with custom physical descriptions.
 [ ] Description based on low/high scores.  Very high strength, very high wisdom, abmyssal constitution in my example.
 [ ] Go through AC1 to find different sentence patterns
+[ ] Have some options/variants be common and some rare, instead of having all
+    options be the same.  "Simple" variants should be common, "complicated"
+    variants should be rare.
+
+#### Name generation
+
+Consider delaying this until after we have campaign support; it would make sense
+to allow it to be tuned per campaign.
+
+[ ] Names should have different priorities
+[ ] Some names could be used across different races
+[ ] Names could be marked as male/female
+[ ] Possibly use Gygax book of names as inspiration for some of the setup?
 
 ### Character Sheet (page)
 
@@ -159,6 +172,30 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
     [ ] Migrate user journeys already found in Gemini into git
 [ ] Migrate storage to Supabase w/authentication through federated login
     (Discord, Google, ++?)
+[ ] Entire system structured around "Campaigns"
+
+
+## Campaign system
+
+[ ] Per campaign configuration for generation, examples:
+
+  [ ] What classes are available
+  [ ] What equipment is available
+  [ ] Special rules for when a user can reroll stats
+  [ ] What equipment is available
+  [ ] Name lists for auto-generation, possibly including cool things like different regions etc
+  [ ] Custom class support
+  [ ] Custom starting gold or starting equipment support
+  [ ] Custom equipment pricing
+  [ ] Enable/disable particular per-class rules (e.g, what weapons a cleric can
+      use).  Maybe ultra-generic structures and some way to call out to an LLM to
+      negotiate exactly what the GM wants, instead of having a complicated UI
+      that can configure everything?
+  
+[ ] Access control - one or more GMs with access to a campaign
+[ ] Access control - users create characters inside the campaign, GM keeps access
+[ ] Access control - users can maybe "port characters out"?
+[ ] Campaign naming, managing several campaigns
 
 ## Planned prompts
 
