@@ -111,7 +111,7 @@ export interface ClassOptionsData {
   weapons: string;
   canUseThiefTools?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  isStandardWeapon: (w?: any) => boolean;
+  canUseWeapon: (w?: any) => boolean;
   languages: string;
   description: string;
   savingThrows: number[];
