@@ -276,7 +276,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
   };
 
   const chooseLanguage = () => {
-    setLanguageSelected(chooseRandomItem(languageOption));
+    setLanguageSelected(chooseRandomItem(languageOptions));
   };
 
   const handleLanguageChange = (event) => {

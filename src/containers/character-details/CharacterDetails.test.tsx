@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
+import { languageOptions } from '../../constants/constants';
 import CharacterDetails from './CharacterDetails';
 
 describe('CharacterDetails', () => {
@@ -45,6 +46,25 @@ describe('CharacterDetails', () => {
     const lawfulButton = screen.getByRole('button', { name: /Lawful/i });
     fireEvent.click(lawfulButton);
     expect(lawfulButton).toHaveClass('button--alignment--selected');
+  });
+
+  describe('Random language button', () => {
+    const languageProps: any = {
+      ...defaultProps,
+      characterClass: { name: 'Fighter', languages: '' },
+      characterModifiers: {
+        intelligenceModExtraLanguageCount: "1",
+        extraLanguageCount: "1",
+      },
+    };
+
+    test('sets the language select to a value from languageOptions', () => {
+      render(<MemoryRouter><CharacterDetails {...languageProps} /></MemoryRouter>);
+      const randomButton = screen.getByRole('button', { name: 'Random' });
+      fireEvent.click(randomButton);
+      const select = screen.getByRole('combobox') as HTMLSelectElement;
+      expect(languageOptions).toContain(select.value);
+    });
   });
 
   test('should trigger background roll via diceService', async () => {
