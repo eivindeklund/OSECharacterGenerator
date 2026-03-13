@@ -1,3 +1,6 @@
 [submodule "reference/OSE.SRD.Wiki"]
 	path = reference/OSE.SRD.Wiki
 	url = https://github.com/oldmanumby/OSE.SRD.Wiki/
+[submodule "janitor"]
+	path = janitor
+	url = https://github.com/eivindeklund/janitor
