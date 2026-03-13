@@ -28,8 +28,6 @@ export default function AbilityScreen() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Loaded");
-
     // TODO: Find out why we no longer auto-roll ability scores on load when
     // dice rolls are disabled, this was working before and seems to have been
     // broken by a recent change

@@ -1,19 +1,19 @@
 import { PDFDocument, PDFField, PDFForm } from 'pdf-lib'
 import {
-  CHARACTER_SHEET_PURIST_DAC_URL,
-  CHARACTER_SHEET_PURIST_URL,
-  CHARACTER_SHEET_UNDERGROUND_URL,
+    CHARACTER_SHEET_PURIST_DAC_URL,
+    CHARACTER_SHEET_PURIST_URL,
+    CHARACTER_SHEET_UNDERGROUND_URL,
 } from '../../constants/constants'
 import armourData, { ARMOUR_ID } from '../../data/armourData'
 import { ABILITY_ID } from '../../data/classOptionsData'
 import weaponsData from '../../data/weaponsData'
 import type {
-  AbilityScores,
-  Character,
-  CharacterEquipment,
-  CharacterModifiers,
-  CharacterStatistics,
-  ClassOptionsData,
+    AbilityScores,
+    Character,
+    CharacterEquipment,
+    CharacterModifiers,
+    CharacterStatistics,
+    ClassOptionsData,
 } from '../../types'
 import { allItemsById } from '../../utilities/PackUtils'
 import { consolidateDuplicates } from '../../utilities/utilities'
@@ -77,7 +77,7 @@ export function applyFieldData(
     if (dataKey === null) continue
 
     if (!(dataKey in data)) {
-      console.log(`PDF field "${pdfName}" has no data mapping (looked up "${dataKey}")`)
+      console.warn(`PDF field "${pdfName}" has no data mapping (looked up "${dataKey}")`)
       continue
     }
 

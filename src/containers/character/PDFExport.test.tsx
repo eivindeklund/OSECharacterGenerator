@@ -148,11 +148,11 @@ describe('applyFieldData', () => {
     expect(form.getTextField).not.toHaveBeenCalled()
   })
 
-  it('logs and skips when field has no data mapping', () => {
+  it('warns and skips when field has no data mapping', () => {
     const form = makeForm()
     const fields = [makeField('UnknownField')]
     const data: FieldData = {}
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
     applyFieldData(form as unknown as PDFForm, fields, data)
 

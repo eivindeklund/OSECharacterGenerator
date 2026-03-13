@@ -319,7 +319,7 @@ class ClassOptions implements ClassOptionsData {
       return ClassOptions.evaluateXpClauses(clauses, abilityScoreValues) + '%';
     }
 
-    console.log(`Error: Class ${this.name} has more than 2 prime requisites, which is not currently supported.`);
+    console.error(`Error: Class ${this.name} has more than 2 prime requisites, which is not currently supported.`);
     return 'unknown%';
   }
 
