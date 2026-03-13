@@ -10,7 +10,7 @@ const fighterClass = {
   weapons: "any",
   divine: false,
   arcane: false,
-  isStandardWeapon: () => true,
+  canUseWeapon: () => true,
 };
 
 const clericClass = {
@@ -19,7 +19,7 @@ const clericClass = {
   weapons: "blunt",
   divine: true,
   arcane: false,
-  isStandardWeapon: (w: { id: string }) =>
+  canUseWeapon: (w: { id: string }) =>
     ["mace", "warhammer", "club", "staff", "sling"].includes(w.id),
 };
 

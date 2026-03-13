@@ -28,8 +28,9 @@ export default function WeaponOptionsContainer(props: WeaponOptionsContainerProp
   const [classAppropriate, setClassAppropriate] = useState(true);
   const [activeQualities, setActiveQualities] = useState<Set<string>>(new Set());
 
+  // TODO: Remove guard; canUseWeapon is always defined on characterClass.
   const isItemStandard = (item: ItemData) =>
-    characterClass.isStandardWeapon ? characterClass.isStandardWeapon(item) : true;
+    characterClass.canUseWeapon ? characterClass.canUseWeapon(item) : true;
 
   const isItemUsable = (item: ItemData) =>
     isItemStandard(item) || isUniversalWeapon(item);

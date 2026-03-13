@@ -41,7 +41,7 @@ const baseProps: PDFExportProps = {
     maxLevel: 14,
     armour: 'Any',
     weapons: 'Any',
-    isStandardWeapon: () => true,
+    canUseWeapon: () => true,
     allowedArmour: [],
     languages: '',
     description: '',

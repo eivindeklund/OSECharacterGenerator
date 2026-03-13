@@ -2,11 +2,11 @@ import { primeRequisiteModifiers } from "../constants/constants";
 import type { AbilityRequirement, AbilityScores, ClassAbility, ClassOptionsData } from "../types";
 import { checkWeaponQuality } from "../utilities/WeaponUtils";
 import { ALL_ARMOUR, ARMOUR_ID } from "./armourData";
+import weaponsData from "./weaponsData";
 
 const large_weapons = ["long_bow", "two_handed_sword", "polearm"];
-const magic_user_weapons = ["dagger", "staff", "silver_dagger"];
 
-type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage' | 'allowedArmour'>;
+type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage' | 'allowedArmour' | 'canUseWeapon'>;
 
 /** Canonical ability IDs for abilities that appear on more than one class — use these instead of magic strings. */
 export const ABILITY_ID = {
@@ -93,7 +93,6 @@ class ClassOptions implements ClassOptionsData {
   armour!: string;
   weapons!: string;
   canUseThiefTools?: boolean;
-  isStandardWeapon!: (w?: any) => boolean;
   languages!: string;
   description!: string;
   savingThrows!: number[];
@@ -111,6 +110,119 @@ class ClassOptions implements ClassOptionsData {
 
   constructor(data: ClassOptionsInput) {
     Object.assign(this, data);
+  }
+
+  /** Map of lowercase human-readable weapon name → weapon ID, built from weaponsData.
+   * Each weapon is indexed by both its display name (lowercased) and its id (with underscores
+   * replaced by spaces), so tokens in weapons strings can use either form.
+   * "dagger" additionally covers silver_dagger via the alias logic in weaponTokenAllowed. */
+  static readonly WEAPON_NAME_MAP: ReadonlyMap<string, string> = (() => {
+    const map = new Map<string, string>();
+    for (const w of weaponsData) {
+      map.set(w.name.toLowerCase(), w.id);
+      map.set(w.id.replace(/_/g, ' '), w.id);
+    }
+    return map;
+  })();
+
+  static weaponNameToId(name: string): string | null {
+    return ClassOptions.WEAPON_NAME_MAP.get(name.toLowerCase().trim()) ?? null;
+  }
+
+  /** Parse a comma-separated weapon name list into IDs. Throws on unknown names. */
+  static parseWeaponNameList(nameList: string): string[] {
+    return nameList.split(', ').map(raw => {
+      const id = ClassOptions.weaponNameToId(raw);
+      if (id === null) throw new Error(`Unknown weapon name: "${raw}"`);
+      return id;
+    });
+  }
+
+  /** Check whether a single token (quality keyword or weapon name) allows a weapon. */
+  static weaponTokenAllowed(token: string, w: any): boolean {
+    const t = token.toLowerCase().trim();
+    if (t === 'missile weapons')          return checkWeaponQuality(w, 'Missile');
+    if (t === 'melee weapons')            return checkWeaponQuality(w, 'Melee');
+    if (t === 'one-handed melee weapons') return checkWeaponQuality(w, 'Melee') && !checkWeaponQuality(w, 'Two-handed');
+    if (t === 'blunt weapons')            return checkWeaponQuality(w, 'Blunt');
+    const id = ClassOptions.weaponNameToId(t);
+    if (id === null) throw new Error(`Unknown weapon name: "${token}"`);
+    // "dagger" implicitly includes silver_dagger (same weapon, different material)
+    if (id === 'dagger') return w.id === 'dagger' || w.id === 'silver_dagger';
+    return w.id === id;
+  }
+
+  /**
+   * Core parser: returns true if the weapon is allowed by the given weapons string.
+   *
+   * Supported forms (checked in order):
+   *   ""                             → false (no weapons — emptyClassOptions)
+   *   "X / Y"                        → true if either X or Y allows the weapon
+   *   "any appropriate to size"      → excludes large weapons (longbow, two-handed sword, polearm)
+   *   "any, except weapon1, weapon2" → any weapon except the named exclusions
+   *   "any..." (any other prefix)    → true (e.g. "any", "any, can wield...")
+   *   "only blunt weapons"           → blunt quality only
+   *   comma-separated list           → true if any token matches (quality keywords or named weapons)
+   */
+  static weaponAllowed(weapons: string, w: any): boolean {
+    if (!weapons) return false;
+
+    if (weapons.includes(' / '))
+      return weapons.split(' / ').some(part => ClassOptions.weaponAllowed(part.trim(), w));
+
+    if (weapons.toLowerCase() === 'any appropriate to size')
+      return !large_weapons.includes(w.id);
+
+    const exceptMatch = weapons.match(/^any, except (.+)$/i);
+    if (exceptMatch) {
+      const excludedIds = ClassOptions.parseWeaponNameList(exceptMatch[1]);
+      return !excludedIds.includes(w.id);
+    }
+
+    if (weapons.toLowerCase().startsWith('any')) return true;
+
+    if (weapons.toLowerCase() === 'only blunt weapons') return checkWeaponQuality(w, 'Blunt');
+
+    return weapons.split(', ').some(token => ClassOptions.weaponTokenAllowed(token, w));
+  }
+
+  /** Returns true if this weapon is permitted for this class. */
+  canUseWeapon(w?: any): boolean {
+    if (!w) return false;
+    return ClassOptions.weaponAllowed(this.weapons, w);
+  }
+
+  /**
+   * Validate a weapons string without needing a weapon object.
+   * Throws with a descriptive message if any token is unrecognised.
+   * Intended for use in tests. Mirrors the structure of weaponAllowed.
+   */
+  static validateWeaponsString(weapons: string): void {
+    if (!weapons) return;
+
+    if (weapons.includes(' / ')) {
+      weapons.split(' / ').forEach(part => ClassOptions.validateWeaponsString(part.trim()));
+      return;
+    }
+
+    if (weapons.toLowerCase() === 'any appropriate to size') return;
+
+    const exceptMatch = weapons.match(/^any, except (.+)$/i);
+    if (exceptMatch) {
+      ClassOptions.parseWeaponNameList(exceptMatch[1]); // throws on unknown names
+      return;
+    }
+
+    if (weapons.toLowerCase().startsWith('any')) return;
+    if (weapons.toLowerCase() === 'only blunt weapons') return;
+
+    const qualityKeywords = new Set(['missile weapons', 'melee weapons', 'one-handed melee weapons', 'blunt weapons']);
+    for (const token of weapons.split(', ')) {
+      const t = token.toLowerCase().trim();
+      if (qualityKeywords.has(t)) continue;
+      const id = ClassOptions.weaponNameToId(t);
+      if (id === null) throw new Error(`Unknown weapon name: "${token}" in weapons string "${weapons}"`);
+    }
   }
 
   // TODO: Normalize to "none" instead of empty string for no armour in the source data
@@ -357,7 +469,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "any",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Fighters are adventurers dedicated to mastering the arts of combat and war. In a group of adventurers, the role of fighters is to battle monsters and to defend other characters.",
@@ -377,7 +488,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "any",
     weapons: "only blunt weapons",
-    isStandardWeapon: (w) => checkWeaponQuality(w, "Blunt"),
     languages: "",
     description:
       "Clerics are adventurers who have sworn to serve a deity. They are trained for battle and channel the power of their deity.",
@@ -400,7 +510,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "none",
     weapons: "dagger, staff",
-    isStandardWeapon: (w) => magic_user_weapons.includes(w.id),
     languages: "",
     description:
       "Magic-users are adventurers whose study of arcane secrets has taught them how to cast spells. Magic-users are able to cast a greater number of increasingly powerful spells as they advance in level.",
@@ -424,7 +533,6 @@ const classOptionsData = [
     armour: "leather",
     canUseThiefTools: true,
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Thieves are adventurers who live by their skills of deception and stealth. Their range of unique skills makes them very handy companions in adventures. However, thieves are not always to be trusted.",
@@ -454,9 +562,7 @@ const classOptionsData = [
     hd: 8,
     maxLevel: 12,
     armour: "any",
-    weapons:
-      "any small or normal sized, but cannot use longbows or two-handed swords",
-    isStandardWeapon: (w) => !["long_bow", "two_handed_sword"].includes(w.id),
+    weapons: "any, except long bow, two-handed sword",
     languages: "Dwarvish, Gnomish, Goblin, Kobold",
     description:
       "Dwarves are stout, bearded demihumans, about 4’ tall and weighing about 150 pounds. Dwarves typically live underground and love fine craftsmanship, gold, hearty food, and strong drink. They have skin, hair, and eye colours in earth tones. Dwarves are known for their stubbornness and practicality. They are a hardy people and have a strong resistance to magic, as reflected in their saving throws.",
@@ -482,7 +588,6 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "any",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "Elvish, Gnoll, Hobgoblin, Orcish",
     description:
       "Elves are slender, fey demihumans with pointed ears. They typically weigh about 120 pounds and are between 5 and 5½ feet tall. Elves are seldom met in human settlements, preferring to feast and make merry in the woods. If crossed, they are dangerous enemies, as they are masters of both sword and spell. Elves are fascinated by spells and beautifully constructed magic items and love to collect both.",
@@ -510,7 +615,6 @@ const classOptionsData = [
     maxLevel: 8,
     armour: "any",
     weapons: "any appropriate to size",
-    isStandardWeapon: (w) => !large_weapons.includes(w.id),
     languages: "Halfling",
     description:
       "Halflings are small, rotund demihumans with furry feet and curly hair. They weigh about 60 pounds and are around 3’ tall. Halflings are a friendly and welcoming folk. Above all, they love the comforts of home and are not known for their bravery. Halflings who gain treasure through adventuring will often use their wealth in pursuit of a quiet, comfortable life.",
@@ -537,19 +641,7 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "leather",
     canUseThiefTools: true,
-    weapons:
-      "missile weapons, dagger, sword, short sword, polearm, spear, staff",
-    isStandardWeapon: (w) =>
-      checkWeaponQuality(w, "Missile") ||
-      [
-        "dagger",
-        "silver_dagger",
-        "sword",
-        "short_sword",
-        "polearm",
-        "spear",
-        "staff",
-      ].includes(w.id),
+    weapons: "missile weapons, dagger, sword, short sword, polearm, spear, staff",
     languages: "",
     description:
       "Acrobats are trained in skills of balance, gymnastics, and stealth. They often work in conjunction with thieves and may belong to a Thieves’ Guild.",
@@ -576,7 +668,6 @@ const classOptionsData = [
     armour: "leather, shields",
     canUseThiefTools: true,
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Assassins are adventurers who specialise in the arts of infiltration and killing by stealth. They sometimes form guilds whereby their illicit services may be hired.",
@@ -603,7 +694,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "leather, chainmail, shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Barbarians are tribal warriors from wild lands. They are formidable fighters with many useful survival skills but have a deep mistrust of the arcane",
@@ -631,9 +721,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "leather, chainmail",
     weapons: "missile weapons, one-handed melee weapons",
-    isStandardWeapon: (w) =>
-      checkWeaponQuality(w, "Missile") ||
-      (checkWeaponQuality(w, "Melee") && !checkWeaponQuality(w, "Two-handed")),
     languages: "",
     description:
       "Bards are members of a sect of minstrels and warrior poets associated with the druids. Like druids, bards worship the force of nature and the myriad deities that personify it. Their strengths lie in their deep knowledge of myth and legend, the magic that they wield on behalf of their gods, and the enchanting power of their music.",
@@ -660,7 +747,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "any",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "Deepcommon, Elvish, Gnomish, the secret language of spiders",
     description:
       "Drow are slender, fey demihumans with pointed ears, skin as black as the night sky, and hair of silver or white. They have extremely long lifespans, being nigh immortal. Drow dwell exclusively underground, carving great cities of stone and crystal. They are related to the elves of the surface world and share their love of nature and magic. Drow typically weigh about 120 pounds and are from 5 to 5½ feet tall. They are talented fighters and gain powerful magic through the worship of their strange subterranean deities. They have a strong resistance to magic, as reflected in their saving throws.",
@@ -689,10 +775,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "leather, wooden shields",
     weapons: "club, dagger, sling, spear, staff",
-    isStandardWeapon: (w) =>
-      ["club", "dagger", "silver_dagger", "sling", "spear", "staff"].includes(
-        w.id,
-      ),
     languages: "the secret druidic tongue",
     description:
       "Druids are priests of nature, protecting wild lands from the encroachment of “civilised” Law and the corrupting touch of Chaos. They worship the force of nature itself, personified in the form of various nature deities.",
@@ -720,8 +802,7 @@ const classOptionsData = [
     hd: 6,
     maxLevel: 10,
     armour: "any",
-    weapons: "small or normal sized",
-    isStandardWeapon: (w) => !large_weapons.includes(w.id),
+    weapons: "any appropriate to size",
     languages: "Deepcommon, Dwarvish, Gnomish, Goblin, Kobold",
     description:
       "Duergars (also known as grey dwarves) are short, scrawny, bearded demihumans with grey skin and hair and ugly visages. They are around 4’ tall, weigh about 120 pounds, and have life spans of up to 500 years. Duergars dwell in strongholds and cities deep underground. They are renowned for their greed and for metals and stones and for their xenophobia toward other races. Duergars have a naturally strong constitution and are highly resistant to magic.",
@@ -749,7 +830,6 @@ const classOptionsData = [
     maxLevel: 8,
     armour: "leather, shields",
     weapons: "any appropriate to size",
-    isStandardWeapon: (w) => !large_weapons.includes(w.id),
     languages: "Deepcommon, Dwarvish, Gnomish, Goblin, Kobold",
     description:
       "Gnomes are a race of short demihumans with long noses and beards. They are cousins of the dwarves and the two races are on friendly terms. Gnomes prefer to dwell in underground complexes in forests or foothills. They love mining, precious stones, and machinery—from miniature marvels of clockwork to great construction 3½’ tall and weigh around 100 pounds.",
@@ -779,7 +859,6 @@ const classOptionsData = [
     maxLevel: 12,
     armour: "any",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "Elvish",
     description:
       "Half-elves are the rare offspring of elves and humans. Physically, they tend to combine the best features of the robust physique of humans. They are human-like in stature but always have a feature that marks their elven heritage (e.g. pointed ears or unusually bright eyes). Half-elves are skilled fighters and dabble with magic, though they lack their elvish parents’ mastery of the arcane.",
@@ -800,7 +879,6 @@ const classOptionsData = [
     maxLevel: 8,
     armour: "leather, chainmail, shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "Orcish",
     description:
       "Half-orcs are the rare offspring of orcs and humans. They are human-like in stature and appearance, but usually have at least one feature that marks their orcish heritage (e.g. fangs or a pig-like snout). Due to the common animosity between orcs and humans, half-orcs are typically outcasts from both their parent cultures, living on the fringes of society and making a living by whatever means they can. Half-orc adventurers are capable combatants and have some skill as thieves.",
@@ -824,8 +902,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "none",
     weapons: "dagger, staff",
-    isStandardWeapon: (w) =>
-      ["dagger", "silver_dagger", "staff"].includes(w.id),
     languages: "",
     description:
       "Illusionists are adventurers who study the arcane arts of illusion and deception. Through this study, they have learned to cast magic spells.",
@@ -846,7 +922,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "chainmail, plate mail, shields",
     weapons: "melee weapons",
-    isStandardWeapon: (w) => checkWeaponQuality(w, "Melee"),
     languages: "",
     description:
       "Knights are warriors who serve a noble house or knightly order, carrying out their liege’s command and combat, preferring the lance above all other weapons. Knights are often members of the noble classes, but a person of lowlier origin may be initiated as a knight as a reward for noble deeds.",
@@ -873,9 +948,7 @@ const classOptionsData = [
     hd: 4,
     maxLevel: 14,
     armour: "none",
-    weapons: "dagger, staff (optional)",
-    isStandardWeapon: (w) =>
-      ["dagger", "silver_dagger", "staff"].includes(w.id),
+    weapons: "dagger, staff",
     languages: "",
     description:
       "Necromancers are adventurers who study the arcane arts of death and the undead. Through this study, they have learned to cast magic spells.",
@@ -897,7 +970,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "any",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Paladins are warriors sworn by sacred oath to the service of a Lawful holy order.",
@@ -924,7 +996,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "leather, chainmail, shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Rangers are members of a secret society which protects their native lands from invasion and the influence of Chaos. They are skilled warriors who are adapted to life in the wilds. At higher levels, their connection with nature grants them the ability to cast spells.",
@@ -952,7 +1023,6 @@ const classOptionsData = [
     maxLevel: 8,
     armour: "any",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages:
       "Deepcommon, Gnomish, Dwarvish, Kobold, the language of earth elementals",
     description:
@@ -983,7 +1053,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "any",
     weapons: "only blunt weapons",
-    isStandardWeapon: (w) => checkWeaponQuality(w, "Blunt"),
     languages: "",
     description:
       "Acolytes are adventurers who have sworn to serve a deity. They are trained for battle and can channel the power of their deity.",
@@ -1012,7 +1081,6 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "any",
     weapons: "any, can wield two-handed melee weapon with one hand",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Known as the “Big Siblings of Human-kind,” gargantuas are demihumans who stand about 7½’ tall and weigh 550 pounds. Gargantuas typically live among or near humans, though some prefer to establish their own communities in the wilderness. They are known as powerful warriors with a strong resistance to every kind of hardship. Gargantuas also have a reputation for being slow-witted and literal-minded that is not entirely deserved, though it is true that they lack subtlety when compared to their smaller kin. They can be steadfast allies or unyielding foes.",
@@ -1033,7 +1101,6 @@ const classOptionsData = [
     maxLevel: 8,
     armour: "any",
     weapons: "any appropriate to size",
-    isStandardWeapon: (w) => !large_weapons.includes(w.id),
     languages: "Goblin, the language of wolves",
     description:
       "Goblins are short demihumans standing between 3’ and 3½’ tall. They possess skin ranging in colour from yellow to orange to red (and everything in between), while their eyes are usually reddish in hue and are visible even in the dark. Though many goblins live underground, not all do so, especially those most likely to interact with humans and join adventuring parties. Goblins can be somewhat surly and resentful when interacting with other beings, or even their own kin, like bugbears and hobgoblins. These attitudes are only heightened by the fact that many goblins—though not all—are aligned with Chaos.",
@@ -1060,7 +1127,6 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "leather, chainmail, shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "Hephaestan",
     description:
       "Hephaestans are a race of tall (6’), thin demihumans with angular features and pointed ears. Some sages claim they are relatives of elves, hailing from a distant land or even another world. For their part, hephaestans are tight lipped on the subject of their origins. Coldly rational and seemingly without emotion, the hephaestans are highly skilled in the use of mental powers, which they employ instead of magic. Despite their aloofness, hephaestans get along well with most intelligent races.",
@@ -1085,7 +1151,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "none",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Kineticists are masters of mind over matter, their rigorous physical and mental training focusing on the manipulation of internal kinetic force. This force can be harnessed to accelerate motion and hone reactions or can be projected outward to affect distant objects.\nThe ability to manipulate kinetic force may be awakened spontaneously or may be learned from a master. Either way, it is often the case that this power runs in families.",
@@ -1110,8 +1175,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "none",
     weapons: "dagger, short sword, staff, sword",
-    isStandardWeapon: (w) =>
-      ["dagger", "short_sword", "staff", "sword"].includes(w.id),
     languages: "",
     description:
       "Mages are adventurers who study the secrets of deep magic, making them powerful allies.",
@@ -1143,7 +1206,6 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "any / none",
     weapons: "any / dagger",
-    isStandardWeapon: (w) => true,
     languages: "Elvish, Doppelgänger, Dragon, Pixie",
     description:
       "Phase elves are slender, fey demihumans with pointed ears. They typically weigh about 120 pounds and are between 5½ and 6 feet tall. Their hair tends to be violet or silver and their eyes are either pure black or pure white—without an iris or pupil (see Dual Persona). Phase elves originate from an alternate dimension which is inaccessible to other races, and about which they never speak.",
@@ -1172,7 +1234,6 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "leather, shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "Elvish, Bugbear, Dryad, Gnoll",
     description:
       "Wood elves are slender, fey demihumans with pointed ears. They typically weigh about 110 pounds and are between 5 and 5½ feet tall. Wood elves dwell in hidden, treetop settlements in deep forests, and are seldom seen by humans. They are reclusive and defend their homelands against trespassers. Like druids, wood elves worship the force of nature and the myriad deities that personify it.",
@@ -1204,7 +1265,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "leather, chainmail, shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Beast masters are adventurers with a special connection to animals. They are often accompanied by one or more loyal beasts.",
@@ -1230,7 +1290,6 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "any",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "Dragon",
     description:
       "Dragonborn are tall, powerful demihumans with scaled skin and dragon-like heads. They typically weigh about 250 pounds and stand around 6’ tall. As reptiles, they reproduce by laying eggs. Unlike true dragons, dragonborn do not have wings or tails. Dragonborn live in clans based on the colour of their scales (see Draconic Bloodline) and are known for their fierce loyalty and their love of hoarding gold. It is believed that dragonborn were created by the dragon gods.",
@@ -1256,11 +1315,7 @@ const classOptionsData = [
     hd: 6,
     maxLevel: 8,
     armour: "leather, shields",
-    weapons: "one-handed melee weapons, all missile weapons",
-    isStandardWeapon: (w) =>
-      (checkWeaponQuality(w, "Melee") &&
-        !checkWeaponQuality(w, "Two-handed")) ||
-      checkWeaponQuality(w, "Missile"),
+    weapons: "missile weapons, one-handed melee weapons",
     languages: "",
     description:
       "Demihumans with mismatched body parts of many different creatures (e.g. reptiles, crustaceans, birds, mammals, etc.). Each individual has a unique appearance. Mutoids are often shunned by other species and live in ruins or in hidden lairs within large settlements.",
@@ -1284,7 +1339,6 @@ const classOptionsData = [
     maxLevel: 6,
     armour: "shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "Deepcommon",
     description:
       "Mycelians are humanoid mushrooms, with tall stems, wide, flat caps, and beady eyes amid their gills. They have no mouths, but communicate telepathically. They dwell in lightless caverns deep underground.",
@@ -1315,7 +1369,6 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "leather, chainmail, shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "",
     description:
       "Tieflings are humans with a mysterious fiendish ancestor. They tend to be outcasts living on the fringes of society, shunned by those who fear their heritage.",
@@ -1342,7 +1395,6 @@ const classOptionsData = [
     maxLevel: 8,
     armour: "leather, shields",
     weapons: "any appropriate to size",
-    isStandardWeapon: (w) => !large_weapons.includes(w.id),
     languages: "Halfling",
     description:
       "Hearthsingers are halflings who specialise in memorising and recalling legends, lore, and local folktales. The desire to learn the truth behind lost legends and forgotten myths often drives them to adventure and they value tomes, journals, and written histories over other treasure.",
@@ -1370,7 +1422,6 @@ const classOptionsData = [
     maxLevel: 8,
     armour: "leather, shields",
     weapons: "any appropriate to size",
-    isStandardWeapon: (w) => !large_weapons.includes(w.id),
     languages: "Halfling",
     description:
       "Reeves are the sworn protectors of rural halfling communities. They patrol the wilderness surrounding these idyllic villages, forgoing home comforts to ensure that predators and enemies do not endanger their kinsfolk or threaten the simple peace of the little folk.",
@@ -1399,9 +1450,6 @@ const classOptionsData = [
     maxLevel: 14,
     armour: "leather, chainmail",
     weapons: "missile weapons, one-handed melee weapons",
-    isStandardWeapon: (w) =>
-      checkWeaponQuality(w, "Missile") ||
-      (checkWeaponQuality(w, "Melee") && !checkWeaponQuality(w, "Two-handed")),
     languages: "",
     description:
       "Arcane bards are musicians and poets drawn to a life of wandering and adventure. They pick up a wide range of abilities in their travels, becoming jacks-of-all-trades.",
@@ -1427,7 +1475,6 @@ const classOptionsData = [
     maxLevel: 8,
     armour: "leather, shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "the secret language of rats",
     description:
       "Ratlings are fur-covered, rat-like, bipedal humanoids. They stand 4′ to 5′ tall and have 3′-long prehensile tails, large ears, and sensitive noses. Though industrious and adaptable, their association with vermin tends to place them in the fringes of human settlements. Ratlings are born in broods of 3–5, reach maturity around age 7 or 8, and rarely live past 40. Naturally gregarious, their relatively short lifespans lend the species a certain devil-may-care outlook that other races find amusing",
@@ -1454,7 +1501,6 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "leather, shields",
     weapons: "any",
-    isStandardWeapon: () => true,
     languages: "Doppelgänger",
     description:
       "Changelings are magical demihumans with powers of deception and shape-stealing. In their natural form, a changeling appears to be a normal human.",
@@ -1479,16 +1525,6 @@ const classOptionsData = [
     maxLevel: 10,
     armour: "leather, chainmail, shields",
     weapons: "battle axe, dagger, hand axe, mace, short sword, warhammer",
-    isStandardWeapon: (w) =>
-      [
-        "battle_axe",
-        "dagger",
-        "silver_dagger",
-        "hand_axe",
-        "mace",
-        "short_sword",
-        "warhammer",
-      ].includes(w.id),
     languages: "Dwarvish, Gnomish, Goblin, Kobold",
     description:
       "Brewmasters are dwarves who dedicate their lives to the craft of brewing alcohol. In combat, they are unpredictable brawlers who fight with drunken fury. Dwarf brewmasters are driven to adventure in search of rare ingredients, secret recipes, and ever-stronger drinks.",
@@ -1514,8 +1550,7 @@ const classOptionsData = [
     hd: 8,
     maxLevel: 10,
     armour: "any",
-    weapons: "small or normal-sized",
-    isStandardWeapon: (w) => !large_weapons.includes(w.id),
+    weapons: "any appropriate to size",
     languages: "Dwarvish, Gnomish, Goblin, Kobold",
     description:
       "While dwarves typically have no skill as magic-users, the wondrous magical armaments of their smiths are legendary. Masters of an ancient secret tradition, dwarf runesmiths wield magic by binding it into runes of power.",
@@ -1543,7 +1578,6 @@ const emptyClassOptions = new ClassOptions({
   maxLevel: 0,
   armour: "",
   weapons: "",
-  isStandardWeapon: () => false,
   languages: "",
   description: "",
   savingThrows: [0, 0, 0, 0, 0],

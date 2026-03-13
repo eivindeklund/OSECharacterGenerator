@@ -209,7 +209,7 @@ export function getOptimalEquipmentPack(
     const weapon = allItems[weaponId];
     if (!weapon) return false;
     if (!isItemBxEligible(weaponId)) return false;
-    return characterClass.isStandardWeapon(weapon);
+    return characterClass.canUseWeapon(weapon);
   };
 
   const hasItemId = (id: string): boolean => items.some(i => i.id === id);

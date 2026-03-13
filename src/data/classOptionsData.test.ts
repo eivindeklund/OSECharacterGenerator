@@ -8,7 +8,105 @@ import classOptionsData, { thiefSkillTable } from "./classOptionsData";
 const ClassOptions = classOptionsData[0].constructor as any;
 
 describe("ClassOptions", () => {
-    describe("Armour String Validation", () => {
+  describe("Weapons String Validation", () => {
+    test("all class weapons strings should be valid", () => {
+      const invalidClasses: Array<{ name: string; weapons: string; error: string }> = [];
+      classOptionsData.forEach((classOption) => {
+        try {
+          ClassOptions.validateWeaponsString(classOption.weapons);
+        } catch (e) {
+          invalidClasses.push({ name: classOption.name, weapons: classOption.weapons, error: String(e) });
+        }
+      });
+      if (invalidClasses.length > 0) console.error("Invalid weapons strings found:", invalidClasses);
+      expect(invalidClasses).toEqual([]);
+    });
+
+    test("canUseWeapon returns true for a blunt weapon used by Cleric", () => {
+      const cleric = classOptionsData.find(c => c.name === "Cleric");
+      const mace = { id: "mace", qualities: ["Blunt", "Melee"] };
+      expect(cleric.canUseWeapon(mace)).toBe(true);
+    });
+
+    test("canUseWeapon returns false for a non-blunt weapon used by Cleric", () => {
+      const cleric = classOptionsData.find(c => c.name === "Cleric");
+      const sword = { id: "sword", qualities: ["Melee"] };
+      expect(cleric.canUseWeapon(sword)).toBe(false);
+    });
+
+    test("canUseWeapon returns true for dagger used by Magic-User", () => {
+      const magicUser = classOptionsData.find(c => c.name === "Magic-User");
+      const dagger = { id: "dagger", qualities: ["Melee"] };
+      expect(magicUser.canUseWeapon(dagger)).toBe(true);
+    });
+
+    test("canUseWeapon also allows silver dagger for Magic-User (dagger implies silver dagger)", () => {
+      const magicUser = classOptionsData.find(c => c.name === "Magic-User");
+      const silverDagger = { id: "silver_dagger", qualities: ["Melee"] };
+      expect(magicUser.canUseWeapon(silverDagger)).toBe(true);
+    });
+
+    test("canUseWeapon returns false for sword used by Magic-User", () => {
+      const magicUser = classOptionsData.find(c => c.name === "Magic-User");
+      const sword = { id: "sword", qualities: ["Melee"] };
+      expect(magicUser.canUseWeapon(sword)).toBe(false);
+    });
+
+    test("canUseWeapon returns false for long bow used by Dwarf", () => {
+      const dwarf = classOptionsData.find(c => c.name === "Dwarf");
+      const longBow = { id: "long_bow", qualities: ["Missile (20/40/60)"] };
+      expect(dwarf.canUseWeapon(longBow)).toBe(false);
+    });
+
+    test("canUseWeapon returns false for two-handed sword used by Dwarf", () => {
+      const dwarf = classOptionsData.find(c => c.name === "Dwarf");
+      const twoHandedSword = { id: "two_handed_sword", qualities: ["Melee", "Two-handed", "Slow"] };
+      expect(dwarf.canUseWeapon(twoHandedSword)).toBe(false);
+    });
+
+    test("canUseWeapon returns true for polearm used by Dwarf (not excluded)", () => {
+      const dwarf = classOptionsData.find(c => c.name === "Dwarf");
+      const polearm = { id: "polearm", qualities: ["Melee", "Brace", "Two-handed", "Slow"] };
+      expect(dwarf.canUseWeapon(polearm)).toBe(true);
+    });
+
+    test("canUseWeapon returns false for polearm used by Halfling (too large)", () => {
+      const halfling = classOptionsData.find(c => c.name === "Halfling");
+      const polearm = { id: "polearm", qualities: ["Melee", "Brace", "Two-handed", "Slow"] };
+      expect(halfling.canUseWeapon(polearm)).toBe(false);
+    });
+
+    test("canUseWeapon returns true for sword used by Fighter (any)", () => {
+      const fighter = classOptionsData.find(c => c.name === "Fighter");
+      const sword = { id: "sword", qualities: ["Melee"] };
+      expect(fighter.canUseWeapon(sword)).toBe(true);
+    });
+
+    test("canUseWeapon returns true for two-handed sword used by Gargantua (any)", () => {
+      const gargantua = classOptionsData.find(c => c.name === "Gargantua");
+      const twoHandedSword = { id: "two_handed_sword", qualities: ["Melee", "Two-handed", "Slow"] };
+      expect(gargantua.canUseWeapon(twoHandedSword)).toBe(true);
+    });
+
+    test("canUseWeapon returns false for two-handed sword used by Bard (one-handed melee only)", () => {
+      const bard = classOptionsData.find(c => c.name === "Bard");
+      const twoHandedSword = { id: "two_handed_sword", qualities: ["Melee", "Two-handed", "Slow"] };
+      expect(bard.canUseWeapon(twoHandedSword)).toBe(false);
+    });
+
+    test("canUseWeapon returns true for missile weapon used by Bard", () => {
+      const bard = classOptionsData.find(c => c.name === "Bard");
+      const longBow = { id: "long_bow", qualities: ["Missile (5/10/15)"] };
+      expect(bard.canUseWeapon(longBow)).toBe(true);
+    });
+
+    test("canUseWeapon returns false for undefined weapon", () => {
+      const fighter = classOptionsData.find(c => c.name === "Fighter");
+      expect(fighter.canUseWeapon(undefined)).toBe(false);
+    });
+  });
+
+  describe("Armour String Validation", () => {
       test("all class armour strings should be valid", () => {
         const invalidClasses: Array<{ name: string; armour: string; error: string }> = [];
         const ClassOptions = classOptionsData[0].constructor as any;

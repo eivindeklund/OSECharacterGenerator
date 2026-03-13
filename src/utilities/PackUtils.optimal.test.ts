@@ -80,7 +80,7 @@ function hasMeleeWeapon(pack: { id: string }[], cls: ClassOptionsData): boolean 
     if (!MELEE_WEAPON_IDS.includes(item.id)) return false;
     const weapon = allItems[item.id];
     if (!weapon) return false;
-    return cls.isStandardWeapon(weapon);
+    return cls.canUseWeapon(weapon);
   });
 }
 
