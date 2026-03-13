@@ -153,11 +153,12 @@ Navigation is **not** part of hook state. `useCharacterManager` calls `useNaviga
 
 ### Game-rule data
 
-`src/data/classOptionsData.tsx` (~1400 lines) is the central rules file. Each class entry is a plain object that includes **embedded functions** — notably:
+`src/data/classOptionsData.tsx` (~1400 lines) is the central rules file. Each class entry is a plain object that gets converted to class classOptionsData.ClassOptions, which provides includes extra methods, notably:
+
 
 - `xpModifierPercentage(abilityScores)` — returns the XP bonus string for the class.
 - `checkAbilityScoreRequirements(abilityScores)` — returns `true` if the player qualifies.
-- `isStandardWeapon(weapon)` — weapon filter for the class.
+- `canUseWeapon(weapon)` — weapon filter for the class.
 
 Do not treat `classOptionsData` as inert JSON; it contains logic.
 

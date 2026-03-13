@@ -69,9 +69,8 @@ Minimum shape:
   primeReqs: ['abilityName'],           // 1–2 entries
   hd: 6,                                // die faces: 4, 6, 8, 10
   maxLevel: 14,
-  armour: 'Any',
-  weapons: 'Any',
-  isStandardWeapon: (w) => true,        // or filter using checkWeaponQuality()
+  armour: 'any',
+  weapons: 'any',
   languages: '',
   description: 'One-sentence summary.',
   savingThrows: [12, 13, 14, 15, 16],  // [Death, Wands, Paralysis, Breath, Spells]
@@ -99,9 +98,9 @@ runesmithSpells: true,
 ### 5. Update tests
 
 Create or extend `src/data/classOptionsData.test.ts`:
+
 - Test `xpModifierPercentage` at all prime req thresholds.
 - Test `checkAbilityScoreRequirements` with a valid and an invalid score set.
-- Test `isStandardWeapon` with an allowed and a forbidden weapon.
 
 ### 6. Verify the UI
 

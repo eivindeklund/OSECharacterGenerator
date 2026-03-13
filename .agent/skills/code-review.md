@@ -29,8 +29,7 @@ description: >
 - [ ] Classes with two prime requisites have a valid `xpBonusRule` string (parseable by `ClassOptions.parseXpBonusRule`).
 - [ ] HP minimum is enforced (`Math.max(1, roll + constitutionMod)`).
 - [ ] Equipment purchases are constrained by the character's `gold` value.
-- [ ] If a new class is added, all required `ClassOptionsData` fields are present,
-  including `xpModifierPercentage`, `checkAbilityScoreRequirements`, and `isStandardWeapon`.
+- [ ] If a new class is added, all required `ClassOptionsData` fields are present.
 
 ### Naming & structure
 

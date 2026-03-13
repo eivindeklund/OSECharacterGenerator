@@ -302,7 +302,7 @@ Pure functions that transform data live in `src/utilities/`.  Name the file afte
 
 ### Game-rule data
 
-`src/data/classOptionsData.tsx` is **not** inert JSON — it contains embedded functions (`xpModifierPercentage`, `checkAbilityScoreRequirements`, `isStandardWeapon`).  Treat it as a module, not a config file.
+`src/data/classOptionsData.tsx` is **not** inert JSON — it is converted to `class ClassOptions` providing several methods, notably (`xpModifierPercentage`, `checkAbilityScoreRequirements`, `canUseWeapon`).  Treat it as a module, not a config file.
 
 All game-rule data belongs in `src/data/`.  Do not hardcode rule values (damage dice, level thresholds, saving throws) in components.
 
