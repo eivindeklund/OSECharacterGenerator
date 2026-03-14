@@ -406,7 +406,7 @@ function hasMeleeWeapon(
 ): boolean {
   return pack.some(item => {
     const weapon = allItems[item.id];
-    return weapon?.category === 'weapon' && characterClass.isStandardWeapon(weapon);
+    return weapon?.category === 'weapon' && characterClass.canUseWeapon(weapon);
   });
 }
 ```
