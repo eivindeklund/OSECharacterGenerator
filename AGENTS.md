@@ -225,3 +225,5 @@ Skills are stored in `.agent/skills/`; there's an index file in `.agent/skills/I
 | Task category | Skill document |
 |---|---|
 | Any change to UI, CSS, or component structure | [`.agent/skills/visual-changes.md`](.agent/skills/visual-changes.md) |
+| Creating or using temporary files during a task | [`.agent/skills/tmp-files.md`](.agent/skills/tmp-files.md) |
+| Adding a field to saved character data, or handling old save formats | [`.agent/skills/normalize-at-load.md`](.agent/skills/normalize-at-load.md) |

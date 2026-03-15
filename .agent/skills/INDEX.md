@@ -13,5 +13,7 @@ description: Index of all available agent skills for the OSE Character Generator
 | [pdf-export.md](pdf-export.md) | Modifying or debugging the PDF character-sheet export pipeline |
 | [wizard-navigation.md](wizard-navigation.md) | Changing screen order, adding screens, or fixing navigation/scrolling |
 | [visual-changes.md](visual-changes.md) | Any change to UI, CSS, or component structure |
+| [tmp-files.md](tmp-files.md) | Creating or using temporary files during a task |
+| [normalize-at-load.md](normalize-at-load.md) | Adding save-format migrations or handling backward compatibility for stored character data |
 
 For general project orientation always read **AGENTS.md** in the repo root first.
