@@ -28,9 +28,10 @@ const baseProps: PDFExportProps = {
     hpResult: 8,
     hpSeed: 1,
     armourClass: 14,
-    spell: null,
     hasSpells: false,
     unarmouredAC: 10,
+    level: 1,
+    spells: [],
   },
   characterClass: {
     name: 'Fighter',
@@ -53,6 +54,11 @@ const baseProps: PDFExportProps = {
     divine: false,
     xpModifierPercentage: () => '0%',
     checkAbilityScoreRequirements: () => true,
+    getSavingThrowsAtLevel: () => [12, 13, 14, 15, 16] as [number, number, number, number, number],
+    getThac0AtLevel: () => 19,
+    getSpellSlotsAtLevel: () => [],
+    isHdRollLevel: () => false,
+    getHpBonusAtLevel: () => 0,
   },
   characterEquipment: {
     armour: [],
@@ -347,7 +353,7 @@ describe('buildFieldData', () => {
   it('populates Notes with spell text when character has spells', () => {
     const props = {
       ...baseProps,
-      characterStatistics: { ...baseProps.characterStatistics, hasSpells: true, spell: 'Sleep' },
+      characterStatistics: { ...baseProps.characterStatistics, hasSpells: true, spells: ['Sleep'] },
     }
     expect(buildFieldData(props)['Notes']).toBe('Spells: Sleep')
   })

@@ -3,9 +3,10 @@ import { CHARACTER_STORAGE } from '../constants/constants';
 import { StorageService } from './StorageService';
 
 describe('StorageService', () => {
+  const minStats = { hitPoints: 5, hpRolls: 1, hpResult: 5, hpSeed: null, armourClass: 9, hasSpells: false, unarmouredAC: null, level: 1, spells: [] };
   const mockCharacters = [
-    { character: { id: '1', name: 'Aragorn' } },
-    { character: { id: '2', name: 'Legolas' } }
+    { character: { id: '1', name: 'Aragorn' }, characterStatistics: minStats },
+    { character: { id: '2', name: 'Legolas' }, characterStatistics: minStats }
   ];
 
   beforeEach(() => {

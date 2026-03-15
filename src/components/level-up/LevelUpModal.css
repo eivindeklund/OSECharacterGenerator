@@ -1,0 +1,221 @@
+/* ── Level Up Modal ─────────────────────────────────────────────────────────
+ * Full-screen backdrop + centred card for the level-up wizard.
+ * Uses BEM-lite naming: level-up-modal, level-up-modal-{element}.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.level-up-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65); /* one-off: semi-opaque modal scrim */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.level-up-modal {
+  background: var(--main-bg-white);
+  color: var(--main-text-color);
+  border-radius: 8px; /* one-off: modal card corner radius */
+  padding: 2rem;
+  max-width: 520px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); /* one-off: modal drop shadow */
+}
+
+.level-up-modal-title {
+  margin: 0 0 1.5rem;
+  font-size: 1.4rem;
+  color: var(--main-bg-color);
+}
+
+.level-up-modal-step-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--xp-zero-color);
+  padding-bottom: 0.4rem;
+}
+
+.level-up-modal-description {
+  margin: 0 0 1rem;
+  color: var(--secondary-text-color);
+}
+
+/* ── HP roll section ── */
+
+.level-up-modal-roll-btn {
+  display: block;
+  margin: 0.5rem 0 1rem;
+  padding: 0.6rem 1.5rem;
+  background: var(--secondary-bg-color);
+  color: var(--main-bg-white);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.level-up-modal-roll-btn:hover {
+  background: var(--main-bg-color);
+}
+
+.level-up-modal-hp-result {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--light-green);
+  border-radius: 4px;
+}
+
+.level-up-modal-hp-result p {
+  margin: 0;
+}
+
+.level-up-modal-reroll-btn {
+  background: none;
+  border: 1px solid var(--xp-zero-color);
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.level-up-modal-reroll-btn:hover {
+  border-color: var(--main-bg-color);
+  color: var(--main-bg-color);
+}
+
+.level-up-modal-reroll-count {
+  color: var(--secondary-text-color);
+}
+
+.level-up-modal-fixed-hp {
+  padding: 0.75rem 1rem;
+  background: var(--light-green);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.level-up-modal-fixed-hp p {
+  margin: 0 0 0.25rem;
+}
+
+.level-up-modal-hp-fixed-value {
+  font-size: 1.2rem;
+}
+
+/* ── Spell selection section ── */
+
+.level-up-modal-spell-list {
+  border: 1px solid var(--xp-zero-color);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.level-up-modal-spell-legend {
+  font-weight: bold;
+  padding: 0 0.25rem;
+  font-size: 0.9rem;
+  color: var(--secondary-text-color);
+}
+
+.level-up-modal-spell-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.2rem 0;
+}
+
+.level-up-modal-spell-option:hover {
+  color: var(--main-bg-color);
+}
+
+/* ── Summary section ── */
+
+.level-up-modal-summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.level-up-modal-summary-list li {
+  padding: 0.4rem 0.75rem;
+  background: var(--light-green);
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+/* ── Action buttons row ── */
+
+.level-up-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--xp-zero-color);
+}
+
+.level-up-modal-cancel-btn {
+  background: none;
+  border: 1px solid var(--xp-zero-color);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.level-up-modal-cancel-btn:hover {
+  border-color: var(--danger-color);
+  color: var(--danger-color);
+}
+
+.level-up-modal-next-btn {
+  background: var(--secondary-bg-color);
+  color: var(--main-bg-white);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.level-up-modal-next-btn:hover:not(:disabled) {
+  background: var(--main-bg-color);
+}
+
+.level-up-modal-next-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.level-up-modal-confirm-btn {
+  background: var(--xp-positive-color);
+  color: var(--main-bg-white);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.level-up-modal-confirm-btn:hover {
+  background: var(--main-bg-color);
+}

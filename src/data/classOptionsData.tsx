@@ -2,11 +2,12 @@ import { primeRequisiteModifiers } from "../constants/constants";
 import type { AbilityRequirement, AbilityScores, ClassAbility, ClassOptionsData } from "../types";
 import { checkWeaponQuality } from "../utilities/WeaponUtils";
 import { ALL_ARMOUR, ARMOUR_ID } from "./armourData";
+import { getLevelEntry } from "./levelProgressionData";
 import weaponsData from "./weaponsData";
 
 const large_weapons = ["long_bow", "two_handed_sword", "polearm"];
 
-type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage' | 'allowedArmour' | 'canUseWeapon'>;
+type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage' | 'allowedArmour' | 'canUseWeapon' | 'getSavingThrowsAtLevel' | 'getThac0AtLevel' | 'getSpellSlotsAtLevel' | 'isHdRollLevel' | 'getHpBonusAtLevel'>;
 
 /** Canonical ability IDs for abilities that appear on more than one class — use these instead of magic strings. */
 export const ABILITY_ID = {
@@ -455,6 +456,59 @@ class ClassOptions implements ClassOptionsData {
   static getThiefSkillAtLevel(skill: keyof Omit<ThiefSkillRow, 'level'>, level: number): number | string {
     const clamped = Math.max(1, Math.min(14, level));
     return thiefSkillTable[clamped - 1][skill];
+  }
+
+  /**
+   * Return the saving throw values [Death, Wands, Paralysis, Breath, Spells]
+   * appropriate for this class at the given character level.
+   * Falls back to the static savingThrows array if no progression data is found.
+   */
+  getSavingThrowsAtLevel(level: number): [number, number, number, number, number] {
+    const entry = getLevelEntry(this.name, level);
+    return entry?.saves ?? (this.savingThrows as [number, number, number, number, number]);
+  }
+
+  /**
+   * Return the THAC0 value for this class at the given character level.
+   * Returns 19 (no attack bonus) as a default.
+   */
+  getThac0AtLevel(level: number): number {
+    const entry = getLevelEntry(this.name, level);
+    return entry?.thac0 ?? 19;
+  }
+
+  /**
+   * Return the spell slot counts [1st, 2nd, 3rd, ...] for this class at the
+   * given level. Returns an empty array for non-spellcasting classes.
+   */
+  getSpellSlotsAtLevel(level: number): number[] {
+    const entry = getLevelEntry(this.name, level);
+    return entry?.spellSlots ?? [];
+  }
+
+  /**
+   * Returns true when a hit die should be rolled for leveling to the given
+   * level (i.e. hdDice increases). Returns false above the dice cap where
+   * only a fixed bonus is gained.
+   */
+  isHdRollLevel(level: number): boolean {
+    if (level <= 1) return false; // level 1 HP was rolled at character creation
+    const prev = getLevelEntry(this.name, level - 1);
+    const curr = getLevelEntry(this.name, level);
+    return curr.hdDice > prev.hdDice;
+  }
+
+  /**
+   * Returns the fixed HP bonus gained when leveling to the given level above
+   * the hit-die cap (i.e. when isHdRollLevel returns false).
+   * Returns 0 for levels where a die is rolled instead.
+   */
+  getHpBonusAtLevel(level: number): number {
+    if (level <= 1) return 0;
+    const prev = getLevelEntry(this.name, level - 1);
+    const curr = getLevelEntry(this.name, level);
+    if (curr.hdDice > prev.hdDice) return 0; // die roll level
+    return Math.max(0, curr.hdBonus - prev.hdBonus);
   }
 }
 

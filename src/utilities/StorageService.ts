@@ -1,10 +1,12 @@
 import { CHARACTER_STORAGE, PARTIAL_CHARACTER_KEY } from "../constants/constants";
+import { normalizeStoredCharacter } from "./normalizeCharacterData";
 
 export const StorageService = {
   loadCharacters: () => {
     try {
       const data = window.localStorage.getItem(CHARACTER_STORAGE);
-      return data ? JSON.parse(data) : [];
+      const raw: unknown[] = data ? JSON.parse(data) : [];
+      return raw.map(normalizeStoredCharacter as (r: unknown) => ReturnType<typeof normalizeStoredCharacter>);
     } catch (e) {
       console.error("Failed to load characters from storage", e);
       return [];
@@ -50,7 +52,8 @@ export const StorageService = {
   loadPartialCharacter: () => {
     try {
       const data = window.localStorage.getItem(PARTIAL_CHARACTER_KEY);
-      return data ? JSON.parse(data) : null;
+      if (!data) return null;
+      return normalizeStoredCharacter(JSON.parse(data));
     } catch (e) {
       console.error("Failed to load partial character", e);
       return null;

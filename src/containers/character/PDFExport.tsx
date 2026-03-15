@@ -1,19 +1,19 @@
 import { PDFDocument, PDFField, PDFForm } from 'pdf-lib'
 import {
-    CHARACTER_SHEET_PURIST_DAC_URL,
-    CHARACTER_SHEET_PURIST_URL,
-    CHARACTER_SHEET_UNDERGROUND_URL,
+  CHARACTER_SHEET_PURIST_DAC_URL,
+  CHARACTER_SHEET_PURIST_URL,
+  CHARACTER_SHEET_UNDERGROUND_URL,
 } from '../../constants/constants'
 import armourData, { ARMOUR_ID } from '../../data/armourData'
 import { ABILITY_ID } from '../../data/classOptionsData'
 import weaponsData from '../../data/weaponsData'
 import type {
-    AbilityScores,
-    Character,
-    CharacterEquipment,
-    CharacterModifiers,
-    CharacterStatistics,
-    ClassOptionsData,
+  AbilityScores,
+  Character,
+  CharacterEquipment,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
 } from '../../types'
 import { allItemsById } from '../../utilities/PackUtils'
 import { consolidateDuplicates } from '../../utilities/utilities'
@@ -27,7 +27,7 @@ export type PDFExportProps = {
   abilityScores: AbilityScores
 }
 
-const INITIAL_LEVEL = '1'
+// INITIAL_LEVEL removed — use characterStatistics.level
 const INITIAL_ATTACK_BONUS = '0'
 const DAC_BASE = 19
 // B/X rule: miscellaneous adventuring gear counts as 80 gp weight
@@ -141,7 +141,9 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     }).join(', ') || ''}
     `
 
-  const spellText = characterStatistics.hasSpells ? `Spells: ${characterStatistics.spell}` : ''
+  const spellText = characterStatistics.hasSpells
+    ? `Spells: ${characterStatistics.spells.join(', ')}`
+    : ''
 
   const baseMovement = (() => {
     const armour = characterEquipment.armour
@@ -183,7 +185,7 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     'Name': character.name,
     'Alignment': alignmentCapitalized,
     'Character Class': characterClass.name,
-    'Level': INITIAL_LEVEL,
+    'Level': String(characterStatistics.level ?? 1),
     'STR': abilityScores.strength,
     'INT': abilityScores.intelligence,
     'DEX': abilityScores.dexterity,
@@ -191,11 +193,11 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     'CON': abilityScores.constitution,
     'CHA': abilityScores.charisma,
 
-    'Death Save': characterClass.savingThrows[0],
-    'Wands Save': characterClass.savingThrows[1],
-    'Paralysis Save': characterClass.savingThrows[2],
-    'Breath Save': characterClass.savingThrows[3],
-    'Spells Save': characterClass.savingThrows[4],
+    'Death Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[0],
+    'Wands Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[1],
+    'Paralysis Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[2],
+    'Breath Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[3],
+    'Spells Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[4],
 
     'Magic Save Mod': characterModifiers.wisdomMod,
     'HP': characterStatistics.hitPoints,

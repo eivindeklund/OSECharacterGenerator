@@ -1,4 +1,5 @@
 import LZString from 'lz-string'
+import { normalizeStoredCharacter } from './normalizeCharacterData'
 
 const ShareService = {
   compressCharacter: (characterData) => {
@@ -17,7 +18,7 @@ const ShareService = {
       const decompressedString = LZString.decompressFromEncodedURIComponent(compressedString)
       if (!decompressedString) return null
       const characterData = JSON.parse(decompressedString)
-      return characterData
+      return normalizeStoredCharacter(characterData)
     } catch (error) {
       console.error('Error decompressing character data:', error)
       return null

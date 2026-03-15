@@ -350,4 +350,125 @@ describe("useCharacterManager", () => {
     expect(result.current.characterRolled).toBe(true);
     expect(mockNavigate).toHaveBeenCalledWith('/sheet');
   });
+
+  describe("levelUp", () => {
+    it("should increment level by 1", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.rollCharacter();
+        const event = { target: { value: "Fighter" } };
+        result.current.changeCharacterClass(event);
+      });
+      act(() => { result.current.rollHP(); });
+
+      act(() => {
+        result.current.levelUp(4, []);
+      });
+
+      expect(result.current.characterStatistics.level).toBe(2);
+    });
+
+    it("should add gained HP to existing hit points", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.rollCharacter();
+        const event = { target: { value: "Fighter" } };
+        result.current.changeCharacterClass(event);
+      });
+      act(() => { result.current.rollHP(); });
+
+      const hpBefore = result.current.characterStatistics.hitPoints as number;
+
+      act(() => {
+        result.current.levelUp(5, []);
+      });
+
+      expect(result.current.characterStatistics.hitPoints).toBe(hpBefore + 5);
+    });
+
+    it("should append new spells to the spells array", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.rollCharacter();
+        const event = { target: { value: "Magic-User" } };
+        result.current.changeCharacterClass(event);
+      });
+      act(() => { result.current.rollHP(); });
+
+      act(() => {
+        result.current.levelUp(2, ["Sleep"]);
+      });
+
+      act(() => {
+        result.current.levelUp(2, ["Charm Person"]);
+      });
+
+      expect(result.current.characterStatistics.spells).toContain("Sleep");
+      expect(result.current.characterStatistics.spells).toContain("Charm Person");
+      expect(result.current.characterStatistics.spells).toHaveLength(2);
+    });
+
+    it("should preserve the starting spell (set via spells[] by SpellSelection) when levelling up", () => {
+      // Verify that levelUp preserves the existing spell and appends the new one.
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.rollCharacter();
+        const event = { target: { value: "Magic-User" } };
+        result.current.changeCharacterClass(event);
+      });
+      act(() => { result.current.rollHP(); });
+
+      // Simulate SpellSelection writing to spells[]
+      act(() => {
+        result.current.setCharacterStatistics((prev) => ({
+          ...prev,
+          spells: ["Sleep"],
+          hasSpells: true,
+        }));
+      });
+
+      // L1 → L2: character gains an extra L1 slot, picks a second L1 spell
+      act(() => {
+        result.current.levelUp(2, ["Charm Person"]);
+      });
+
+      expect(result.current.characterStatistics.spells).toContain("Sleep");
+      expect(result.current.characterStatistics.spells).toContain("Charm Person");
+      expect(result.current.characterStatistics.spells).toHaveLength(2);
+    });
+
+    it("should load character statistics from well-formed (normalized) data", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      const normalizedSave = {
+        character: { name: "Gandalf", id: "xyz" },
+        abilityScores: { strength: 9, intelligence: 18, wisdom: 12, dexterity: 10, constitution: 10, charisma: 14 },
+        characterModifiers: { xpModifierPercentage: "+10%", strengthModMelee: "+0" },
+        characterStatistics: { hitPoints: 3, hpRolls: 1, hpResult: 3, hpSeed: null, armourClass: 9, spells: ["Sleep"], hasSpells: true, unarmouredAC: null, level: 1 },
+        characterClass: { name: "Magic-User" },
+        characterEquipment: { armour: [], weapons: [], adventuringGear: [], gold: 30 },
+      };
+
+      act(() => {
+        result.current.loadCharacter(normalizedSave as unknown as StoredCharacterData);
+      });
+
+      expect(result.current.characterStatistics.level).toBe(1);
+      expect(result.current.characterStatistics.spells).toEqual(["Sleep"]);
+    });
+  });
 });

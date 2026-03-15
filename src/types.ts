@@ -53,9 +53,12 @@ export interface CharacterStatistics {
   /** Canonical seed (1–120) used to derive hpResult for any hit die size. */
   hpSeed: number | null;
   armourClass: number | null;
-  spell: string | null;
   hasSpells: boolean;
   unarmouredAC: number | null;
+  /** Current character level (1-based). */
+  level: number;
+  /** All spells known by the character (spell book entries for arcane casters). */
+  spells: string[];
 }
 
 // ── Character ─────────────────────────────────────────────────────────────────
@@ -129,6 +132,11 @@ export interface ClassOptionsData {
   xpBonusRule?: string;
   xpModifierPercentage: (abilityScoreValues: AbilityScores) => string;
   checkAbilityScoreRequirements: (abilityScores: AbilityScores) => boolean;
+  getSavingThrowsAtLevel: (level: number) => [number, number, number, number, number];
+  getThac0AtLevel: (level: number) => number;
+  getSpellSlotsAtLevel: (level: number) => number[];
+  isHdRollLevel: (level: number) => boolean;
+  getHpBonusAtLevel: (level: number) => number;
 }
 
 // ── Character Equipment ───────────────────────────────────────────────────────

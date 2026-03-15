@@ -2,19 +2,19 @@ import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
-    abilityScoreNames,
-    defaultAbilityScoresState
+  abilityScoreNames,
+  defaultAbilityScoresState
 } from "../constants/constants";
 import classOptionsData, { emptyClassOptions } from "../data/classOptionsData";
 import { CharacterModifiers, ClassOptionsData, StoredCharacterData } from "../types";
 import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
-    d,
-    deriveCharacterModifiers,
-    generateHpSeed,
-    hpRollToSeed,
-    hpSeedToRoll,
+  d,
+  deriveCharacterModifiers,
+  generateHpSeed,
+  hpRollToSeed,
+  hpSeedToRoll,
 } from "../utilities/utilities";
 
 /** Returns the furthest wizard route that is valid for the given (possibly partial) character data. */
@@ -72,9 +72,10 @@ export const useCharacterManager = (
     hpResult: null,
     hpSeed: null,
     armourClass: null,
-    spell: null,
     hasSpells: false,
     unarmouredAC: null,
+    level: 1,
+    spells: [] as string[],
   });
 
   const [pointBuy, setPointBuy] = useState(0);
@@ -334,9 +335,10 @@ export const useCharacterManager = (
       hpResult: null,
       hpSeed: null,
       armourClass: null,
-      spell: null,
       hasSpells: false,
       unarmouredAC: null,
+      level: 1,
+      spells: [],
     });
     setCharacterEquipment({
       armour: [],
@@ -438,6 +440,7 @@ export const useCharacterManager = (
     setCharacter(data.character);
     setAbilityScores(data.abilityScores);
     setCharacterModifiers(data.characterModifiers);
+
     setCharacterStatistics(data.characterStatistics);
 
     const matchedClass = classOptionsData.find(c => c.name === data.characterClass.name) || data.characterClass;
@@ -447,6 +450,22 @@ export const useCharacterManager = (
     setPointBuy(0);
     setCharacterRolled(true);
     navigate(data.partial ? getFurthestRoute(data) : '/sheet');
+  };
+
+  /**
+   * Level up the current character.
+   * @param hpGained  HP gained from the level-up roll (minimum 1).
+   * @param newSpells Spells selected during this level-up (arcane casters only).
+   */
+  const levelUp = (hpGained: number, newSpells: string[] = []) => {
+    setCharacterStatistics((prev) => {
+      return {
+        ...prev,
+        level: prev.level + 1,
+        hitPoints: (prev.hitPoints ?? 0) + hpGained,
+        spells: [...prev.spells, ...newSpells],
+      };
+    });
   };
 
   const discardPartialCharacter = () => {
@@ -505,6 +524,7 @@ export const useCharacterManager = (
     deleteStoredCharacter,
     importCharacter,
     loadCharacter,
+    levelUp,
     storedCharacters,
     isMobile,
     abilityScoresThatCanDecrease,

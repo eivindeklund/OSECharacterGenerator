@@ -7,7 +7,7 @@ describe('ShareService', () => {
     characterClass: { name: 'Fighter' },
     abilityScores: { strength: 18, dexterity: 12 },
     characterModifiers: {},
-    characterStatistics: { hitPoints: 10 },
+    characterStatistics: { hitPoints: 10, level: 1, spells: [] },
     characterEquipment: { gold: 100 }
   }
 

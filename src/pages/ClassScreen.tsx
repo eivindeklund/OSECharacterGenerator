@@ -72,7 +72,7 @@ export default function ClassScreen() {
             characterClass.necromancerSpells ||
             characterClass.runesmithSpells
           ) &&
-            !characterStatistics.spell &&
+            characterStatistics.spells.length === 0 &&
             "Select a Spell",
         ].filter(Boolean)}
       />

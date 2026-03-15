@@ -70,7 +70,7 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
         <Trans i18nKey={"characterSheet"}></Trans>
       </h3> */}
       <h3 className='character--name'>{character.name}</h3>
-      <h4 className='character--subheader'> Level 1 {characterClass.name}</h4>
+      <h4 className='character--subheader'> Level {characterStatistics.level ?? 1} {characterClass.name}</h4>
       <div className='character-sheet'>
         <div className='character-top-container'>{getCharacterFields()}</div>
 
@@ -157,26 +157,40 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
 
         <div className='charsheet-saving-throws-container'>
           <div className='character-container'>
+            <span className='charsheet-value-name'>THAC0</span>
+            <span className='charsheet-value'>
+              {characterClass.getThac0AtLevel(characterStatistics.level ?? 1)}
+            </span>
+          </div>
+
+          <div className='character-container'>
             <span className='charsheet-value-name'>Saving Throws</span>
             <span className='charsheet-value charsheet-value--saving-throws'>
-              <div>
-                <span>Death</span> <span>{characterClass.savingThrows[0]}</span>
-              </div>
-              <div>
-                <span>Wands</span> <span>{characterClass.savingThrows[1]}</span>
-              </div>
-              <div>
-                <span>Paralysis</span>{' '}
-                <span>{characterClass.savingThrows[2]}</span>
-              </div>
-              <div>
-                <span>Breath</span>{' '}
-                <span>{characterClass.savingThrows[3]}</span>
-              </div>
-              <div>
-                <span>Spells</span>{' '}
-                <span>{characterClass.savingThrows[4]}</span>
-              </div>
+              {(() => {
+                const saves = characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1);
+                return (
+                  <>
+                    <div>
+                      <span>Death</span> <span>{saves[0]}</span>
+                    </div>
+                    <div>
+                      <span>Wands</span> <span>{saves[1]}</span>
+                    </div>
+                    <div>
+                      <span>Paralysis</span>{' '}
+                      <span>{saves[2]}</span>
+                    </div>
+                    <div>
+                      <span>Breath</span>{' '}
+                      <span>{saves[3]}</span>
+                    </div>
+                    <div>
+                      <span>Spells</span>{' '}
+                      <span>{saves[4]}</span>
+                    </div>
+                  </>
+                );
+              })()}
             </span>
           </div>
 
@@ -184,7 +198,7 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
             <span className='charsheet-value-name'>Abilities</span>
             <span className='charsheet-value character-sheet--class-ability'>
               <ul>
-                {getAbilitiesForLevel(characterClass.abilities, 1).map((ability) => {
+                {getAbilitiesForLevel(characterClass.abilities, characterStatistics.level ?? 1).map((ability) => {
                   return (
                     <li key={ability.name} className='character-sheet--class-ability'>
                       {' '}
@@ -198,11 +212,34 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
             </span>
           </div>
 
+          {(() => {
+            const slots = characterClass.getSpellSlotsAtLevel(characterStatistics.level ?? 1);
+            const hasAnySlot = slots.some((s) => s > 0);
+            if (!hasAnySlot) return null;
+            const SLOT_LABELS = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
+            return (
+              <div className='character-container'>
+                <span className='charsheet-value-name'>Spell Slots</span>
+                <span className='charsheet-value charsheet-value--spell-slots'>
+                  {slots.map((count, i) =>
+                    count > 0 ? (
+                      <div key={i}>
+                        <span>{SLOT_LABELS[i]}</span> <span>{count}</span>
+                      </div>
+                    ) : null
+                  )}
+                </span>
+              </div>
+            );
+          })()}
+
           {characterStatistics.hasSpells && (
             <div className='character-container'>
               <span className='charsheet-value-name'>Spells</span>
               <span className='charsheet-value character-sheet--class-ability'>
-                {characterStatistics.spell}
+                {characterStatistics.spells && characterStatistics.spells.length > 0
+                  ? characterStatistics.spells.join(', ')
+                  : ''}
               </span>
             </div>
           )}

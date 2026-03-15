@@ -22,7 +22,7 @@ export default function SpellSelection({
   setCharacterStatistics,
 }: SpellSelectionProps) {
   const [spellSelected, setSpellSelected] = useState(
-    characterStatistics.spell || "",
+    characterStatistics.spells[0] ?? "",
   );
 
   const chooseSpells = () => {
@@ -50,7 +50,7 @@ export default function SpellSelection({
 
     setSpellSelected(randomSpell);
     setCharacterStatistics((prevState) => {
-      return { ...prevState, spell: randomSpell, hasSpells: true };
+      return { ...prevState, spells: [randomSpell], hasSpells: true };
     });
 
     return randomSpell;
@@ -88,7 +88,7 @@ export default function SpellSelection({
     setSpellSelected(event.target.value);
     setCharacterStatistics({
       ...characterStatistics,
-      spell: event.target.value,
+      spells: [event.target.value],
       hasSpells: true,
     });
   };

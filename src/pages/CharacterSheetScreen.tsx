@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Trans } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import ScreenNavigation from "../components/general/ScreenNavigation";
+import LevelUpModal from "../components/level-up/LevelUpModal";
 import CharacterSheet from "../containers/character/CharacterSheet";
 import PDFExport from "../containers/character/PDFExport";
 import { useCharacter } from "../contexts/CharacterContext";
@@ -16,10 +17,16 @@ export default function CharacterSheetScreen() {
     abilityScores,
     setCharacterRolled,
     saveCharacter,
+    levelUp,
   } = useCharacter();
 
+  const [levelUpOpen, setLevelUpOpen] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  const currentLevel = characterStatistics.level ?? 1;
+  const maxLevel = characterClass.maxLevel === 0 ? 14 : characterClass.maxLevel;
+  const canLevelUp = currentLevel < maxLevel;
 
   useEffect(() => {
     saveCharacter();
@@ -27,6 +34,19 @@ export default function CharacterSheetScreen() {
 
   return (
     <div className="character-sheet-container container">
+      {levelUpOpen && (
+        <LevelUpModal
+          characterClass={characterClass}
+          characterStatistics={characterStatistics}
+          characterModifiers={characterModifiers}
+          onConfirm={(hpGained, newSpells) => {
+            levelUp(hpGained, newSpells);
+            setLevelUpOpen(false);
+          }}
+          onCancel={() => setLevelUpOpen(false)}
+        />
+      )}
+
       <CharacterSheet
         character={character}
         characterStatistics={characterStatistics}
@@ -38,6 +58,15 @@ export default function CharacterSheetScreen() {
       ></CharacterSheet>
 
       <div className="button-container">
+        {canLevelUp && (
+          <>
+            <h3 className="header-default header-pdf">Advancement</h3>
+            <button onClick={() => setLevelUpOpen(true)}>
+              Level Up (→ Level {currentLevel + 1})
+            </button>
+          </>
+        )}
+
         <h3 className="header-default header-pdf">Export to PDF</h3>
 
         <PDFExport
