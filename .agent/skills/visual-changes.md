@@ -42,7 +42,149 @@ The automated test in `src/css/tokens.test.ts` enforces these rules for `App.css
 
 ---
 
-## 3. Token Test
+## 3. Quixote CSS Tests
+
+Quixote is a CSS unit-testing library.  CSS tests live in `e2e/css.spec.js` and helpers in `e2e/css-helpers.js`.  They run via:
+
+```bash
+npm run test:css
+```
+
+### Why Quixote tests exist
+
+LLM agents (and humans) frequently introduce layout defects that look correct in code but are wrong in the browser: a button whose `width` is too narrow for its label, a container that collapses to zero height, text that overflows its box, or a flex child that shrinks away.  Quixote catches these by measuring what the browser *actually* renders — not just what the CSS *declares*.
+
+> **Motivating example:** An agent added a button with descriptive text but gave it a fixed pixel width that was far too narrow.  The CSS was valid and the component test passed.  A Quixote test asserting that the button is at least as wide as its text content would have caught this immediately.
+
+### When to add a Quixote test
+
+Add a test to `e2e/css.spec.js` whenever you:
+
+- **Add any new interactive element** (button, link, input, select) — assert that its rendered width and height are large enough for its content and are not zero or suspiciously small.
+- **Add a new CSS class that defines layout behaviour** (`display`, `flex-*`, `grid-*`, `position`).
+- **Add or modify a state modifier class** (e.g. `.active`, `--selected`) that changes a computed style.
+- **Change the value of a design token** in `tokens.css` that is consumed by a component class.
+- **Add a new CSS file** — also export it as a constant from `e2e/css-helpers.js`.
+
+For new interactive elements the minimum useful assertions are:
+
+1. `width` > 0 and `height` > 0 (element is visible).
+2. The rendered `width` is ≥ the width of its text content (button is not clipped).
+3. `overflow` is `visible` or `auto`, not `hidden` in a way that would clip the label.
+
+You do **not** need a Quixote test for:
+
+- Spacing / margin tweaks with no layout-mode change, provided a related element already has size assertions.
+- Thematic colour changes to tokens that are not asserted by any existing test.
+- Logic-only changes with no CSS effect.
+
+### Two testing styles
+
+**Isolated fixture tests** — Quixote creates a sandboxed `<iframe>` and injects the app CSS as inline text.  HTML snippets are added, and computed styles are read from the Quixote frame.  No app state and no app navigation are required; these tests run fast and reproduce identically on every machine.
+
+**Live rendered style tests** — navigate to the running app and read computed styles on the real DOM using `getComputedStyle`.  Use these to verify that the full pipeline is intact (Vite build, tokens cascade, component rendering).
+
+### How to write an isolated fixture test
+
+```js
+import { test, expect } from '@playwright/test';
+import { injectQuixote, getIsolatedStyles, tokensCSS, appCSS } from './css-helpers.js';
+
+test.describe('Isolated CSS rules — MyFeature', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await injectQuixote(page);
+  });
+
+  test('my-element has expected layout', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + appCSS,
+      '<div class="my-element"></div>',
+      '.my-element',
+      ['display', 'cursor'],
+    );
+    expect(styles['display']).toBe('flex');
+    expect(styles['cursor']).toBe('pointer');
+  });
+});
+```
+
+For elements whose CSS rule requires a parent context (e.g. `.container > .child`), provide the full ancestor chain in the `html` snippet and use the child's selector or ID:
+
+```js
+'<div class="container"><div class="child" id="target"></div></div>'
+// selector: '#target'
+```
+
+#### Asserting that a button is wide enough for its text
+
+Use `getBoundingClientRect()` inside `page.evaluate()` to compare the button's rendered width against the width of the text it contains.  This directly catches the "button too narrow for its label" class of defect:
+
+```js
+test('my-action button is wide enough for its label', async ({ page }) => {
+  await page.goto('/');
+  await injectQuixote(page);
+
+  const result = await page.evaluate(async ({ css }) => {
+    const frame = await new Promise((resolve, reject) =>
+      window.quixote.createFrame({ css, width: 800, height: 600 }, (err, f) =>
+        err ? reject(err) : resolve(f),
+      ),
+    );
+    frame.add('<button class="button--my-action">Save Character</button>');
+    const btn = frame.document().querySelector('.button--my-action');
+    const btnRect = btn.getBoundingClientRect();
+    // Measure text width in a throwaway span with no constrained width
+    const span = frame.document().createElement('span');
+    span.style.visibility = 'hidden';
+    span.style.position = 'absolute';
+    span.style.whiteSpace = 'nowrap';
+    span.textContent = btn.textContent;
+    frame.document().body.appendChild(span);
+    const textWidth = span.getBoundingClientRect().width;
+    frame.remove();
+    return { btnWidth: btnRect.width, textWidth };
+  }, { css: tokensCSS + '\n' + appCSS });
+
+  expect(result.btnWidth).toBeGreaterThan(0);
+  expect(result.btnWidth).toBeGreaterThanOrEqual(result.textWidth);
+});
+```
+
+> **Note:** `frame.document()` accesses the Quixote iframe's `contentDocument` — use it when you need raw DOM APIs that Quixote's own element wrapper doesn't expose.  When you only need computed styles, prefer `getIsolatedStyles()` from `css-helpers.js`.
+
+### How to write a live rendered style test
+
+```js
+import { test, expect } from '@playwright/test';
+import { tokenValue, computedProp } from './css-helpers.js';
+
+test.describe('Live rendered styles', () => {
+  test('--my-new-token resolves to the expected value', async ({ page }) => {
+    await page.goto('/');
+    const value = await tokenValue(page, '--my-new-token');
+    expect(value).toBe('#hexvalue');
+  });
+});
+```
+
+`computedProp(page, selector, property)` reads any computed CSS property from a live element (useful when you need to check something other than a token value):
+
+```js
+const display = await computedProp(page, '.my-selector', 'display');
+expect(display).toBe('grid');
+```
+
+### Adding a new CSS file
+
+1. Add a `readFileSync` constant in `e2e/css-helpers.js` following the existing pattern.
+2. Export it (`export const myNewCSS = ...`).
+3. Add representative isolated tests to `e2e/css.spec.js`.
+
+---
+
+## 4. Token Test
 
 After editing `tokens.css`, `App.css`, or `PackOptions.css`, run the automated token test to confirm no rules are violated:
 
@@ -54,7 +196,7 @@ The relevant file is `src/css/tokens.test.ts`.  Fix any failures before proceedi
 
 ---
 
-## 4. Visual Regression Tests
+## 5. Visual Regression Tests
 
 ### When to add a new visual test
 
@@ -105,7 +247,7 @@ test.describe('Visual regression — my new screen', () => {
 
 ---
 
-## 5. Capturing / Updating Baselines
+## 6. Capturing / Updating Baselines
 
 **After every intentional visual change** — including new tests — you must regenerate the baseline screenshots:
 
@@ -119,7 +261,7 @@ This writes PNG files to `e2e/visual.spec.js-snapshots/`.  **Commit these files 
 
 ---
 
-## 6. Verifying Visual Changes
+## 7. Verifying Visual Changes
 
 After updating baselines, do a final sanity-check comparison run:
 
@@ -147,12 +289,13 @@ If you find it hard to interpret the differences, you can ask the user to do it 
 
 ---
 
-## 7. Full End-of-Change Checklist
+## 8. Full End-of-Change Checklist
 
 1. `npm run check-types` — no TypeScript errors.
 2. `npm run test` — unit tests (including `tokens.test.ts`) pass.
-3. If a new interactive UI state was added, a new test exists in `e2e/visual.spec.js`.
-4. `npm run test:visual-update` — baselines regenerated.
-5. `npm run test:visual` — comparison run is green.
-6. Baseline PNG(s) committed to git alongside the code change.
-7. Component checklist from §2 above is fully ticked.
+3. If a new CSS rule affects layout or a token value changed, add or update a test in `e2e/css.spec.js` and confirm `npm run test:css` is green.
+4. If a new interactive UI state was added, a new test exists in `e2e/visual.spec.js`.
+5. `npm run test:visual-update` — baselines regenerated.
+6. `npm run test:visual` — comparison run is green.
+7. Baseline PNG(s) committed to git alongside the code change.
+8. Component checklist from §2 above is fully ticked.

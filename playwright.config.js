@@ -30,19 +30,19 @@ module.exports = defineConfig({
                 {
                         name: 'chromium',
                         use: { ...devices['Desktop Chrome'] },
-                        testIgnore: /visual\.spec/,
+                        testIgnore: /(visual|css)\.spec/,
                 },
 
                 {
                         name: 'firefox',
                         use: { ...devices['Desktop Firefox'] },
-                        testIgnore: /visual\.spec/,
+                        testIgnore: /(visual|css)\.spec/,
                 },
 
                 {
                         name: 'webkit',
                         use: { ...devices['Desktop Safari'] },
-                        testIgnore: /visual\.spec/,
+                        testIgnore: /(visual|css)\.spec/,
                 },
 
                 {
@@ -54,6 +54,17 @@ module.exports = defineConfig({
                                 viewport: { width: 1280, height: 800 },
                         },
                         testMatch: /visual\.spec/,
+                },
+
+                {
+                        // CSS tests run on a single browser with a fixed viewport.
+                        // They are excluded from the normal test:e2e run.
+                        name: 'css',
+                        use: {
+                                ...devices['Desktop Chrome'],
+                                viewport: { width: 1280, height: 800 },
+                        },
+                        testMatch: /css\.spec/,
                 },
         ],
 

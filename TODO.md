@@ -19,10 +19,12 @@ TODO-list for maintainer work on OSECharacterGenerator.  Tracked here instead of
 [X] When we navigate back to the Ability Scores page, it is not visible which
     class has been selected, apart from the "XXX details" button appearing.
 [X] "Reset equipment" does not return the spent gold
+[ ] There's a legacy "spell" field, in additions to the spells array.  Get rid
+    of the 'spell' field; there's odd interactions.
 
 ## Necessary to get the fork to "completion" for handback to matthewfee
 
-This is what eivindelkund wants to do before offering the fork back to matthewfee
+This is what eivindeklund wants to do before offering the fork back to matthewfee
 
 ### Correctness status
 
@@ -77,6 +79,10 @@ This is what eivindelkund wants to do before offering the fork back to matthewfe
 
 [ ] We've removed the access pattern `name = allItemsById[id]?.name ?? id`, replacing it with a getter that logs an error + stacktrace and notifies monitoring if the id is not available in prod, and failing if the item is not available and we are running a unit or integration test or in dev.   Incorrect ids are bugs and should not be papered over automatically, especially not in test conditions.  See if there are other use of similar patterns (`foo = bar[baz]?.quz ?? some_default`) elsewhere in the codebase that also are just "work if we have bugs", and replace them with getters a la the one described for item id -> item name.  
 [ ] Remove dead code
+
+[ ] Add CSS tests
+[ ] Update "create new UI" skill so it runs e2e tests and CSS tests and capture new golden images.
+[ ] Add skill for updating anything that's close to the UI but should not change anything to run e2e tests and run golden UI checks
 
 ### Abilities page
 
@@ -154,10 +160,25 @@ to allow it to be tuned per campaign.
     "nice styling".  Claude Sonnet can't look at images.
 [ ] Have Gemini go through the UI to come with suggestion for improvements
     functionality-wise.
+[ ] Add character IDs to the URLs, so it is possible to reference separate
+    characters.  Especially important for the "sheet" URL.
+
+## Level upgrades
+
+[ ] Cleanup: Get rid of "spell" field, only "spells"
+[ ] Modal claims "Gets access to 2nd level spells" rather than "gets another 2nd level spell"
+[ ] Text in modal is miniscule
+[ ] Misalignment of text vs radio buttons in modal
+[ ] Scroll problem in modal - sometimes I start randomly scrolling the screen
+    instead of the spell list
+[ ] HP increase display (when rolling) should show existing HP
+[ ] On going from L6 to L7, the Magic-User should get access to one L1 and one
+    L4 spell.  Only the L4 spell shows up in the level up modal.
 
 ## Large features (wishlist)
 
-[ ] Level increases & manual updates to character sheets
+[X] Level increases
+[ ] Manual updates to character sheets
 [ ] Share through Google Drive
 [ ] Concurrent updates from different users
 [ ] GM can set what requirements they want for e.g. rerolls, what languages are
@@ -173,7 +194,6 @@ to allow it to be tuned per campaign.
 [ ] Migrate storage to Supabase w/authentication through federated login
     (Discord, Google, ++?)
 [ ] Entire system structured around "Campaigns"
-
 
 ## Campaign system
 
