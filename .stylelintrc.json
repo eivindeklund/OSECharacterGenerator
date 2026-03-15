@@ -1,0 +1,30 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "ignoreFiles": [
+    "src/css/normalize.css",
+    "src/css/skeleton.css"
+  ],
+  "rules": {
+    "selector-class-pattern": [
+      "^[a-z][a-z0-9]*(-[a-z0-9]+)*(--[a-z0-9]+(-[a-z0-9]+)*)*$",
+      {
+        "message": "Class names must follow BEM-lite format (block, block-element, block--modifier)"
+      }
+    ],
+    "declaration-no-important": [true, { "severity": "warning" }],
+    "no-descending-specificity": [true, { "severity": "warning" }],
+
+    "color-function-notation": null,
+    "alpha-value-notation": null,
+    "color-function-alias-notation": null,
+    "length-zero-no-unit": null,
+    "comment-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "shorthand-property-no-redundant-values": null,
+    "color-hex-length": null,
+    "function-url-quotes": null,
+    "keyframes-name-pattern": null,
+    "media-feature-range-notation": null,
+    "declaration-block-no-redundant-longhand-properties": null
+  }
+}

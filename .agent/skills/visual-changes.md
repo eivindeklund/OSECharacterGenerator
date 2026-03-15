@@ -184,8 +184,50 @@ expect(display).toBe('grid');
 
 ---
 
-## 4. Token Test
+## 4. Stylelint CSS Checks
 
+After editing any CSS file, run the automated stylelint check:
+
+```bash
+npm run lint:css
+```
+
+This checks `src/css/App.css`, `src/css/PackOptions.css`, and `src/css/tokens.css` against the project's `.stylelintrc.json` config. `normalize.css` and `skeleton.css` are excluded (third-party).
+
+### Rules enforced
+
+| Rule | Level | What it catches |
+|---|---|---|
+| `selector-class-pattern` | error | Class names must follow BEM-lite: `block`, `block-element`, `block--modifier` (compound modifiers like `block--mod1--mod2` are allowed) |
+| `no-duplicate-selectors` | error | The same selector appearing in more than one rule block |
+| `declaration-block-no-duplicate-properties` | error | The same property declared twice within a single rule |
+| `property-no-deprecated` | error | Deprecated properties e.g. `grid-gap` (use `gap`) |
+| `declaration-property-value-no-unknown` | error | Invalid values e.g. `display: flexbox` instead of `display: flex` |
+| `declaration-no-important` | warning | `!important` usage (avoid except to override third-party sheets) |
+| `no-descending-specificity` | warning | Specificity ordering that could cause confusing cascade behaviour |
+
+### What is intentionally NOT enforced
+
+The following standard-config rules are disabled because they conflict with the project's existing, working code style:
+
+- `color-function-notation` — existing code uses `rgba()` / `rgb()` legacy syntax
+- `alpha-value-notation` — existing code uses decimal notation (`0.95`) not percentage
+- `length-zero-no-unit` — existing code uses `0rem`, `0px` etc.
+- Formatting rules (`comment-empty-line-before`, `rule-empty-line-before`, etc.)
+
+Do not re-enable these without first updating all existing CSS to conform.
+
+### BEM-lite pattern enforced
+
+`^[a-z][a-z0-9]*(-[a-z0-9]+)*(--[a-z0-9]+(-[a-z0-9]+)*)*$`
+
+Examples of **valid** names: `button`, `filter-chip`, `filter-chip--active`, `button--ability--increase`, `saving-throw--death--value`
+
+Examples of **invalid** names: `Button`, `filterChip`, `filter_chip`, `BUTTON`
+
+---
+
+## 5. Token Test
 After editing `tokens.css`, `App.css`, or `PackOptions.css`, run the automated token test to confirm no rules are violated:
 
 ```bash
@@ -196,7 +238,7 @@ The relevant file is `src/css/tokens.test.ts`.  Fix any failures before proceedi
 
 ---
 
-## 5. Visual Regression Tests
+## 6. Visual Regression Tests
 
 ### When to add a new visual test
 
@@ -247,7 +289,7 @@ test.describe('Visual regression — my new screen', () => {
 
 ---
 
-## 6. Capturing / Updating Baselines
+## 7. Capturing / Updating Baselines
 
 **After every intentional visual change** — including new tests — you must regenerate the baseline screenshots:
 
@@ -257,11 +299,11 @@ npm run test:visual-update
 
 This writes PNG files to `e2e/visual.spec.js-snapshots/`.  **Commit these files to git** together with the code change — they are the ground truth for all future runs.
 
-> **Do not run `test:visual-update` to silence a failing test.**  If `npm run test:visual` fails on an existing test, investigate the diff first (see §6).  Only run the update command once you have confirmed the visual change is intentional and correct.
+> **Do not run `test:visual-update` to silence a failing test.**  If `npm run test:visual` fails on an existing test, investigate the diff first (see §7).  Only run the update command once you have confirmed the visual change is intentional and correct.
 
 ---
 
-## 7. Verifying Visual Changes
+## 8. Verifying Visual Changes
 
 After updating baselines, do a final sanity-check comparison run:
 
@@ -289,13 +331,14 @@ If you find it hard to interpret the differences, you can ask the user to do it 
 
 ---
 
-## 8. Full End-of-Change Checklist
+## 9. Full End-of-Change Checklist
 
 1. `npm run check-types` — no TypeScript errors.
-2. `npm run test` — unit tests (including `tokens.test.ts`) pass.
-3. If a new CSS rule affects layout or a token value changed, add or update a test in `e2e/css.spec.js` and confirm `npm run test:css` is green.
-4. If a new interactive UI state was added, a new test exists in `e2e/visual.spec.js`.
-5. `npm run test:visual-update` — baselines regenerated.
-6. `npm run test:visual` — comparison run is green.
-7. Baseline PNG(s) committed to git alongside the code change.
-8. Component checklist from §2 above is fully ticked.
+2. `npm run lint:css` — no stylelint errors (warnings about `no-descending-specificity` are pre-existing and acceptable; new warnings should be investigated).
+3. `npm run test` — unit tests (including `tokens.test.ts`) pass.
+4. If a new CSS rule affects layout or a token value changed, add or update a test in `e2e/css.spec.js` and confirm `npm run test:css` is green.
+5. If a new interactive UI state was added, a new test exists in `e2e/visual.spec.js`.
+6. `npm run test:visual-update` — baselines regenerated.
+7. `npm run test:visual` — comparison run is green.
+8. Baseline PNG(s) committed to git alongside the code change.
+9. Component checklist from §2 above is fully ticked.
