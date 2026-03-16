@@ -1,9 +1,9 @@
 import {
-    druidSpellsByLevel,
-    illusionistSpellsByLevel,
-    magicUserSpellsByLevel,
-    necromancerSpellsByLevel,
-    runesmithSpellsByLevel,
+  druidSpellsByLevel,
+  illusionistSpellsByLevel,
+  magicUserSpellsByLevel,
+  necromancerSpellsByLevel,
+  runesmithSpellsByLevel,
 } from '../data/spells';
 import type { ClassOptionsData, SpellDefinition } from '../types';
 
@@ -100,5 +100,5 @@ export function getAvailableSpellsAtTier(
   // If the tier doesn't exist in our data yet, fall back to the last known tier
   const safeIdx = Math.min(spellTier, byLevel.length - 1);
   if (safeIdx < 0) return [];
-  return byLevel[safeIdx].filter((s) => !knownSpells.includes(s.name)) as SpellDefinition[];
+  return byLevel[safeIdx].filter((s) => !knownSpells.includes(s.id)) as SpellDefinition[];
 }

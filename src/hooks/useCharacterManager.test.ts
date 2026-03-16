@@ -405,15 +405,15 @@ describe("useCharacterManager", () => {
       act(() => { result.current.rollHP(); });
 
       act(() => {
-        result.current.levelUp(2, ["Sleep"]);
+        result.current.levelUp(2, ["sleep"]);
       });
 
       act(() => {
-        result.current.levelUp(2, ["Charm Person"]);
+        result.current.levelUp(2, ["charm-person"]);
       });
 
-      expect(result.current.characterStatistics.spells).toContain("Sleep");
-      expect(result.current.characterStatistics.spells).toContain("Charm Person");
+      expect(result.current.characterStatistics.spells).toContain("sleep");
+      expect(result.current.characterStatistics.spells).toContain("charm-person");
       expect(result.current.characterStatistics.spells).toHaveLength(2);
     });
 
@@ -434,18 +434,18 @@ describe("useCharacterManager", () => {
       act(() => {
         result.current.setCharacterStatistics((prev) => ({
           ...prev,
-          spells: ["Sleep"],
+          spells: ["sleep"],
           hasSpells: true,
         }));
       });
 
       // L1 → L2: character gains an extra L1 slot, picks a second L1 spell
       act(() => {
-        result.current.levelUp(2, ["Charm Person"]);
+        result.current.levelUp(2, ["charm-person"]);
       });
 
-      expect(result.current.characterStatistics.spells).toContain("Sleep");
-      expect(result.current.characterStatistics.spells).toContain("Charm Person");
+      expect(result.current.characterStatistics.spells).toContain("sleep");
+      expect(result.current.characterStatistics.spells).toContain("charm-person");
       expect(result.current.characterStatistics.spells).toHaveLength(2);
     });
 
@@ -458,7 +458,7 @@ describe("useCharacterManager", () => {
         character: { name: "Gandalf", id: "xyz" },
         abilityScores: { strength: 9, intelligence: 18, wisdom: 12, dexterity: 10, constitution: 10, charisma: 14 },
         characterModifiers: { xpModifierPercentage: "+10%", strengthModMelee: "+0" },
-        characterStatistics: { hitPoints: 3, hpRolls: 1, hpResult: 3, hpSeed: null, armourClass: 9, spells: ["Sleep"], hasSpells: true, unarmouredAC: null, level: 1 },
+        characterStatistics: { hitPoints: 3, hpRolls: 1, hpResult: 3, hpSeed: null, armourClass: 9, spells: ["sleep"], hasSpells: true, unarmouredAC: null, level: 1 },
         characterClass: { name: "Magic-User" },
         characterEquipment: { armour: [], weapons: [], adventuringGear: [], gold: 30 },
       };
@@ -468,7 +468,7 @@ describe("useCharacterManager", () => {
       });
 
       expect(result.current.characterStatistics.level).toBe(1);
-      expect(result.current.characterStatistics.spells).toEqual(["Sleep"]);
+      expect(result.current.characterStatistics.spells).toEqual(["sleep"]);
     });
   });
 });

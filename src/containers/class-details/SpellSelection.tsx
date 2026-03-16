@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Option from "../../components/general/Option";
 import type { CharacterStatistics, ClassOptionsData, SpellDefinition } from "../../types";
 import { getSpellsByLevelForClass } from "../../utilities/levelUpSpellUtils";
 import { chooseRandomItem } from "../../utilities/utilities";
@@ -36,19 +35,19 @@ export default function SpellSelection({
     const spellList = getSpellList();
     const randomSpell = chooseRandomItem(spellList);
     if (!randomSpell) return;
-    const spellName = randomSpell.name;
+    const spellId = randomSpell.id;
 
-    setSpellSelected(spellName);
+    setSpellSelected(spellId);
     setCharacterStatistics((prevState) => {
-      return { ...prevState, spells: [spellName], hasSpells: true };
+      return { ...prevState, spells: [spellId], hasSpells: true };
     });
 
-    return spellName;
+    return spellId;
   };
 
   const spellsList = () => {
     return getSpellList().map((spell) => {
-      return <Option key={spell.name} value={spell.name}></Option>;
+      return <option key={spell.id} value={spell.id}>{spell.name}</option>;
     });
   };
 

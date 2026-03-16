@@ -1,4 +1,21 @@
+import { spellNameToId } from "../data/spells";
 import type { CharacterStatistics, StoredCharacterData } from "../types";
+
+/**
+ * Converts a spell string that may be either a spell name (legacy) or a spell id (current)
+ * into the canonical spell id. If the value is already a known id, it is returned unchanged.
+ * If it matches a known name, the corresponding id is returned. Otherwise the value is
+ * returned as-is so that unknown/custom values are not silently discarded.
+ */
+function toSpellId(value: string): string {
+  // Already an id (all lowercase, no spaces) that exists in our id map
+  // — check via the inverse name map to avoid importing allSpellsById separately.
+  if (spellNameToId[value] === undefined && /^[a-z0-9-]+$/.test(value)) {
+    // Looks like an id already; keep it.
+    return value;
+  }
+  return spellNameToId[value] ?? value;
+}
 
 /**
  * The raw shape that may arrive from localStorage or a URL-share param —
@@ -31,9 +48,11 @@ type RawStoredCharacterData = Omit<StoredCharacterData, 'characterStatistics'> &
  */
 export function normalizeCharacterStatistics(raw: RawCharacterStatistics): CharacterStatistics {
   const { spell, ...rest } = raw;
-  const spells: string[] = (rest.spells && rest.spells.length > 0)
+  const rawSpells: string[] = (rest.spells && rest.spells.length > 0)
     ? rest.spells
     : (spell ? [spell] : []);
+  // Migrate each spell: convert names from old saves to canonical ids.
+  const spells = rawSpells.map(toSpellId);
   return {
     ...rest,
     level: rest.level ?? 1,

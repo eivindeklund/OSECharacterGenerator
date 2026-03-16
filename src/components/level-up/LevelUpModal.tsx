@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react';
+import { allSpellsById } from '../../data/spells';
 import type {
-    CharacterModifiers,
-    CharacterStatistics,
-    ClassOptionsData,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassOptionsData,
 } from '../../types';
 import { getAbilitiesForLevel } from '../../utilities/classAbilities';
 import {
-    getAvailableSpellsAtTier,
-    getSpellTiersGained,
+  getAvailableSpellsAtTier,
+  getSpellTiersGained,
 } from '../../utilities/levelUpSpellUtils';
 import { d } from '../../utilities/utilities';
 import './LevelUpModal.css';
@@ -214,15 +215,15 @@ export default function LevelUpModal({
             <fieldset className="level-up-modal-spell-list">
               <legend className="level-up-modal-spell-legend">Available spells</legend>
               {availableSpells.map((spell) => (
-                <label key={spell.name} className="level-up-modal-spell-option">
+                <label key={spell.id} className="level-up-modal-spell-option">
                   <input
                     type="radio"
                     name="new-spell"
-                    value={spell.name}
-                    checked={currentSpellSelection === spell.name}
+                    value={spell.id}
+                    checked={currentSpellSelection === spell.id}
                     onChange={() => setSpellSelections((prev) => {
                       const next = [...prev];
-                      next[spellStepIndex] = spell.name;
+                      next[spellStepIndex] = spell.id;
                       return next;
                     })}
                   />
@@ -299,7 +300,7 @@ export default function LevelUpModal({
 
               {spellSelections.filter(Boolean).map((s, i) => (
                 <li key={i}>
-                  <strong>New spell:</strong> {s}
+                  <strong>New spell:</strong> {allSpellsById[s as string]?.name ?? s}
                 </li>
               ))}
 

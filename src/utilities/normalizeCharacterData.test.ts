@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-        normalizeCharacterStatistics,
-        normalizeStoredCharacter,
+  normalizeCharacterStatistics,
+  normalizeStoredCharacter,
 } from './normalizeCharacterData';
 
 describe('normalizeCharacterStatistics', () => {
@@ -14,7 +14,7 @@ describe('normalizeCharacterStatistics', () => {
 
     const result = normalizeCharacterStatistics(raw);
 
-    expect(result.spells).toEqual(['Sleep']);
+    expect(result.spells).toEqual(['sleep']);
   });
 
   it('migrates legacy spell field into spells[] when spells is empty', () => {
@@ -26,7 +26,7 @@ describe('normalizeCharacterStatistics', () => {
 
     const result = normalizeCharacterStatistics(raw);
 
-    expect(result.spells).toEqual(['Charm Person']);
+    expect(result.spells).toEqual(['charm-person']);
   });
 
   it('preserves existing spells[] when it is non-empty (legacy spell field is discarded)', () => {
@@ -38,7 +38,7 @@ describe('normalizeCharacterStatistics', () => {
 
     const result = normalizeCharacterStatistics(raw);
 
-    expect(result.spells).toEqual(['Magic Missile', 'Web']);
+    expect(result.spells).toEqual(['magic-missile', 'web']);
   });
 
   it('defaults level to 1 when level is missing', () => {
@@ -76,6 +76,30 @@ describe('normalizeCharacterStatistics', () => {
     expect(result.spells).toEqual([]);
   });
 
+  it('converts spell names in spells[] to ids', () => {
+    const raw = {
+      hitPoints: 5, hpRolls: 2, hpResult: 5, hpSeed: null,
+      armourClass: 8, hasSpells: true, unarmouredAC: null,
+      level: 3, spells: ['Fire Ball', 'Invisibility'],
+    } as Parameters<typeof normalizeCharacterStatistics>[0];
+
+    const result = normalizeCharacterStatistics(raw);
+
+    expect(result.spells).toEqual(['fire-ball', 'invisibility']);
+  });
+
+  it('leaves already-normalized ids unchanged (idempotent)', () => {
+    const raw = {
+      hitPoints: 5, hpRolls: 2, hpResult: 5, hpSeed: null,
+      armourClass: 8, hasSpells: true, unarmouredAC: null,
+      level: 3, spells: ['fire-ball', 'invisibility'],
+    } as Parameters<typeof normalizeCharacterStatistics>[0];
+
+    const result = normalizeCharacterStatistics(raw);
+
+    expect(result.spells).toEqual(['fire-ball', 'invisibility']);
+  });
+
   it('does not include the legacy spell key in the output', () => {
     const raw = {
       hitPoints: 3, hpRolls: 1, hpResult: 3, hpSeed: null,
@@ -108,7 +132,7 @@ describe('normalizeStoredCharacter', () => {
     const result = normalizeStoredCharacter(raw as Parameters<typeof normalizeStoredCharacter>[0]);
 
     expect(result.characterStatistics.level).toBe(1);
-    expect(result.characterStatistics.spells).toEqual(['Sleep']);
+    expect(result.characterStatistics.spells).toEqual(['sleep']);
     expect('spell' in result.characterStatistics).toBe(false);
   });
 });

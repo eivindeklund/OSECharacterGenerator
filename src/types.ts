@@ -88,6 +88,8 @@ export interface AbilityRequirement {
 // ── Spell Definition ─────────────────────────────────────────────────────────
 
 export interface SpellDefinition {
+  /** Stable kebab-case identifier (e.g. "magic-missile"). Stored in saved character data. */
+  id: string;
   name: string;
   /**
    * Compact at-the-table combat reference (damage dice, target, save, key effect).

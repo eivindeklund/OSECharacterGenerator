@@ -6,7 +6,7 @@ import {
 } from '../../constants/constants'
 import armourData, { ARMOUR_ID } from '../../data/armourData'
 import { ABILITY_ID } from '../../data/classOptionsData'
-import { allSpellsByName } from '../../data/spells'
+import { allSpellsById } from '../../data/spells'
 import weaponsData from '../../data/weaponsData'
 import type {
     AbilityScores,
@@ -149,13 +149,15 @@ export function buildFieldData(props: PDFExportProps): FieldData {
   // Section 3: Combat spells with dice/save summaries
   const combatSpellLines: string[] = []
   if (characterStatistics.hasSpells && characterStatistics.spells.length > 0) {
-    for (const spell of characterStatistics.spells) {
-      const info = allSpellsByName[spell]?.combatInfo
-      if (info) combatSpellLines.push(`${spell}: ${info}`)
+    for (const spellId of characterStatistics.spells) {
+      const spellDef = allSpellsById[spellId]
+      const spellName = spellDef?.name ?? spellId
+      const info = spellDef?.combatInfo
+      if (info) combatSpellLines.push(`${spellName}: ${info}`)
     }
     // Fall back to listing all spell names if none match the combat list
     if (combatSpellLines.length === 0) {
-      combatSpellLines.push(characterStatistics.spells.join(', '))
+      combatSpellLines.push(characterStatistics.spells.map(id => allSpellsById[id]?.name ?? id).join(', '))
     }
   }
 
@@ -204,7 +206,7 @@ export function buildFieldData(props: PDFExportProps): FieldData {
   const equipmentInfo = [...gearEntries, ...dualUseEntries].join(', ')
 
   const spellText = characterStatistics.hasSpells
-    ? `Spells: ${characterStatistics.spells.join(', ')}`
+    ? `Spells: ${characterStatistics.spells.map(id => allSpellsById[id]?.name ?? id).join(', ')}`
     : ''
 
   const baseMovement = (() => {

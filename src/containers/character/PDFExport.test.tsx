@@ -2,9 +2,9 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import type { PDFField, PDFForm } from 'pdf-lib'
 import { describe, expect, it, vi } from 'vitest'
+import { dualListedWeaponIds } from '../../utilities/PackUtils'
 import type { AliasMap, FieldData, PDFExportProps } from './PDFExport'
 import PDFExport, { applyFieldData, buildFieldData } from './PDFExport'
-import { dualListedWeaponIds } from '../../utilities/PackUtils'
 
 // ── Shared fixture ─────────────────────────────────────────────────────────────
 
@@ -354,7 +354,7 @@ describe('buildFieldData', () => {
   it('populates Notes with spell text when character has spells', () => {
     const props = {
       ...baseProps,
-      characterStatistics: { ...baseProps.characterStatistics, hasSpells: true, spells: ['Sleep'] },
+      characterStatistics: { ...baseProps.characterStatistics, hasSpells: true, spells: ['sleep'] },
     }
     expect(buildFieldData(props)['Notes']).toBe('Spells: Sleep')
   })
@@ -578,7 +578,7 @@ describe('buildFieldData', () => {
   it('lists combat spells with summaries in the abilities box', () => {
     const props = {
       ...baseProps,
-      characterStatistics: { ...baseProps.characterStatistics, hasSpells: true, spells: ['Sleep'] },
+      characterStatistics: { ...baseProps.characterStatistics, hasSpells: true, spells: ['sleep'] },
     }
     const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
     expect(text).toContain('COMBAT SPELLS')
@@ -591,7 +591,7 @@ describe('buildFieldData', () => {
       characterStatistics: {
         ...baseProps.characterStatistics,
         hasSpells: true,
-        spells: ['Floating Disc', 'Sleep'],
+        spells: ['floating-disc', 'sleep'],
       },
     }
     const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
@@ -605,7 +605,7 @@ describe('buildFieldData', () => {
       characterStatistics: {
         ...baseProps.characterStatistics,
         hasSpells: true,
-        spells: ['Floating Disc', 'Read Languages'],
+        spells: ['floating-disc', 'read-languages'],
       },
     }
     const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])

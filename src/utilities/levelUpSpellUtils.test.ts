@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import classOptionsData from '../data/classOptionsData';
 import {
-    magicUserSpellsByLevel
+  magicUserSpellsByLevel
 } from '../data/spells';
 import {
-    getAvailableSpellsAtTier,
-    getSpellsByLevelForClass,
-    getSpellTierGained,
-    getSpellTiersGained,
+  getAvailableSpellsAtTier,
+  getSpellsByLevelForClass,
+  getSpellTierGained,
+  getSpellTiersGained,
 } from './levelUpSpellUtils';
 
 const mu = classOptionsData.find((c) => c.name === 'Magic-User')!;
@@ -82,7 +82,7 @@ describe('getAvailableSpellsAtTier', () => {
   });
 
   it('excludes already-known spells from the results', () => {
-    const available = getAvailableSpellsAtTier(mu, 0, ['Sleep', 'Magic Missile']);
+    const available = getAvailableSpellsAtTier(mu, 0, ['sleep', 'magic-missile']);
     expect(available.map((s) => s.name)).not.toContain('Sleep');
     expect(available.map((s) => s.name)).not.toContain('Magic Missile');
     expect(available.map((s) => s.name)).toContain('Charm Person');
