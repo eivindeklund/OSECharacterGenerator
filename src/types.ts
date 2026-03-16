@@ -85,6 +85,17 @@ export interface AbilityRequirement {
   minimum: number;
 }
 
+// ── Spell Definition ─────────────────────────────────────────────────────────
+
+export interface SpellDefinition {
+  name: string;
+  /**
+   * Compact at-the-table combat reference (damage dice, target, save, key effect).
+   * Absent for non-combat utility spells.
+   */
+  combatInfo?: string;
+}
+
 // ── Class Ability ─────────────────────────────────────────────────────────────
 
 export interface ClassAbility {

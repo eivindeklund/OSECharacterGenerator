@@ -4,6 +4,7 @@ import type { PDFField, PDFForm } from 'pdf-lib'
 import { describe, expect, it, vi } from 'vitest'
 import type { AliasMap, FieldData, PDFExportProps } from './PDFExport'
 import PDFExport, { applyFieldData, buildFieldData } from './PDFExport'
+import { dualListedWeaponIds } from '../../utilities/PackUtils'
 
 // ── Shared fixture ─────────────────────────────────────────────────────────────
 
@@ -383,6 +384,253 @@ describe('buildFieldData', () => {
     expect(data['PP']).toBeNull()
     expect(data['SP']).toBeNull()
     expect(data['Treasure']).toBeNull()
+  })
+
+  // ── Abilities, Skills, Weapons box ───────────────────────────────────────
+
+  it('shows ability name and description when ability has a description', () => {
+    const props = {
+      ...baseProps,
+      characterClass: {
+        ...baseProps.characterClass,
+        abilities: [{ name: 'Backstab', description: '+4 to hit, ×2 damage on unaware opponents' }],
+      },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('Backstab: +4 to hit, ×2 damage on unaware opponents')
+  })
+
+  it('shows ability name without colon when ability has no description', () => {
+    const props = {
+      ...baseProps,
+      characterClass: {
+        ...baseProps.characterClass,
+        abilities: [{ name: 'Stronghold' }],
+      },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('Stronghold')
+    expect(text).not.toMatch(/Stronghold:/)
+  })
+
+  it('excludes abilities with minLevel above current level', () => {
+    const props = {
+      ...baseProps,
+      characterStatistics: { ...baseProps.characterStatistics, level: 1 },
+      characterClass: {
+        ...baseProps.characterClass,
+        abilities: [
+          { name: 'Basic Skill' },
+          { name: 'Advanced Skill', minLevel: 4 },
+        ],
+      },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('Basic Skill')
+    expect(text).not.toContain('Advanced Skill')
+  })
+
+  it('excludes abilities with shownInList: false', () => {
+    const props = {
+      ...baseProps,
+      characterClass: {
+        ...baseProps.characterClass,
+        abilities: [
+          { name: 'Visible Skill' },
+          { id: 'listening_at_doors', name: 'Listening at Doors', shownInList: false as const },
+        ],
+      },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('Visible Skill')
+    expect(text).not.toContain('Listening at Doors')
+  })
+
+  it('uses getDescription for level-aware ability descriptions', () => {
+    const props = {
+      ...baseProps,
+      characterStatistics: { ...baseProps.characterStatistics, level: 2 },
+      characterClass: {
+        ...baseProps.characterClass,
+        abilities: [{ name: 'Hear Noise', getDescription: (lvl: number) => `${lvl * 10}% chance` }],
+      },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('Hear Noise: 20% chance')
+  })
+
+  it('includes dual-use items in the weapons quick-ref with damage', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['torches'] },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('Torches (6) (1d4)')
+  })
+
+  it('shows damage for a regular weapon in the weapons quick-ref', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['sword'] },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('Sword (1d8)')
+  })
+
+  // ── Weapons and Armour box ──────────────────────────────────────────────────
+
+  it('includes a regular weapon with damage in Weapons and Armour', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['sword'] },
+    }
+    const text = String(buildFieldData(props)['Weapons and Armour'])
+    expect(text).toContain('Sword: 1d8')
+  })
+
+  it('excludes dual-use items (torches) from Weapons and Armour', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['torches'] },
+    }
+    const text = String(buildFieldData(props)['Weapons and Armour'])
+    expect(text).not.toContain('Torches')
+  })
+
+  it('excludes holy water from Weapons and Armour when in weapons list', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['sword', 'holy_water_vial'] },
+    }
+    const text = String(buildFieldData(props)['Weapons and Armour'])
+    expect(text).toContain('Sword')
+    expect(text).not.toContain('Holy water')
+  })
+
+  it('lists armour under an Armour: header in Weapons and Armour', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, armour: ['chainmail'] },
+    }
+    const text = String(buildFieldData(props)['Weapons and Armour'])
+    expect(text).toContain('Armour:')
+  })
+
+  it('includes Slow and Two-handed qualities for a two-handed sword in Weapons and Armour', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['two_handed_sword'] },
+    }
+    const text = String(buildFieldData(props)['Weapons and Armour'])
+    expect(text).toContain('Slow')
+    expect(text).toContain('Two-handed')
+  })
+
+  it('includes Range for a missile weapon in Weapons and Armour', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['short_bow'] },
+    }
+    const text = String(buildFieldData(props)['Weapons and Armour'])
+    expect(text).toContain('Range')
+  })
+
+  // ── Equipment box ─────────────────────────────────────────────────────────
+
+  it('includes torches in Equipment when in weapons list', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['torches'] },
+    }
+    const text = String(buildFieldData(props)['Equipment'])
+    expect(text).toContain('Torches (6)')
+  })
+
+  it('includes holy water in Equipment when in weapons list', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['holy_water_vial'] },
+    }
+    const text = String(buildFieldData(props)['Equipment'])
+    expect(text).toContain('Holy water (vial)')
+  })
+
+  it('does not include regular weapons in Equipment', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, weapons: ['sword'], adventuringGear: [] },
+    }
+    const text = String(buildFieldData(props)['Equipment'])
+    expect(text).not.toContain('Sword')
+  })
+
+  it('includes adventuring gear in Equipment', () => {
+    const props = {
+      ...baseProps,
+      characterEquipment: { ...baseProps.characterEquipment, adventuringGear: ['oil_flask'] },
+    }
+    const text = String(buildFieldData(props)['Equipment'])
+    expect(text).toContain('Oil (1 flask)')
+  })
+
+  // ── combat spells in abilitiesInfo ────────────────────────────────────────────
+
+  it('lists combat spells with summaries in the abilities box', () => {
+    const props = {
+      ...baseProps,
+      characterStatistics: { ...baseProps.characterStatistics, hasSpells: true, spells: ['Sleep'] },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('COMBAT SPELLS')
+    expect(text).toContain('Sleep: 2d8 HD of creatures')
+  })
+
+  it('omits non-combat spells from the combat spells section', () => {
+    const props = {
+      ...baseProps,
+      characterStatistics: {
+        ...baseProps.characterStatistics,
+        hasSpells: true,
+        spells: ['Floating Disc', 'Sleep'],
+      },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('Sleep:')
+    expect(text).not.toContain('Floating Disc:')
+  })
+
+  it('falls back to listing all spell names when none are in the combat list', () => {
+    const props = {
+      ...baseProps,
+      characterStatistics: {
+        ...baseProps.characterStatistics,
+        hasSpells: true,
+        spells: ['Floating Disc', 'Read Languages'],
+      },
+    }
+    const text = String(buildFieldData(props)['Abilities, Skills, Weapons'])
+    expect(text).toContain('Floating Disc')
+    expect(text).toContain('Read Languages')
+  })
+
+  it('omits the combat spells section when character has no spells', () => {
+    const text = String(buildFieldData(baseProps)['Abilities, Skills, Weapons'])
+    expect(text).not.toContain('COMBAT SPELLS')
+  })
+})
+
+// ── dualListedWeaponIds ────────────────────────────────────────────────────────────
+
+describe('dualListedWeaponIds', () => {
+  it('contains items present in both weapons and equipment data', () => {
+    expect(dualListedWeaponIds.has('torches')).toBe(true)
+    expect(dualListedWeaponIds.has('holy_water_vial')).toBe(true)
+  })
+
+  it('does not contain dedicated weapons', () => {
+    expect(dualListedWeaponIds.has('sword')).toBe(false)
+    expect(dualListedWeaponIds.has('dagger')).toBe(false)
+    expect(dualListedWeaponIds.has('short_bow')).toBe(false)
   })
 })
 

@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react';
 import type {
-  CharacterModifiers,
-  CharacterStatistics,
-  ClassOptionsData,
+    CharacterModifiers,
+    CharacterStatistics,
+    ClassOptionsData,
 } from '../../types';
 import { getAbilitiesForLevel } from '../../utilities/classAbilities';
 import {
-  getAvailableSpellsAtTier,
-  getSpellTiersGained,
+    getAvailableSpellsAtTier,
+    getSpellTiersGained,
 } from '../../utilities/levelUpSpellUtils';
 import { d } from '../../utilities/utilities';
 import './LevelUpModal.css';
@@ -214,19 +214,19 @@ export default function LevelUpModal({
             <fieldset className="level-up-modal-spell-list">
               <legend className="level-up-modal-spell-legend">Available spells</legend>
               {availableSpells.map((spell) => (
-                <label key={spell} className="level-up-modal-spell-option">
+                <label key={spell.name} className="level-up-modal-spell-option">
                   <input
                     type="radio"
                     name="new-spell"
-                    value={spell}
-                    checked={currentSpellSelection === spell}
+                    value={spell.name}
+                    checked={currentSpellSelection === spell.name}
                     onChange={() => setSpellSelections((prev) => {
                       const next = [...prev];
-                      next[spellStepIndex] = spell;
+                      next[spellStepIndex] = spell.name;
                       return next;
                     })}
                   />
-                  {spell}
+                  {spell.name}
                 </label>
               ))}
               {availableSpells.length === 0 && (

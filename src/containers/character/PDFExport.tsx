@@ -1,21 +1,23 @@
 import { PDFDocument, PDFField, PDFForm } from 'pdf-lib'
 import {
-  CHARACTER_SHEET_PURIST_DAC_URL,
-  CHARACTER_SHEET_PURIST_URL,
-  CHARACTER_SHEET_UNDERGROUND_URL,
+    CHARACTER_SHEET_PURIST_DAC_URL,
+    CHARACTER_SHEET_PURIST_URL,
+    CHARACTER_SHEET_UNDERGROUND_URL,
 } from '../../constants/constants'
 import armourData, { ARMOUR_ID } from '../../data/armourData'
 import { ABILITY_ID } from '../../data/classOptionsData'
+import { allSpellsByName } from '../../data/spells'
 import weaponsData from '../../data/weaponsData'
 import type {
-  AbilityScores,
-  Character,
-  CharacterEquipment,
-  CharacterModifiers,
-  CharacterStatistics,
-  ClassOptionsData,
+    AbilityScores,
+    Character,
+    CharacterEquipment,
+    CharacterModifiers,
+    CharacterStatistics,
+    ClassAbility,
+    ClassOptionsData,
 } from '../../types'
-import { allItemsById } from '../../utilities/PackUtils'
+import { allItemsById, dualListedWeaponIds } from '../../utilities/PackUtils'
 import { consolidateDuplicates } from '../../utilities/utilities'
 
 export type PDFExportProps = {
@@ -100,6 +102,10 @@ function openPdfInBrowser(pdfBytes: Uint8Array, fileName: string) {
   setTimeout(() => URL.revokeObjectURL(url), 60000)
 }
 
+function getAbilityDescription(ability: ClassAbility, level: number): string {
+  return ability.getDescription?.(level) ?? ability.description ?? ''
+}
+
 /** Derives all PDF field values from character state. Pure — no side effects. */
 export function buildFieldData(props: PDFExportProps): FieldData {
   const {
@@ -119,27 +125,83 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     ? `${alignmentCapitalized}, Common, ${character.languages.join(', ')}`
     : `${alignmentCapitalized}, Common`
 
-  const abilitiesInfo = `
-    Weapons: ${consolidateDuplicates(characterEquipment.weapons).map(({ id, count }) => {
-      const name = allItemsById[id]?.name ?? id
-      return count > 1 ? `${name} (x${count})` : name
-    }).join(', ') || ''}
-    Abilities: ${characterClass.abilities.map((a) => a.name).join(', ')}`
+  const level = characterStatistics.level ?? 1
 
-  const weaponsInfo = `
-    Weapons: ${consolidateDuplicates(characterEquipment.weapons).map(({ id, count }) => {
-      const name = allItemsById[id]?.name ?? id
-      return count > 1 ? `${name} (x${count})` : name
-    }).join(', ') || ''}
-    Armour: ${characterEquipment.armour.map(id => allItemsById[id]?.name ?? id).join(', ') || ''}
-    `
+  // ── Abilities, Skills, Weapons box ──────────────────────────────────────────
+  // Section 1: Class abilities with full descriptions
+  const abilitiesLines = characterClass.abilities
+    .filter(a => (a.minLevel ?? 1) <= level && a.shownInList !== false)
+    .map(a => {
+      const desc = getAbilityDescription(a, level)
+      return desc ? `${a.name}: ${desc}` : a.name
+    })
 
-  const equipmentInfo = `
-    ${consolidateDuplicates(characterEquipment.adventuringGear).map(({ id, count }) => {
+  // Section 2: All equipped weapons (including dual-use gear) with damage for quick reference
+  const weaponItems = consolidateDuplicates(characterEquipment.weapons)
+  const weaponsQuickRefLines = weaponItems.map(({ id, count }) => {
+    const w = weaponsData.find(x => x.id === id)
+    const name = w?.name ?? allItemsById[id]?.name ?? id
+    const dmg = w?.damage ?? '?'
+    const countStr = count > 1 ? ` ×${count}` : ''
+    return `${name}${countStr} (${dmg})`
+  })
+
+  // Section 3: Combat spells with dice/save summaries
+  const combatSpellLines: string[] = []
+  if (characterStatistics.hasSpells && characterStatistics.spells.length > 0) {
+    for (const spell of characterStatistics.spells) {
+      const info = allSpellsByName[spell]?.combatInfo
+      if (info) combatSpellLines.push(`${spell}: ${info}`)
+    }
+    // Fall back to listing all spell names if none match the combat list
+    if (combatSpellLines.length === 0) {
+      combatSpellLines.push(characterStatistics.spells.join(', '))
+    }
+  }
+
+  const abilitiesSections: string[] = []
+  if (abilitiesLines.length > 0) abilitiesSections.push('ABILITIES\n' + abilitiesLines.join('\n'))
+  if (weaponsQuickRefLines.length > 0) abilitiesSections.push('WEAPONS\n' + weaponsQuickRefLines.join(', '))
+  if (combatSpellLines.length > 0) abilitiesSections.push('COMBAT SPELLS\n' + combatSpellLines.join('\n'))
+  const abilitiesInfo = abilitiesSections.join('\n\n')
+
+  // ── Weapons and Armour box ───────────────────────────────────────────────────
+  // Full combat stats for dedicated weapons only; dual-use gear items are excluded
+  const realWeaponLines = consolidateDuplicates(characterEquipment.weapons)
+    .filter(({ id }) => !dualListedWeaponIds.has(id))
+    .map(({ id, count }) => {
+      const w = weaponsData.find(x => x.id === id)
+      const name = w?.name ?? allItemsById[id]?.name ?? id
+      const dmg = w?.damage ?? '?'
+      const countStr = count > 1 ? ` ×${count}` : ''
+      const qualParts = (w?.qualities ?? [])
+        .map(q => q.startsWith('Missile (') ? `Range ${q.slice(8)}` : q)
+        .filter(q => q !== 'Melee')
+        .join(', ')
+      return qualParts
+        ? `${name}${countStr}: ${dmg}, ${qualParts}`
+        : `${name}${countStr}: ${dmg}`
+    })
+
+  const armourNames = characterEquipment.armour.map(id => allItemsById[id]?.name ?? id)
+  const weaponsInfoSections: string[] = []
+  if (realWeaponLines.length > 0) weaponsInfoSections.push(realWeaponLines.join('\n'))
+  if (armourNames.length > 0) weaponsInfoSections.push('Armour: ' + armourNames.join(', '))
+  const weaponsInfo = weaponsInfoSections.join('\n\n')
+
+  // ── Equipment box ────────────────────────────────────────────────────────────
+  // Adventuring gear plus any dual-use weapon items (consumables the player tracks)
+  const gearEntries = consolidateDuplicates(characterEquipment.adventuringGear).map(({ id, count }) => {
+    const name = allItemsById[id]?.name ?? id
+    return count > 1 ? `${name} ×${count}` : name
+  })
+  const dualUseEntries = consolidateDuplicates(characterEquipment.weapons)
+    .filter(({ id }) => dualListedWeaponIds.has(id))
+    .map(({ id, count }) => {
       const name = allItemsById[id]?.name ?? id
-      return count > 1 ? `${name} (x${count})` : name
-    }).join(', ') || ''}
-    `
+      return count > 1 ? `${name} ×${count}` : name
+    })
+  const equipmentInfo = [...gearEntries, ...dualUseEntries].join(', ')
 
   const spellText = characterStatistics.hasSpells
     ? `Spells: ${characterStatistics.spells.join(', ')}`
@@ -207,15 +269,12 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     'DEX AC Mod': characterModifiers.dexterityModAC,
     'STR Melee Mod': characterModifiers.strengthModMelee,
     'DEX Missile Mod': characterModifiers.dexterityModMissiles,
-    // TODO: Improve formatting
     'Abilities, Skills, Weapons': abilitiesInfo,
     'Abilities': abilitiesInfo,
     'Reactions CHA Mod': characterModifiers.charismaModNPCReactions,
-    // TODO: Improve formatting
     'Equipment': equipmentInfo,
     'Weapons and Armour': weaponsInfo,
     'GP': characterEquipment.gold,
-    // TODO: Improve formatting
     'Description': descriptionInfo,
     'XP for Next Level': characterClass.nextLevel,
     'PR XP Bonus': characterModifiers.primeReqMod,

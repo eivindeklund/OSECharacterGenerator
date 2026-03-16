@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import Option from "../../components/general/Option";
-import {
-  druidSpells,
-  illusionistSpells,
-  magicUserSpells,
-  necromancerSpells,
-  runesmithSpells,
-} from "../../data/spells";
-import type { CharacterStatistics, ClassOptionsData } from "../../types";
+import type { CharacterStatistics, ClassOptionsData, SpellDefinition } from "../../types";
+import { getSpellsByLevelForClass } from "../../utilities/levelUpSpellUtils";
 import { chooseRandomItem } from "../../utilities/utilities";
 
 interface SpellSelectionProps {
@@ -25,62 +19,36 @@ export default function SpellSelection({
     characterStatistics.spells[0] ?? "",
   );
 
+  const getSpellList = (): SpellDefinition[] => {
+    const byLevel = getSpellsByLevelForClass(characterClass);
+    if (byLevel.length === 0) return [];
+    if (byLevel.length > 1) {
+      const slots = characterClass.getSpellSlotsAtLevel(characterStatistics.level);
+      const filtered = slots.flatMap((count, tier) =>
+        count > 0 ? [...(byLevel[tier] ?? [])] : []
+      );
+      if (filtered.length > 0) return filtered as SpellDefinition[];
+    }
+    return (byLevel as readonly (readonly SpellDefinition[])[]).flat() as SpellDefinition[];
+  };
+
   const chooseSpells = () => {
-    let randomSpell : string;
+    const spellList = getSpellList();
+    const randomSpell = chooseRandomItem(spellList);
+    if (!randomSpell) return;
+    const spellName = randomSpell.name;
 
-    if (characterClass.arcaneSpells) {
-      randomSpell = chooseRandomItem(magicUserSpells);
-    }
-
-    if (characterClass.druidSpells) {
-      randomSpell = chooseRandomItem(druidSpells);
-    }
-
-    if (characterClass.illusionistSpells) {
-      randomSpell = chooseRandomItem(illusionistSpells);
-    }
-
-    if (characterClass.necromancerSpells) {
-      randomSpell = chooseRandomItem(necromancerSpells);
-    }
-
-    if (characterClass.runesmithSpells) {
-      randomSpell = chooseRandomItem(runesmithSpells);
-    }
-
-    setSpellSelected(randomSpell);
+    setSpellSelected(spellName);
     setCharacterStatistics((prevState) => {
-      return { ...prevState, spells: [randomSpell], hasSpells: true };
+      return { ...prevState, spells: [spellName], hasSpells: true };
     });
 
-    return randomSpell;
+    return spellName;
   };
 
   const spellsList = () => {
-    let spellList: string[] = [];
-
-    if (characterClass.arcaneSpells) {
-      spellList = magicUserSpells;
-    }
-
-    if (characterClass.druidSpells) {
-      spellList = druidSpells;
-    }
-
-    if (characterClass.illusionistSpells) {
-      spellList = illusionistSpells;
-    }
-
-    if (characterClass.necromancerSpells) {
-      spellList = necromancerSpells;
-    }
-
-    if (characterClass.runesmithSpells) {
-      spellList = runesmithSpells;
-    }
-
-    return spellList.map((spell, index) => {
-      return <Option key={index} value={spell.toString()}></Option>;
+    return getSpellList().map((spell) => {
+      return <Option key={spell.name} value={spell.name}></Option>;
     });
   };
 

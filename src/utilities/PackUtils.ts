@@ -24,6 +24,20 @@ const allItems = {
 export const allItemsById = allItems
 
 /**
+ * IDs of items that appear in both weaponsData and equipmentData.
+ * These are consumable gear items (torches, oil, holy water) that can also be
+ * used as improvised weapons. Computed at module load — no hardcoded list.
+ */
+const equipmentIds = new Set(
+  (equipmentData as Array<{ id?: string }>).map(e => e.id).filter(Boolean)
+)
+export const dualListedWeaponIds: Set<string> = new Set(
+  (weaponsData as Array<{ id?: string }>)
+    .map(w => w.id)
+    .filter((id): id is string => id !== undefined && equipmentIds.has(id))
+)
+
+/**
  * Resolves a pack's items into a list of displayable objects.
  * Handles conditional logic based on character class.
  *
