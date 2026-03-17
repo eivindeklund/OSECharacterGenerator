@@ -224,8 +224,8 @@ test.describe('Tavern button visibility and modal when partial is in progress', 
     await page.getByText(/Confirmed Hero/i).click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByRole('button', { name: /Load Character/i }).click();
-    // Should navigate to /sheet and show the saved character
-    await expect(page).toHaveURL(/#\/sheet/);
+    // Should navigate to /character/:id/sheet and show the saved character
+    await expect(page).toHaveURL(/\/sheet/);
     await expect(page.getByText(/Confirmed Hero/i)).toBeVisible();
     // Partial should be cleared from localStorage
     const stored = await page.evaluate((key) => localStorage.getItem(key), PARTIAL_KEY);

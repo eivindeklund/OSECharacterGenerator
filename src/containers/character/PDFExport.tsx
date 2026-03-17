@@ -111,7 +111,7 @@ export default function PDFExport(props: PDFExportProps) {
         'Unarmoured AC': 'Ascending Unarmoured AC',
       })}>Underground (AAC)</button>
 
-      <button onClick={() => window.open('/#/sheet/purist-web', '_blank', 'noopener,noreferrer')}>
+      <button onClick={() => window.open(`/#/character/${character.id}/sheet/purist-web`, '_blank', 'noopener,noreferrer')}>
         Purist (Web)
       </button>
     </div>

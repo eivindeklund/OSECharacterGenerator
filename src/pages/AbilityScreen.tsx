@@ -8,6 +8,7 @@ import { useCharacter } from "../contexts/CharacterContext";
 
 export default function AbilityScreen() {
   const {
+    character,
     characterClass,
     abilityScores,
     originalAbilityScores,
@@ -64,7 +65,7 @@ export default function AbilityScreen() {
 
       <ScreenNavigation
         onNext={() =>
-          navigate('/class')
+          navigate(`/character/${character.id}/class`)
         }
         nextLabel="Class Options"
         requirements={[

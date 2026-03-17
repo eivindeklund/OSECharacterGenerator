@@ -79,8 +79,7 @@ This is what eivindeklund wants to do before offering the fork back to matthewfe
 
 [ ] We've removed the access pattern `name = allItemsById[id]?.name ?? id`, replacing it with a getter that logs an error + stacktrace and notifies monitoring if the id is not available in prod, and failing if the item is not available and we are running a unit or integration test or in dev.   Incorrect ids are bugs and should not be papered over automatically, especially not in test conditions.  See if there are other use of similar patterns (`foo = bar[baz]?.quz ?? some_default`) elsewhere in the codebase that also are just "work if we have bugs", and replace them with getters a la the one described for item id -> item name.  
 [ ] Remove dead code
-
-[ ] Add CSS tests
+[X] Add CSS tests
 [ ] Update "create new UI" skill so it runs e2e tests and CSS tests and capture new golden images.
 [ ] Add skill for updating anything that's close to the UI but should not change anything to run e2e tests and run golden UI checks
 
@@ -90,13 +89,22 @@ This is what eivindeklund wants to do before offering the fork back to matthewfe
 
 ### Equipemnt page
 
+[ ] IMPORTANT: Equipment pack warning for missing holy symbol should only be
+    present when there is no holy symbol either purchased by the user already or in the pack
 [X] Auto-include holy symbol for cleric
-[X] No armor selection for magic-user
 [X] Automatic "best" equipment pack based on class & available gold.
    [X] Fix so this fills ~the full gold is used
+
 [ ] Give the auto-packs "Elf" and "Dwarf" and etc flavor
 [ ] Suggested equipment pack should look at what items already exists in the
     user's inventory and not include those in the pack.
+[ ] Equipment packs should be two columns, not one
+[ ] Equipment pack should not be re-generated each time the user change how much
+    gold they have; it makes the page jumpy
+[ ] Equipment pack should be viewable as Weapons / Armour / Light / etc, and
+    have this as different "pages" instead of pack a/b/c, and then be able to buy just that
+    type of equipment.
+[ ] When weapon is purchased, the weapons block should collapse, so the page isn't so tall.
 
 ### Character Details (page)
 
@@ -134,17 +142,17 @@ to allow it to be tuned per campaign.
 
 ### Character Sheet (PDF)
 
-[ ] Weapons list w/damage, including strength etc bonus if there is one (ie, 1d8 + STR => 1d8 + 1)
-[ ] Cleaner weapons list - one per line
+[X] Weapons list w/damage, including strength etc bonus if there is one (ie, 1d8 + STR => 1d8 + 1)
+[X] Cleaner weapons list - one per line
 [ ] Download vs show PDF
 [ ] Ammo slots (torches, rations, waterskins, holy water) as 4-6 checkboxes.
 [ ] Quiver block w/20 circles for any character that has arrows/slingshots/crossbow bolts
-[ ] Count weight
+[X] Count weight
 [ ] Also fill in alternate sheet (slot encumberance)
    [ ] Shade out the slots the character does not have strength to use without penalty
-[ ] Fill in missing fields
-[ ] Fix formatting so the 1-of-6 etc boxes have the same font throughout
-[ ] Fill in complete information for special abilities; e.g, description of
+[X] Fill in missing fields
+[X] Fix formatting so the 1-of-6 etc boxes have the same font throughout
+[X] Fill in complete information for special abilities; e.g, description of
     first spell, complete list of thief's abilities w/percentages.  We already
     have this for abilities in the web page; it should go into the PDF fill
 [ ] Encumberance sums per different parts of our list of stuff, so it's easy to
@@ -160,7 +168,7 @@ to allow it to be tuned per campaign.
     "nice styling".  Claude Sonnet can't look at images.
 [ ] Have Gemini go through the UI to come with suggestion for improvements
     functionality-wise.
-[ ] Add character IDs to the URLs, so it is possible to reference separate
+[X] Add character IDs to the URLs, so it is possible to reference separate
     characters.  Especially important for the "sheet" URL.
 
 ## Level upgrades

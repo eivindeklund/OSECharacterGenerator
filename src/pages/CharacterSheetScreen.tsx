@@ -20,6 +20,8 @@ export default function CharacterSheetScreen() {
     levelUp,
   } = useCharacter();
 
+  const characterId = character.id;
+
   const [levelUpOpen, setLevelUpOpen] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -82,7 +84,7 @@ export default function CharacterSheetScreen() {
 
         <ScreenNavigation
           onPrev={() => {
-            navigate('/details');
+            navigate(`/character/${characterId}/details`);
           }}
           prevLabel="Character Details"
         />

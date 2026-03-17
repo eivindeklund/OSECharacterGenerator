@@ -57,7 +57,9 @@ describe("useCharacterManager", () => {
 
     expect(result.current.character.id).not.toBeNull();
     expect(result.current.characterRolled).toBe(true);
-    expect(mockNavigate).toHaveBeenCalledWith('/ability');
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `/character/${result.current.character.id}/ability`
+    );
   });
 
   it("should roll attributes without animation when dice are disabled", () => {
@@ -315,7 +317,9 @@ describe("useCharacterManager", () => {
     expect(result.current.characterEquipment.gold).toBe(100);
     expect(result.current.characterRolled).toBe(true);
     expect(result.current.pointBuy).toBe(0);
-    expect(mockNavigate).toHaveBeenCalledWith('/sheet');
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `/character/${result.current.character.id}/sheet`
+    );
   });
 
   it("should expose a loadCharacter function", () => {
@@ -348,7 +352,9 @@ describe("useCharacterManager", () => {
     expect(result.current.characterClass.name).toBe("Fighter");
     expect(typeof result.current.characterClass.xpModifierPercentage).toBe("function");
     expect(result.current.characterRolled).toBe(true);
-    expect(mockNavigate).toHaveBeenCalledWith('/sheet');
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `/character/${result.current.character.id}/sheet`
+    );
   });
 
   describe("levelUp", () => {

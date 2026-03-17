@@ -40,8 +40,10 @@ vi.mock('./CharacterStorageScreen', () => ({
 }));
 
 describe('CharacterGenerator', () => {
+  const TEST_ID = 'test-char-id-123';
+
   const mockManagerBase = {
-    character: {},
+    character: { id: TEST_ID },
     setCharacter: vi.fn(),
     abilityScores: {},
     setAbilityScores: vi.fn(),
@@ -69,6 +71,7 @@ describe('CharacterGenerator', () => {
     saveCharacter: vi.fn(),
     deleteStoredCharacter: vi.fn(),
     importCharacter: vi.fn(),
+    loadCharacterWithoutNavigate: vi.fn(),
     storedCharacters: [],
     isMobile: false,
     abilityScoresThatCanDecrease: {},
@@ -88,28 +91,28 @@ describe('CharacterGenerator', () => {
     expect(screen.getByTestId('landing-screen')).toBeInTheDocument();
   });
 
-  it('renders AbilityScreen at /ability', () => {
-    renderAt('/ability', { characterRolled: true });
+  it('renders AbilityScreen at /character/:id/ability', () => {
+    renderAt(`/character/${TEST_ID}/ability`, { characterRolled: true });
     expect(screen.getByTestId('ability-screen')).toBeInTheDocument();
   });
 
-  it('renders ClassScreen at /class', () => {
-    renderAt('/class', { characterRolled: true });
+  it('renders ClassScreen at /character/:id/class', () => {
+    renderAt(`/character/${TEST_ID}/class`, { characterRolled: true });
     expect(screen.getByTestId('class-screen')).toBeInTheDocument();
   });
 
-  it('renders EquipmentScreen at /equipment', () => {
-    renderAt('/equipment', { characterRolled: true });
+  it('renders EquipmentScreen at /character/:id/equipment', () => {
+    renderAt(`/character/${TEST_ID}/equipment`, { characterRolled: true });
     expect(screen.getByTestId('equipment-screen')).toBeInTheDocument();
   });
 
-  it('renders DetailsScreen at /details', () => {
-    renderAt('/details', { characterRolled: true });
+  it('renders DetailsScreen at /character/:id/details', () => {
+    renderAt(`/character/${TEST_ID}/details`, { characterRolled: true });
     expect(screen.getByTestId('details-screen')).toBeInTheDocument();
   });
 
-  it('renders CharacterSheetScreen at /sheet', () => {
-    renderAt('/sheet', { characterRolled: true });
+  it('renders CharacterSheetScreen at /character/:id/sheet', () => {
+    renderAt(`/character/${TEST_ID}/sheet`, { characterRolled: true });
     expect(screen.getByTestId('character-sheet-screen')).toBeInTheDocument();
   });
 

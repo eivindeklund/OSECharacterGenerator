@@ -517,11 +517,11 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
 
       <ScreenNavigation
         onPrev={() => {
-          navigate('/equipment');
+          navigate(`/character/${character.id}/equipment`);
         }}
         prevLabel="Equipment"
         onNext={() => {
-          navigate('/sheet');
+          navigate(`/character/${character.id}/sheet`);
         }}
         onNavigation={() => {
           setCharacter({

@@ -9,6 +9,7 @@ import { useCharacter } from "../contexts/CharacterContext";
 
 export default function ClassScreen() {
   const {
+    character,
     characterClass,
     characterStatistics,
     setCharacterStatistics,
@@ -55,11 +56,11 @@ export default function ClassScreen() {
 
       <ScreenNavigation
         onPrev={() => {
-          navigate('/ability');
+          navigate(`/character/${character.id}/ability`);
         }}
         prevLabel="Character Class"
         onNext={() => {
-          navigate('/equipment');
+          navigate(`/character/${character.id}/equipment`);
         }}
         nextLabel="Equipment"
         requirements={[

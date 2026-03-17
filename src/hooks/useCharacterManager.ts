@@ -2,23 +2,23 @@ import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
-  abilityScoreNames,
-  defaultAbilityScoresState
+    abilityScoreNames,
+    defaultAbilityScoresState
 } from "../constants/constants";
 import classOptionsData, { emptyClassOptions } from "../data/classOptionsData";
 import { CharacterModifiers, ClassOptionsData, StoredCharacterData } from "../types";
 import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
 import {
-  d,
-  deriveCharacterModifiers,
-  generateHpSeed,
-  hpRollToSeed,
-  hpSeedToRoll,
+    d,
+    deriveCharacterModifiers,
+    generateHpSeed,
+    hpRollToSeed,
+    hpSeedToRoll,
 } from "../utilities/utilities";
 
-/** Returns the furthest wizard route that is valid for the given (possibly partial) character data. */
-function getFurthestRoute(data: StoredCharacterData): string {
+/** Returns the furthest wizard sub-path (without the /character/:id prefix) for the given character data. */
+function getFurthestSubPath(data: StoredCharacterData): string {
   const { abilityScores, characterClass, characterStatistics, characterEquipment, character } = data;
   const allScoresRolled = abilityScores && Object.values(abilityScores).every(v => v !== null);
   const classSelected = characterClass && characterClass.name !== '';
@@ -27,6 +27,10 @@ function getFurthestRoute(data: StoredCharacterData): string {
   if (characterEquipment.gold === null) return '/equipment';
   if (!character.name || !character.alignment) return '/details';
   return '/sheet';
+}
+
+function characterRoute(id: string, subPath: string): string {
+  return `/character/${id}${subPath}`;
 }
 
 export const useCharacterManager = (
@@ -327,7 +331,7 @@ export const useCharacterManager = (
     setCharacterRolled(true);
     setAbilityScores(defaultAbilityScoresState);
     setOriginalAbilityScores(defaultAbilityScoresState);
-    navigate('/ability');
+    navigate(characterRoute(newID, '/ability'));
     setPointBuy(0);
     setCharacterStatistics({
       hitPoints: null,
@@ -431,25 +435,33 @@ export const useCharacterManager = (
     setCharacterEquipment(data.characterEquipment);
     setPointBuy(0); 
     setCharacterRolled(true);
-    navigate('/sheet');
+    navigate(characterRoute(data.character.id, '/sheet'));
+  };
+
+  const applyCharacterData = (data: StoredCharacterData) => {
+    setCharacter(data.character);
+    setAbilityScores(data.abilityScores);
+    if (data.characterModifiers) {
+      setCharacterModifiers(data.characterModifiers);
+    }
+    setCharacterStatistics(data.characterStatistics);
+    const matchedClass = classOptionsData.find(c => c.name === data.characterClass.name) || data.characterClass;
+    setCharacterClass(matchedClass);
+    setCharacterEquipment(data.characterEquipment);
+    setPointBuy(0);
+    setCharacterRolled(true);
   };
 
   const loadCharacter = (data: StoredCharacterData) => {
     if (!data) return;
+    applyCharacterData(data);
+    navigate(characterRoute(data.character.id, data.partial ? getFurthestSubPath(data) : '/sheet'));
+  };
 
-    setCharacter(data.character);
-    setAbilityScores(data.abilityScores);
-    setCharacterModifiers(data.characterModifiers);
-
-    setCharacterStatistics(data.characterStatistics);
-
-    const matchedClass = classOptionsData.find(c => c.name === data.characterClass.name) || data.characterClass;
-    setCharacterClass(matchedClass);
-
-    setCharacterEquipment(data.characterEquipment);
-    setPointBuy(0);
-    setCharacterRolled(true);
-    navigate(data.partial ? getFurthestRoute(data) : '/sheet');
+  /** Load character state without changing the URL (used when the URL already targets the right route). */
+  const loadCharacterWithoutNavigate = (data: StoredCharacterData) => {
+    if (!data) return;
+    applyCharacterData(data);
   };
 
   /**
@@ -524,6 +536,7 @@ export const useCharacterManager = (
     deleteStoredCharacter,
     importCharacter,
     loadCharacter,
+    loadCharacterWithoutNavigate,
     levelUp,
     storedCharacters,
     isMobile,

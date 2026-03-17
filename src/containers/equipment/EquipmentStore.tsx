@@ -6,17 +6,18 @@ import ArmourOptionsContainer from "../../containers/equipment/ArmourOptionsCont
 import GearOptionsContainer from "../../containers/equipment/GearOptionsContainer";
 import PackOptionsContainer from "../../containers/equipment/PackOptionsContainer";
 import WeaponOptionsContainer from "../../containers/equipment/WeaponOptionsContainer";
+import { useCharacter } from "../../contexts/CharacterContext";
 import armourData from "../../data/armourData";
 import equipmentData from "../../data/equipmentData";
 import weaponsData from "../../data/weaponsData";
 import type {
-  CharacterEquipment,
-  CharacterModifiers,
-  CharacterStatistics,
-  ClassOptionsData,
+    CharacterEquipment,
+    CharacterModifiers,
+    CharacterStatistics,
+    ClassOptionsData,
 } from "../../types";
 import {
-  calculateArmourClass
+    calculateArmourClass
 } from "../../utilities/utilities";
 
 interface EquipmentStoreProps {
@@ -41,6 +42,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
   } = props;
 
   const navigate = useNavigate();
+  const { character } = useCharacter();
 
   const [gold, setGold] = useState<number | null>(characterEquipment.gold);
   const [rolledGold, setRolledGold] = useState<number | null>(characterEquipment.gold);
@@ -276,11 +278,11 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
       {/* updates parent state with all new values when moving on to next page */}
       <ScreenNavigation
         onPrev={() => {
-          navigate('/class');
+          navigate(`/character/${character.id}/class`);
         }}
         prevLabel="Class Options"
         onNext={() => {
-          navigate('/details');
+          navigate(`/character/${character.id}/details`);
         }}
         onNavigation={() => {
           const newCharacterEquipment = {

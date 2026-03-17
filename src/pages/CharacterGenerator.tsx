@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Outlet, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { CharacterProvider } from "../contexts/CharacterContext";
 import { useCharacterManager } from "../hooks/useCharacterManager";
 import { Dice } from "../utilities/DiceBox";
 import ShareService from "../utilities/ShareService";
+import { StorageService } from "../utilities/StorageService";
 import AbilityScreen from "./AbilityScreen";
 import CharacterSheetScreen from "./CharacterSheetScreen";
 import CharacterStorageScreen from "./CharacterStorageScreen";
@@ -20,6 +21,50 @@ function ScrollToTop() {
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
+}
+
+/**
+ * Rendered inside <Route path="/character/:id/*">.
+ * On mount it looks up the character by ID from localStorage and hydrates
+ * the context if needed. Renders null until hydration is done so the wizard
+ * chrome doesn't flash in an empty state.
+ */
+function CharacterLoader({ characterContext }) {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { character, characterRolled, loadCharacterWithoutNavigate } = characterContext;
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Already loaded and it's the same character — nothing to do.
+    if (characterRolled && character.id === id) {
+      setReady(true);
+      return;
+    }
+
+    // Try saved characters first, then the partial character.
+    const saved = StorageService.loadCharacters();
+    const match = saved.find((c) => c.character.id === id);
+    if (match) {
+      loadCharacterWithoutNavigate(match);
+      setReady(true);
+      return;
+    }
+
+    const partial = StorageService.loadPartialCharacter();
+    if (partial && partial.character.id === id) {
+      loadCharacterWithoutNavigate(partial);
+      setReady(true);
+      return;
+    }
+
+    // ID not found — redirect to landing page.
+    navigate('/');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  if (!ready) return null;
+  return <Outlet />;
 }
 
 // TODO: Add typescript types to all props and state in this file, likely need
@@ -88,11 +133,16 @@ export default function CharacterGenerator() {
               style={characterMenuStyle}
             >
               <Routes>
-                <Route path="/ability" element={<AbilityScreen />} />
-                <Route path="/class" element={<ClassScreen />} />
-                <Route path="/equipment" element={<EquipmentScreen />} />
-                <Route path="/details" element={<DetailsScreen />} />
-                <Route path="/sheet" element={<CharacterSheetScreen />} />
+                <Route
+                  path="/character/:id/*"
+                  element={<CharacterLoader characterContext={characterContext} />}
+                >
+                  <Route path="ability" element={<AbilityScreen />} />
+                  <Route path="class" element={<ClassScreen />} />
+                  <Route path="equipment" element={<EquipmentScreen />} />
+                  <Route path="details" element={<DetailsScreen />} />
+                  <Route path="sheet" element={<CharacterSheetScreen />} />
+                </Route>
                 <Route path="/tavern" element={<CharacterStorageScreen />} />
               </Routes>
             </div>
@@ -101,7 +151,10 @@ export default function CharacterGenerator() {
       </div>
       {/* Full-page sheet routes — outside wizard layout, covers all app chrome */}
       <Routes>
-        <Route path="/sheet/purist-web" element={<PuristWebSheetScreen />} />
+        <Route
+          path="/character/:id/sheet/purist-web"
+          element={<PuristWebSheetScreen />}
+        />
       </Routes>
     </CharacterProvider>
   );
