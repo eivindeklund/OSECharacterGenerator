@@ -15,36 +15,64 @@ async function createCharacterToSheet(page, { className = 'Fighter', name = 'Lev
   await page.getByRole('button', { name: /Start/i }).click();
   await expect(page.getByRole('heading', { name: /Ability Scores/i })).toBeVisible();
 
-  await page.getByRole('button', { name: /Roll All/i }).click();
-  await page.getByRole('button', { name: new RegExp(`^${className}$`, 'i') }).click();
+  // Some classes have minimum ability score requirements. Re-roll until the
+  // class button is enabled so the test doesn't depend on lucky random rolls.
+  const classBtn = page.getByRole('button', { name: new RegExp(`^${className}$`, 'i') });
+  for (let attempt = 0; attempt < 20; attempt++) {
+    await page.getByRole('button', { name: /Roll All/i }).click();
+    // Brief wait for React to process the state update
+    await page.waitForTimeout(100);
+    const enabled = await classBtn.isEnabled();
+    if (enabled) break;
+  }
+  await classBtn.click();
+  // Wait for the navigation button to confirm class selection was registered
+  await expect(page.getByRole('button', { name: /Class Options/i })).toBeEnabled();
   await page.getByRole('button', { name: /Class Options/i }).click();
 
-  await expect(page.getByText(/Hit Die/i)).toBeVisible();
-  await page.getByRole('button', { name: /Roll HP/i }).click();
+  await expect(page.getByText(/Hit Die/i)).toBeVisible({ timeout: 20000 });
 
-  // Spellcasting classes need an initial spell selected before Equipment is unlocked
+  // Click Roll HP (internally fires a 200ms setTimeout before updating state).
+  // For spellcasting classes the spell-select is rendered based on class, not HP
+  // state, so check it immediately — clicking Random Spell before HP settles is fine.
+  await page.getByRole('button', { name: /Roll HP/i }).click();
   const spellSelect = page.locator('select.spells-select');
   if (await spellSelect.isVisible()) {
-    // Click "Random Spell" which picks and confirms a spell in one action
     await page.getByRole('button', { name: /Random Spell/i }).click();
   }
 
-  // Wait for Equipment button to become enabled
-  await page.getByRole('button', { name: /Equipment/i }).waitFor({ state: 'visible' });
-  await expect(page.getByRole('button', { name: /Equipment/i })).toBeEnabled({ timeout: 5000 });
+  // Wait for Equipment button to be enabled — this is the definitive signal that
+  // HP has been set (and a spell selected for casters). 20s covers the 200ms
+  // setTimeout even under heavy parallel-browser CPU contention.
+  await expect(page.getByRole('button', { name: /Equipment/i })).toBeEnabled({ timeout: 20000 });
   await page.getByRole('button', { name: /Equipment/i }).click();
 
   await expect(page.getByRole('heading', { name: /^Equipment$/i })).toBeVisible();
+  // Roll Gold also uses a 200ms setTimeout; wait for Character Details to be enabled.
   await page.getByRole('button', { name: /Roll Gold/i }).click();
+  await expect(page.getByRole('button', { name: /Character Details/i })).toBeEnabled({ timeout: 20000 });
   await page.getByRole('button', { name: /Character Details/i }).click();
 
   await expect(page.getByRole('heading', { name: /Character Details/i })).toBeVisible();
-  await page.locator('input[type="text"]').first().fill(name);
-  await page.getByRole('button', { name: /^Neutral$/i }).click();
-  await page.getByRole('button', { name: /Character Sheet/i }).click();
+  const nameInput = page.locator('input[type="text"]').first();
+  await nameInput.fill(name);
+  await expect(nameInput).toHaveValue(name);
 
-  await expect(page.getByText(/Saving Throws/i)).toBeVisible();
-  await expect(page.getByText(new RegExp(name, 'i'))).toBeVisible();
+  // Use a CSS-specific locator for the alignment button to avoid any ambiguity.
+  // Then wait for the Character Sheet nav button to be enabled — ScreenNavigation
+  // disables it until both name AND alignment requirements are satisfied, making
+  // this a single definitive check that's more robust than inspecting CSS classes.
+  await page.locator('.alignment-button-container button', { hasText: 'Neutral' }).click();
+  const charSheetBtn = page.getByRole('button', { name: /Character Sheet/i });
+  await expect(charSheetBtn).toBeEnabled();
+  await charSheetBtn.click();
+
+  await expect(page.getByText(/Saving Throws/i)).toBeVisible({ timeout: 20000 });
+  await expect(page.getByText(new RegExp(name, 'i'))).toBeVisible({ timeout: 20000 });
+  // Confirm the Level Up button is rendered before returning — ensures the sheet is
+  // fully hydrated and canLevelUp has been evaluated, eliminating a race condition
+  // where tests click Level Up before the button exists in the DOM.
+  await expect(page.getByRole('button', { name: /Level Up/i })).toBeVisible();
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -128,6 +156,7 @@ test.describe('Level-Up feature', () => {
     await createCharacterToSheet(page, { className: 'Fighter' });
 
     await page.getByRole('button', { name: /Level Up/i }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByRole('button', { name: /Roll HP/i }).click();
     await page.getByRole('button', { name: /Next.*Summary/i }).click();
 

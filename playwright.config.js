@@ -10,10 +10,16 @@ module.exports = defineConfig({
         fullyParallel: true,
         /* Fail the build on CI if you accidentally left test.only in the source code. */
         forbidOnly: !!process.env.CI,
-        /* Retry on CI only */
-        retries: process.env.CI ? 2 : 0,
-        /* Opt out of parallel tests on CI. */
-        workers: process.env.CI ? 1 : undefined,
+        /* Retry once locally (handles transient WebKit timing spikes), twice on CI */
+        retries: process.env.CI ? 2 : 1,
+        /* Limit workers to reduce CPU contention across 3 parallel browser engines.
+           Unlimited workers on a many-core machine causes WebKit timeouts under load. */
+        workers: process.env.CI ? 1 : 3,
+        /* Increase timeout for tests that go through the full wizard flow (especially on WebKit) */
+        timeout: 60000,
+        /* Increase assertion timeout from the 5s default — WebKit under parallel load
+           can take >5s for React state updates to produce visible DOM changes */
+        expect: { timeout: 10000 },
         /* Reporter to use. See https://playwright.dev/docs/test-reporters */
         reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
         /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */

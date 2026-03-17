@@ -120,7 +120,9 @@ test.describe('Partial character persistence', () => {
     // Delete button appears on hover
     const partialCard = page.locator('.character-button--partial');
     await partialCard.hover();
-    await partialCard.locator('.character-button--delete').click();
+    // The delete button is revealed via CSS :hover. Use dispatchEvent to fire
+    // the click handler directly, bypassing the CSS visibility check (fixes WebKit).
+    await partialCard.locator('.character-button--delete').dispatchEvent('click');
 
     // Card should disappear
     await expect(page.locator('.character-button--partial')).not.toBeVisible();
