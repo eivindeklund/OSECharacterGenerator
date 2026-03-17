@@ -1,0 +1,349 @@
+/*
+ * Purist Web Sheet — layout and appearance CSS.
+ *
+ * All CSS custom properties are declared on .ps-screen so they cascade to every
+ * child element without polluting the global :root.  These are sheet-specific
+ * layout geometry constants (paper dimensions, column positions, row rhythm, etc.)
+ * and are NOT app design tokens — they must not be moved to tokens.css.
+ *
+ * Bare hex / rgba values below are each annotated with
+ * "one-off: <reason>" per docs/html-css-style.md §3.
+ *
+ * Inline styles for left/top/width/height in the section components reference
+ * these variables via var(--name).  This is intentional: the values are CSS
+ * variable references that the browser resolves at paint time, effectively
+ * making them runtime-computed from the layout system's perspective.
+ */
+
+.ps-screen {
+    background: #2c2f33; /* one-off: dark background for print-sheet preview viewport */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30pt;
+    padding: 20px;
+    position: fixed;
+    inset: 0;
+    overflow: auto;
+    z-index: 1000;
+
+    /* ── Shared primitives ── */
+    --ps-border:   1pt solid black;
+    --ps-main-f:   'Crimson Pro', serif;
+    --ps-lab-f:    'Barlow Condensed', sans-serif;
+
+    /* ── Page dimensions ── */
+    --ps-page-w:   595.28pt;
+    --ps-page-h:   841.89pt;
+    --ps-margin:   20pt;
+    --ps-page-r:   calc(var(--ps-page-w) - var(--ps-margin));
+    --ps-page-bot: calc(var(--ps-page-h) - var(--ps-margin));
+
+    /* ── Black label box width ── */
+    --ps-lbl:  24.55pt;
+
+    /* ── Column left edges ── */
+    --ps-col1:  20pt;
+    --ps-col2:  209pt;
+    --ps-col3:  398pt;
+
+    /* ── Derived: input-box left edges ── */
+    --ps-c1-in:  calc(var(--ps-col1) + var(--ps-lbl));
+    --ps-c2-in:  calc(var(--ps-col2) + var(--ps-lbl));
+    --ps-c3-in:  calc(var(--ps-col3) + var(--ps-lbl));
+
+    /* ── Input widths ── */
+    --ps-inp-sm:    70pt;
+    --ps-inp-wd:    152pt;
+    --ps-inp-pc:    calc(var(--ps-col2) + var(--ps-inp-sm) - var(--ps-col1));
+    --ps-inp-coins: calc(var(--ps-page-r) - var(--ps-col3) - var(--ps-lbl));
+
+    /* ── Box widths ── */
+    --ps-box-lft-w: 355pt;
+    --ps-box-rgt-w: calc(var(--ps-page-r) - var(--ps-col3));
+
+    /* ── Row rhythm ── */
+    --ps-row-h:  24.55pt;
+    --ps-vsp:    4.45pt;
+    --ps-stride: 29pt;
+
+    /* ── Big-box height (HP / AC / Att / XP) = 2 rows + 1 gap ── */
+    --ps-big-h:   53.55pt;
+    --ps-big-vsp: 5pt;
+
+    /* ── Help text: left edges per column, and their widths ── */
+    --ps-c1-help:   118pt;
+    --ps-c2-help:   308pt;
+    --ps-c3-help:   496pt;
+    --ps-c1-help-w: calc(var(--ps-col2)   - var(--ps-c1-help));
+    --ps-c2-help-w: calc(var(--ps-col3)   - var(--ps-c2-help));
+    --ps-c3-help-w: calc(var(--ps-page-r) - var(--ps-c3-help));
+
+    /* ── Gap between a section header and the box/row below it ── */
+    --ps-hdr-gap: 19pt;
+
+    /* ═══════════════════════════════════════
+       PAGE 1 SECTION ANCHORS
+       ═══════════════════════════════════════ */
+
+    --ps-pc-top:    20pt;
+    --ps-class-top: calc(var(--ps-pc-top)    + var(--ps-stride));
+    --ps-title-top: calc(var(--ps-pc-top)    + 2 * var(--ps-stride));
+
+    --ps-abil-top: 147pt;
+    --ps-abil-bot: calc(var(--ps-abil-top)  + 5 * var(--ps-stride) + var(--ps-row-h));
+
+    --ps-desc-h:   197pt;
+    --ps-desc-top: calc(var(--ps-abil-bot)  - var(--ps-desc-h));
+
+    --ps-combat-top: 380pt;
+    --ps-ac-top:     calc(var(--ps-combat-top) + var(--ps-big-h) + var(--ps-big-vsp));
+    --ps-att-top:    calc(var(--ps-ac-top)     + var(--ps-big-h) + var(--ps-big-vsp));
+
+    --ps-explr-top: 478pt;
+
+    --ps-abil-box-top: calc(var(--ps-explr-top) + 4 * var(--ps-stride));
+    --ps-abil-box-h:   calc(var(--ps-page-bot)  - var(--ps-abil-box-top));
+
+    --ps-move-top: 634pt;
+
+    --ps-lang-top: 760pt;
+    --ps-lang-h:   calc(var(--ps-page-bot) - var(--ps-lang-top));
+
+    /* ═══════════════════════════════════════
+       PAGE 2 SECTION ANCHORS
+       ═══════════════════════════════════════ */
+
+    --ps-p2-box-top:   55.4pt;
+    --ps-p2-box-top-h: 226.6pt;
+
+    --ps-p2-mid-top: 325.1pt;
+    --ps-p2-mid-h:   188.8pt;
+
+    --ps-p2-bot-top:  557.2pt;
+    --ps-p2-notes-h:  205.3pt;
+
+    --ps-p2-enc-top: 739.1pt;
+    --ps-p2-xp-top:  768.2pt;
+}
+
+/* ── Page ── */
+.ps-page {
+    width: var(--ps-page-w);
+    height: var(--ps-page-h);
+    background: white;
+    position: relative;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.7); /* one-off: drop shadow for print-preview page */
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* ── Label + input row ── */
+.ps-row {
+    position: absolute;
+    display: flex;
+    align-items: stretch;
+    height: var(--ps-row-h);
+}
+
+/* ── Black label box ── */
+.ps-lbl {
+    width: var(--ps-lbl);
+    background: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ps-lab-f);
+    font-size: 11pt;
+    font-weight: 700;
+    flex-shrink: 0;
+    align-self: stretch;
+}
+
+/* ── White input box ── */
+.ps-inp {
+    border: var(--ps-border);
+    margin-left: -1pt;
+    background: white;
+    position: relative;
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+}
+.ps-inp input {
+    border: none;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-family: var(--ps-main-f);
+    font-size: 12pt;
+    outline: none;
+    background: transparent;
+}
+
+/* ── Big-box inputs (HP / AC / Att / XP) ── */
+.ps-big-inp input {
+    font-size: 24pt;
+}
+
+/* ── Italic corner label inside big boxes ── */
+.ps-inner-lbl {
+    position: absolute;
+    top: 2pt;
+    right: 3pt;
+    font-family: var(--ps-main-f);
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #555; /* one-off: subtle corner label inside a big input box */
+    pointer-events: none;
+    line-height: 1.1;
+}
+
+/* ── Section header ── */
+.ps-sec-hdr {
+    position: absolute;
+    font-family: var(--ps-lab-f);
+    font-size: 18pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: black;
+    line-height: 1;
+}
+
+/* ── Help / italic description text ── */
+.ps-help {
+    position: absolute;
+    height: var(--ps-row-h);
+    display: flex;
+    align-items: center;
+    font-family: var(--ps-main-f);
+    font-size: 7.5pt;
+    font-style: italic;
+    line-height: 1.15;
+    color: #222; /* one-off: help text body colour */
+}
+
+/* ── Footnote lines ── */
+.ps-footnote {
+    position: absolute;
+    font-family: var(--ps-main-f);
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #222; /* one-off: footnote body colour */
+}
+.ps-footnote b {
+    font-family: var(--ps-lab-f);
+    font-style: normal;
+    font-weight: 700;
+}
+
+/* ── Bordered content box ── */
+.ps-box {
+    position: absolute;
+    border: var(--ps-border);
+    box-sizing: border-box;
+}
+
+/* ── Textarea filling a .ps-box ── */
+.ps-box-textarea {
+    position: absolute;
+    inset: 0;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-family: var(--ps-main-f);
+    font-size: 8pt;
+    padding: 4pt;
+    box-sizing: border-box;
+    outline: none;
+}
+
+/* ── Caption below a box ── */
+.ps-caption {
+    position: absolute;
+    font-family: var(--ps-main-f);
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #222; /* one-off: caption body colour */
+    line-height: 1.15;
+    text-align: center;
+}
+
+/* ── OSE logo ── */
+.ps-ose-logo {
+    position: absolute;
+    top: 20pt;
+    right: 22pt;
+    text-align: right;
+}
+.ps-ose-logo span {
+    font-family: var(--ps-lab-f);
+    font-weight: 700;
+    display: block;
+}
+
+/* ── Copyright line ── */
+.ps-copyright {
+    position: absolute;
+    bottom: 5pt;
+    left: var(--ps-margin);
+    font-family: var(--ps-main-f);
+    font-size: 7.5pt;
+    color: #444; /* one-off: copyright line colour */
+}
+
+/* ── Literate checkbox row ── */
+.ps-literate-row {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 3pt;
+    font-family: var(--ps-lab-f);
+    font-size: 8pt;
+    font-weight: 700;
+}
+.ps-literate-row input[type='checkbox'] {
+    width: 10pt;
+    height: 10pt;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* ── Hint text overlaying a section header (right-aligned) ── */
+.ps-notes-hint {
+    position: absolute;
+    font-family: var(--ps-main-f);
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #555; /* one-off: secondary hint text inside Other Notes header */
+    line-height: 1.4;
+    pointer-events: none;
+    text-align: right;
+}
+
+/* ── "(Optional rule)" label beside Encumbrance header ── */
+.ps-enc-optional {
+    position: absolute;
+    height: var(--ps-row-h);
+    display: flex;
+    align-items: center;
+    font-family: var(--ps-main-f);
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #555; /* one-off: optional-rule indicator beside Encumbrance */
+}
+
+/* ── Print overrides ── */
+@media print {
+    .ps-screen {
+        position: static;
+        background: none;
+        padding: 0;
+        gap: 0;
+    }
+    .ps-page {
+        box-shadow: none;
+        page-break-after: always;
+    }
+}

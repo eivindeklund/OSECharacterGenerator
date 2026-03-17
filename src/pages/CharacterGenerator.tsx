@@ -12,6 +12,7 @@ import DetailsScreen from "./DetailsScreen";
 import EquipmentScreen from "./EquipmentScreen";
 import ImportCharacterScreen from "./ImportCharacterScreen";
 import LandingScreen from "./LandingScreen";
+import PuristWebSheetScreen from "./PuristWebSheetScreen";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -98,6 +99,10 @@ export default function CharacterGenerator() {
           </div>
         </div>
       </div>
+      {/* Full-page sheet routes — outside wizard layout, covers all app chrome */}
+      <Routes>
+        <Route path="/sheet/purist-web" element={<PuristWebSheetScreen />} />
+      </Routes>
     </CharacterProvider>
   );
 }
