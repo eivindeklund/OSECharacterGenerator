@@ -2,17 +2,19 @@ import { useState } from "react";
 import { DEFAULT_CAMPAIGN_ID } from "../constants/constants";
 import classOptionsData from "../data/classOptionsData";
 import equipmentData from "../data/equipmentData";
+import { DEFAULT_SPELL_SLOT_TABLES } from "../data/levelProgressionData";
+import { getSpellListById } from "../data/spells";
 import weaponsData from "../data/weaponsData";
 import type {
-        Campaign,
-        CampaignClassOverride,
-        CampaignNewClass,
-        ClassOptionsData,
-        EquipmentItem,
-        SpellDefinition,
-        WeaponItem,
+  Campaign,
+  CampaignClassOverride,
+  CampaignNewClass,
+  ClassOptionsData,
+  EquipmentItem,
+  SpellDefinition,
+  SpellSlotTable,
+  WeaponItem,
 } from "../types";
-import { getSpellListById } from "../data/spells";
 import { buildCampaignClass } from "../utilities/buildCampaignClass";
 import { CampaignService } from "../utilities/CampaignService";
 
@@ -77,6 +79,20 @@ export function useCampaignManager() {
   };
 
   // ── Derived getters ────────────────────────────────────────────────────────
+
+  /**
+   * Returns the effective spell-slot table list for the active campaign.
+   * Campaign tables replace the matching default table (by id); extra tables are appended.
+   */
+  const spellSlotTables: SpellSlotTable[] = (() => {
+    const customTables: SpellSlotTable[] = activeCampaign.customSpellSlotTables ?? [];
+    if (customTables.length === 0) return DEFAULT_SPELL_SLOT_TABLES;
+    // TODO: This looks quite expensive, and we should consider memoizing it.
+    return [
+      ...DEFAULT_SPELL_SLOT_TABLES.map(t => customTables.find(c => c.id === t.id) ?? t),
+      ...customTables.filter(t => !DEFAULT_SPELL_SLOT_TABLES.some(d => d.id === t.id)),
+    ];
+  })();
 
   /**
    * Returns the list of classes available for character creation in the
@@ -201,11 +217,10 @@ export function useCampaignManager() {
 
   /**
    * Returns the spell slot counts for the given class at the given character
-   * level, respecting any campaign spell slot overrides applied via
-   * `buildCampaignClass`.
+   * level, respecting any campaign spell slot table overrides.
    */
   const getClassSpellSlots = (cls: ClassOptionsData, charLevel: number): number[] => {
-    return cls.getSpellSlotsAtLevel(charLevel);
+    return cls.getSpellSlotsAtLevel(charLevel, spellSlotTables);
   };
 
   // ── Active campaign convenience properties ─────────────────────────────────
@@ -218,6 +233,7 @@ export function useCampaignManager() {
     activeCampaign,
     activeCampaignId,
     activeCharacterCampaignId,
+    spellSlotTables,
     setActiveCampaign,
     createCampaign,
     updateCampaign,

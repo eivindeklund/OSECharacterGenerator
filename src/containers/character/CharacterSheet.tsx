@@ -7,6 +7,7 @@ import type {
   CharacterModifiers,
   CharacterStatistics,
   ClassOptionsData,
+  SpellSlotTable,
 } from '../../types';
 import { getAbilitiesForLevel } from '../../utilities/classAbilities';
 import { allItemsById } from '../../utilities/PackUtils';
@@ -19,6 +20,7 @@ interface CharacterSheetProps {
   characterClass: ClassOptionsData;
   characterEquipment: CharacterEquipment;
   characterModifiers: CharacterModifiers;
+  spellSlotTables: SpellSlotTable[];
 }
 
 const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((props, ref) => {
@@ -28,7 +30,8 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
     characterStatistics,
     characterClass,
     characterEquipment,
-    characterModifiers
+    characterModifiers,
+    spellSlotTables,
   } = props
 
   const alignmentCapitalized = character.alignment
@@ -64,6 +67,11 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
       })
   }
 
+
+  // TODO: There are "?? 1" below; these are a buggy band-aid for the fact that
+  // some code paths possibly allow characterStatistics.level to be undefined.
+  // We should fix those code paths and remove the need for this
+  // default.
   return (
     <div ref={ref} className='character-sheet-component'>
       {/* <h3 className="header-default">
@@ -167,6 +175,10 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
             <span className='charsheet-value-name'>Saving Throws</span>
             <span className='charsheet-value charsheet-value--saving-throws'>
               {(() => {
+                // TODO: The ?? 1 below is a buggy band-aid for the fact that some code
+                // paths possibly allow characterStatistics.level to be undefined.
+                // We should fix those code paths and remove the need for this
+                // default.
                 const saves = characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1);
                 return (
                   <>
@@ -199,6 +211,10 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
             <span className='charsheet-value character-sheet--class-ability'>
               <ul>
                 {getAbilitiesForLevel(characterClass.abilities, characterStatistics.level ?? 1).map((ability) => {
+                  // TODO: The ?? 1 above is a buggy band-aid for the fact that some code
+                  // paths possibly allow characterStatistics.level to be undefined.
+                  // We should fix those code paths and remove the need for this
+                  // default.
                   return (
                     <li key={ability.name} className='character-sheet--class-ability'>
                       {' '}
@@ -213,7 +229,11 @@ const CharacterSheet = React.forwardRef<HTMLDivElement, CharacterSheetProps>((pr
           </div>
 
           {(() => {
-            const slots = characterClass.getSpellSlotsAtLevel(characterStatistics.level ?? 1);
+            // TODO: The ?? 1 below is a buggy band-aid for the fact that some code
+            // paths possibly allow characterStatistics.level to be undefined.
+            // We should fix those code paths and remove the need for this
+            // default.
+            const slots = characterClass.getSpellSlotsAtLevel(characterStatistics.level ?? 1, spellSlotTables);
             const hasAnySlot = slots.some((s) => s > 0);
             if (!hasAnySlot) return null;
             const SLOT_LABELS = ['1st', '2nd', '3rd', '4th', '5th', '6th'];

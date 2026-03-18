@@ -216,11 +216,11 @@ describe('useCampaignManager — spell helpers', () => {
     expect(hasSpells).toBe(false);
   });
 
-  it('getClassSpellSlots delegates to cls.getSpellSlotsAtLevel', () => {
+  it('getClassSpellSlots returns correct slots using campaign spellSlotTables', () => {
     const { result } = renderHook(() => useCampaignManager());
     const classes = result.current.availableClasses();
     const mu = classes.find((c) => c.name === 'Magic-User')!;
     const slots = result.current.getClassSpellSlots(mu, 1);
-    expect(slots).toEqual(mu.getSpellSlotsAtLevel(1));
+    expect(slots).toEqual(mu.getSpellSlotsAtLevel(1, result.current.spellSlotTables));
   });
 });

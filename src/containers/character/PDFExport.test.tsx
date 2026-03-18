@@ -58,6 +58,7 @@ const baseProps: PDFExportProps = {
     getSpellSlotsAtLevel: () => [],
     isHdRollLevel: () => false,
     getHpBonusAtLevel: () => 0,
+    levelProgression: null,
   },
   characterEquipment: {
     armour: [],

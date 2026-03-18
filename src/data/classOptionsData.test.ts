@@ -2,6 +2,7 @@ import { abilityScoreNames } from "../constants/constants";
 import type { AbilityScores } from "../types";
 import { getAbilitiesForLevel } from "../utilities/classAbilities";
 import classOptionsData, { thiefSkillTable } from "./classOptionsData";
+import { DEFAULT_SPELL_SLOT_TABLES } from "./levelProgressionData";
 
 // Get the ClassOptions class from the first item in the array
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1045,5 +1046,30 @@ describe("parseArmourString (union of splits)", () => {
   });
   test("returns empty for 'none / none'", () => {
     expect(ClassOptions.parseArmourString("none / none")).toEqual([]);
+  });
+});
+
+describe("ClassOptions.getSpellSlotsAtLevel with custom spellSlotTables", () => {
+  it("returns correct slots when DEFAULT_SPELL_SLOT_TABLES is passed (Magic-User L1)", () => {
+    const mu = classOptionsData.find(c => c.name === 'Magic-User')!;
+    const slots = mu.getSpellSlotsAtLevel(1, DEFAULT_SPELL_SLOT_TABLES);
+    expect(slots).toEqual([1, 0, 0, 0, 0, 0]);
+  });
+
+  it("uses passed spellSlotTables instead of DEFAULT_SPELL_SLOT_TABLES", () => {
+    const mu = classOptionsData.find(c => c.name === 'Magic-User')!;
+    const customTable = {
+      id: 'magic-user',
+      name: 'Custom Magic-User',
+      slots: [[9, 8, 7, 6, 5, 4]],
+    };
+    const slots = mu.getSpellSlotsAtLevel(1, [customTable]);
+    expect(slots).toEqual([9, 8, 7, 6, 5, 4]);
+  });
+
+  it("returns empty array for non-caster regardless of spellSlotTables", () => {
+    const fighter = classOptionsData.find(c => c.name === 'Fighter')!;
+    const customTable = { id: 'fighter', name: 'Custom Fighter', slots: [[9, 9, 9]] };
+    expect(fighter.getSpellSlotsAtLevel(1, [customTable])).toEqual([]);
   });
 });

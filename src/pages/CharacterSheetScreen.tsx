@@ -5,6 +5,7 @@ import ScreenNavigation from "../components/general/ScreenNavigation";
 import LevelUpModal from "../components/level-up/LevelUpModal";
 import CharacterSheet from "../containers/character/CharacterSheet";
 import PDFExport from "../containers/character/PDFExport";
+import { useCampaign } from "../contexts/CampaignContext";
 import { useCharacter } from "../contexts/CharacterContext";
 
 export default function CharacterSheetScreen() {
@@ -19,6 +20,7 @@ export default function CharacterSheetScreen() {
     saveCharacter,
     levelUp,
   } = useCharacter();
+  const { spellSlotTables } = useCampaign();
 
   const characterId = character.id;
 
@@ -56,6 +58,7 @@ export default function CharacterSheetScreen() {
         characterEquipment={characterEquipment}
         characterModifiers={characterModifiers}
         abilityScores={abilityScores}
+        spellSlotTables={spellSlotTables}
         ref={componentRef}
       ></CharacterSheet>
 

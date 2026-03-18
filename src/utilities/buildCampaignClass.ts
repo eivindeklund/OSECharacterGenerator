@@ -1,18 +1,14 @@
 import { ClassOptions } from "../data/classOptionsData";
-import { getLevelEntry } from "../data/levelProgressionData";
 import type {
-    CampaignClassDefinition,
-    CampaignClassOverride,
-    CampaignLevelEntry,
-    CampaignNewClass,
-    ClassOptionsData,
+  CampaignClassDefinition,
+  CampaignClassOverride,
+  CampaignNewClass,
+  ClassOptionsData,
 } from "../types";
 
 // ── Subclass for entirely new campaign-defined classes ────────────────────────
 
 class CampaignNewClassOptions extends ClassOptions {
-  private readonly _levels: CampaignLevelEntry[];
-
   constructor(def: CampaignNewClass) {
     // ClassOptionsInput is not exported; use cast.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,49 +31,9 @@ class CampaignNewClassOptions extends ClassOptions {
       savingThrows: (def.levels[0]?.saves ?? [15, 16, 17, 18, 19]) as number[],
       nextLevel: def.levels[1]?.xp ?? 2000,
       link: "",
+      levelProgression: { levels: def.levels, spellSlotTableId: def.spellSlotTableId },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
-    this._levels = def.levels;
-  }
-
-  private _entry(level: number): CampaignLevelEntry {
-    const idx = Math.max(0, Math.min(level, this._levels.length) - 1);
-    return (
-      this._levels[idx] ??
-      this._levels[0] ?? {
-        level: 1,
-        xp: 0,
-        hdDice: 1,
-        hdBonus: 0,
-        thac0: 19,
-        saves: [15, 16, 17, 18, 19] as [number, number, number, number, number],
-      }
-    );
-  }
-
-  getSavingThrowsAtLevel(level: number): [number, number, number, number, number] {
-    return this._entry(level).saves;
-  }
-
-  getThac0AtLevel(level: number): number {
-    return this._entry(level).thac0;
-  }
-
-  getSpellSlotsAtLevel(level: number): number[] {
-    return this._entry(level).spellSlots ?? [];
-  }
-
-  isHdRollLevel(level: number): boolean {
-    if (level <= 1) return false;
-    return this._entry(level).hdDice > this._entry(level - 1).hdDice;
-  }
-
-  getHpBonusAtLevel(level: number): number {
-    if (level <= 1) return 0;
-    const prev = this._entry(level - 1);
-    const curr = this._entry(level);
-    if (curr.hdDice > prev.hdDice) return 0;
-    return Math.max(0, curr.hdBonus - prev.hdBonus);
   }
 }
 
@@ -110,42 +66,10 @@ function buildOverrideClass(
   if (def.abilities !== undefined) patch.abilities = def.abilities;
   Object.assign(obj, patch);
 
-  // Always override the five level-entry methods to use baseName, so that
-  // a renamed class still reads from the correct progression table.
-  const baseName = def.baseName;
-  const slotOverrides = def.spellSlotOverrides;
-
-  obj.getSavingThrowsAtLevel = (level: number) => {
-    const entry = getLevelEntry(baseName, level);
-    return entry?.saves ?? base.getSavingThrowsAtLevel(level);
-  };
-
-  obj.getThac0AtLevel = (level: number) => {
-    return getLevelEntry(baseName, level)?.thac0 ?? 19;
-  };
-
-  obj.getSpellSlotsAtLevel = (level: number) => {
-    if (slotOverrides) {
-      const idx = Math.max(0, level - 1);
-      if (idx < slotOverrides.length) return slotOverrides[idx];
-    }
-    return getLevelEntry(baseName, level)?.spellSlots ?? [];
-  };
-
-  obj.isHdRollLevel = (level: number) => {
-    if (level <= 1) return false;
-    const prev = getLevelEntry(baseName, level - 1);
-    const curr = getLevelEntry(baseName, level);
-    return curr.hdDice > prev.hdDice;
-  };
-
-  obj.getHpBonusAtLevel = (level: number) => {
-    if (level <= 1) return 0;
-    const prev = getLevelEntry(baseName, level - 1);
-    const curr = getLevelEntry(baseName, level);
-    if (curr.hdDice > prev.hdDice) return 0;
-    return Math.max(0, curr.hdBonus - prev.hdBonus);
-  };
+  // Override the spell slot table ID if a custom table is requested.
+  if (def.spellSlotTableId !== undefined) {
+    obj.levelProgression = { ...base.levelProgression, spellSlotTableId: def.spellSlotTableId };
+  }
 
   return obj;
 }
@@ -156,11 +80,14 @@ function buildOverrideClass(
  * Build a `ClassOptionsData`-compatible object from a campaign class definition.
  *
  * For `CampaignNewClass`: returns a fully functional subclass of `ClassOptions`
- * whose level-entry methods read from the inline `levels[]` array.
+ * whose level-entry methods read from the inline `levels[]` array stored in
+ * `levelProgression`. Spell slots are looked up at call time by passing
+ * `spellSlotTables` to `getSpellSlotsAtLevel`.
  *
  * For `CampaignClassOverride`: returns an object that prototypally inherits
- * from the base class, with patched fields and overridden level-entry methods
- * that look up by `baseName` so renames don't break the progression table.
+ * from the base class, with patched fields; if `spellSlotTableId` is given,
+ * `levelProgression.spellSlotTableId` is updated so that callers who pass
+ * `spellSlotTables` to `getSpellSlotsAtLevel` get the custom table.
  *
  * Returns `null` when a `CampaignClassOverride` references an unknown base class.
  */

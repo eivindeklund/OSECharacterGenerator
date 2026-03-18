@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
+import { useCampaign } from '../../contexts/CampaignContext';
 import { allSpellsById } from '../../data/spells';
 import type {
   CharacterModifiers,
   CharacterStatistics,
   ClassOptionsData,
 } from '../../types';
-import { useCampaign } from '../../contexts/CampaignContext';
 import { getAbilitiesForLevel } from '../../utilities/classAbilities';
 import {
   getAvailableSpellsAtTier,
@@ -39,7 +39,7 @@ export default function LevelUpModal({
   const newLevel = currentLevel + 1;
   const conMod = parseInt(characterModifiers.constitutionMod) || 0;
 
-  const { getSpellListsForClass } = useCampaign();
+  const { getSpellListsForClass, spellSlotTables } = useCampaign();
 
   const isRollLevel = characterClass.isHdRollLevel(newLevel);
   const fixedBonus   = characterClass.getHpBonusAtLevel(newLevel);
@@ -48,8 +48,8 @@ export default function LevelUpModal({
   const nextSaves = characterClass.getSavingThrowsAtLevel(newLevel);
   const prevThac0 = characterClass.getThac0AtLevel(currentLevel);
   const nextThac0 = characterClass.getThac0AtLevel(newLevel);
-  const prevSlots = characterClass.getSpellSlotsAtLevel(currentLevel);
-  const nextSlots = characterClass.getSpellSlotsAtLevel(newLevel);
+  const prevSlots = characterClass.getSpellSlotsAtLevel(currentLevel, spellSlotTables);
+  const nextSlots = characterClass.getSpellSlotsAtLevel(newLevel, spellSlotTables);
 
   // Abilities newly available at newLevel
   const prevAbilities = getAbilitiesForLevel(characterClass.abilities, currentLevel);
@@ -60,8 +60,8 @@ export default function LevelUpModal({
 
   // Spells that could be picked — one step per gained tier (0-indexed tiers, ascending)
   const spellTiersGained = useMemo(
-    () => getSpellTiersGained(characterClass, currentLevel, newLevel),
-    [characterClass, currentLevel, newLevel]
+    () => getSpellTiersGained(characterClass, currentLevel, newLevel, spellSlotTables),
+    [characterClass, currentLevel, newLevel, spellSlotTables]
   );
   const needsSpellSelection = characterClass.limitedSpellSelection === true && spellTiersGained.length > 0;
 

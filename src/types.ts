@@ -1,4 +1,7 @@
 
+import type { ClassProgression, SpellSlotTable } from './data/levelProgressionData';
+export type { SpellSlotTable };
+
 // ── Ability Scores ────────────────────────────────────────────────────────────
 
 export interface AbilityScores {
@@ -151,9 +154,10 @@ export interface ClassOptionsData {
   checkAbilityScoreRequirements: (abilityScores: AbilityScores) => boolean;
   getSavingThrowsAtLevel: (level: number) => [number, number, number, number, number];
   getThac0AtLevel: (level: number) => number;
-  getSpellSlotsAtLevel: (level: number) => number[];
+  getSpellSlotsAtLevel: (level: number, spellSlotTables: SpellSlotTable[]) => number[];
   isHdRollLevel: (level: number) => boolean;
   getHpBonusAtLevel: (level: number) => number;
+  levelProgression: ClassProgression;
 }
 
 // ── Character Equipment ───────────────────────────────────────────────────────
@@ -206,11 +210,15 @@ export interface CampaignLevelEntry {
   hdBonus: number;
   thac0: number;
   saves: [number, number, number, number, number];
-  spellSlots?: number[];
 }
 
 // ── Campaign Class Definitions ────────────────────────────────────────────────
 
+// TODO: This looks exactly like ClassOptionsData except with some optional
+// properties and no methods. Can we unify them?  It's also like
+// ClassOptionsInput, but that type is not exported. Maybe we should export it
+// and use it here instead of duplicating all the properties?
+// It also looks like CampaignNewClass. Can we unify those two as well?
 export interface CampaignClassOverride {
   type: 'override';
   /** Exact name of the existing class to override. */
@@ -229,8 +237,11 @@ export interface CampaignClassOverride {
   magicTypeId?: string;
   limitedSpellSelection?: boolean;
   abilities?: ClassAbility[];
-  /** Spell slot table override: index = level−1, value = slots per spell level. */
-  spellSlotOverrides?: number[][];
+  /**
+   * Override the spell slot table for this class.
+   * References a table by ID in the campaign's spellSlotTables.
+   */
+  spellSlotTableId?: string;
 }
 
 export interface CampaignNewClass {
@@ -249,6 +260,8 @@ export interface CampaignNewClass {
   magicTypeId?: string;
   limitedSpellSelection?: boolean;
   abilities: ClassAbility[];
+  /** ID of the spell slot table to use for this class. */
+  spellSlotTableId?: string;
   /** Full level progression table (one entry per level, 1-indexed). */
   levels: CampaignLevelEntry[];
 }
@@ -283,6 +296,8 @@ export interface Campaign {
   customEquipment: EquipmentItem[];
   customWeapons: WeaponItem[];
   customSpells: CampaignCustomSpells;
+  /** Custom spell slot tables that override or extend the built-in tables. */
+  customSpellSlotTables?: SpellSlotTable[];
   createdAt: string;
   updatedAt: string;
 }

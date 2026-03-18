@@ -2,7 +2,11 @@ import { primeRequisiteModifiers } from "../constants/constants";
 import type { AbilityRequirement, AbilityScores, ClassAbility, ClassOptionsData } from "../types";
 import { checkWeaponQuality } from "../utilities/WeaponUtils";
 import { ALL_ARMOUR, ARMOUR_ID } from "./armourData";
-import { getLevelEntry } from "./levelProgressionData";
+import {
+  type ClassProgression,
+  type SpellSlotTable,
+  default as levelProgressionData
+} from "./levelProgressionData";
 import weaponsData from "./weaponsData";
 
 const large_weapons = ["long_bow", "two_handed_sword", "polearm"];
@@ -123,6 +127,7 @@ class ClassOptions implements ClassOptionsData {
   magicTypeId?: string;
   limitedSpellSelection?: boolean;
   xpBonusRule?: string;
+  levelProgression!: ClassProgression;
 
   constructor(data: ClassOptionsInput) {
     Object.assign(this, data);
@@ -479,8 +484,9 @@ class ClassOptions implements ClassOptionsData {
    * Falls back to the static savingThrows array if no progression data is found.
    */
   getSavingThrowsAtLevel(level: number): [number, number, number, number, number] {
-    const entry = getLevelEntry(this.name, level);
-    return entry?.saves ?? (this.savingThrows as [number, number, number, number, number]);
+    const { levels } = this.levelProgression;
+    const idx = Math.max(0, Math.min(level, levels.length) - 1);
+    return levels[idx]?.saves ?? (this.savingThrows as [number, number, number, number, number]);
   }
 
   /**
@@ -488,17 +494,22 @@ class ClassOptions implements ClassOptionsData {
    * Returns 19 (no attack bonus) as a default.
    */
   getThac0AtLevel(level: number): number {
-    const entry = getLevelEntry(this.name, level);
-    return entry?.thac0 ?? 19;
+    const { levels } = this.levelProgression;
+    const idx = Math.max(0, Math.min(level, levels.length) - 1);
+    return levels[idx]?.thac0 ?? 19;
   }
 
   /**
    * Return the spell slot counts [1st, 2nd, 3rd, ...] for this class at the
    * given level. Returns an empty array for non-spellcasting classes.
    */
-  getSpellSlotsAtLevel(level: number): number[] {
-    const entry = getLevelEntry(this.name, level);
-    return entry?.spellSlots ?? [];
+  getSpellSlotsAtLevel(level: number, spellSlotTables: SpellSlotTable[]): number[] {
+    const tableId = this.levelProgression.spellSlotTableId;
+    if (!tableId) return [];
+    const table = spellSlotTables.find(t => t.id === tableId);
+    if (!table) throw new Error(`Spell slot table "${tableId}" not found for class "${this.name}"`);
+    const idx = Math.max(0, Math.min(level, table.slots.length) - 1);
+    return table.slots[idx];
   }
 
   /**
@@ -508,9 +519,10 @@ class ClassOptions implements ClassOptionsData {
    */
   isHdRollLevel(level: number): boolean {
     if (level <= 1) return false; // level 1 HP was rolled at character creation
-    const prev = getLevelEntry(this.name, level - 1);
-    const curr = getLevelEntry(this.name, level);
-    return curr.hdDice > prev.hdDice;
+    const { levels } = this.levelProgression;
+    const prevIdx = Math.max(0, Math.min(level - 1, levels.length) - 1);
+    const currIdx = Math.max(0, Math.min(level, levels.length) - 1);
+    return levels[currIdx].hdDice > levels[prevIdx].hdDice;
   }
 
   /**
@@ -520,10 +532,11 @@ class ClassOptions implements ClassOptionsData {
    */
   getHpBonusAtLevel(level: number): number {
     if (level <= 1) return 0;
-    const prev = getLevelEntry(this.name, level - 1);
-    const curr = getLevelEntry(this.name, level);
-    if (curr.hdDice > prev.hdDice) return 0; // die roll level
-    return Math.max(0, curr.hdBonus - prev.hdBonus);
+    const { levels } = this.levelProgression;
+    const prevIdx = Math.max(0, Math.min(level - 1, levels.length) - 1);
+    const currIdx = Math.max(0, Math.min(level, levels.length) - 1);
+    if (levels[currIdx].hdDice > levels[prevIdx].hdDice) return 0; // die roll level
+    return Math.max(0, levels[currIdx].hdBonus - levels[prevIdx].hdBonus);
   }
 }
 
@@ -1576,7 +1589,7 @@ const classOptionsData = [
     magicTypeId: 'rune',
     limitedSpellSelection: true,
   },
-].map((x) => new ClassOptions(x));
+].map((x) => new ClassOptions({ ...x, levelProgression: levelProgressionData[x.name] } as any));
 
 const emptyClassOptions = new ClassOptions({
   name: "",
@@ -1593,7 +1606,8 @@ const emptyClassOptions = new ClassOptions({
   nextLevel: 0,
   abilities: [],
   link: "",
-});
+  levelProgression: null,
+} as any);
 
 export { ClassOptions, classOptionsData, emptyClassOptions };
 

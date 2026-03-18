@@ -20,6 +20,22 @@
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+/**
+ * A named table of spell slot counts, shared across all classes that follow
+ * the same progression pattern (e.g. all clerics, all magic-users).
+ */
+export interface SpellSlotTable {
+  /** Unique identifier (e.g. 'cleric', 'magic-user', 'elf'). */
+  id: string;
+  /** Human-readable name. */
+  name: string;
+  /**
+   * slots[levelIndex] = slot counts per spell level (index 0 = 1st-level spells).
+   * Length of outer array = number of class levels this table covers.
+   */
+  slots: number[][];
+}
+
 export interface LevelEntry {
   /** 1-based level number. */
   level: number;
@@ -42,31 +58,21 @@ export interface LevelEntry {
   thac0: number;
   /** Saving throw targets: [Death/Poison, Wands, Paralysis/Petrify, Breath, Spells]. */
   saves: [number, number, number, number, number];
-  /**
-   * Spell slots per spell level (index 0 = 1st-level spells).
-   * Undefined for non-spellcasting classes.
-   * A value of 0 means no slots at that spell level yet.
-   */
-  spellSlots?: number[];
 }
 
 export interface ClassProgression {
   /** All level entries, one per level from 1 to maxLevel. */
   levels: LevelEntry[];
+  /**
+   * ID of the spell slot table used by this class.
+   * Undefined for non-spellcasting classes.
+   */
+  spellSlotTableId?: string;
 }
 
 // ── Helper: build level-entry arrays ─────────────────────────────────────────
 
 type SaveTuple = [number, number, number, number, number];
-
-/** Represents the repeating save and thac0 that applies to a bracket of levels. */
-interface LevelBracket {
-  fromLevel: number;
-  toLevel: number;
-  thac0: number;
-  saves: SaveTuple;
-  spellSlots?: number[];
-}
 
 function buildLevels(
   entries: Array<{
@@ -76,7 +82,6 @@ function buildLevels(
     hdBonus: number;
     thac0: number;
     saves: SaveTuple;
-    spellSlots?: number[];
   }>
 ): LevelEntry[] {
   return entries.map(e => ({
@@ -86,7 +91,6 @@ function buildLevels(
     hdBonus: e.hdBonus,
     thac0: e.thac0,
     saves: e.saves,
-    ...(e.spellSlots !== undefined ? { spellSlots: e.spellSlots } : {}),
   }));
 }
 
@@ -113,40 +117,42 @@ const fighter: ClassProgression = {
 
 const cleric: ClassProgression = {
   levels: buildLevels([
-    { level:  1, xp:       0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15], spellSlots: [0,0,0,0,0] },
-    { level:  2, xp:    1500, hdDice: 2, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15], spellSlots: [1,0,0,0,0] },
-    { level:  3, xp:    3000, hdDice: 3, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15], spellSlots: [2,0,0,0,0] },
-    { level:  4, xp:    6000, hdDice: 4, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15], spellSlots: [2,1,0,0,0] },
-    { level:  5, xp:   12000, hdDice: 5, hdBonus: 0, thac0: 17, saves: [ 9,10,12,14,12], spellSlots: [2,2,0,0,0] },
-    { level:  6, xp:   25000, hdDice: 6, hdBonus: 0, thac0: 17, saves: [ 9,10,12,14,12], spellSlots: [2,2,1,1,0] },
-    { level:  7, xp:   50000, hdDice: 7, hdBonus: 0, thac0: 17, saves: [ 9,10,12,14,12], spellSlots: [2,2,2,1,1] },
-    { level:  8, xp:  100000, hdDice: 8, hdBonus: 0, thac0: 17, saves: [ 9,10,12,14,12], spellSlots: [3,3,2,2,1] },
-    { level:  9, xp:  200000, hdDice: 9, hdBonus: 0, thac0: 14, saves: [ 6, 7, 9,11, 9], spellSlots: [3,3,3,2,2] },
-    { level: 10, xp:  300000, hdDice: 9, hdBonus: 1, thac0: 14, saves: [ 6, 7, 9,11, 9], spellSlots: [4,4,3,3,2] },
-    { level: 11, xp:  400000, hdDice: 9, hdBonus: 2, thac0: 14, saves: [ 6, 7, 9,11, 9], spellSlots: [4,4,4,3,3] },
-    { level: 12, xp:  500000, hdDice: 9, hdBonus: 3, thac0: 14, saves: [ 6, 7, 9,11, 9], spellSlots: [5,5,4,4,3] },
-    { level: 13, xp:  600000, hdDice: 9, hdBonus: 4, thac0: 12, saves: [ 3, 5, 7, 8, 7], spellSlots: [5,5,5,4,4] },
-    { level: 14, xp:  700000, hdDice: 9, hdBonus: 5, thac0: 12, saves: [ 3, 5, 7, 8, 7], spellSlots: [6,5,5,5,4] },
+    { level:  1, xp:       0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15] },
+    { level:  2, xp:    1500, hdDice: 2, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15] },
+    { level:  3, xp:    3000, hdDice: 3, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15] },
+    { level:  4, xp:    6000, hdDice: 4, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15] },
+    { level:  5, xp:   12000, hdDice: 5, hdBonus: 0, thac0: 17, saves: [ 9,10,12,14,12] },
+    { level:  6, xp:   25000, hdDice: 6, hdBonus: 0, thac0: 17, saves: [ 9,10,12,14,12] },
+    { level:  7, xp:   50000, hdDice: 7, hdBonus: 0, thac0: 17, saves: [ 9,10,12,14,12] },
+    { level:  8, xp:  100000, hdDice: 8, hdBonus: 0, thac0: 17, saves: [ 9,10,12,14,12] },
+    { level:  9, xp:  200000, hdDice: 9, hdBonus: 0, thac0: 14, saves: [ 6, 7, 9,11, 9] },
+    { level: 10, xp:  300000, hdDice: 9, hdBonus: 1, thac0: 14, saves: [ 6, 7, 9,11, 9] },
+    { level: 11, xp:  400000, hdDice: 9, hdBonus: 2, thac0: 14, saves: [ 6, 7, 9,11, 9] },
+    { level: 12, xp:  500000, hdDice: 9, hdBonus: 3, thac0: 14, saves: [ 6, 7, 9,11, 9] },
+    { level: 13, xp:  600000, hdDice: 9, hdBonus: 4, thac0: 12, saves: [ 3, 5, 7, 8, 7] },
+    { level: 14, xp:  700000, hdDice: 9, hdBonus: 5, thac0: 12, saves: [ 3, 5, 7, 8, 7] },
   ]),
+  spellSlotTableId: 'cleric',
 };
 
 const magicUser: ClassProgression = {
   levels: buildLevels([
-    { level:  1, xp:        0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15], spellSlots: [1,0,0,0,0,0] },
-    { level:  2, xp:     2500, hdDice: 2, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15], spellSlots: [2,0,0,0,0,0] },
-    { level:  3, xp:     5000, hdDice: 3, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15], spellSlots: [2,1,0,0,0,0] },
-    { level:  4, xp:    10000, hdDice: 4, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15], spellSlots: [2,2,0,0,0,0] },
-    { level:  5, xp:    20000, hdDice: 5, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15], spellSlots: [2,2,1,0,0,0] },
-    { level:  6, xp:    40000, hdDice: 6, hdBonus: 0, thac0: 17, saves: [11,12,11,14,12], spellSlots: [2,2,2,0,0,0] },
-    { level:  7, xp:    80000, hdDice: 7, hdBonus: 0, thac0: 17, saves: [11,12,11,14,12], spellSlots: [3,2,2,1,0,0] },
-    { level:  8, xp:   150000, hdDice: 8, hdBonus: 0, thac0: 17, saves: [11,12,11,14,12], spellSlots: [3,3,2,2,0,0] },
-    { level:  9, xp:   300000, hdDice: 9, hdBonus: 0, thac0: 17, saves: [11,12,11,14,12], spellSlots: [3,3,3,2,1,0] },
-    { level: 10, xp:   450000, hdDice: 9, hdBonus: 1, thac0: 17, saves: [11,12,11,14,12], spellSlots: [3,3,3,3,2,0] },
-    { level: 11, xp:   600000, hdDice: 9, hdBonus: 2, thac0: 14, saves: [ 8, 9, 8,11, 8], spellSlots: [4,3,3,3,2,1] },
-    { level: 12, xp:   750000, hdDice: 9, hdBonus: 3, thac0: 14, saves: [ 8, 9, 8,11, 8], spellSlots: [4,4,3,3,3,2] },
-    { level: 13, xp:   900000, hdDice: 9, hdBonus: 4, thac0: 14, saves: [ 8, 9, 8,11, 8], spellSlots: [4,4,4,3,3,3] },
-    { level: 14, xp:  1050000, hdDice: 9, hdBonus: 5, thac0: 14, saves: [ 8, 9, 8,11, 8], spellSlots: [4,4,4,4,3,3] },
+    { level:  1, xp:        0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15] },
+    { level:  2, xp:     2500, hdDice: 2, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15] },
+    { level:  3, xp:     5000, hdDice: 3, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15] },
+    { level:  4, xp:    10000, hdDice: 4, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15] },
+    { level:  5, xp:    20000, hdDice: 5, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15] },
+    { level:  6, xp:    40000, hdDice: 6, hdBonus: 0, thac0: 17, saves: [11,12,11,14,12] },
+    { level:  7, xp:    80000, hdDice: 7, hdBonus: 0, thac0: 17, saves: [11,12,11,14,12] },
+    { level:  8, xp:   150000, hdDice: 8, hdBonus: 0, thac0: 17, saves: [11,12,11,14,12] },
+    { level:  9, xp:   300000, hdDice: 9, hdBonus: 0, thac0: 17, saves: [11,12,11,14,12] },
+    { level: 10, xp:   450000, hdDice: 9, hdBonus: 1, thac0: 17, saves: [11,12,11,14,12] },
+    { level: 11, xp:   600000, hdDice: 9, hdBonus: 2, thac0: 14, saves: [ 8, 9, 8,11, 8] },
+    { level: 12, xp:   750000, hdDice: 9, hdBonus: 3, thac0: 14, saves: [ 8, 9, 8,11, 8] },
+    { level: 13, xp:   900000, hdDice: 9, hdBonus: 4, thac0: 14, saves: [ 8, 9, 8,11, 8] },
+    { level: 14, xp:  1050000, hdDice: 9, hdBonus: 5, thac0: 14, saves: [ 8, 9, 8,11, 8] },
   ]),
+  spellSlotTableId: 'magic-user',
 };
 
 const thief: ClassProgression = {
@@ -187,17 +193,18 @@ const dwarf: ClassProgression = {
 
 const elf: ClassProgression = {
   levels: buildLevels([
-    { level:  1, xp:       0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [12,13,13,15,15], spellSlots: [1,0,0,0,0] },
-    { level:  2, xp:    4000, hdDice: 2, hdBonus: 0, thac0: 19, saves: [12,13,13,15,15], spellSlots: [2,0,0,0,0] },
-    { level:  3, xp:    8000, hdDice: 3, hdBonus: 0, thac0: 19, saves: [12,13,13,15,15], spellSlots: [2,1,0,0,0] },
-    { level:  4, xp:   16000, hdDice: 4, hdBonus: 0, thac0: 17, saves: [10,11,11,13,12], spellSlots: [2,2,0,0,0] },
-    { level:  5, xp:   32000, hdDice: 5, hdBonus: 0, thac0: 17, saves: [10,11,11,13,12], spellSlots: [2,2,1,0,0] },
-    { level:  6, xp:   64000, hdDice: 6, hdBonus: 0, thac0: 17, saves: [10,11,11,13,12], spellSlots: [2,2,2,0,0] },
-    { level:  7, xp:  120000, hdDice: 7, hdBonus: 0, thac0: 14, saves: [ 8, 9, 9,10,10], spellSlots: [3,2,2,1,0] },
-    { level:  8, xp:  250000, hdDice: 8, hdBonus: 0, thac0: 14, saves: [ 8, 9, 9,10,10], spellSlots: [3,3,2,2,0] },
-    { level:  9, xp:  400000, hdDice: 9, hdBonus: 0, thac0: 14, saves: [ 8, 9, 9,10,10], spellSlots: [3,3,3,2,1] },
-    { level: 10, xp:  600000, hdDice: 9, hdBonus: 2, thac0: 12, saves: [ 6, 7, 8, 8, 8], spellSlots: [3,3,3,3,2] },
+    { level:  1, xp:       0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [12,13,13,15,15] },
+    { level:  2, xp:    4000, hdDice: 2, hdBonus: 0, thac0: 19, saves: [12,13,13,15,15] },
+    { level:  3, xp:    8000, hdDice: 3, hdBonus: 0, thac0: 19, saves: [12,13,13,15,15] },
+    { level:  4, xp:   16000, hdDice: 4, hdBonus: 0, thac0: 17, saves: [10,11,11,13,12] },
+    { level:  5, xp:   32000, hdDice: 5, hdBonus: 0, thac0: 17, saves: [10,11,11,13,12] },
+    { level:  6, xp:   64000, hdDice: 6, hdBonus: 0, thac0: 17, saves: [10,11,11,13,12] },
+    { level:  7, xp:  120000, hdDice: 7, hdBonus: 0, thac0: 14, saves: [ 8, 9, 9,10,10] },
+    { level:  8, xp:  250000, hdDice: 8, hdBonus: 0, thac0: 14, saves: [ 8, 9, 9,10,10] },
+    { level:  9, xp:  400000, hdDice: 9, hdBonus: 0, thac0: 14, saves: [ 8, 9, 9,10,10] },
+    { level: 10, xp:  600000, hdDice: 9, hdBonus: 2, thac0: 12, saves: [ 6, 7, 8, 8, 8] },
   ]),
+  spellSlotTableId: 'elf',
 };
 
 const halfling: ClassProgression = {
@@ -241,14 +248,15 @@ function scaleXp(archetype: keyof typeof archetypeXp, nextLevelXp: number, maxLe
  * Build a derived ClassProgression from archetype data.
  * Uses the full source archetype level entries up to maxLevel.
  * If nextLevelXp differs from archetype's level-2 XP, scales all XP values.
+ * Pass spellSlotTableId to assign a spell slot table to the result;
+ * spell slots are NOT inherited from the archetype automatically.
  */
 function deriveFromArchetype(
-  archetype: ClassProgression & { sourceClass?: string },
+  archetype: ClassProgression,
   maxLevel: number,
   nextLevelXp: number,
-  spellSlotsOverride?: ClassProgression,
+  spellSlotTableId?: string,
 ): ClassProgression {
-  // Get offset XP values based on the archetype's own XP (ratio scaling)
   const archetypeL2Xp = archetype.levels[1]?.xp ?? nextLevelXp;
   const ratio = nextLevelXp / archetypeL2Xp;
 
@@ -258,15 +266,6 @@ function deriveFromArchetype(
     const src = archetype.levels[sourceIdx];
     const xp = i === 0 ? 0 : Math.round(archetype.levels[sourceIdx].xp * ratio / 500) * 500;
 
-    // Get spell slots from override source if provided, otherwise use archetype's
-    let spellSlots: number[] | undefined;
-    if (spellSlotsOverride) {
-      const slotIdx = Math.min(i, spellSlotsOverride.levels.length - 1);
-      spellSlots = spellSlotsOverride.levels[slotIdx].spellSlots;
-    } else if (src.spellSlots !== undefined) {
-      spellSlots = src.spellSlots;
-    }
-
     levels.push({
       level: i + 1,
       xp,
@@ -274,71 +273,73 @@ function deriveFromArchetype(
       hdBonus: src.hdBonus,
       thac0: src.thac0,
       saves: src.saves,
-      ...(spellSlots !== undefined ? { spellSlots } : {}),
     });
   }
-  return { levels };
+  return {
+    levels,
+    ...(spellSlotTableId !== undefined ? { spellSlotTableId } : {}),
+  };
 }
 
 // ── Advanced Fantasy classes ──────────────────────────────────────────────────
 // Derived from the archetype nearest to the published class role and HD.
 
 // Fighter archetype (d8, max 14)
-const barbarian  = deriveFromArchetype(fighter, 14, 2500);
-const knight     = deriveFromArchetype(fighter, 14, 2500);
-const paladin    = deriveFromArchetype(fighter, 14, 2750); // divine flag but no specific spell type → no spell slots in archetype
-const ranger     = deriveFromArchetype(fighter, 14, 2250); // arcane+divine but no specific type → no slots
+export const barbarian  = deriveFromArchetype(fighter, 14, 2500);
+export const knight     = deriveFromArchetype(fighter, 14, 2500);
+export const paladin    = deriveFromArchetype(fighter, 14, 2750); // divine flag but no specific spell type → no spell slots
+export const ranger     = deriveFromArchetype(fighter, 14, 2250); // arcane+divine but no specific type → no slots
 
 // Thief archetype (d4, max 14)
-const acrobat   = deriveFromArchetype(thief, 14, 1200);
-const assassin  = deriveFromArchetype(thief, 14, 1500);
+export const acrobat   = deriveFromArchetype(thief, 14, 1200);
+export const assassin  = deriveFromArchetype(thief, 14, 1500);
 
 // Cleric archetype (d6)
-const bard          = deriveFromArchetype(cleric, 14, 2000, cleric);
-const drow          = deriveFromArchetype(cleric, 14, 4000, cleric);
-const druid         = deriveFromArchetype(cleric, 14, 2000, cleric);
-const halfOrc       = deriveFromArchetype(halfling, 8, 1800);
-const duergar       = deriveFromArchetype(dwarf, 10, 2800);
-const halfElf       = deriveFromArchetype(elf, 12, 2500); // arcane but no specific type → elf slots limited to 12 levels
+export const bard          = deriveFromArchetype(cleric, 14, 2000, 'cleric');
+export const drow          = deriveFromArchetype(cleric, 14, 4000, 'cleric');
+export const druid         = deriveFromArchetype(cleric, 14, 2000, 'cleric');
+export const halfOrc       = deriveFromArchetype(halfling, 8, 1800);
+export const duergar       = deriveFromArchetype(dwarf, 10, 2800);
+export const halfElf       = deriveFromArchetype(elf, 12, 2500, 'elf'); // elf spell slots capped at 12 levels
 
 // MU archetype (d4, max varies)
-const illusionist   = deriveFromArchetype(magicUser, 14, 2500, magicUser);
-const necromancer   = deriveFromArchetype(magicUser, 14, 2500, magicUser);
-const gnome         = deriveFromArchetype(magicUser,  8, 3000, magicUser);  // d4, max 8
+export const illusionist   = deriveFromArchetype(magicUser, 14, 2500, 'magic-user');
+export const necromancer   = deriveFromArchetype(magicUser, 14, 2500, 'magic-user');
+export const gnome         = deriveFromArchetype(magicUser,  8, 3000, 'magic-user');  // d4, max 8
 
 // Dwarf archetype
-const svirfneblin   = deriveFromArchetype(dwarf, 8, 2400);
+export const svirfneblin   = deriveFromArchetype(dwarf, 8, 2400);
 
 // ── Carcass Crawler classes ───────────────────────────────────────────────────
 
 // Cleric archetype (d6)
-const acolyte          = deriveFromArchetype(cleric, 14, 1500, cleric);
-const beastMaster      = deriveFromArchetype(cleric, 14, 1800);
-const goblin           = deriveFromArchetype(halfling, 8, 2000);
-const hephaestan       = deriveFromArchetype(cleric, 10, 3000);
-const kineticist       = deriveFromArchetype(cleric, 14, 2000);
-const ratling          = deriveFromArchetype(halfling, 8, 2000);
-const mutoid           = deriveFromArchetype(halfling, 8, 1750);
-const changeling       = deriveFromArchetype(cleric, 10, 2500);
-const tiefling         = deriveFromArchetype(cleric, 10, 2500);
-const halflingHearthsinger = deriveFromArchetype(halfling, 8, 2000);
-const halflingReeve    = deriveFromArchetype(halfling, 8, 2500, cleric); // divine → cleric spell slots (capped at 8)
+export const acolyte          = deriveFromArchetype(cleric, 14, 1500, 'cleric');
+export const beastMaster      = deriveFromArchetype(cleric, 14, 1800);
+export const goblin           = deriveFromArchetype(halfling, 8, 2000);
+export const hephaestan       = deriveFromArchetype(cleric, 10, 3000);
+export const kineticist       = deriveFromArchetype(cleric, 14, 2000);
+export const ratling          = deriveFromArchetype(halfling, 8, 2000);
+export const mutoid           = deriveFromArchetype(halfling, 8, 1750);
+export const changeling       = deriveFromArchetype(cleric, 10, 2500);
+export const tiefling         = deriveFromArchetype(cleric, 10, 2500);
+export const halflingHearthsinger = deriveFromArchetype(halfling, 8, 2000);
+export const halflingReeve    = deriveFromArchetype(halfling, 8, 2500, 'cleric'); // divine → cleric spell slots (capped at 8)
 
 // Arcane casters (d6, MU-like spell slots)
-const mage             = deriveFromArchetype(cleric, 14, 2800, magicUser); // d6 fighter-like stats but arcane spells
-const arcaneBard       = deriveFromArchetype(cleric, 14, 2000, magicUser);
-const phaseElf         = deriveFromArchetype(elf, 10, 2800, elf);   // arcaneSpells → elf slots
-const woodElf          = deriveFromArchetype(elf, 10, 3000, cleric); // druidSpells → cleric slots
+export const mage             = deriveFromArchetype(cleric, 14, 2800, 'magic-user'); // d6 fighter-like stats but arcane spells
+export const arcaneBard       = deriveFromArchetype(cleric, 14, 2000, 'magic-user');
+export const phaseElf         = deriveFromArchetype(elf, 10, 2800, 'elf');   // arcaneSpells → elf slots
+export const woodElf          = deriveFromArchetype(elf, 10, 3000, 'cleric'); // druidSpells → cleric slots
 
 // Dwarf archetype (d8)
-const dwarfBrewmaster  = deriveFromArchetype(dwarf, 10, 2500);
-const dwarfRunesmith   = deriveFromArchetype(dwarf, 10, 2800, magicUser); // runesmithSpells → MU slots (approximation)
+export const dwarfBrewmaster  = deriveFromArchetype(dwarf, 10, 2500);
+export const dwarfRunesmith   = deriveFromArchetype(dwarf, 10, 2800, 'magic-user'); // runesmithSpells → MU slots (approximation)
 
 // Fighter archetype (d8)
-const dragonborn  = deriveFromArchetype(fighter, 10, 3000);
+export const dragonborn  = deriveFromArchetype(fighter, 10, 3000);
 
 // Special
-const gargantua = (() => {
+export const gargantua = (() => {
   // d10, max 10, fighter saves/thac0 — custom HD values
   const base = fighter.levels;
   const ratio = 2500 / 2000;
@@ -358,7 +359,7 @@ const gargantua = (() => {
   };
 })();
 
-const mycelian = (() => {
+export const mycelian = (() => {
   // d8, max 6, fighter saves/thac0
   const base = fighter.levels;
   const ratio = 3000 / 2000;
@@ -373,6 +374,67 @@ const mycelian = (() => {
     ]),
   };
 })();
+
+// ── Canonical spell slot tables ───────────────────────────────────────────────
+
+export const DEFAULT_SPELL_SLOT_TABLES: SpellSlotTable[] = [
+  {
+    id: 'cleric',
+    name: 'Cleric',
+    slots: [
+      [0,0,0,0,0],   // level 1
+      [1,0,0,0,0],   // level 2
+      [2,0,0,0,0],   // level 3
+      [2,1,0,0,0],   // level 4
+      [2,2,0,0,0],   // level 5
+      [2,2,1,1,0],   // level 6
+      [2,2,2,1,1],   // level 7
+      [3,3,2,2,1],   // level 8
+      [3,3,3,2,2],   // level 9
+      [4,4,3,3,2],   // level 10
+      [4,4,4,3,3],   // level 11
+      [5,5,4,4,3],   // level 12
+      [5,5,5,4,4],   // level 13
+      [6,5,5,5,4],   // level 14
+    ],
+  },
+  {
+    id: 'magic-user',
+    name: 'Magic-User',
+    slots: [
+      [1,0,0,0,0,0],  // level 1
+      [2,0,0,0,0,0],  // level 2
+      [2,1,0,0,0,0],  // level 3
+      [2,2,0,0,0,0],  // level 4
+      [2,2,1,0,0,0],  // level 5
+      [2,2,2,0,0,0],  // level 6
+      [3,2,2,1,0,0],  // level 7
+      [3,3,2,2,0,0],  // level 8
+      [3,3,3,2,1,0],  // level 9
+      [3,3,3,3,2,0],  // level 10
+      [4,3,3,3,2,1],  // level 11
+      [4,4,3,3,3,2],  // level 12
+      [4,4,4,3,3,3],  // level 13
+      [4,4,4,4,3,3],  // level 14
+    ],
+  },
+  {
+    id: 'elf',
+    name: 'Elf',
+    slots: [
+      [1,0,0,0,0],  // level 1
+      [2,0,0,0,0],  // level 2
+      [2,1,0,0,0],  // level 3
+      [2,2,0,0,0],  // level 4
+      [2,2,1,0,0],  // level 5
+      [2,2,2,0,0],  // level 6
+      [3,2,2,1,0],  // level 7
+      [3,3,2,2,0],  // level 8
+      [3,3,3,2,1],  // level 9
+      [3,3,3,3,2],  // level 10
+    ],
+  },
+];
 
 // ── Main export: class name → ClassProgression ────────────────────────────────
 

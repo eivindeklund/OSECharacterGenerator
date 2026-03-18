@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
+import { CampaignProvider } from '../contexts/CampaignContext';
 import { CharacterProvider } from '../contexts/CharacterContext';
 import i18n from '../utilities/i18n';
 import CharacterSheetScreen from './CharacterSheetScreen';
@@ -28,14 +29,20 @@ describe('CharacterSheetScreen', () => {
     saveCharacter: vi.fn(),
   } as any;
 
+  const mockCampaignContextValue = {
+    effectiveTables: [],
+  } as any;
+
   const renderWithI18n = () => {
     return render(
       <MemoryRouter>
-        <CharacterProvider value={mockContextValue}>
-          <I18nextProvider i18n={i18n}>
-            <CharacterSheetScreen />
-          </I18nextProvider>
-        </CharacterProvider>
+        <CampaignProvider value={mockCampaignContextValue}>
+          <CharacterProvider value={mockContextValue}>
+            <I18nextProvider i18n={i18n}>
+              <CharacterSheetScreen />
+            </I18nextProvider>
+          </CharacterProvider>
+        </CampaignProvider>
       </MemoryRouter>
     );
   };

@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import classOptionsData from '../data/classOptionsData';
+import { DEFAULT_SPELL_SLOT_TABLES } from '../data/levelProgressionData';
 import type {
-        CampaignClassOverride,
-        CampaignLevelEntry,
-        CampaignNewClass,
-        ClassOptionsData,
+  CampaignClassOverride,
+  CampaignLevelEntry,
+  CampaignNewClass,
+  ClassOptionsData,
+  SpellSlotTable,
 } from '../types';
 import { buildCampaignClass } from './buildCampaignClass';
 
@@ -92,26 +94,36 @@ describe('buildCampaignClass — type "new"', () => {
     expect(result.getThac0AtLevel(2)).toBe(16); // clamped to last entry at index 1 → wait, idx = min(2,2)-1=1
   });
 
-  it('returns spell slots from the inline levels array when defined', () => {
+  it('returns spell slots from the named table when spellSlotTableId is set', () => {
+    const customTable: SpellSlotTable = {
+      id: 'test-caster',
+      name: 'Test Caster',
+      slots: [
+        [1, 0, 0],  // level 1
+        [2, 0, 0],  // level 2
+        [2, 1, 0],  // level 3
+      ],
+    };
     const def: CampaignNewClass = {
       ...baseNewClassDef,
       spellListId: 'magic-user',
       magicTypeId: 'arcane',
       limitedSpellSelection: true,
+      spellSlotTableId: 'test-caster',
       levels: [
-        { level: 1, xp: 0,    hdDice: 1, hdBonus: 0, thac0: 19, saves: [15, 16, 17, 18, 19], spellSlots: [1, 0, 0] },
-        { level: 2, xp: 2000, hdDice: 2, hdBonus: 0, thac0: 19, saves: [15, 16, 17, 18, 19], spellSlots: [2, 0, 0] },
-        { level: 3, xp: 4000, hdDice: 3, hdBonus: 0, thac0: 19, saves: [15, 16, 17, 18, 19], spellSlots: [2, 1, 0] },
+        { level: 1, xp: 0,    hdDice: 1, hdBonus: 0, thac0: 19, saves: [15, 16, 17, 18, 19] },
+        { level: 2, xp: 2000, hdDice: 2, hdBonus: 0, thac0: 19, saves: [15, 16, 17, 18, 19] },
+        { level: 3, xp: 4000, hdDice: 3, hdBonus: 0, thac0: 19, saves: [15, 16, 17, 18, 19] },
       ],
     };
     const result = buildCampaignClass(def, baseClasses)!;
-    expect(result.getSpellSlotsAtLevel(1)).toEqual([1, 0, 0]);
-    expect(result.getSpellSlotsAtLevel(3)).toEqual([2, 1, 0]);
+    expect(result.getSpellSlotsAtLevel(1, [customTable])).toEqual([1, 0, 0]);
+    expect(result.getSpellSlotsAtLevel(3, [customTable])).toEqual([2, 1, 0]);
   });
 
   it('returns empty spell slots when spellSlots is not defined on a level entry', () => {
     const result = buildCampaignClass(baseNewClassDef, baseClasses)!;
-    expect(result.getSpellSlotsAtLevel(1)).toEqual([]);
+    expect(result.getSpellSlotsAtLevel(1, DEFAULT_SPELL_SLOT_TABLES)).toEqual([]);
   });
 
   it('isHdRollLevel is false at level 1 and true when hdDice increases', () => {
@@ -221,25 +233,29 @@ describe('buildCampaignClass — type "override"', () => {
     };
     const result = buildCampaignClass(def, baseClasses)!;
     const mu = baseClasses.find((c) => c.name === 'Magic-User')!;
-    expect(result.getSpellSlotsAtLevel(1)).toEqual(mu.getSpellSlotsAtLevel(1));
-    expect(result.getSpellSlotsAtLevel(3)).toEqual(mu.getSpellSlotsAtLevel(3));
+    expect(result.getSpellSlotsAtLevel(1, DEFAULT_SPELL_SLOT_TABLES)).toEqual(mu.getSpellSlotsAtLevel(1, DEFAULT_SPELL_SLOT_TABLES));
+    expect(result.getSpellSlotsAtLevel(3, DEFAULT_SPELL_SLOT_TABLES)).toEqual(mu.getSpellSlotsAtLevel(3, DEFAULT_SPELL_SLOT_TABLES));
   });
 
-  it('spellSlotOverrides replace the standard table per level', () => {
-    const customSlots = [
-      [2, 0, 0, 0, 0, 0],  // level 1
-      [3, 1, 0, 0, 0, 0],  // level 2
-      [3, 2, 0, 0, 0, 0],  // level 3
-    ];
+  it('spellSlotTableId replaces the standard table for the override class', () => {
+    const customTable: SpellSlotTable = {
+      id: 'custom-mu',
+      name: 'Custom Magic-User',
+      slots: [
+        [2, 0, 0, 0, 0, 0],  // level 1
+        [3, 1, 0, 0, 0, 0],  // level 2
+        [3, 2, 0, 0, 0, 0],  // level 3
+      ],
+    };
     const def: CampaignClassOverride = {
       type: 'override',
       baseName: 'Magic-User',
-      spellSlotOverrides: customSlots,
+      spellSlotTableId: 'custom-mu',
     };
     const result = buildCampaignClass(def, baseClasses)!;
-    expect(result.getSpellSlotsAtLevel(1)).toEqual([2, 0, 0, 0, 0, 0]);
-    expect(result.getSpellSlotsAtLevel(2)).toEqual([3, 1, 0, 0, 0, 0]);
-    expect(result.getSpellSlotsAtLevel(3)).toEqual([3, 2, 0, 0, 0, 0]);
+    expect(result.getSpellSlotsAtLevel(1, [customTable])).toEqual([2, 0, 0, 0, 0, 0]);
+    expect(result.getSpellSlotsAtLevel(2, [customTable])).toEqual([3, 1, 0, 0, 0, 0]);
+    expect(result.getSpellSlotsAtLevel(3, [customTable])).toEqual([3, 2, 0, 0, 0, 0]);
   });
 
   it('isHdRollLevel delegates to Fighter progression', () => {

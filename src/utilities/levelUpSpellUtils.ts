@@ -1,4 +1,4 @@
-import type { ClassOptionsData, SpellDefinition } from '../types';
+import type { ClassOptionsData, SpellDefinition, SpellSlotTable } from '../types';
 
 /**
  * Returns every (0-indexed) spell tier whose slot count increased when going
@@ -13,9 +13,10 @@ export function getSpellTiersGained(
   cls: ClassOptionsData,
   fromCharLevel: number,
   toCharLevel: number,
+  spellSlotTables?: SpellSlotTable[],
 ): number[] {
-  const prevSlots = cls.getSpellSlotsAtLevel(fromCharLevel);
-  const nextSlots = cls.getSpellSlotsAtLevel(toCharLevel);
+  const prevSlots = cls.getSpellSlotsAtLevel(fromCharLevel, spellSlotTables);
+  const nextSlots = cls.getSpellSlotsAtLevel(toCharLevel, spellSlotTables);
   if (nextSlots.length === 0) return [];
 
   const tiersGained: number[] = [];
@@ -46,9 +47,10 @@ export function getSpellTierGained(
   cls: ClassOptionsData,
   fromCharLevel: number,
   toCharLevel: number,
+  spellSlotTables: SpellSlotTable[],
 ): number {
-  const prevSlots = cls.getSpellSlotsAtLevel(fromCharLevel);
-  const nextSlots = cls.getSpellSlotsAtLevel(toCharLevel);
+  const prevSlots = cls.getSpellSlotsAtLevel(fromCharLevel, spellSlotTables);
+  const nextSlots = cls.getSpellSlotsAtLevel(toCharLevel, spellSlotTables);
   if (nextSlots.length === 0) return -1;
 
   let highestGained = -1;
