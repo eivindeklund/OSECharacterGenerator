@@ -1,4 +1,4 @@
-type { SpellDefinition } from '../types'
+import type { SpellDefinition } from '../types';
 
 /**
  * combatUse rating constants — 1–5 scale indicating how combat-relevant a spell is.
@@ -14,7 +14,7 @@ export const COMBAT_USE = {
   BOTH:           3,
   MOSTLY_COMBAT:  4,
   COMBAT_ONLY:    5,
-} as const satisfies Record<string, 1 | 2 | 3 | 4 | 5>
+} as const; // TODO not yet supported by web compilation: satisfies Record<string, 1 | 2 | 3 | 4 | 5>
 
 /**
  * Magic-User spells organised by spell level (0-indexed: index 0 = 1st-level spells).
