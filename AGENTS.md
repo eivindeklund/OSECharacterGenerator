@@ -4,6 +4,27 @@ A React/TypeScript single-page application that guides users through step-by-ste
 
 ---
 
+## Development rules
+
+* Only classOptionsData.tsx is allowed to know about particular character
+  classes.  Everything else shall operate based on the properties in the
+  character data exported from that.
+* Assume that ids are valid; do not write code to silently ignore/"fix" problems
+  when ids are invalid.
+* Prefer to use fields and parameters that are always set; if at all reasonable,
+  prefer to initialize with a sane default value at the point of initialization
+  rather than having ?? handling at the point a value is consumed.  Consider ??
+  a code smell.
+* Don't repeat yourself.
+* Use Red/Green TDD.  Exceptions:
+  * Pure refactorings where there's already sufficient tests.
+  * Pure data changes
+* Static data that have invariants shall have tests that check that the
+  invariants are correct.  Example: Checking that the format of a parsable text
+  string is parsable.
+
+---
+
 ## Tech Stack
 
 | Layer | Library / Tool | Version |
@@ -19,109 +40,6 @@ A React/TypeScript single-page application that guides users through step-by-ste
 | URL sharing | lz-string | ^1.5.0 |
 | i18n | i18next + react-i18next | ^21 / ^11 |
 | Character persistence | browser localStorage | — |
-
----
-
-## Development Commands
-
-```bash
-npm run dev            # Vite dev server → http://localhost:3000
-npm run build          # Production build to /dist
-npm run check-types    # TypeScript type-check (no emit)
-npm run test           # Vitest unit tests (single run)
-npm run test:ui        # Vitest interactive UI
-npm run test:e2e       # Playwright e2e (Chrome + Firefox + WebKit)
-npm run test:e2e-ui    # Playwright interactive UI
-npm run test:visual          # Visual regression: compare against baselines
-npm run test:visual-update   # Visual regression: re-capture baselines
-npm run test:e2e-report      # Open HTML report (shows screenshot diffs)
-npm run test:all       # Vitest + Playwright combined
-npm run find-duplicate-code  # jscpd duplicate detection (excludes test files)
-```
-
----
-
-## Repository Map
-
-```
-src/
-  App.tsx                     # Root: initialises DiceBox, renders CharacterGenerator
-  types.ts                    # ALL shared TypeScript interfaces
-  main.tsx                    # React DOM entry point
-  pages/                      # One file per wizard screen + its *.test.tsx
-  hooks/
-    useCharacterManager.ts    # SINGLE source of truth for ALL wizard state
-  data/                       # Static game-rule data (classes, equipment, spells…)
-  constants/constants.tsx     # Global constants, default states, armour type maps
-  utilities/                  # Pure-function helpers + service objects
-  css/                        # Global stylesheets (skeleton, normalize, App)
-  img/                        # Static image assets
-e2e/                          # Playwright end-to-end specs
-reference/OSE.SRD.Wiki/       # Markdown copy of OSE SRD — game reference only, not code
-temp/                         # Scribus .sla files for character sheet design — not code
-public/assets/dice-box/       # Web-worker assets required by @3d-dice/dice-box
-```
-
----
-
-## Visual Regression Tests
-
-Golden-image screenshot tests live in `e2e/visual.spec.js` and run exclusively under the `visual` Playwright project (Chromium, 1280×800). They are excluded from the normal `test:e2e` run so they do not add noise to functional CI.
-
-### Workflow
-
-```bash
-# First time, or after an intentional visual change — capture new baselines:
-npm run test:visual-update
-
-# On every subsequent run — compare against baselines:
-npm run test:visual
-
-# After a failure, open the HTML report to inspect diffs:
-npm run test:e2e-report
-```
-
-### Viewing diffs
-
-When `test:visual` fails, Playwright writes files to a subdirectory of `test-results/` named after the project, a truncated/hashed form of the test title, and the project name again — e.g. `test-results/visual-Visual-regression-—-<hash>-<slug>-visual/`. Inside each folder:
-
-| File | Contents |
-|---|---|
-| `<snapshot-name>-expected.png` | The stored baseline |
-| `<snapshot-name>-actual.png` | What the browser rendered this run |
-| `<snapshot-name>-diff.png` | Pixels that differ, highlighted in magenta |
-| `error-context.md` | Playwright error message and stack trace for the failure |
-
-`npm run test:e2e-report` opens a browser with the HTML report, which includes a side-by-side diff slider for each failing screenshot.
-
-Example file names from real tests:
-
-```text
-test-results
-test-results/.last-run.json
-test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual
-test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual/ability-rolled-actual.png
-test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual/ability-rolled-diff.png
-test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual/ability-rolled-expected.png
-test-results/visual-Visual-regression-—-43d49-n-—-after-rolling-all-stats-visual/error-context.md
-test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual
-test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual/ability-fighter-selected-expected.png
-test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual/ability-fighter-selected-diff.png
-test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual/error-context.md
-test-results/visual-Visual-regression-—-a70d1-y-screen-—-Fighter-selected-visual/ability-fighter-selected-actual.png
-```
-
-
-### Baseline files
-
-Baselines are stored in `e2e/visual.spec.js-snapshots/` as `<name>-visual-<platform>.png`. **Commit these files to git** — they are the ground truth that all future runs compare against. When a design change is intentional, run `test:visual-update` and commit the updated images together with the code change.
-
-### How screenshots are kept stable
-
-- **Deterministic dice rolls** — `Math.random` is replaced at page-init time with a seeded LCG so every roll produces the same values on every run.
-- **Animations disabled** — a `<style>` tag is injected that sets `animation-duration` and `transition-duration` to `0s`, preventing mid-animation frames.
-- **Fixed viewport** — the `visual` project uses 1280×800 so layout never reflows between runs.
-- **1 % pixel tolerance** — `maxDiffPixelRatio: 0.01` absorbs sub-pixel rendering noise without hiding real regressions.
 
 ---
 
@@ -154,7 +72,6 @@ Navigation is **not** part of hook state. `useCharacterManager` calls `useNaviga
 ### Game-rule data
 
 `src/data/classOptionsData.tsx` (~1400 lines) is the central rules file. Each class entry is a plain object that gets converted to class classOptionsData.ClassOptions, which provides includes extra methods, notably:
-
 
 - `xpModifierPercentage(abilityScores)` — returns the XP bonus string for the class.
 - `checkAbilityScoreRequirements(abilityScores)` — returns `true` if the player qualifies.
@@ -209,9 +126,7 @@ Understanding these is required to make sensible changes to game-rule code.
 
 6. **i18n translations are inline** in `src/utilities/i18n.tsx`, not in separate JSON files. Currently English and German are supported.
 
-7. **PDF character sheet templates are hosted remotely** on `matthewfee.github.io`. If that server is down, PDF export will not work (not a local asset).
-
-8. **`emptyClassOptions`** is an exported sentinel object from `classOptionsData.tsx`. It is used as the initial `characterClass` state. Its functions return safe defaults. Never replace it with `null`.
+7. **`emptyClassOptions`** is an exported sentinel object from `classOptionsData.tsx`. It is used as the initial `characterClass` state. Its functions return safe defaults. Never replace it with `null`.
 
 9. **`hpRolls` counter** tracks how many times HP has been re-rolled; it resets only on class change. The UI uses this to decide whether to show "re-roll" affordances.
 ---
