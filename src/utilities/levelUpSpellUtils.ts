@@ -1,4 +1,5 @@
 import {
+  clericSpellsByLevel,
   druidSpellsByLevel,
   illusionistSpellsByLevel,
   magicUserSpellsByLevel,
@@ -20,6 +21,7 @@ export function getSpellsByLevelForClass(
   if (cls.necromancerSpells) return necromancerSpellsByLevel;
   if (cls.runesmithSpells)   return runesmithSpellsByLevel;
   if (cls.druidSpells)       return druidSpellsByLevel;
+  if (cls.divineSpells)      return clericSpellsByLevel;
   if (cls.arcaneSpells)      return magicUserSpellsByLevel;
   return [];
 }

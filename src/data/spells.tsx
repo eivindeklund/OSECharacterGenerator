@@ -1,4 +1,4 @@
-import type { SpellDefinition } from '../types'
+type { SpellDefinition } from '../types'
 
 /**
  * combatUse rating constants — 1–5 scale indicating how combat-relevant a spell is.
@@ -24,29 +24,29 @@ export const COMBAT_USE = {
 export const magicUserSpellsByLevel: readonly (readonly SpellDefinition[])[] = [
   // 1st level
   [
-    { id: 'charm-person',          name: 'Charm Person',          duration: "Special",   range: "120'",  combatUse: COMBAT_USE.BOTH,           shortDesc: '1 humanoid, save vs Spells or treats caster as trusted friend' },
-    { id: 'detect-magic',          name: 'Detect Magic',          duration: "2 turns",   range: "60'",   combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: 'Reveal all magic auras in range' },
-    { id: 'floating-disc',         name: 'Floating Disc',         duration: "6 turns",   range: "6'",    combatUse: COMBAT_USE.OUT_OF_COMBAT,   shortDesc: 'Floating 3\' disc carries up to 5,000 coins; follows caster' },
-    { id: 'hold-portal',           name: 'Hold Portal',           duration: "2d6 turns", range: "10'",   combatUse: COMBAT_USE.BOTH,            shortDesc: 'Holds a door, gate, or window shut' },
-    { id: 'light',                 name: 'Light',                 duration: "6 turns",   range: "120'",  combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: '15\' radius light; or blind a target (save vs Spells)' },
-    { id: 'magic-missile',         name: 'Magic Missile',         duration: "1 turn",    range: "150'",  combatUse: COMBAT_USE.COMBAT_ONLY,     shortDesc: '1d6+1 dmg, auto-hit, no save (1 missile at level 1)' },
-    { id: 'protection-from-evil',  name: 'Protection from Evil',  duration: "6 turns",   range: "Touch", combatUse: COMBAT_USE.BOTH,            shortDesc: '+1 AC and saves; blocks summoned/enchanted creatures from attacking' },
-    { id: 'read-languages',        name: 'Read Languages',        duration: "2 turns",   range: "0",     combatUse: COMBAT_USE.OUT_OF_COMBAT,   shortDesc: 'Read any non-magical text or map' },
-    { id: 'read-magic',            name: 'Read Magic',            duration: "1 turn",    range: "0",     combatUse: COMBAT_USE.OUT_OF_COMBAT,   shortDesc: 'Decipher magical writing on scrolls or spellbooks' },
-    { id: 'shield',                name: 'Shield',                duration: "2 turns",   range: "0",     combatUse: COMBAT_USE.COMBAT_ONLY,     shortDesc: 'AC 17 vs melee, AC 19 vs missiles; immune to Magic Missile' },
-    { id: 'sleep',                 name: 'Sleep',                 duration: "4d4 turns", range: "240'",  combatUse: COMBAT_USE.MOSTLY_COMBAT,   shortDesc: '2d8 HD of creatures (≤4 HD each, lowest HD first), no save' },
-    { id: 'ventriloquism',         name: 'Ventriloquism',         duration: "2 turns",   range: "60'",   combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: 'Throw voice up to 60\' in any direction' },
+    { id: 'charm-person',            name: 'Charm Person',          duration: "Special",   range: "120'",  combatUse: COMBAT_USE.BOTH,           shortDesc: '1 humanoid, save vs Spells or treats caster as trusted friend' },
+    { id: 'detect-magic',            name: 'Detect Magic',          duration: "2 turns",   range: "60'",   combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: 'Reveal all magic auras in range' },
+    { id: 'floating-disc',           name: 'Floating Disc',         duration: "6 turns",   range: "6'",    combatUse: COMBAT_USE.OUT_OF_COMBAT,   shortDesc: 'Floating 3\' disc carries up to 5,000 coins; follows caster' },
+    { id: 'hold-portal',             name: 'Hold Portal',           duration: "2d6 turns", range: "10'",   combatUse: COMBAT_USE.BOTH,            shortDesc: 'Holds a door, gate, or window shut' },
+    { id: 'mu-light',                name: 'Light',                 duration: "6 turns + 1/level",   range: "120'",  combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: '15\' radius light; or blind a target (save vs Spells)' },
+    { id: 'magic-missile',           name: 'Magic Missile',         duration: "1 turn",    range: "150'",  combatUse: COMBAT_USE.COMBAT_ONLY,     shortDesc: '1d6+1 dmg, auto-hit, no save (1 missile at level 1)' },
+    { id: 'mu-protection-from-evil', name: 'Protection from Evil',  duration: "6 turns",   range: "Touch", combatUse: COMBAT_USE.BOTH,            shortDesc: '+1 AC and saves; blocks summoned/enchanted creatures from attacking' },
+    { id: 'read-languages',          name: 'Read Languages',        duration: "2 turns",   range: "0",     combatUse: COMBAT_USE.OUT_OF_COMBAT,   shortDesc: 'Read any non-magical text or map' },
+    { id: 'read-magic',              name: 'Read Magic',            duration: "1 turn",    range: "0",     combatUse: COMBAT_USE.OUT_OF_COMBAT,   shortDesc: 'Decipher magical writing on scrolls or spellbooks' },
+    { id: 'shield',                  name: 'Shield',                duration: "2 turns",   range: "0",     combatUse: COMBAT_USE.COMBAT_ONLY,     shortDesc: 'AC 17 vs melee, AC 19 vs missiles; immune to Magic Missile' },
+    { id: 'sleep',                   name: 'Sleep',                 duration: "4d4 turns", range: "240'",  combatUse: COMBAT_USE.MOSTLY_COMBAT,   shortDesc: '2d8 HD of creatures (≤4 HD each, lowest HD first), no save' },
+    { id: 'ventriloquism',           name: 'Ventriloquism',         duration: "2 turns",   range: "60'",   combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: 'Throw voice up to 60\' in any direction' },
   ],
   // 2nd level
   [
     { id: 'continual-light',       name: 'Continual Light',       duration: "Permanent", range: "120'",  combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: '30\' radius permanent light; or permanently blind a target (save vs Spells)' },
-    { id: 'detect-evil',           name: 'Detect Evil',           duration: "2 turns",   range: "60'",   combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: 'Sense evil intent or enchantment within range' },
+    { id: 'mu-detect-evil',        name: 'Detect Evil',           duration: "2 turns",   range: "60'",   combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: 'Sense evil intent or enchantment within range' },
     { id: 'detect-invisible',      name: 'Detect Invisible',      duration: "6 turns",   range: "10'/level", combatUse: COMBAT_USE.BOTH,        shortDesc: 'See invisible creatures and objects' },
     { id: 'esp',                   name: 'ESP',                   duration: "12 turns",  range: "60'",   combatUse: COMBAT_USE.BOTH,            shortDesc: 'Detect surface thoughts of 1 creature; 1 turn to lock on' },
     { id: 'invisibility',          name: 'Invisibility',          duration: "Permanent", range: "240'",  combatUse: COMBAT_USE.BOTH,            shortDesc: 'Invisible until next attack or dispelled; enemies at −4 to hit' },
     { id: 'knock',                 name: 'Knock',                 duration: "Immediate", range: "60'",   combatUse: COMBAT_USE.OUT_OF_COMBAT,   shortDesc: 'Opens locked, held, or wizard-locked doors or chests' },
     { id: 'levitate',              name: 'Levitate',              duration: "6 turns + 1/level", range: "20'/level", combatUse: COMBAT_USE.MOSTLY_UTILITY, shortDesc: 'Float up or down at 6\'/round; cannot move horizontally' },
-    { id: 'locate-object',         name: 'Locate Object',         duration: "6 turns",   range: "60' + 10'/level", combatUse: COMBAT_USE.OUT_OF_COMBAT, shortDesc: 'Sense direction of a known object within range' },
+    { id: 'mu-locate-object',      name: 'Locate Object',         duration: "6 turns",   range: "60' + 10'/level", combatUse: COMBAT_USE.OUT_OF_COMBAT, shortDesc: 'Sense direction of a known object within range' },
     { id: 'mirror-image',          name: 'Mirror Image',          duration: "6 turns",   range: "0",     combatUse: COMBAT_USE.MOSTLY_COMBAT,   shortDesc: '1d4 illusory duplicates; each absorbs 1 hit; lasts until dispelled' },
     { id: 'phantasmal-force',      name: 'Phantasmal Force',      duration: "Concentration", range: "240'", combatUse: COMBAT_USE.BOTH,         shortDesc: 'Illusion up to 240\'; deals real dmg if believed; save vs Spells to disbelieve' },
     { id: 'web',                   name: 'Web',                   duration: "48 turns",  range: "10'",   combatUse: COMBAT_USE.MOSTLY_COMBAT,   shortDesc: '10\'×10\'×20\' area; save vs Spells or stuck 2d4 turns; flammable (2 rounds)' },
@@ -59,7 +59,7 @@ export const magicUserSpellsByLevel: readonly (readonly SpellDefinition[])[] = [
     { id: 'fire-ball',                        name: 'Fire Ball',                        duration: "Instant",  range: "240'", combatUse: COMBAT_USE.COMBAT_ONLY,    shortDesc: '6d6 fire in 20\' radius sphere; save vs Spells for half' },
     { id: 'fly',                              name: 'Fly',                              duration: "1d6 turns + 1/level", range: "Touch", combatUse: COMBAT_USE.MOSTLY_UTILITY, shortDesc: 'Fly at 120\' per turn (40\' per round); duration is secret' },
     { id: 'haste',                            name: 'Haste',                            duration: "3 turns",  range: "240'", combatUse: COMBAT_USE.MOSTLY_COMBAT,  shortDesc: '2× speed and attacks for 3 turns; ages target 1 year' },
-    { id: 'hold-person',                      name: 'Hold Person',                      duration: "1 turn/level", range: "120'", combatUse: COMBAT_USE.COMBAT_ONLY, shortDesc: '1–4 humanoids; save vs Spells or paralyzed' },
+    { id: 'mu-hold-person',                   name: 'Hold Person',                      duration: "1 turn/level", range: "120'", combatUse: COMBAT_USE.COMBAT_ONLY, shortDesc: '1–4 humanoids; save vs Spells or paralyzed' },
     { id: 'infravision',                      name: 'Infravision',                      duration: "1 day",    range: "Touch", combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Grant 60\' infravision for 1 day' },
     { id: 'invisibility-10-radius',           name: "Invisibility 10' Radius",          duration: "Permanent", range: "240'", combatUse: COMBAT_USE.BOTH,          shortDesc: 'All within 10\' of target invisible until they attack or cast' },
     { id: 'lightning-bolt',                   name: 'Lightning Bolt',                   duration: "Instant",  range: "180'", combatUse: COMBAT_USE.COMBAT_ONLY,    shortDesc: '6d6 lightning, 60\' line; bounces off walls; save vs Spells for half' },
@@ -292,12 +292,70 @@ export const runesmithSpellsByLevel: readonly (readonly SpellDefinition[])[] = [
   { id: 'rune-of-warding',  name: 'Rune of Warding',  duration: "Until triggered", range: "Touch", combatUse: COMBAT_USE.BOTH,           shortDesc: 'Inscribed trap; triggered creature takes 1d10 dmg; save vs Spells for half' },
 ]]
 
+/**
+ * Cleric spells organised by spell level (0-indexed: index 0 = 1st-level spells).
+ * Reversible spells note the reversed form in shortDesc where relevant.
+ * Source: OSE SRD.
+ */
+export const clericSpellsByLevel: readonly (readonly SpellDefinition[])[] = [
+  // 1st level
+  [
+    { id: 'cure-light-wounds',            name: 'Cure Light Wounds',            duration: "Instant",   range: "Touch",  combatUse: COMBAT_USE.BOTH,           shortDesc: 'Heal 1d6+1 HP or cure paralysis; reverse: cause 1d6+1 dmg (melee attack)' },
+    { id: 'cleric-detect-evil',           name: 'Detect Evil',                  duration: "6 turns",   range: "120'",   combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: 'Objects under evil enchantment and creatures with evil intent glow' },
+    { id: 'detect-magic',                 name: 'Detect Magic',                 duration: "2 turns",   range: "60'",    combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: 'Reveal all magic auras in range' },
+    { id: 'cleric-light',                 name: 'Light',                        duration: "12 turns",  range: "120'",   combatUse: COMBAT_USE.MOSTLY_UTILITY,  shortDesc: '15\' radius light or blind target (save vs Spells); reverse: 15\' magical darkness' },
+    { id: 'cleric-protection-from-evil',  name: 'Protection from Evil',         duration: "12 turns",  range: "0",      combatUse: COMBAT_USE.BOTH,            shortDesc: '+1 saves, −1 to enemy attacks; blocks summoned/enchanted melee attacks' },
+    { id: 'purify-food-and-water',        name: 'Purify Food and Water',        duration: "Permanent", range: "10'",    combatUse: COMBAT_USE.OUT_OF_COMBAT,   shortDesc: 'Purify contaminated food/water: 6 qt drink, 1 ration, or food for 12 people' },
+    { id: 'remove-fear',                  name: 'Remove Fear',                  duration: "2 turns",   range: "Touch",  combatUse: COMBAT_USE.BOTH,            shortDesc: 'Purge fear; dispel magical fear (+1/level to save); reverse: cause fear at 120\'' },
+    { id: 'resist-cold',                  name: 'Resist Cold',                  duration: "6 turns",   range: "30'",    combatUse: COMBAT_USE.BOTH,            shortDesc: 'Immune to non-magical cold; +2 saves vs magical cold; −1/die cold damage' },
+  ],
+  // 2nd level
+  [
+    { id: 'bless',                name: 'Bless',                  duration: "6 turns",  range: "60'",   combatUse: COMBAT_USE.BOTH,           shortDesc: '+1 attack/damage/morale to allies in 20\' sq before melee; reverse: −1 penalty (save vs Spells)' },
+    { id: 'find-traps',           name: 'Find Traps',             duration: "2 turns",  range: "30'",   combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Trapped areas glow blue; reveals magical and mechanical traps; no disarming info' },
+    { id: 'cleric-hold-person',   name: 'Hold Person',            duration: "9 turns",  range: "180'",  combatUse: COMBAT_USE.COMBAT_ONLY,    shortDesc: '1 humanoid (save −2) or 1d4 humanoids; save vs Spells or paralyzed; ≤4+1 HD only' },
+    { id: 'know-alignment',       name: 'Know Alignment',         duration: "1 round",  range: "10'",   combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Reveal alignment of 1 creature, object, or area' },
+    { id: 'resist-fire',          name: 'Resist Fire',            duration: "2 turns",  range: "30'",   combatUse: COMBAT_USE.BOTH,           shortDesc: 'Immune to non-magical fire; +2 saves vs magical fire; −1/die fire damage' },
+    { id: 'silence-15-radius',    name: "Silence 15' Radius",     duration: "12 turns", range: "180'",  combatUse: COMBAT_USE.BOTH,           shortDesc: '15\' radius utter silence; spellcasting impossible; cast on creature (save vs Spells)' },
+    { id: 'snake-charm',          name: 'Snake Charm',            duration: "1d4+1 rounds/turns", range: "60'", combatUse: COMBAT_USE.MOSTLY_COMBAT, shortDesc: 'Charm up to 1 HD/level of snakes; 1d4+1 rounds if attacking, turns if not' },
+    { id: 'speak-with-animals',   name: 'Speak with Animals',     duration: "6 turns",  range: "30'",   combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Converse with 1 type of normal/giant animal; may request services (reaction applies)' },
+  ],
+  // 3rd level
+  [
+    { id: 'continual-light',        name: 'Continual Light',   duration: "Permanent", range: "120'",  combatUse: COMBAT_USE.MOSTLY_UTILITY, shortDesc: '30\' radius permanent daylight; or permanently blind target (save vs Spells)' },
+    { id: 'cure-disease',           name: 'Cure Disease',      duration: "Instant",   range: "30'",   combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Cure any disease (incl. magical); kills green slime; reverse: wasting disease (2d12 days, save vs Spells)' },
+    { id: 'growth-of-animal',       name: 'Growth of Animal',  duration: "12 turns",  range: "120'",  combatUse: COMBAT_USE.MOSTLY_COMBAT,  shortDesc: '1 normal/giant animal: double size, damage, and carrying capacity' },
+    { id: 'cleric-locate-object',   name: 'Locate Object',     duration: "6 turns",   range: "120'",  combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Sense direction of a general object type or specific visualised object' },
+    { id: 'remove-curse',           name: 'Remove Curse',      duration: "Instant",   range: "Touch", combatUse: COMBAT_USE.BOTH,           shortDesc: 'Remove one curse; reverse: curse (save vs Spells): −2 saves / −4 attack / −50% ability score' },
+    { id: 'striking',               name: 'Striking',          duration: "1 turn",    range: "30'",   combatUse: COMBAT_USE.MOSTLY_COMBAT,  shortDesc: '1 weapon deals +1d6 damage and counts as magical for 1 turn' },
+  ],
+  // 4th level
+  [
+    { id: 'create-water',                    name: 'Create Water',                    duration: "Permanent", range: "Touch", combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Create ~50 gallons of water (sustains 12 humans + mounts for 1 day)' },
+    { id: 'cure-serious-wounds',             name: 'Cure Serious Wounds',             duration: "Instant",   range: "Touch", combatUse: COMBAT_USE.COMBAT_ONLY,    shortDesc: 'Heal 2d6+2 HP; reverse causes same damage (save vs Spells)' },
+    { id: 'neutralize-poison',               name: 'Neutralize Poison',               duration: "Instant",   range: "Touch", combatUse: COMBAT_USE.BOTH,           shortDesc: 'Neutralize poison in creature or object; revive character dead ≤10 rounds from poison' },
+    { id: 'protection-from-evil-10-radius',  name: "Protection from Evil 10' Radius", duration: "12 turns",  range: "0",    combatUse: COMBAT_USE.BOTH,           shortDesc: '+1 saves, −1 enemy attacks for all allies within 10\'; blocks summoned/enchanted melee' },
+    { id: 'speak-with-plants',               name: 'Speak with Plants',               duration: "3 turns",   range: "30'",   combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Communicate with normal and monstrous plants; request simple favors' },
+    { id: 'sticks-to-snakes',                name: 'Sticks to Snakes',                duration: "6 turns",   range: "120'",  combatUse: COMBAT_USE.MOSTLY_COMBAT,  shortDesc: '2d8 sticks become 1 HD snakes (50% poisonous); follow caster; revert when killed' },
+  ],
+  // 5th level
+  [
+    { id: 'commune',        name: 'Commune',        duration: "3 turns",         range: "0",    combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Ask divine power 3 yes/no questions per casting (6 once/year); once per week only' },
+    { id: 'create-food',    name: 'Create Food',    duration: "Permanent",       range: "0",    combatUse: COMBAT_USE.OUT_OF_COMBAT,  shortDesc: 'Conjure food sufficient for 12 humans + mounts for 1 day' },
+    { id: 'dispel-evil',    name: 'Dispel Evil',    duration: "Concentration",   range: "30'",  combatUse: COMBAT_USE.MOSTLY_COMBAT,  shortDesc: 'Banish/destroy enchanted or undead monsters (save vs Spells); or dispel a cursed item\'s hold' },
+    { id: 'insect-plague',  name: 'Insect Plague',  duration: "Concentration",   range: "480'", combatUse: COMBAT_USE.MOSTLY_COMBAT,  shortDesc: '60\' diameter swarm; obscures vision; drives away ≤2 HD creatures; above ground only' },
+    { id: 'quest',          name: 'Quest',          duration: "Until completed", range: "30'",  combatUse: COMBAT_USE.BOTH,           shortDesc: 'Compel 1 creature to complete a task or suffer a curse (save vs Spells negates)' },
+    { id: 'raise-dead',     name: 'Raise Dead',     duration: "Instant",         range: "120'", combatUse: COMBAT_USE.BOTH,           shortDesc: 'Restore life (dead ≤4 days/level above 7th) or destroy 1 undead; reverse: instant death ray' },
+  ],
+]
+
 const _allSpellsFlat: readonly SpellDefinition[] = [
   ...magicUserSpellsByLevel,
   ...illusionistSpellsByLevel,
   ...necromancerSpellsByLevel,
   ...runesmithSpellsByLevel,
   ...druidSpellsByLevel,
+  ...clericSpellsByLevel,
 ].flat()
 
 /**
@@ -316,6 +374,7 @@ export const allSpellsByName: Readonly<Record<string, SpellDefinition>> = Object
   _allSpellsFlat.map(spell => [spell.name, spell])
 )
 
+// TODO: Rename allSpellByName to spellNameToSpell, and get rid of this since spellNameToSpell[name].id is just as easy as spellNameToId[name].
 /**
  * Map from spell name to spell id.
  * Used by the normalization layer to migrate legacy saves that stored spell names.
