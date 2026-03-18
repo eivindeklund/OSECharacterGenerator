@@ -82,6 +82,11 @@ This is what eivindeklund wants to do before offering the fork back to matthewfe
 [X] Add CSS tests
 [ ] Update "create new UI" skill so it runs e2e tests and CSS tests and capture new golden images.
 [ ] Add skill for updating anything that's close to the UI but should not change anything to run e2e tests and run golden UI checks
+[ ] Update everywhere so the code doesn't guard against stuff not existing in
+    the arrays and fields they should exist in.  Make things as far as possible
+    non-nullable, initializing it correctly at the start.
+[ ] Verify that none of the spells named the same actually are different
+    (typically range or duration).
 
 ### Abilities page
 
