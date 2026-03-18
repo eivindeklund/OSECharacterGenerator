@@ -19,7 +19,7 @@ import weaponsData from "./weaponsData";
 
 const large_weapons = ["long_bow", "two_handed_sword", "polearm"];
 
-type ClassOptionsInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage' | 'allowedArmour' | 'canUseWeapon' | 'getSavingThrowsAtLevel' | 'getThac0AtLevel' | 'getSpellSlotsAtLevel' | 'isHdRollLevel' | 'getHpBonusAtLevel'>;
+export type CharacterClassInput = Omit<ClassOptionsData, 'checkAbilityScoreRequirements' | 'xpModifierPercentage' | 'allowedArmour' | 'canUseWeapon' | 'getSavingThrowsAtLevel' | 'getThac0AtLevel' | 'getSpellSlotsAtLevel' | 'isHdRollLevel' | 'getHpBonusAtLevel'>;
 
 /** Canonical ability IDs for abilities that appear on more than one class — use these instead of magic strings. */
 export const ABILITY_ID = {
@@ -135,9 +135,10 @@ class ClassOptions implements ClassOptionsData {
   magicTypeId?: string;
   limitedSpellSelection?: boolean;
   xpBonusRule?: string;
+  spellSlotTableId?: string;
   levelProgression!: ClassProgression;
 
-  constructor(data: ClassOptionsInput) {
+  constructor(data: CharacterClassInput) {
     Object.assign(this, data);
   }
 

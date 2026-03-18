@@ -124,32 +124,49 @@ export interface ClassAbility {
   shownInList?: boolean;
 }
 
-// ── Class Options ─────────────────────────────────────────────────────────────
+// ── Character Class (base) ───────────────────────────────────────────────────
 
-export interface ClassOptionsData {
+/** Plain data fields shared by all class representations (full, campaign-defined, and override). */
+export interface CharacterClass {
   name: string;
   category: string;
-  requirements: string | null;
-  primeReqs: string[];
+  description: string;
+  armour: string;
+  weapons: string;
   hd: number;
   maxLevel: number;
-  armour: string;
-  // TODO: This should be typed in a way that only allow the appropriate armour ids.
-  allowedArmour: string[];
-  weapons: string;
-  canUseThiefTools?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  canUseWeapon: (w?: any) => boolean;
-  languages: string;
-  description: string;
-  savingThrows: number[];
-  nextLevel: number;
+  requirements: string | null;
+  primeReqs: string[];
   abilities: ClassAbility[];
-  link: string;
+  xpBonusRule?: string;
   spellListId?: string;
   magicTypeId?: string;
   limitedSpellSelection?: boolean;
-  xpBonusRule?: string;
+  /** ID of the spell slot table to use for this class. */
+  spellSlotTableId?: string;
+}
+
+// ── Class Options ─────────────────────────────────────────────────────────────
+
+export interface ClassOptionsData extends CharacterClass {
+  // TODO: Move to CharacterClass, since these should be customizable by
+  // campaigns too.
+  canUseThiefTools?: boolean;
+  languages: string;
+  link: string;
+  // TODO: These should possibly be extracted to be a separate table with an id,
+  // but that's a crappy source code representation when we have a series of
+  // constant tables that are used only once per class.
+  levelProgression: ClassProgression;
+
+  // TODO: Remove.  These are legacy values that are now stored in the
+  // progression tables.
+  savingThrows: number[];
+  nextLevel: number;
+
+  // This is also method, deriving the information from the "armour" field.  It
+  // is structured this way for historical reasons.
+  allowedArmour: string[];
   xpModifierPercentage: (abilityScoreValues: AbilityScores) => string;
   checkAbilityScoreRequirements: (abilityScores: AbilityScores) => boolean;
   getSavingThrowsAtLevel: (level: number) => [number, number, number, number, number];
@@ -157,7 +174,8 @@ export interface ClassOptionsData {
   getSpellSlotsAtLevel: (level: number, spellSlotTables: SpellSlotTable[]) => number[];
   isHdRollLevel: (level: number) => boolean;
   getHpBonusAtLevel: (level: number) => number;
-  levelProgression: ClassProgression;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  canUseWeapon: (w?: any) => boolean;
 }
 
 // ── Character Equipment ───────────────────────────────────────────────────────
@@ -214,54 +232,16 @@ export interface CampaignLevelEntry {
 
 // ── Campaign Class Definitions ────────────────────────────────────────────────
 
-// TODO: This looks exactly like ClassOptionsData except with some optional
-// properties and no methods. Can we unify them?  It's also like
-// ClassOptionsInput, but that type is not exported. Maybe we should export it
-// and use it here instead of duplicating all the properties?
-// It also looks like CampaignNewClass. Can we unify those two as well?
-export interface CampaignClassOverride {
+export interface CampaignClassOverride extends Partial<CharacterClass> {
   type: 'override';
   /** Exact name of the existing class to override. */
   baseName: string;
-  name?: string;
-  category?: string;
-  description?: string;
-  armour?: string;
-  weapons?: string;
-  hd?: number;
-  maxLevel?: number;
-  requirements?: string | null;
-  primeReqs?: string[];
-  xpBonusRule?: string;
-  spellListId?: string;
-  magicTypeId?: string;
-  limitedSpellSelection?: boolean;
-  abilities?: ClassAbility[];
-  /**
-   * Override the spell slot table for this class.
-   * References a table by ID in the campaign's spellSlotTables.
-   */
-  spellSlotTableId?: string;
 }
 
-export interface CampaignNewClass {
+export interface CampaignNewClass extends CharacterClass {
   type: 'new';
-  name: string;
+  /** Narrows CharacterClass.category to campaign-legal values. */
   category: 'basic' | 'advanced' | 'carcass' | 'custom';
-  description: string;
-  armour: string;
-  weapons: string;
-  hd: number;
-  maxLevel: number;
-  requirements: string | null;
-  primeReqs: string[];
-  xpBonusRule?: string;
-  spellListId?: string;
-  magicTypeId?: string;
-  limitedSpellSelection?: boolean;
-  abilities: ClassAbility[];
-  /** ID of the spell slot table to use for this class. */
-  spellSlotTableId?: string;
   /** Full level progression table (one entry per level, 1-indexed). */
   levels: CampaignLevelEntry[];
 }

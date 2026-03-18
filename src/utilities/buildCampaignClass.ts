@@ -1,4 +1,4 @@
-import { ClassOptions } from "../data/classOptionsData";
+import { ClassOptions, type CharacterClassInput } from "../data/classOptionsData";
 import type {
   CampaignClassDefinition,
   CampaignClassOverride,
@@ -10,8 +10,6 @@ import type {
 
 class CampaignNewClassOptions extends ClassOptions {
   constructor(def: CampaignNewClass) {
-    // ClassOptionsInput is not exported; use cast.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     super({
       name: def.name,
       category: def.category,
@@ -32,8 +30,7 @@ class CampaignNewClassOptions extends ClassOptions {
       nextLevel: def.levels[1]?.xp ?? 2000,
       link: "",
       levelProgression: { levels: def.levels, spellSlotTableId: def.spellSlotTableId },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    } as CharacterClassInput);
   }
 }
 
