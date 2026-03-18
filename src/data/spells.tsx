@@ -382,3 +382,35 @@ export const allSpellsByName: Readonly<Record<string, SpellDefinition>> = Object
 export const spellNameToId: Readonly<Record<string, string>> = Object.fromEntries(
   _allSpellsFlat.map(spell => [spell.name, spell.id])
 )
+
+// ── Spell list registry ───────────────────────────────────────────────────────
+
+export const SPELL_LIST_IDS = [
+  'magic-user',
+  'cleric',
+  'druid',
+  'illusionist',
+  'necromancer',
+  'runesmith',
+] as const;
+
+export type SpellListId = typeof SPELL_LIST_IDS[number];
+
+export interface SpellListEntry {
+  id: SpellListId;
+  name: string;
+  byLevel: readonly (readonly SpellDefinition[])[];
+}
+
+export const SPELL_LIST_REGISTRY: Readonly<Record<SpellListId, SpellListEntry>> = {
+  'magic-user':  { id: 'magic-user',  name: 'Magic-User',  byLevel: magicUserSpellsByLevel },
+  'cleric':      { id: 'cleric',      name: 'Cleric',      byLevel: clericSpellsByLevel },
+  'druid':       { id: 'druid',       name: 'Druid',       byLevel: druidSpellsByLevel },
+  'illusionist': { id: 'illusionist', name: 'Illusionist', byLevel: illusionistSpellsByLevel },
+  'necromancer': { id: 'necromancer', name: 'Necromancer', byLevel: necromancerSpellsByLevel },
+  'runesmith':   { id: 'runesmith',   name: 'Runesmith',   byLevel: runesmithSpellsByLevel },
+};
+
+export function getSpellListById(id: string): SpellListEntry | undefined {
+  return SPELL_LIST_REGISTRY[id as SpellListId];
+}

@@ -16,6 +16,25 @@ export const ABILITY_ID = {
   detectRoomTraps:    'detect_room_traps',
 } as const;
 
+// ── Magic type registry ───────────────────────────────────────────────────────
+
+export const MAGIC_TYPE_IDS = ['arcane', 'divine', 'rune'] as const;
+
+export type MagicTypeId = typeof MAGIC_TYPE_IDS[number];
+
+export interface MagicTypeEntry {
+  id: MagicTypeId;
+  name: string;
+  /** Label shown on class detail sheets (e.g. "Arcane Magic"). */
+  label: string;
+}
+
+export const MAGIC_TYPE_REGISTRY: Readonly<Record<MagicTypeId, MagicTypeEntry>> = {
+  arcane: { id: 'arcane', name: 'Arcane', label: 'Arcane Magic' },
+  divine: { id: 'divine', name: 'Divine', label: 'Divine Magic' },
+  rune:   { id: 'rune',   name: 'Rune',   label: 'Rune Magic'   },
+};
+
 // ── Thief Skill Table (OSE B/X, levels 1–14) ──────────────────────────────────
 // Source: OSE SRD, Thief class. HN (Hear Noise) is a 1d6 range; all others are d% roll-under.
 
@@ -100,13 +119,9 @@ class ClassOptions implements ClassOptionsData {
   nextLevel!: number;
   abilities!: ClassAbility[];
   link!: string;
-  arcane!: boolean;
-  divine!: boolean;
-  arcaneSpells?: boolean;
-  druidSpells?: boolean;
-  illusionistSpells?: boolean;
-  necromancerSpells?: boolean;
-  runesmithSpells?: boolean;
+  spellListId?: string;
+  magicTypeId?: string;
+  limitedSpellSelection?: boolean;
   xpBonusRule?: string;
 
   constructor(data: ClassOptionsInput) {
@@ -530,8 +545,6 @@ const classOptionsData = [
     nextLevel: 2000,
     abilities: [{ name: "Stronghold" }],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Fighter",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Cleric",
@@ -552,8 +565,9 @@ const classOptionsData = [
       { name: "Turning the Undead", description: "Roll 2d6: turn 1 HD undead on 7+, 2 HD on 9+, 2* HD on 11+" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Cleric",
-    arcane: false,
-    divine: true,
+    spellListId: 'cleric',
+    magicTypeId: 'divine',
+    limitedSpellSelection: false,
   },
   {
     name: "Magic-User",
@@ -573,9 +587,9 @@ const classOptionsData = [
       { name: "Arcane Magic", description: "Cast arcane spells from spell book; use arcane magic scrolls; use arcane magic items (wands, etc.)" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Magic-User",
-    arcane: true,
-    arcaneSpells: true,
-    divine: false,
+    spellListId: 'magic-user',
+    magicTypeId: 'arcane',
+    limitedSpellSelection: true,
   },
   {
     name: "Thief",
@@ -605,8 +619,6 @@ const classOptionsData = [
       { name: "Scroll Use", description: "Cast arcane spells from scrolls; 10% mishap chance", minLevel: 10 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Thief",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Dwarf",
@@ -629,8 +641,6 @@ const classOptionsData = [
       { id: "listening_at_doors", name: "Listening at Doors", description: "2-in-6 chance of hearing noises", shownInList: false },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Dwarf",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Elf",
@@ -648,16 +658,15 @@ const classOptionsData = [
     savingThrows: [12, 13, 13, 15, 15],
     nextLevel: 4000,
     abilities: [
-      { name: "Arcane Magic", description: "Cast arcane spells from spell book; use arcane magic scrolls; use arcane magic items (wands, etc.)" },
       { id: "detect_secret_doors", name: "Detect Secret Doors", description: "2-in-6 chance to locate secret or hidden doors when searching", shownInList: false },
       { name: "Infravision", description: "60'" },
       { id: "listening_at_doors", name: "Listening at Doors", description: "2-in-6 chance of hearing noises", shownInList: false },
       { name: "Immunity to Ghoul Paralysis", description: "Immune to the paralyzing effect of ghouls" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Elf",
-    arcane: true,
-    arcaneSpells: true,
-    divine: false,
+    spellListId: 'magic-user',
+    magicTypeId: 'arcane',
+    limitedSpellSelection: true,
   },
   {
     name: "Halfling",
@@ -683,8 +692,6 @@ const classOptionsData = [
       { name: "Stronghold", description: "May build a halfling Shire any time sufficient funds are available" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Halfling",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Acrobat",
@@ -708,8 +715,6 @@ const classOptionsData = [
       { name: "Tumbling Attack" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: false,
     classEquivalent: "Thief",
   },
   {
@@ -734,8 +739,6 @@ const classOptionsData = [
       { name: "Assassin Hirelings", minLevel: 4 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: false,
     classEquivalent: "Thief",
   },
   {
@@ -763,8 +766,6 @@ const classOptionsData = [
       { name: "Strike Invulnerable Monsters", minLevel: 4 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Bard",
@@ -782,14 +783,14 @@ const classOptionsData = [
     nextLevel: 2000,
     abilities: [
       { name: "Anti-Charm" },
-      { name: "Divine Magic" },
       { name: "Enchantment" },
       { name: "Languages", minLevel: 4 },
       { name: "Lore", minLevel: 2 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: true,
+    spellListId: 'cleric',
+    magicTypeId: 'divine',
+    limitedSpellSelection: false,
   },
   {
     name: "Drow",
@@ -809,7 +810,6 @@ const classOptionsData = [
     abilities: [
       { id: "detect_secret_doors", name: "Detect Secret Doors" },
       { id: "listening_at_doors", name: "Listening at Doors" },
-      { name: "Divine Magic" },
       { name: "Infravision" },
       { name: "Light Sensitivity" },
       { name: "Spider Affinity" },
@@ -817,8 +817,8 @@ const classOptionsData = [
       { name: "Spell: Light (Darkness)" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: true,
+    magicTypeId: 'divine',
+    limitedSpellSelection: false,
   },
   {
     name: "Druid",
@@ -835,7 +835,6 @@ const classOptionsData = [
     savingThrows: [11, 12, 14, 16, 15],
     nextLevel: 2000,
     abilities: [
-      { name: "Divine Magic" },
       { name: "Energy Resistance" },
       { name: "Identification" },
       { name: "Path-Finding" },
@@ -844,9 +843,9 @@ const classOptionsData = [
       { name: "Charm Immunity", minLevel: 7 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: true,
-    druidSpells: true,
+    spellListId: 'druid',
+    magicTypeId: 'divine',
+    limitedSpellSelection: true,
   },
   {
     name: "Duergar",
@@ -871,8 +870,6 @@ const classOptionsData = [
       { name: "Stealth" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Gnome",
@@ -890,7 +887,6 @@ const classOptionsData = [
     savingThrows: [8, 9, 10, 14, 11],
     nextLevel: 3000,
     abilities: [
-      { name: "Arcane Magic" },
       { name: "Defensive Bonus" },
       { name: "Detect Construction Tricks" },
       { name: "Hiding" },
@@ -899,9 +895,9 @@ const classOptionsData = [
       { name: "Speak with Burrowing Mammals" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: true,
-    arcaneSpells: true,
-    divine: false,
+    spellListId: 'magic-user',
+    magicTypeId: 'arcane',
+    limitedSpellSelection: true,
   },
   {
     name: "Half-Elf",
@@ -918,10 +914,10 @@ const classOptionsData = [
       "Half-elves are the rare offspring of elves and humans. Physically, they tend to combine the best features of the robust physique of humans. They are human-like in stature but always have a feature that marks their elven heritage (e.g. pointed ears or unusually bright eyes). Half-elves are skilled fighters and dabble with magic, though they lack their elvish parents’ mastery of the arcane.",
     savingThrows: [12, 13, 13, 15, 15],
     nextLevel: 2500,
-    abilities: [{ name: "Arcane Magic" }, { id: "detect_secret_doors", name: "Detect Secret Doors" }, { name: "Infravision" }],
+    abilities: [{ id: "detect_secret_doors", name: "Detect Secret Doors" }, { name: "Infravision" }],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: true,
-    divine: false,
+    magicTypeId: 'arcane',
+    limitedSpellSelection: false,
   },
   {
     name: "Half-Orc",
@@ -944,8 +940,6 @@ const classOptionsData = [
       { name: "Thieving Skills (hide in shadows, move silently, pick pockets)" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Illusionist",
@@ -961,11 +955,11 @@ const classOptionsData = [
       "Illusionists are adventurers who study the arcane arts of illusion and deception. Through this study, they have learned to cast magic spells.",
     savingThrows: [13, 14, 13, 16, 15],
     nextLevel: 2500,
-    abilities: [{ name: "Arcane Magic" }],
+    abilities: [],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: true,
-    divine: false,
-    illusionistSpells: true,
+    spellListId: 'illusionist',
+    magicTypeId: 'arcane',
+    limitedSpellSelection: true,
   },
   {
     name: "Knight",
@@ -991,8 +985,6 @@ const classOptionsData = [
       { name: "Flying Mounts", minLevel: 5 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Necromancer",
@@ -1008,11 +1000,11 @@ const classOptionsData = [
       "Necromancers are adventurers who study the arcane arts of death and the undead. Through this study, they have learned to cast magic spells.",
     savingThrows: [13, 14, 13, 16, 15],
     nextLevel: 2500,
-    abilities: [{ name: "Arcane Magic" }],
+    abilities: [],
     link: "https://www.drivethrurpg.com/product/414657/OldSchool-Essentials-The-Necromancer",
-    arcane: true,
-    necromancerSpells: true,
-    divine: false,
+    spellListId: 'necromancer',
+    magicTypeId: 'arcane',
+    limitedSpellSelection: true,
   },
   {
     name: "Paladin",
@@ -1030,7 +1022,6 @@ const classOptionsData = [
     savingThrows: [10, 11, 12, 13, 14],
     nextLevel: 2750,
     abilities: [
-      { name: "Divine Magic" },
       { name: "Holy Resistance" },
       { name: "Laying on Hands" },
       { name: "Turning the Undead" },
@@ -1038,8 +1029,8 @@ const classOptionsData = [
       { name: "War Horse", minLevel: 4 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: true,
+    magicTypeId: 'divine',
+    limitedSpellSelection: false,
   },
   {
     name: "Ranger",
@@ -1057,7 +1048,6 @@ const classOptionsData = [
     nextLevel: 2250,
     abilities: [
       { name: "Awareness" },
-      { name: "Divine Magic" },
       { name: "Foraging and Hunting" },
       { name: "Limited Possessions" },
       { name: "Pursuit" },
@@ -1065,8 +1055,8 @@ const classOptionsData = [
       { name: "Tracking" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: true,
-    divine: false,
+    magicTypeId: 'arcane',
+    limitedSpellSelection: false,
   },
   {
     name: "Svirfneblin",
@@ -1095,8 +1085,6 @@ const classOptionsData = [
       { name: "Using Magic Items" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Acolyte",
@@ -1115,15 +1103,14 @@ const classOptionsData = [
     abilities: [
       { name: "Bless" },
       { name: "Detect Magic" },
-      { name: "Divine Magic" },
       { name: "Know Alignment" },
       { name: "Purify" },
       { name: "Rally" },
       { name: "Turn Undead" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
-    arcane: false,
-    divine: true,
+    magicTypeId: 'divine',
+    limitedSpellSelection: false,
   },
   {
     name: "Gargantua",
@@ -1142,8 +1129,6 @@ const classOptionsData = [
     nextLevel: 2500,
     abilities: [{ name: "Open Doors" }, { name: "Rock Throwing" }],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Goblin",
@@ -1168,8 +1153,6 @@ const classOptionsData = [
       { name: "Wolf Affinity" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Hephaestan",
@@ -1192,8 +1175,6 @@ const classOptionsData = [
       { name: "Neuropressure" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Kineticist",
@@ -1216,8 +1197,6 @@ const classOptionsData = [
       { name: "Neuropressure" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Mage",
@@ -1235,7 +1214,6 @@ const classOptionsData = [
     savingThrows: [12, 13, 12, 15, 14],
     nextLevel: 2800,
     abilities: [
-      { name: "Arcane Magic" },
       { name: "Detect Magic" },
       { name: "Healing" },
       { name: "Mage Armour" },
@@ -1247,8 +1225,8 @@ const classOptionsData = [
       { name: "Suggestion" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
-    arcane: true,
-    divine: false,
+    magicTypeId: 'arcane',
+    limitedSpellSelection: false,
   },
   {
     name: "Phase Elf",
@@ -1266,7 +1244,6 @@ const classOptionsData = [
     savingThrows: [12, 13, 13, 15, 15],
     nextLevel: 2800,
     abilities: [
-      { name: "Arcane Magic" },
       { id: "detect_secret_doors", name: "Detect Secret Doors" },
       { name: "Dual Persona" },
       { name: "Immunity to Ghoul Paralysis" },
@@ -1274,9 +1251,9 @@ const classOptionsData = [
       { id: "listening_at_doors", name: "Listening at Doors" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-2",
-    arcane: true,
-    arcaneSpells: true,
-    divine: false,
+    spellListId: 'magic-user',
+    magicTypeId: 'arcane',
+    limitedSpellSelection: true,
   },
   {
     name: "Wood Elf",
@@ -1296,7 +1273,6 @@ const classOptionsData = [
     abilities: [
       { name: "Awareness" },
       { id: "detect_secret_doors", name: "Detect Secret Doors" },
-      { name: "Divine Magic" },
       { name: "Foraging and Hunting" },
       { name: "Hiding" },
       { name: "Immunity to Ghoul Paralysis" },
@@ -1305,9 +1281,9 @@ const classOptionsData = [
       { name: "Missile Attack Bonus" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-2",
-    arcane: false,
-    divine: true,
-    druidSpells: true,
+    spellListId: 'druid',
+    magicTypeId: 'divine',
+    limitedSpellSelection: true,
   },
   {
     name: "Beast Master",
@@ -1332,8 +1308,6 @@ const classOptionsData = [
       { name: "Speak with Animals" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Dragonborn",
@@ -1358,8 +1332,6 @@ const classOptionsData = [
       { name: "Scales" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Mutoid",
@@ -1381,8 +1353,6 @@ const classOptionsData = [
       { name: "Mutoid Skills (Hide in shadows, mimicry, move silently, pick pockets)" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Mycelian",
@@ -1410,8 +1380,6 @@ const classOptionsData = [
       { name: "Fungal Reanimation", minLevel: 6 },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Tiefling",
@@ -1435,8 +1403,6 @@ const classOptionsData = [
       { name: "Tiefling Skills (Beguile, hear noise, hide in shadows, move silently)" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Halfling Hearthsinger",
@@ -1462,8 +1428,6 @@ const classOptionsData = [
       { name: "Tavern" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-4",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Halfling Reeve",
@@ -1483,7 +1447,6 @@ const classOptionsData = [
     nextLevel: 2500,
     abilities: [
       { name: "Defensive Bonus" },
-      { name: "Divine Magic (4th Level)" },
       { name: "Goblin Slayer" },
       { name: "Limited Possessions" },
       { name: "Stealth" },
@@ -1491,8 +1454,8 @@ const classOptionsData = [
       { name: "Hunting Lodge" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-4",
-    arcane: false,
-    divine: true,
+    magicTypeId: 'divine',
+    limitedSpellSelection: false,
   },
   {
     name: "Arcane Bard",
@@ -1512,13 +1475,12 @@ const classOptionsData = [
     abilities: [
       { name: "Anti-Charm" },
       { name: "Arcane Bard Skills" },
-      { name: "Arcane Magic" },
       { name: "Lore", minLevel: 2 },
       { name: "Manor" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-4",
-    arcane: true,
-    divine: false,
+    magicTypeId: 'arcane',
+    limitedSpellSelection: false,
   },
   {
     name: "Ratling",
@@ -1542,8 +1504,6 @@ const classOptionsData = [
       { name: "Ratling Skills (climb sheer surfaces, detect poison, hear noise, hide in shadows, move silently)" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-5",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Changeling",
@@ -1566,8 +1526,6 @@ const classOptionsData = [
       { name: "Shape-Stealing" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-5",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Dwarf Brewmaster",
@@ -1592,8 +1550,6 @@ const classOptionsData = [
       { id: "listening_at_doors", name: "Listening at Doors" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-6",
-    arcane: false,
-    divine: false,
   },
   {
     name: "Dwarf Runesmith",
@@ -1614,12 +1570,11 @@ const classOptionsData = [
       { name: "Forge-Craft" },
       { name: "Infravision" },
       { id: "listening_at_doors", name: "Listening at Doors" },
-      { name: "Rune Magic" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-6",
-    arcane: false,
-    runesmithSpells: true,
-    divine: false,
+    spellListId: 'runesmith',
+    magicTypeId: 'rune',
+    limitedSpellSelection: true,
   },
 ].map((x) => new ClassOptions(x));
 
@@ -1638,8 +1593,6 @@ const emptyClassOptions = new ClassOptions({
   nextLevel: 0,
   abilities: [],
   link: "",
-  arcane: false,
-  divine: false,
 });
 
 export { ClassOptions, classOptionsData, emptyClassOptions };

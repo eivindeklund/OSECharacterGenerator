@@ -5,7 +5,6 @@ import equipmentData from "../data/equipmentData";
 import weaponsData from "../data/weaponsData";
 import type {
         Campaign,
-        CampaignAllowedSpells,
         CampaignClassOverride,
         CampaignNewClass,
         ClassOptionsData,
@@ -13,26 +12,9 @@ import type {
         SpellDefinition,
         WeaponItem,
 } from "../types";
+import { getSpellListById } from "../data/spells";
 import { buildCampaignClass } from "../utilities/buildCampaignClass";
 import { CampaignService } from "../utilities/CampaignService";
-import { getSpellsByLevelForClass } from "../utilities/levelUpSpellUtils";
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-/**
- * Returns the key into CampaignAllowedSpells / CampaignCustomSpells for the
- * given class, based on its spell-type flags.
- */
-function getSpellTypeKey(cls: ClassOptionsData): keyof CampaignAllowedSpells | null {
-  if (cls.customSpellListId) return cls.customSpellListId;
-  if (cls.illusionistSpells) return "illusionist";
-  if (cls.necromancerSpells) return "necromancer";
-  if (cls.runesmithSpells) return "runesmith";
-  if (cls.druidSpells) return "druid";
-  if (cls.arcaneSpells) return "magicUser";
-  if (cls.divineSpells) return "cleric";
-  return null;
-}
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
@@ -170,57 +152,48 @@ export function useCampaignManager() {
    * Returns the spell lists (grouped by spell level, 0-indexed) available for
    * the given class in the active campaign.
    *
-   * - If the class has a `customSpellListId`, the campaign's custom spell list
-   *   is used as the base.
-   * - Otherwise the standard built-in list for the class's spell type is used.
-   * - Spells are then filtered by `allowedSpellIds` for that type.
+   * - If a campaign custom spell list matches `cls.spellListId`, it is used as the base.
+   * - Otherwise the standard built-in list from the SPELL_LIST_REGISTRY is used.
+   * - Spells are filtered by `allowedSpellIds` for that spell list id.
    * - Custom spells from `customSpells` are appended.
    */
   const getSpellListsForClass = (cls: ClassOptionsData): SpellDefinition[][] => {
     const campaign = activeCampaign;
 
+    if (!cls.spellListId) return [];
+
+    const spellListId = cls.spellListId;
+
     // Determine base spell lists.
     let byLevel: SpellDefinition[][];
-    if (cls.customSpellListId) {
-      const customList = campaign.customSpellLists.find(
-        (l) => l.id === cls.customSpellListId,
-      );
-      if (customList) {
-        const maxLevel = Math.max(...Object.keys(customList.spells).map(Number), 0);
-        byLevel = Array.from({ length: maxLevel }, (_, i) => [
-          ...(customList.spells[i + 1] ?? []),
-        ]);
-      } else {
-        byLevel = (getSpellsByLevelForClass(cls) as SpellDefinition[][]).map(
-          (s) => [...s],
-        );
-      }
+    const customList = campaign.customSpellLists.find((l) => l.id === spellListId);
+    if (customList) {
+      const maxLevel = Math.max(...Object.keys(customList.spells).map(Number), 0);
+      byLevel = Array.from({ length: maxLevel }, (_, i) => [
+        ...(customList.spells[i + 1] ?? []),
+      ]);
     } else {
-      byLevel = (getSpellsByLevelForClass(cls) as SpellDefinition[][]).map(
-        (s) => [...s],
-      );
+      const registryEntry = getSpellListById(spellListId);
+      if (!registryEntry) {
+        throw new Error(`Spell list "${spellListId}" not found in SPELL_LIST_REGISTRY`);
+      }
+      byLevel = registryEntry.byLevel.map((s) => [...s]) as SpellDefinition[][];
     }
 
-    const typeKey = getSpellTypeKey(cls);
-
     // Filter by allowedSpellIds.
-    if (typeKey !== null) {
-      const allowed = campaign.allowedSpellIds[typeKey];
-      if (allowed !== null && allowed !== undefined) {
-        const allowedSet = new Set(allowed);
-        byLevel = byLevel.map((spells) => spells.filter((s) => allowedSet.has(s.id)));
-      }
+    const allowed = campaign.allowedSpellIds[spellListId];
+    if (allowed !== null && allowed !== undefined) {
+      const allowedSet = new Set(allowed);
+      byLevel = byLevel.map((spells) => spells.filter((s) => allowedSet.has(s.id)));
     }
 
     // Append custom spells.
-    if (typeKey !== null) {
-      const customForType = campaign.customSpells[typeKey as string];
-      if (customForType) {
-        byLevel = byLevel.map((spells, i) => {
-          const extra = customForType[i + 1] ?? [];
-          return [...spells, ...(extra as SpellDefinition[])];
-        });
-      }
+    const customForType = campaign.customSpells[spellListId];
+    if (customForType) {
+      byLevel = byLevel.map((spells, i) => {
+        const extra = customForType[i + 1] ?? [];
+        return [...spells, ...(extra as SpellDefinition[])];
+      });
     }
 
     return byLevel;

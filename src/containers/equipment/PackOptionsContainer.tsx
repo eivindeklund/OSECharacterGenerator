@@ -89,7 +89,7 @@ const PackOptionsContainer: React.FC<PackOptionsContainerProps> = ({
   const isMissingHolySymbol: boolean =
     isOptimalTab &&
     canShowOptimal &&
-    !!(characterClass?.divine) &&
+    !!(characterClass?.magicTypeId === 'divine') &&
     !optimalItems?.some((item) => HOLY_SYMBOL_IDS.includes(item.id)) &&
     !playerOwnsHolySymbol;
 

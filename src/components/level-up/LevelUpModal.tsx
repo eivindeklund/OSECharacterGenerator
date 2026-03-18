@@ -5,6 +5,7 @@ import type {
   CharacterStatistics,
   ClassOptionsData,
 } from '../../types';
+import { useCampaign } from '../../contexts/CampaignContext';
 import { getAbilitiesForLevel } from '../../utilities/classAbilities';
 import {
   getAvailableSpellsAtTier,
@@ -38,6 +39,8 @@ export default function LevelUpModal({
   const newLevel = currentLevel + 1;
   const conMod = parseInt(characterModifiers.constitutionMod) || 0;
 
+  const { getSpellListsForClass } = useCampaign();
+
   const isRollLevel = characterClass.isHdRollLevel(newLevel);
   const fixedBonus   = characterClass.getHpBonusAtLevel(newLevel);
 
@@ -60,7 +63,7 @@ export default function LevelUpModal({
     () => getSpellTiersGained(characterClass, currentLevel, newLevel),
     [characterClass, currentLevel, newLevel]
   );
-  const needsSpellSelection = spellTiersGained.length > 0;
+  const needsSpellSelection = characterClass.limitedSpellSelection === true && spellTiersGained.length > 0;
 
   // Known spells before this level-up
   const knownSpells = characterStatistics.spells;
@@ -80,15 +83,16 @@ export default function LevelUpModal({
 
   const availableSpells = useMemo(
     () => {
-      if (currentSpellTier === -1) return [];
+      if (currentSpellTier === -1 || !characterClass.limitedSpellSelection) return [];
+      const byLevel = getSpellListsForClass(characterClass);
       // Only exclude spells chosen in *earlier* steps so the current step's
       // list stays stable while the player is picking.
       const alreadyPicked = spellSelections
         .slice(0, spellStepIndex)
         .filter((s): s is string => s !== null);
-      return getAvailableSpellsAtTier(characterClass, currentSpellTier, [...knownSpells, ...alreadyPicked]);
+      return getAvailableSpellsAtTier(byLevel, currentSpellTier, [...knownSpells, ...alreadyPicked]);
     },
-    [characterClass, currentSpellTier, knownSpells, spellSelections, spellStepIndex],
+    [characterClass, currentSpellTier, getSpellListsForClass, knownSpells, spellSelections, spellStepIndex],
   );
 
   // ── HP calculations ───────────────────────────────────────────────────────

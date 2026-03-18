@@ -1,30 +1,4 @@
-import {
-  clericSpellsByLevel,
-  druidSpellsByLevel,
-  illusionistSpellsByLevel,
-  magicUserSpellsByLevel,
-  necromancerSpellsByLevel,
-  runesmithSpellsByLevel,
-} from '../data/spells';
 import type { ClassOptionsData, SpellDefinition } from '../types';
-
-/**
- * Returns the spell-level progression table for the given class.
- * Index 0 = 1st-level spells, index 1 = 2nd-level spells, etc.
- *
- * Returns an empty array for non-arcane-caster classes.
- */
-export function getSpellsByLevelForClass(
-  cls: ClassOptionsData,
-): readonly (readonly SpellDefinition[])[] {
-  if (cls.illusionistSpells) return illusionistSpellsByLevel;
-  if (cls.necromancerSpells) return necromancerSpellsByLevel;
-  if (cls.runesmithSpells)   return runesmithSpellsByLevel;
-  if (cls.druidSpells)       return druidSpellsByLevel;
-  if (cls.divineSpells)      return clericSpellsByLevel;
-  if (cls.arcaneSpells)      return magicUserSpellsByLevel;
-  return [];
-}
 
 /**
  * Returns every (0-indexed) spell tier whose slot count increased when going
@@ -90,15 +64,14 @@ export function getSpellTierGained(
 }
 
 /**
- * Returns the spells available at a given tier (0-indexed) for the class,
+ * Returns the spells available at a given tier (0-indexed),
  * excluding any already known by the character.
  */
 export function getAvailableSpellsAtTier(
-  cls: ClassOptionsData,
+  byLevel: readonly (readonly SpellDefinition[])[],
   spellTier: number,
   knownSpells: readonly string[],
 ): SpellDefinition[] {
-  const byLevel = getSpellsByLevelForClass(cls);
   // If the tier doesn't exist in our data yet, fall back to the last known tier
   const safeIdx = Math.min(spellTier, byLevel.length - 1);
   if (safeIdx < 0) return [];

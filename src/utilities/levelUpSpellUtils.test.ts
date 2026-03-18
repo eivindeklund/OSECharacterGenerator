@@ -5,29 +5,12 @@ import {
 } from '../data/spells';
 import {
   getAvailableSpellsAtTier,
-  getSpellsByLevelForClass,
   getSpellTierGained,
   getSpellTiersGained,
 } from './levelUpSpellUtils';
 
 const mu = classOptionsData.find((c) => c.name === 'Magic-User')!;
 const fighter = classOptionsData.find((c) => c.name === 'Fighter')!;
-const illusionist = classOptionsData.find((c) => c.name === 'Illusionist');
-const druid = classOptionsData.find((c) => c.name === 'Druid');
-
-describe('getSpellsByLevelForClass', () => {
-  it('returns the Magic-User spell table with 6 tiers', () => {
-    const table = getSpellsByLevelForClass(mu);
-    expect(table.length).toBe(6);
-    expect(table[0].map((s) => s.name)).toContain('Magic Missile');
-    expect(table[1].map((s) => s.name)).toContain('Invisibility');
-    expect(table[2].map((s) => s.name)).toContain('Fire Ball');
-  });
-
-  it('returns an empty array for a Fighter', () => {
-    expect(getSpellsByLevelForClass(fighter)).toEqual([]);
-  });
-});
 
 // Magic-User spell slot progression (from rules):
 //   L1: [1,0,0,0,0,0]   L2: [2,0,0,0,0,0]   L3: [2,1,0,0,0,0]
@@ -69,32 +52,32 @@ describe('getSpellTierGained', () => {
 
 describe('getAvailableSpellsAtTier', () => {
   it('returns L1 MU spells (tier 0) when no spells are known', () => {
-    const available = getAvailableSpellsAtTier(mu, 0, []);
+    const available = getAvailableSpellsAtTier(magicUserSpellsByLevel, 0, []);
     expect(available).toEqual([...magicUserSpellsByLevel[0]]);
     expect(available.map((s) => s.name)).toContain('Sleep');
   });
 
   it('returns L2 MU spells (tier 1) when no spells are known', () => {
-    const available = getAvailableSpellsAtTier(mu, 1, []);
+    const available = getAvailableSpellsAtTier(magicUserSpellsByLevel, 1, []);
     expect(available).toEqual([...magicUserSpellsByLevel[1]]);
     expect(available.map((s) => s.name)).toContain('Invisibility');
     expect(available.map((s) => s.name)).not.toContain('Sleep'); // L1 spell must not appear
   });
 
   it('excludes already-known spells from the results', () => {
-    const available = getAvailableSpellsAtTier(mu, 0, ['sleep', 'magic-missile']);
+    const available = getAvailableSpellsAtTier(magicUserSpellsByLevel, 0, ['sleep', 'magic-missile']);
     expect(available.map((s) => s.name)).not.toContain('Sleep');
     expect(available.map((s) => s.name)).not.toContain('Magic Missile');
     expect(available.map((s) => s.name)).toContain('Charm Person');
   });
 
-  it('returns empty array for a non-caster class', () => {
-    expect(getAvailableSpellsAtTier(fighter, 0, [])).toEqual([]);
+  it('returns empty array for empty byLevel (non-caster)', () => {
+    expect(getAvailableSpellsAtTier([], 0, [])).toEqual([]);
   });
 
   it('falls back to the last available tier when spellTier is out of range', () => {
     // Only 6 tiers for MU. Asking for tier 10 → falls back to tier 5 (last).
-    const available = getAvailableSpellsAtTier(mu, 10, []);
+    const available = getAvailableSpellsAtTier(magicUserSpellsByLevel, 10, []);
     expect(available).toEqual([...magicUserSpellsByLevel[5]]);
   });
 });
@@ -134,7 +117,7 @@ describe('Bug regression: L2→L3 spell selection shows L2 spells', () => {
   });
 
   it('getAvailableSpellsAtTier with tier 1 returns L2 spells (not L1 spells)', () => {
-    const available = getAvailableSpellsAtTier(mu, 1, ['Sleep']); // 'Sleep' is L1, irrelevant
+    const available = getAvailableSpellsAtTier(magicUserSpellsByLevel, 1, ['Sleep']); // 'Sleep' is L1, irrelevant
     expect(available.map((s) => s.name)).toContain('Invisibility'); // L2 spell
     expect(available.map((s) => s.name)).not.toContain('Sleep');    // L1 spell must not appear
     expect(available.map((s) => s.name)).not.toContain('Magic Missile'); // L1 spell must not appear

@@ -33,14 +33,6 @@ const baseNewClassDef: CampaignNewClass = {
   requirements: null,
   primeReqs: ['dexterity'],
   xpBonusRule: 'primeReq:dexterity:13:5%:16:10%',
-  arcane: false,
-  divine: false,
-  arcaneSpells: false,
-  illusionistSpells: false,
-  druidSpells: false,
-  necromancerSpells: false,
-  runesmithSpells: false,
-  customSpellListId: undefined,
   abilities: [{ name: 'Bonus to hit from behind' }],
   levels: makeLevels(10),
 };
@@ -103,8 +95,9 @@ describe('buildCampaignClass — type "new"', () => {
   it('returns spell slots from the inline levels array when defined', () => {
     const def: CampaignNewClass = {
       ...baseNewClassDef,
-      arcane: true,
-      arcaneSpells: true,
+      spellListId: 'magic-user',
+      magicTypeId: 'arcane',
+      limitedSpellSelection: true,
       levels: [
         { level: 1, xp: 0,    hdDice: 1, hdBonus: 0, thac0: 19, saves: [15, 16, 17, 18, 19], spellSlots: [1, 0, 0] },
         { level: 2, xp: 2000, hdDice: 2, hdBonus: 0, thac0: 19, saves: [15, 16, 17, 18, 19], spellSlots: [2, 0, 0] },

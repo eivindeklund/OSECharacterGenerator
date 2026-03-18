@@ -8,8 +8,6 @@ const fighterClass = {
   name: "Fighter",
   armour: "any leather, chainmail, plate, shields",
   weapons: "any",
-  divine: false,
-  arcane: false,
   canUseWeapon: () => true,
 };
 
@@ -17,8 +15,7 @@ const clericClass = {
   name: "Cleric",
   armour: "any leather, chainmail, plate, shields",
   weapons: "blunt",
-  divine: true,
-  arcane: false,
+  magicTypeId: "divine",
   canUseWeapon: (w: { id: string }) =>
     ["mace", "warhammer", "club", "staff", "sling"].includes(w.id),
 };

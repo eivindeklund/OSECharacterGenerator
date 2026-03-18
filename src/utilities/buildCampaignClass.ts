@@ -27,14 +27,9 @@ class CampaignNewClassOptions extends ClassOptions {
       requirements: def.requirements,
       primeReqs: def.primeReqs,
       xpBonusRule: def.xpBonusRule,
-      arcane: def.arcane,
-      divine: def.divine,
-      arcaneSpells: def.arcaneSpells,
-      druidSpells: def.druidSpells,
-      illusionistSpells: def.illusionistSpells,
-      necromancerSpells: def.necromancerSpells,
-      runesmithSpells: def.runesmithSpells,
-      customSpellListId: def.customSpellListId,
+      spellListId: def.spellListId,
+      magicTypeId: def.magicTypeId,
+      limitedSpellSelection: def.limitedSpellSelection,
       abilities: def.abilities,
       languages: "",
       savingThrows: (def.levels[0]?.saves ?? [15, 16, 17, 18, 19]) as number[],
@@ -109,14 +104,9 @@ function buildOverrideClass(
   if (def.requirements !== undefined) patch.requirements = def.requirements;
   if (def.primeReqs !== undefined) patch.primeReqs = def.primeReqs;
   if (def.xpBonusRule !== undefined) patch.xpBonusRule = def.xpBonusRule;
-  if (def.arcane !== undefined) patch.arcane = def.arcane;
-  if (def.divine !== undefined) patch.divine = def.divine;
-  if (def.arcaneSpells !== undefined) patch.arcaneSpells = def.arcaneSpells;
-  if (def.druidSpells !== undefined) patch.druidSpells = def.druidSpells;
-  if (def.illusionistSpells !== undefined) patch.illusionistSpells = def.illusionistSpells;
-  if (def.necromancerSpells !== undefined) patch.necromancerSpells = def.necromancerSpells;
-  if (def.runesmithSpells !== undefined) patch.runesmithSpells = def.runesmithSpells;
-  if (def.customSpellListId !== undefined) patch.customSpellListId = def.customSpellListId;
+  if (def.spellListId !== undefined) patch.spellListId = def.spellListId;
+  if (def.magicTypeId !== undefined) patch.magicTypeId = def.magicTypeId;
+  if (def.limitedSpellSelection !== undefined) patch.limitedSpellSelection = def.limitedSpellSelection;
   if (def.abilities !== undefined) patch.abilities = def.abilities;
   Object.assign(obj, patch);
 

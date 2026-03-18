@@ -114,7 +114,7 @@ function missingMandatoryCosts(
   if (!hasAnyItem(pack, ['rations_standard', 'rations_iron'])) missing.push(CHEAPEST.rations);
   if (!hasItem(pack, 'tinder_box')) missing.push(CHEAPEST.tinder);
 
-  if (cls.divine && !hasAnyItem(pack, ['holy_symbol_silver', 'holy_symbol_wooden', 'holy_symbol_gold'])) {
+  if (cls.magicTypeId === 'divine' && !hasAnyItem(pack, ['holy_symbol_silver', 'holy_symbol_wooden', 'holy_symbol_gold'])) {
     missing.push(CHEAPEST.holy_symbol);
   }
   const THIEF_CLASSES = ['Thief', 'Acrobat', 'Assassin'];

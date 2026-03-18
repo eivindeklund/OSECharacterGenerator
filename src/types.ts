@@ -143,16 +143,9 @@ export interface ClassOptionsData {
   nextLevel: number;
   abilities: ClassAbility[];
   link: string;
-  arcane: boolean;
-  divine: boolean;
-  arcaneSpells?: boolean;
-  druidSpells?: boolean;
-  illusionistSpells?: boolean;
-  necromancerSpells?: boolean;
-  runesmithSpells?: boolean;
-  divineSpells?: boolean;
-  /** ID of a CampaignSpellList to use instead of the built-in spell pool for this class. */
-  customSpellListId?: string;
+  spellListId?: string;
+  magicTypeId?: string;
+  limitedSpellSelection?: boolean;
   xpBonusRule?: string;
   xpModifierPercentage: (abilityScoreValues: AbilityScores) => string;
   checkAbilityScoreRequirements: (abilityScores: AbilityScores) => boolean;
@@ -232,14 +225,9 @@ export interface CampaignClassOverride {
   requirements?: string | null;
   primeReqs?: string[];
   xpBonusRule?: string;
-  arcane?: boolean;
-  divine?: boolean;
-  arcaneSpells?: boolean;
-  druidSpells?: boolean;
-  illusionistSpells?: boolean;
-  necromancerSpells?: boolean;
-  runesmithSpells?: boolean;
-  customSpellListId?: string;
+  spellListId?: string;
+  magicTypeId?: string;
+  limitedSpellSelection?: boolean;
   abilities?: ClassAbility[];
   /** Spell slot table override: index = level−1, value = slots per spell level. */
   spellSlotOverrides?: number[][];
@@ -257,14 +245,9 @@ export interface CampaignNewClass {
   requirements: string | null;
   primeReqs: string[];
   xpBonusRule?: string;
-  arcane: boolean;
-  divine: boolean;
-  arcaneSpells?: boolean;
-  druidSpells?: boolean;
-  illusionistSpells?: boolean;
-  necromancerSpells?: boolean;
-  runesmithSpells?: boolean;
-  customSpellListId?: string;
+  spellListId?: string;
+  magicTypeId?: string;
+  limitedSpellSelection?: boolean;
   abilities: ClassAbility[];
   /** Full level progression table (one entry per level, 1-indexed). */
   levels: CampaignLevelEntry[];
@@ -275,23 +258,11 @@ export type CampaignClassDefinition = CampaignClassOverride | CampaignNewClass;
 // ── Campaign ──────────────────────────────────────────────────────────────────
 
 export interface CampaignAllowedSpells {
-  magicUser?: string[] | null;
-  cleric?: string[] | null;
-  druid?: string[] | null;
-  illusionist?: string[] | null;
-  necromancer?: string[] | null;
-  runesmith?: string[] | null;
-  [customListId: string]: string[] | null | undefined;
+  [spellListId: string]: string[] | null | undefined;
 }
 
 export interface CampaignCustomSpells {
-  magicUser?: { [spellLevel: number]: SpellDefinition[] };
-  cleric?: { [spellLevel: number]: SpellDefinition[] };
-  druid?: { [spellLevel: number]: SpellDefinition[] };
-  illusionist?: { [spellLevel: number]: SpellDefinition[] };
-  necromancer?: { [spellLevel: number]: SpellDefinition[] };
-  runesmith?: { [spellLevel: number]: SpellDefinition[] };
-  [customListId: string]: { [spellLevel: number]: SpellDefinition[] } | undefined;
+  [spellListId: string]: { [spellLevel: number]: SpellDefinition[] } | undefined;
 }
 
 export interface Campaign {

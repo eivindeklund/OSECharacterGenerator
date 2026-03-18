@@ -20,23 +20,14 @@ vi.mock('../../contexts/CampaignContext', () => ({
 
 const arcaneSpellClass = {
   name: 'Magic-User',
-  arcaneSpells: true,
-  divineSpells: false,
-  illusionistSpells: false,
-  druidSpells: false,
-  necromancerSpells: false,
-  runesmithSpells: false,
-} as ClassOptionsData;
+  spellListId: 'magic-user',
+  magicTypeId: 'arcane',
+  limitedSpellSelection: true,
+} as unknown as ClassOptionsData;
 
 const nonSpellClass = {
   name: 'Fighter',
-  arcaneSpells: false,
-  divineSpells: false,
-  illusionistSpells: false,
-  druidSpells: false,
-  necromancerSpells: false,
-  runesmithSpells: false,
-} as ClassOptionsData;
+} as unknown as ClassOptionsData;
 
 const spellList = [
   { id: 'sleep',         name: 'Sleep',          level: 1, type: 'arcane' },

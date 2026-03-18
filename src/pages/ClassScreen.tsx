@@ -21,14 +21,7 @@ export default function ClassScreen() {
   const { getClassSpellSlots } = useCampaign();
   const navigate = useNavigate();
 
-  const hasSpellClass = !!(
-    characterClass.arcaneSpells ||
-    characterClass.divineSpells ||
-    characterClass.illusionistSpells ||
-    characterClass.druidSpells ||
-    characterClass.necromancerSpells ||
-    characterClass.runesmithSpells
-  );
+  const hasSpellClass = !!(characterClass.spellListId && characterClass.limitedSpellSelection);
   const requiredSpells = hasSpellClass
     ? Math.max(1, getClassSpellSlots(characterClass, 1)[0] ?? 1)
     : 0;
@@ -80,14 +73,7 @@ export default function ClassScreen() {
         nextLabel="Equipment"
         requirements={[
           !characterStatistics.hitPoints && "Roll Hit Points",
-          !!(
-            characterClass.arcaneSpells ||
-            characterClass.divineSpells ||
-            characterClass.illusionistSpells ||
-            characterClass.druidSpells ||
-            characterClass.necromancerSpells ||
-            characterClass.runesmithSpells
-          ) &&
+          !!(characterClass.spellListId && characterClass.limitedSpellSelection) &&
             selectedSpells < requiredSpells &&
             (requiredSpells > 1
               ? `Select ${requiredSpells} Spells (${selectedSpells}/${requiredSpells})`

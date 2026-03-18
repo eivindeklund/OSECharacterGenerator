@@ -51,8 +51,6 @@ const baseProps: PDFExportProps = {
     nextLevel: 2000,
     abilities: [],
     link: '',
-    arcane: false,
-    divine: false,
     xpModifierPercentage: () => '0%',
     checkAbilityScoreRequirements: () => true,
     getSavingThrowsAtLevel: () => [12, 13, 14, 15, 16] as [number, number, number, number, number],

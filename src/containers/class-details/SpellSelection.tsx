@@ -16,14 +16,7 @@ export default function SpellSelection({
 }: SpellSelectionProps) {
   const { getSpellListsForClass, getClassSpellSlots } = useCampaign();
 
-  const hasSpells = !!(
-    characterClass.arcaneSpells ||
-    characterClass.divineSpells ||
-    characterClass.illusionistSpells ||
-    characterClass.druidSpells ||
-    characterClass.necromancerSpells ||
-    characterClass.runesmithSpells
-  );
+  const hasSpells = !!(characterClass.spellListId && characterClass.limitedSpellSelection);
 
   // Number of 1st-level spell slots the class gets at character level 1.
   const slotsAtLv1 = getClassSpellSlots(characterClass, 1);

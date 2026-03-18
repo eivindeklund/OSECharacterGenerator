@@ -291,8 +291,8 @@ export function getOptimalEquipmentPack(
   //      class_item_cost + essentials_min_cost.
   const essentialsMinCost = ESSENTIAL_GEAR.reduce((s, g) => s + g.price, 0); // 15
   const classItemCost =
-    (characterClass.divine && bxOnly) ? 25
-    : (characterClass.divine && !bxOnly) ? 1
+    (characterClass.magicTypeId === 'divine' && bxOnly) ? 25
+    : (characterClass.magicTypeId === 'divine' && !bxOnly) ? 1
     : (characterClass.canUseThiefTools ?? false) ? 25
     : 0;
   let meleeTwoHanded = false;
@@ -324,7 +324,7 @@ export function getOptimalEquipmentPack(
   //    Buy immediately after weapon selection (priority over essential gear).
   //    If unaffordable now, attempt again after essential gear in step 3b.
   {
-    if (characterClass.divine) {
+    if (characterClass.magicTypeId === 'divine') {
       // BX only has holy_symbol_silver (25gp); non-BX can use the cheaper wooden (1gp).
       if (bxOnly) {
         buyGearItem('holy_symbol_silver', 25);
@@ -343,7 +343,7 @@ export function getOptimalEquipmentPack(
   }
 
   // ── 3b. Deferred class items (attempt again after essential gear) ──────────
-  if (characterClass.divine && bxOnly && !hasItemId('holy_symbol_silver')) {
+  if (characterClass.magicTypeId === 'divine' && bxOnly && !hasItemId('holy_symbol_silver')) {
     buyGearItem('holy_symbol_silver', 25);
   }
   if ((characterClass.canUseThiefTools ?? false) && !hasItemId('thieves_tools')) {
