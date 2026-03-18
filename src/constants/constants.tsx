@@ -42,6 +42,8 @@ export const lngs = {
 
 export const CHARACTER_STORAGE = "characterStorage";
 export const PARTIAL_CHARACTER_KEY = "partialCharacter";
+export const CAMPAIGNS_STORAGE = "ose-campaigns";
+export const DEFAULT_CAMPAIGN_ID = "default";
 
 export const primeRequisiteModifiers = [
   null,

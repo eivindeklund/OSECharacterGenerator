@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
     abilityScoreNames,
+    DEFAULT_CAMPAIGN_ID,
     defaultAbilityScoresState
 } from "../constants/constants";
 import classOptionsData, { emptyClassOptions } from "../data/classOptionsData";
@@ -100,6 +101,7 @@ export const useCharacterManager = (
   const [pendingRoll, setPendingRoll] = useState(null);
   const [storedCharacters, setStoredCharacters] = useState([]);
   const [partialCharacter, setPartialCharacter] = useState<StoredCharacterData | null>(null);
+  const [characterCampaignId, setCharacterCampaignId] = useState<string>(DEFAULT_CAMPAIGN_ID);
 
   useEffect(() => {
     setStoredCharacters(storageService.loadCharacters());
@@ -145,6 +147,7 @@ export const useCharacterManager = (
       characterClass,
       characterEquipment,
       partial: true,
+      campaignId: characterCampaignId,
     };
     storageService.savePartialCharacter(partialData);
     setPartialCharacter(partialData);
@@ -405,6 +408,7 @@ export const useCharacterManager = (
       characterEquipment,
       characterModifiers,
       abilityScores,
+      campaignId: characterCampaignId,
     };
     const updated = storageService.saveCharacter(characterData);
     setStoredCharacters(updated);
@@ -544,5 +548,7 @@ export const useCharacterManager = (
     partialCharacter,
     discardPartialCharacter,
     clearPartialCharacter,
+    characterCampaignId,
+    setCharacterCampaignId,
   };
 };

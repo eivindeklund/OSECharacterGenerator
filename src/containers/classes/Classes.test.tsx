@@ -1,7 +1,15 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import classOptionsData from '../../data/classOptionsData';
 import Classes, { xpBadgeLabel } from './Classes';
+
+vi.mock('../../contexts/CampaignContext', () => ({
+  useCampaign: () => ({
+    availableClasses: () => classOptionsData,
+    activeCampaign: { allowAdvancedClasses: null, allowCarcassClasses: null },
+  }),
+}));
 
 // Shared props factory
 const makeProps = (

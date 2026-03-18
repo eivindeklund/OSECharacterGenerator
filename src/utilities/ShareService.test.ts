@@ -8,7 +8,8 @@ describe('ShareService', () => {
     abilityScores: { strength: 18, dexterity: 12 },
     characterModifiers: {},
     characterStatistics: { hitPoints: 10, level: 1, spells: [] },
-    characterEquipment: { gold: 100 }
+    characterEquipment: { gold: 100 },
+    campaignId: 'default',
   }
 
   it('should compress and decompress character data correctly', () => {

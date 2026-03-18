@@ -5,6 +5,13 @@ import { CharacterProvider } from '../contexts/CharacterContext';
 import type { StoredCharacterData } from '../types';
 import CharacterStorageScreen from './CharacterStorageScreen';
 
+vi.mock('../contexts/CampaignContext', () => ({
+  useCampaign: () => ({
+    campaigns: [{ id: 'default', name: 'Default Campaign' }],
+    activeCampaignId: null,
+  }),
+}));
+
 // Mock the child component to verify props are passed
 vi.mock('../containers/storage/CharacterStorage', () => {
   return {

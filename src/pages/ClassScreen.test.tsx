@@ -7,6 +7,12 @@ import { CharacterProvider } from '../contexts/CharacterContext';
 import i18n from '../utilities/i18n';
 import ClassScreen from './ClassScreen';
 
+vi.mock('../contexts/CampaignContext', () => ({
+  useCampaign: () => ({
+    getClassSpellSlots: () => [1, 0, 0, 0, 0, 0],
+  }),
+}));
+
 // Mock sub-containers and components
 vi.mock('../containers/class-details/HPRoller', () => ({
   default: () => <div data-testid="hp-roller">HP Roller</div>
@@ -24,11 +30,12 @@ vi.mock('../containers/class-details/SpellSelection', () => ({
 describe('ClassScreen', () => {
   const mockContextValue = {
     characterClass: { name: 'Fighter', primeReqs: ['strength'], hd: 8 },
-    characterStatistics: { hitPoints: 8 },
+    characterStatistics: { hitPoints: 8, spells: [] },
     setCharacterStatistics: vi.fn(),
     characterModifiers: { constitutionMod: '0' },
     diceEnabled: false,
     rollHP: vi.fn(),
+    character: { id: 'test-id' },
   } as any;
 
   const renderWithI18n = () => {

@@ -142,6 +142,8 @@ export interface ClassOptionsData {
   necromancerSpells?: boolean;
   runesmithSpells?: boolean;
   divineSpells?: boolean;
+  /** ID of a CampaignSpellList to use instead of the built-in spell pool for this class. */
+  customSpellListId?: string;
   xpBonusRule?: string;
   xpModifierPercentage: (abilityScoreValues: AbilityScores) => string;
   checkAbilityScoreRequirements: (abilityScores: AbilityScores) => boolean;
@@ -161,6 +163,150 @@ export interface CharacterEquipment {
   gold: number | null;
 }
 
+// ── Equipment Item ────────────────────────────────────────────────────────────
+
+export interface EquipmentItem {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  in_bx_basic?: boolean;
+  in_bx_expert?: boolean;
+}
+
+// ── Weapon Item ───────────────────────────────────────────────────────────────
+
+export interface WeaponItem {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  weight: number;
+  damage: string;
+  qualities: string[];
+}
+
+// ── Campaign Spell List ───────────────────────────────────────────────────────
+
+export interface CampaignSpellList {
+  id: string;
+  name: string;
+  spells: { [level: number]: SpellDefinition[] };
+}
+
+// ── Campaign Level Entry ──────────────────────────────────────────────────────
+
+/** Mirrors LevelEntry from levelProgressionData for use in campaign class definitions. */
+export interface CampaignLevelEntry {
+  level: number;
+  xp: number;
+  hdDice: number;
+  hdBonus: number;
+  thac0: number;
+  saves: [number, number, number, number, number];
+  spellSlots?: number[];
+}
+
+// ── Campaign Class Definitions ────────────────────────────────────────────────
+
+export interface CampaignClassOverride {
+  type: 'override';
+  /** Exact name of the existing class to override. */
+  baseName: string;
+  name?: string;
+  category?: string;
+  description?: string;
+  armour?: string;
+  weapons?: string;
+  hd?: number;
+  maxLevel?: number;
+  requirements?: string | null;
+  primeReqs?: string[];
+  xpBonusRule?: string;
+  arcane?: boolean;
+  divine?: boolean;
+  arcaneSpells?: boolean;
+  druidSpells?: boolean;
+  illusionistSpells?: boolean;
+  necromancerSpells?: boolean;
+  runesmithSpells?: boolean;
+  customSpellListId?: string;
+  abilities?: ClassAbility[];
+  /** Spell slot table override: index = level−1, value = slots per spell level. */
+  spellSlotOverrides?: number[][];
+}
+
+export interface CampaignNewClass {
+  type: 'new';
+  name: string;
+  category: 'basic' | 'advanced' | 'carcass' | 'custom';
+  description: string;
+  armour: string;
+  weapons: string;
+  hd: number;
+  maxLevel: number;
+  requirements: string | null;
+  primeReqs: string[];
+  xpBonusRule?: string;
+  arcane: boolean;
+  divine: boolean;
+  arcaneSpells?: boolean;
+  druidSpells?: boolean;
+  illusionistSpells?: boolean;
+  necromancerSpells?: boolean;
+  runesmithSpells?: boolean;
+  customSpellListId?: string;
+  abilities: ClassAbility[];
+  /** Full level progression table (one entry per level, 1-indexed). */
+  levels: CampaignLevelEntry[];
+}
+
+export type CampaignClassDefinition = CampaignClassOverride | CampaignNewClass;
+
+// ── Campaign ──────────────────────────────────────────────────────────────────
+
+export interface CampaignAllowedSpells {
+  magicUser?: string[] | null;
+  cleric?: string[] | null;
+  druid?: string[] | null;
+  illusionist?: string[] | null;
+  necromancer?: string[] | null;
+  runesmith?: string[] | null;
+  [customListId: string]: string[] | null | undefined;
+}
+
+export interface CampaignCustomSpells {
+  magicUser?: { [spellLevel: number]: SpellDefinition[] };
+  cleric?: { [spellLevel: number]: SpellDefinition[] };
+  druid?: { [spellLevel: number]: SpellDefinition[] };
+  illusionist?: { [spellLevel: number]: SpellDefinition[] };
+  necromancer?: { [spellLevel: number]: SpellDefinition[] };
+  runesmith?: { [spellLevel: number]: SpellDefinition[] };
+  [customListId: string]: { [spellLevel: number]: SpellDefinition[] } | undefined;
+}
+
+export interface Campaign {
+  id: string;
+  name: string;
+  notes: string;
+  allowedClassNames: string[] | null;
+  allowedEquipmentIds: string[] | null;
+  allowedWeaponIds: string[] | null;
+  allowedSpellIds: CampaignAllowedSpells;
+  /** null = player controls; false = always deny (section hidden); true = always show (checkbox hidden) */
+  allowAdvancedClasses: boolean | null;
+  allowCarcassClasses: boolean | null;
+  /** null = player controls B/X checkbox; false = force B/X only; true = force all equipment shown */
+  allowNonBxEquipment: boolean | null;
+  customClasses: CampaignClassDefinition[];
+  customSpellLists: CampaignSpellList[];
+  customEquipment: EquipmentItem[];
+  customWeapons: WeaponItem[];
+  customSpells: CampaignCustomSpells;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ── Stored Character ──────────────────────────────────────────────────────────
 
 export interface StoredCharacterData {
@@ -170,6 +316,8 @@ export interface StoredCharacterData {
   characterEquipment: CharacterEquipment;
   characterModifiers: CharacterModifiers;
   abilityScores: AbilityScores;
+  /** Campaign this character belongs to. Defaults to "default". */
+  campaignId: string;
   /** True for in-progress characters that haven't been saved to the tavern yet */
   partial?: boolean;
 }

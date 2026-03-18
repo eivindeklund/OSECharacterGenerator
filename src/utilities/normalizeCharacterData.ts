@@ -1,5 +1,6 @@
 import { spellNameToId } from "../data/spells";
 import type { CharacterStatistics, StoredCharacterData } from "../types";
+import { DEFAULT_CAMPAIGN_ID } from "../constants/constants";
 
 /**
  * Converts a spell string that may be either a spell name (legacy) or a spell id (current)
@@ -31,8 +32,10 @@ type RawCharacterStatistics = Omit<CharacterStatistics, 'level'> & {
   spells?: string[];
 };
 
-type RawStoredCharacterData = Omit<StoredCharacterData, 'characterStatistics'> & {
+type RawStoredCharacterData = Omit<StoredCharacterData, 'characterStatistics' | 'campaignId'> & {
   characterStatistics: RawCharacterStatistics;
+  /** Missing in saves predating campaign support; defaults to DEFAULT_CAMPAIGN_ID. */
+  campaignId?: string;
 };
 
 /**
@@ -72,6 +75,7 @@ export function normalizeCharacterStatistics(raw: RawCharacterStatistics): Chara
 export function normalizeStoredCharacter(raw: RawStoredCharacterData): StoredCharacterData {
   return {
     ...raw,
+    campaignId: raw.campaignId ?? DEFAULT_CAMPAIGN_ID,
     characterStatistics: normalizeCharacterStatistics(raw.characterStatistics),
   } as StoredCharacterData;
 }

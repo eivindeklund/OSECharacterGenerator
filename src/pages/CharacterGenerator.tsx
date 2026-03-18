@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { Outlet, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
+import { CampaignProvider } from "../contexts/CampaignContext";
 import { CharacterProvider } from "../contexts/CharacterContext";
+import { useCampaignManager } from "../hooks/useCampaignManager";
 import { useCharacterManager } from "../hooks/useCharacterManager";
 import { Dice } from "../utilities/DiceBox";
 import ShareService from "../utilities/ShareService";
 import { StorageService } from "../utilities/StorageService";
 import AbilityScreen from "./AbilityScreen";
+import CampaignLandingScreen from "./CampaignLandingScreen";
+import CampaignSettingsScreen from "./CampaignSettingsScreen";
+import CampaignsScreen from "./CampaignsScreen";
 import CharacterSheetScreen from "./CharacterSheetScreen";
 import CharacterStorageScreen from "./CharacterStorageScreen";
 import ClassScreen from "./ClassScreen";
@@ -71,6 +76,7 @@ function CharacterLoader({ characterContext }) {
 // to refactor some of the state management to make it more manageable and type
 // safe. This is a large task and should be done in a separate branch.
 export default function CharacterGenerator() {
+  const campaignContext = useCampaignManager();
   const characterContext = useCharacterManager(Dice);
   const { importCharacter } = characterContext;
 
@@ -118,6 +124,7 @@ export default function CharacterGenerator() {
   let characterMenuStyle = characterContext.characterRolled ? {} : { display: "none" };
 
   return (
+    <CampaignProvider value={campaignContext}>
     <CharacterProvider value={characterContext}>
       <div className={"layout"}>
         <ScrollToTop />
@@ -144,6 +151,9 @@ export default function CharacterGenerator() {
                   <Route path="sheet" element={<CharacterSheetScreen />} />
                 </Route>
                 <Route path="/tavern" element={<CharacterStorageScreen />} />
+                <Route path="/campaigns" element={<CampaignsScreen />} />
+                <Route path="/campaigns/:id/settings" element={<CampaignSettingsScreen />} />
+                <Route path="/campaign/:id" element={<CampaignLandingScreen />} />
               </Routes>
             </div>
           </div>
@@ -157,5 +167,6 @@ export default function CharacterGenerator() {
         />
       </Routes>
     </CharacterProvider>
+    </CampaignProvider>
   );
 }

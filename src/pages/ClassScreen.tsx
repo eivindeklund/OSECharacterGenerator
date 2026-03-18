@@ -6,6 +6,7 @@ import ScreenNavigation from "../components/general/ScreenNavigation";
 import HPRoller from "../containers/class-details/HPRoller";
 import SpellSelection from "../containers/class-details/SpellSelection";
 import { useCharacter } from "../contexts/CharacterContext";
+import { useCampaign } from "../contexts/CampaignContext";
 
 export default function ClassScreen() {
   const {
@@ -17,7 +18,21 @@ export default function ClassScreen() {
     rollHP,
   } = useCharacter();
 
+  const { getClassSpellSlots } = useCampaign();
   const navigate = useNavigate();
+
+  const hasSpellClass = !!(
+    characterClass.arcaneSpells ||
+    characterClass.divineSpells ||
+    characterClass.illusionistSpells ||
+    characterClass.druidSpells ||
+    characterClass.necromancerSpells ||
+    characterClass.runesmithSpells
+  );
+  const requiredSpells = hasSpellClass
+    ? Math.max(1, getClassSpellSlots(characterClass, 1)[0] ?? 1)
+    : 0;
+  const selectedSpells = characterStatistics.spells.filter((s) => s !== "").length;
 
   return (
     <div className="class-options-screen">
@@ -73,8 +88,10 @@ export default function ClassScreen() {
             characterClass.necromancerSpells ||
             characterClass.runesmithSpells
           ) &&
-            characterStatistics.spells.length === 0 &&
-            "Select a Spell",
+            selectedSpells < requiredSpells &&
+            (requiredSpells > 1
+              ? `Select ${requiredSpells} Spells (${selectedSpells}/${requiredSpells})`
+              : "Select a Spell"),
         ].filter(Boolean)}
       />
     </div>

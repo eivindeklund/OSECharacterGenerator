@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEFAULT_CAMPAIGN_ID } from '../constants/constants';
 import {
   normalizeCharacterStatistics,
   normalizeStoredCharacter,
@@ -135,4 +136,43 @@ describe('normalizeStoredCharacter', () => {
     expect(result.characterStatistics.spells).toEqual(['sleep']);
     expect('spell' in result.characterStatistics).toBe(false);
   });
+
+  it('defaults campaignId to DEFAULT_CAMPAIGN_ID when missing', () => {
+    const raw = {
+      character: { name: 'Zed', id: 'abc' },
+      abilityScores: { strength: 10, intelligence: 10, wisdom: 10, dexterity: 10, constitution: 10, charisma: 10 },
+      characterModifiers: {},
+      characterStatistics: {
+        hitPoints: 4, hpRolls: 1, hpResult: 4, hpSeed: null,
+        armourClass: 9, hasSpells: false, unarmouredAC: null, spells: [],
+      },
+      characterClass: { name: 'Fighter' },
+      characterEquipment: { armour: [], weapons: [], adventuringGear: [], gold: 30 },
+      // campaignId intentionally absent
+    };
+
+    const result = normalizeStoredCharacter(raw as Parameters<typeof normalizeStoredCharacter>[0]);
+
+    expect(result.campaignId).toBe(DEFAULT_CAMPAIGN_ID);
+  });
+
+  it('preserves an existing campaignId', () => {
+    const raw = {
+      character: { name: 'Zed', id: 'abc' },
+      abilityScores: { strength: 10, intelligence: 10, wisdom: 10, dexterity: 10, constitution: 10, charisma: 10 },
+      characterModifiers: {},
+      characterStatistics: {
+        hitPoints: 4, hpRolls: 1, hpResult: 4, hpSeed: null,
+        armourClass: 9, hasSpells: false, unarmouredAC: null, spells: [],
+      },
+      characterClass: { name: 'Fighter' },
+      characterEquipment: { armour: [], weapons: [], adventuringGear: [], gold: 30 },
+      campaignId: 'campaign-abc-123',
+    };
+
+    const result = normalizeStoredCharacter(raw as Parameters<typeof normalizeStoredCharacter>[0]);
+
+    expect(result.campaignId).toBe('campaign-abc-123');
+  });
 });
+

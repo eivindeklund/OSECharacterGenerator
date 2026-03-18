@@ -1,8 +1,9 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import CheckBox from "../components/general/Checkbox";
-import { lngs } from "../constants/constants";
+import { DEFAULT_CAMPAIGN_ID, lngs } from "../constants/constants";
+import { useCampaign } from "../contexts/CampaignContext";
 import { useCharacter } from "../contexts/CharacterContext";
 import designed from "../img/designed.png";
 import { LinkText } from "../utilities/utilities";
@@ -30,7 +31,17 @@ export default function LandingScreen(props: LandingScreenProps) {
     partialCharacter,
     discardPartialCharacter,
     loadCharacter,
+    setCharacterCampaignId,
   } = useCharacter();
+
+  const { campaigns, activeCampaignId, activeCampaign, setActiveCampaign } = useCampaign();
+  const isNonDefaultCampaign = activeCampaignId != null && activeCampaignId !== DEFAULT_CAMPAIGN_ID;
+
+  // Sync the active campaign ID into the character manager so new characters
+  // are stamped with the correct campaign when saved.
+  useEffect(() => {
+    setCharacterCampaignId(activeCampaignId ?? DEFAULT_CAMPAIGN_ID);
+  }, [activeCampaignId, setCharacterCampaignId]);
 
   const override = {
     display: "block",
@@ -55,6 +66,9 @@ export default function LandingScreen(props: LandingScreenProps) {
         style={{ fontSize: (characterRolled && !isPartialLanding) ? "1.4rem" : "" }}
       >
         <Trans i18nKey="AppName">OSE Character Generator</Trans>
+        {isNonDefaultCampaign && (
+          <span className="campaign-badge"> — {activeCampaign.name}</span>
+        )}
       </h2>
       {isInitialLanding && !partialCharacter && (
         <button
@@ -108,6 +122,31 @@ export default function LandingScreen(props: LandingScreenProps) {
         >
           <Trans i18nKey="Tavern"></Trans>
         </button>
+      )}
+
+      {(isInitialLanding || isPartialLanding) && (
+        <div className={`campaign-selector-row ${rollButtonHover ? "fade" : ""}`}>
+          <label htmlFor="campaign-select" className="campaign-selector-label">Campaign:</label>
+          <select
+            id="campaign-select"
+            className="campaign-selector"
+            value={activeCampaignId ?? DEFAULT_CAMPAIGN_ID}
+            onChange={(e) => setActiveCampaign(e.target.value === DEFAULT_CAMPAIGN_ID ? null : e.target.value)}
+          >
+            {campaigns.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+          <button
+            className="button button-primary button--campaigns"
+            onClick={() => {
+              setCharacterRolled(true);
+              navigate('/campaigns');
+            }}
+          >
+            Manage Campaigns
+          </button>
+        </div>
       )}
 
       {(isInitialLanding || isPartialLanding) && (

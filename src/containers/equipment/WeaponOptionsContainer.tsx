@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import weaponsData from "../../data/weaponsData";
 import type { ClassOptionsData } from "../../types";
+import { useCampaign } from "../../contexts/CampaignContext";
 import { checkWeaponQuality, isUniversalWeapon } from "../../utilities/WeaponUtils";
 import ItemOptionsContainer, { ItemData } from "./ItemOptionsContainer";
 
@@ -25,6 +25,8 @@ type WeaponOptionsContainerProps = {
 export default function WeaponOptionsContainer(props: WeaponOptionsContainerProps) {
   const { characterClass, purchaseLedger, handleUpdateLedger } = props;
 
+  const { availableWeapons } = useCampaign();
+
   const [classAppropriate, setClassAppropriate] = useState(true);
   const [activeQualities, setActiveQualities] = useState<Set<string>>(new Set());
 
@@ -48,7 +50,7 @@ export default function WeaponOptionsContainer(props: WeaponOptionsContainerProp
   };
 
   const filteredWeapons = useMemo(() => {
-    let weapons = weaponsData as ItemData[];
+    let weapons = availableWeapons() as ItemData[];
 
     if (classAppropriate) {
       weapons = weapons.filter(w => isItemUsable(w));

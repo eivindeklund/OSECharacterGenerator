@@ -4,7 +4,7 @@ import ClassOptionsButton from "../../components/class/ClassOptionsButton";
 import Button from "../../components/general/Button";
 import Checkbox from "../../components/general/Checkbox";
 import Modal from "../../components/general/Modal";
-import classOptionsData from "../../data/classOptionsData";
+import { useCampaign } from "../../contexts/CampaignContext";
 import type { AbilityScores, ClassOptionsData } from "../../types";
 import ClassDescription from "./ClassDescription";
 
@@ -36,6 +36,13 @@ export function xpBadgeLabel(xpMod: string | null): string {
 export default function ClassOptions(props: ClassOptionsProps) {
   const { characterClass, abilityScores, changeCharacterClass } = props;
 
+  const { availableClasses, activeCampaign } = useCampaign();
+  const allClasses = availableClasses();
+
+  // Campaign lock flags: null = player controls, false = deny+hidden, true = allow+hidden
+  const advLock = activeCampaign.allowAdvancedClasses;
+  const carcassLock = activeCampaign.allowCarcassClasses;
+
   const [showAdvancedClasses, setShowAdvancedClasses] = useState(false);
   const [showCarcassClasses, setShowCarcassClasses] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,7 +56,7 @@ export default function ClassOptions(props: ClassOptionsProps) {
   };
 
   const listClassOptions = (classType) => {
-    const classData = classOptionsData.filter((item) => item.category === classType);
+    const classData = allClasses.filter((item) => item.category === classType);
 
     return classData.map((item) => {
       const selectable = item.checkAbilityScoreRequirements(abilityScores);
@@ -101,32 +108,36 @@ export default function ClassOptions(props: ClassOptionsProps) {
       ></CharacterClasses>
 
       <div className="advanced-classes-container">
-        <div className="advanced-class-item">
-          <span>Advanced Classes</span>
-          <Checkbox
-            value="Advanced Classes"
-            checkedCondition={showAdvancedClasses}
-            callback={() => setShowAdvancedClasses(!showAdvancedClasses)}
-          />
-        </div>
-        <div className="advanced-class-item">
-          <span>Carcass Crawler Classes</span>
-          <Checkbox
-            value="Carcass Crawler Classes"
-            checkedCondition={showCarcassClasses}
-            callback={() => setShowCarcassClasses(!showCarcassClasses)}
-          />
-        </div>
+        {advLock === null && (
+          <div className="advanced-class-item">
+            <span>Advanced Classes</span>
+            <Checkbox
+              value="Advanced Classes"
+              checkedCondition={showAdvancedClasses}
+              callback={() => setShowAdvancedClasses(!showAdvancedClasses)}
+            />
+          </div>
+        )}
+        {carcassLock === null && (
+          <div className="advanced-class-item">
+            <span>Carcass Crawler Classes</span>
+            <Checkbox
+              value="Carcass Crawler Classes"
+              checkedCondition={showCarcassClasses}
+              callback={() => setShowCarcassClasses(!showCarcassClasses)}
+            />
+          </div>
+        )}
       </div>
 
-      {showAdvancedClasses && (
+      {(advLock === true || (advLock === null && showAdvancedClasses)) && (
         <CharacterClasses
           classType="advanced"
           callback={listClassOptions}
         ></CharacterClasses>
       )}
 
-      {showCarcassClasses && (
+      {(carcassLock === true || (carcassLock === null && showCarcassClasses)) && (
         <CharacterClasses
           classType="carcass"
           callback={listClassOptions}

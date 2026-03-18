@@ -7,6 +7,14 @@ import { CharacterProvider } from '../contexts/CharacterContext';
 import i18n from '../utilities/i18n';
 import LandingScreen from './LandingScreen';
 
+vi.mock('../contexts/CampaignContext', () => ({
+  useCampaign: () => ({
+    campaigns: [{ id: 'default', name: 'Default Campaign' }],
+    activeCampaignId: null,
+    setActiveCampaign: vi.fn(),
+  }),
+}));
+
 describe('LandingScreen', () => {
   const defaultContextValue = {
     diceEnabled: true,
@@ -19,6 +27,7 @@ describe('LandingScreen', () => {
     partialCharacter: null,
     discardPartialCharacter: vi.fn(),
     loadCharacter: vi.fn(),
+    setCharacterCampaignId: vi.fn(),
   } as any;
 
   const defaultProps = {
