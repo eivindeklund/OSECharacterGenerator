@@ -74,7 +74,7 @@ export interface ClassProgression {
 
 type SaveTuple = [number, number, number, number, number];
 
-function buildLevels(
+export function buildLevels(
   entries: Array<{
     level: number;
     xp: number;
@@ -96,7 +96,7 @@ function buildLevels(
 
 // ── Basic Classes (verbatim from OSE SRD) ────────────────────────────────────
 
-const fighter: ClassProgression = {
+export const fighter: ClassProgression = {
   levels: buildLevels([
     { level:  1, xp:       0, hdDice: 1, hdBonus:  0, thac0: 19, saves: [12,13,14,15,16] },
     { level:  2, xp:    2000, hdDice: 2, hdBonus:  0, thac0: 19, saves: [12,13,14,15,16] },
@@ -115,7 +115,7 @@ const fighter: ClassProgression = {
   ]),
 };
 
-const cleric: ClassProgression = {
+export const cleric: ClassProgression = {
   levels: buildLevels([
     { level:  1, xp:       0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15] },
     { level:  2, xp:    1500, hdDice: 2, hdBonus: 0, thac0: 19, saves: [11,12,14,16,15] },
@@ -135,7 +135,7 @@ const cleric: ClassProgression = {
   spellSlotTableId: 'cleric',
 };
 
-const magicUser: ClassProgression = {
+export const magicUser: ClassProgression = {
   levels: buildLevels([
     { level:  1, xp:        0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15] },
     { level:  2, xp:     2500, hdDice: 2, hdBonus: 0, thac0: 19, saves: [13,14,13,16,15] },
@@ -155,7 +155,7 @@ const magicUser: ClassProgression = {
   spellSlotTableId: 'magic-user',
 };
 
-const thief: ClassProgression = {
+export const thief: ClassProgression = {
   levels: buildLevels([
     { level:  1, xp:       0, hdDice: 1, hdBonus:  0, thac0: 19, saves: [13,14,13,16,15] },
     { level:  2, xp:    1200, hdDice: 2, hdBonus:  0, thac0: 19, saves: [13,14,13,16,15] },
@@ -174,7 +174,7 @@ const thief: ClassProgression = {
   ]),
 };
 
-const dwarf: ClassProgression = {
+export const dwarf: ClassProgression = {
   levels: buildLevels([
     { level:  1, xp:       0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [ 8, 9,10,13,12] },
     { level:  2, xp:    2200, hdDice: 2, hdBonus: 0, thac0: 19, saves: [ 8, 9,10,13,12] },
@@ -191,7 +191,7 @@ const dwarf: ClassProgression = {
   ]),
 };
 
-const elf: ClassProgression = {
+export const elf: ClassProgression = {
   levels: buildLevels([
     { level:  1, xp:       0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [12,13,13,15,15] },
     { level:  2, xp:    4000, hdDice: 2, hdBonus: 0, thac0: 19, saves: [12,13,13,15,15] },
@@ -207,7 +207,7 @@ const elf: ClassProgression = {
   spellSlotTableId: 'elf',
 };
 
-const halfling: ClassProgression = {
+export const halfling: ClassProgression = {
   levels: buildLevels([
     { level: 1, xp:      0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [ 8, 9,10,13,12] },
     { level: 2, xp:   2000, hdDice: 2, hdBonus: 0, thac0: 19, saves: [ 8, 9,10,13,12] },
@@ -225,24 +225,6 @@ const halfling: ClassProgression = {
 // Generate a ClassProgression by scaling an archetype's XP values and
 // applying the same saves/thac0/spellSlots pattern, capped at maxLevel.
 
-/** XP progression lists for each archetype (level-2 XP first, index 0 = level 2). */
-const archetypeXp = {
-  fighter:   [2000, 4000, 8000, 16000, 32000, 64000, 120000, 240000, 360000, 480000, 600000, 720000, 840000],
-  cleric:    [1500, 3000, 6000, 12000, 25000, 50000, 100000, 200000, 300000, 400000, 500000, 600000, 700000],
-  magicUser: [2500, 5000, 10000, 20000, 40000, 80000, 150000, 300000, 450000, 600000, 750000, 900000, 1050000],
-  thief:     [1200, 2400, 4800, 9600, 20000, 40000, 80000, 160000, 280000, 400000, 520000, 640000, 760000],
-  dwarf:     [2200, 4400, 8800, 17000, 35000, 70000, 140000, 270000, 400000, 530000, 660000],
-  elf:       [4000, 8000, 16000, 32000, 64000, 120000, 250000, 400000, 600000],
-  halfling:  [2000, 4000, 8000, 16000, 32000, 64000, 120000],
-};
-
-function scaleXp(archetype: keyof typeof archetypeXp, nextLevelXp: number, maxLevel: number): number[] {
-  const base = archetypeXp[archetype];
-  const level2Xp = base[0];
-  const ratio = nextLevelXp / level2Xp;
-  const scaled = [0, ...base.map(xp => Math.round(xp * ratio / 500) * 500)];
-  return scaled.slice(0, maxLevel);
-}
 
 /**
  * Build a derived ClassProgression from archetype data.
@@ -251,7 +233,7 @@ function scaleXp(archetype: keyof typeof archetypeXp, nextLevelXp: number, maxLe
  * Pass spellSlotTableId to assign a spell slot table to the result;
  * spell slots are NOT inherited from the archetype automatically.
  */
-function deriveFromArchetype(
+export function deriveFromArchetype(
   archetype: ClassProgression,
   maxLevel: number,
   nextLevelXp: number,
@@ -280,100 +262,6 @@ function deriveFromArchetype(
     ...(spellSlotTableId !== undefined ? { spellSlotTableId } : {}),
   };
 }
-
-// ── Advanced Fantasy classes ──────────────────────────────────────────────────
-// Derived from the archetype nearest to the published class role and HD.
-
-// Fighter archetype (d8, max 14)
-export const barbarian  = deriveFromArchetype(fighter, 14, 2500);
-export const knight     = deriveFromArchetype(fighter, 14, 2500);
-export const paladin    = deriveFromArchetype(fighter, 14, 2750); // divine flag but no specific spell type → no spell slots
-export const ranger     = deriveFromArchetype(fighter, 14, 2250); // arcane+divine but no specific type → no slots
-
-// Thief archetype (d4, max 14)
-export const acrobat   = deriveFromArchetype(thief, 14, 1200);
-export const assassin  = deriveFromArchetype(thief, 14, 1500);
-
-// Cleric archetype (d6)
-export const bard          = deriveFromArchetype(cleric, 14, 2000, 'cleric');
-export const drow          = deriveFromArchetype(cleric, 14, 4000, 'cleric');
-export const druid         = deriveFromArchetype(cleric, 14, 2000, 'cleric');
-export const halfOrc       = deriveFromArchetype(halfling, 8, 1800);
-export const duergar       = deriveFromArchetype(dwarf, 10, 2800);
-export const halfElf       = deriveFromArchetype(elf, 12, 2500, 'elf'); // elf spell slots capped at 12 levels
-
-// MU archetype (d4, max varies)
-export const illusionist   = deriveFromArchetype(magicUser, 14, 2500, 'magic-user');
-export const necromancer   = deriveFromArchetype(magicUser, 14, 2500, 'magic-user');
-export const gnome         = deriveFromArchetype(magicUser,  8, 3000, 'magic-user');  // d4, max 8
-
-// Dwarf archetype
-export const svirfneblin   = deriveFromArchetype(dwarf, 8, 2400);
-
-// ── Carcass Crawler classes ───────────────────────────────────────────────────
-
-// Cleric archetype (d6)
-export const acolyte          = deriveFromArchetype(cleric, 14, 1500, 'cleric');
-export const beastMaster      = deriveFromArchetype(cleric, 14, 1800);
-export const goblin           = deriveFromArchetype(halfling, 8, 2000);
-export const hephaestan       = deriveFromArchetype(cleric, 10, 3000);
-export const kineticist       = deriveFromArchetype(cleric, 14, 2000);
-export const ratling          = deriveFromArchetype(halfling, 8, 2000);
-export const mutoid           = deriveFromArchetype(halfling, 8, 1750);
-export const changeling       = deriveFromArchetype(cleric, 10, 2500);
-export const tiefling         = deriveFromArchetype(cleric, 10, 2500);
-export const halflingHearthsinger = deriveFromArchetype(halfling, 8, 2000);
-export const halflingReeve    = deriveFromArchetype(halfling, 8, 2500, 'cleric'); // divine → cleric spell slots (capped at 8)
-
-// Arcane casters (d6, MU-like spell slots)
-export const mage             = deriveFromArchetype(cleric, 14, 2800, 'magic-user'); // d6 fighter-like stats but arcane spells
-export const arcaneBard       = deriveFromArchetype(cleric, 14, 2000, 'magic-user');
-export const phaseElf         = deriveFromArchetype(elf, 10, 2800, 'elf');   // arcaneSpells → elf slots
-export const woodElf          = deriveFromArchetype(elf, 10, 3000, 'cleric'); // druidSpells → cleric slots
-
-// Dwarf archetype (d8)
-export const dwarfBrewmaster  = deriveFromArchetype(dwarf, 10, 2500);
-export const dwarfRunesmith   = deriveFromArchetype(dwarf, 10, 2800, 'magic-user'); // runesmithSpells → MU slots (approximation)
-
-// Fighter archetype (d8)
-export const dragonborn  = deriveFromArchetype(fighter, 10, 3000);
-
-// Special
-export const gargantua = (() => {
-  // d10, max 10, fighter saves/thac0 — custom HD values
-  const base = fighter.levels;
-  const ratio = 2500 / 2000;
-  return {
-    levels: buildLevels([
-      { level:  1, xp:      0, hdDice: 1, hdBonus: 0, thac0: base[0].thac0, saves: base[0].saves },
-      { level:  2, xp:   2500, hdDice: 2, hdBonus: 0, thac0: base[1].thac0, saves: base[1].saves },
-      { level:  3, xp:   5000, hdDice: 3, hdBonus: 0, thac0: base[2].thac0, saves: base[2].saves },
-      { level:  4, xp:  10000, hdDice: 4, hdBonus: 0, thac0: base[3].thac0, saves: base[3].saves },
-      { level:  5, xp:  20000, hdDice: 5, hdBonus: 0, thac0: base[4].thac0, saves: base[4].saves },
-      { level:  6, xp:  40000, hdDice: 6, hdBonus: 0, thac0: base[5].thac0, saves: base[5].saves },
-      { level:  7, xp:  80000, hdDice: 7, hdBonus: 0, thac0: base[6].thac0, saves: base[6].saves },
-      { level:  8, xp: 150000, hdDice: 8, hdBonus: 0, thac0: base[7].thac0, saves: base[7].saves },
-      { level:  9, xp: 300000, hdDice: 9, hdBonus: 0, thac0: base[8].thac0, saves: base[8].saves },
-      { level: 10, xp: 450000, hdDice: 9, hdBonus: 2, thac0: base[9].thac0, saves: base[9].saves },
-    ]),
-  };
-})();
-
-export const mycelian = (() => {
-  // d8, max 6, fighter saves/thac0
-  const base = fighter.levels;
-  const ratio = 3000 / 2000;
-  return {
-    levels: buildLevels([
-      { level: 1, xp:     0, hdDice: 1, hdBonus: 0, thac0: base[0].thac0, saves: base[0].saves },
-      { level: 2, xp:  3000, hdDice: 2, hdBonus: 0, thac0: base[1].thac0, saves: base[1].saves },
-      { level: 3, xp:  6000, hdDice: 3, hdBonus: 0, thac0: base[2].thac0, saves: base[2].saves },
-      { level: 4, xp: 12000, hdDice: 4, hdBonus: 0, thac0: base[3].thac0, saves: base[3].saves },
-      { level: 5, xp: 24000, hdDice: 5, hdBonus: 0, thac0: base[4].thac0, saves: base[4].saves },
-      { level: 6, xp: 48000, hdDice: 6, hdBonus: 0, thac0: base[5].thac0, saves: base[5].saves },
-    ]),
-  };
-})();
 
 // ── Canonical spell slot tables ───────────────────────────────────────────────
 
@@ -435,72 +323,3 @@ export const DEFAULT_SPELL_SLOT_TABLES: SpellSlotTable[] = [
     ],
   },
 ];
-
-// ── Main export: class name → ClassProgression ────────────────────────────────
-
-const levelProgressionData: Record<string, ClassProgression> = {
-  // Basic classes
-  'Fighter':       fighter,
-  'Cleric':        cleric,
-  'Magic-User':    magicUser,
-  'Thief':         thief,
-  'Dwarf':         dwarf,
-  'Elf':           elf,
-  'Halfling':      halfling,
-
-  // Advanced Fantasy classes
-  'Acrobat':       acrobat,
-  'Assassin':      assassin,
-  'Barbarian':     barbarian,
-  'Bard':          bard,
-  'Drow':          drow,
-  'Druid':         druid,
-  'Duergar':       duergar,
-  'Gnome':         gnome,
-  'Half-Elf':      halfElf,
-  'Half-Orc':      halfOrc,
-  'Illusionist':   illusionist,
-  'Knight':        knight,
-  'Necromancer':   necromancer,
-  'Paladin':       paladin,
-  'Ranger':        ranger,
-  'Svirfneblin':   svirfneblin,
-
-  // Carcass Crawler classes
-  'Acolyte':                  acolyte,
-  'Gargantua':                gargantua,
-  'Goblin':                   goblin,
-  'Hephaestan':               hephaestan,
-  'Kineticist':               kineticist,
-  'Mage':                     mage,
-  'Phase Elf':                phaseElf,
-  'Wood Elf':                 woodElf,
-  'Beast Master':             beastMaster,
-  'Dragonborn':               dragonborn,
-  'Mutoid':                   mutoid,
-  'Mycelian':                 mycelian,
-  'Tiefling':                 tiefling,
-  'Halfling Hearthsinger':    halflingHearthsinger,
-  'Halfling Reeve':           halflingReeve,
-  'Arcane Bard':              arcaneBard,
-  'Ratling':                  ratling,
-  'Changeling':               changeling,
-  'Dwarf Brewmaster':         dwarfBrewmaster,
-  'Dwarf Runesmith':          dwarfRunesmith,
-};
-
-export default levelProgressionData;
-
-/**
- * Look up the progression entry for a class at a given level.
- * Falls back to a safe default entry if the class or level is unknown.
- */
-export function getLevelEntry(className: string, level: number): LevelEntry {
-  const progression = levelProgressionData[className];
-  if (!progression) {
-    // Fallback: use level 1 of a generic fighter-like class
-    return fighter.levels[Math.max(0, Math.min(level, fighter.levels.length) - 1)];
-  }
-  const idx = Math.max(0, Math.min(level, progression.levels.length) - 1);
-  return progression.levels[idx];
-}

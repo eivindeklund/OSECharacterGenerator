@@ -5,7 +5,15 @@ import { ALL_ARMOUR, ARMOUR_ID } from "./armourData";
 import {
   type ClassProgression,
   type SpellSlotTable,
-  default as levelProgressionData
+  buildLevels,
+  deriveFromArchetype,
+  fighter,
+  cleric,
+  magicUser,
+  thief,
+  dwarf,
+  elf,
+  halfling,
 } from "./levelProgressionData";
 import weaponsData from "./weaponsData";
 
@@ -558,6 +566,7 @@ const classOptionsData = [
     nextLevel: 2000,
     abilities: [{ name: "Stronghold" }],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Fighter",
+    levelProgression: fighter,
   },
   {
     name: "Cleric",
@@ -581,6 +590,7 @@ const classOptionsData = [
     spellListId: 'cleric',
     magicTypeId: 'divine',
     limitedSpellSelection: false,
+    levelProgression: cleric,
   },
   {
     name: "Magic-User",
@@ -603,6 +613,7 @@ const classOptionsData = [
     spellListId: 'magic-user',
     magicTypeId: 'arcane',
     limitedSpellSelection: true,
+    levelProgression: magicUser,
   },
   {
     name: "Thief",
@@ -632,6 +643,7 @@ const classOptionsData = [
       { name: "Scroll Use", description: "Cast arcane spells from scrolls; 10% mishap chance", minLevel: 10 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Thief",
+    levelProgression: thief,
   },
   {
     name: "Dwarf",
@@ -654,6 +666,7 @@ const classOptionsData = [
       { id: "listening_at_doors", name: "Listening at Doors", description: "2-in-6 chance of hearing noises", shownInList: false },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Dwarf",
+    levelProgression: dwarf,
   },
   {
     name: "Elf",
@@ -680,6 +693,7 @@ const classOptionsData = [
     spellListId: 'magic-user',
     magicTypeId: 'arcane',
     limitedSpellSelection: true,
+    levelProgression: elf,
   },
   {
     name: "Halfling",
@@ -705,6 +719,7 @@ const classOptionsData = [
       { name: "Stronghold", description: "May build a halfling Shire any time sufficient funds are available" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/index.php/Halfling",
+    levelProgression: halfling,
   },
   {
     name: "Acrobat",
@@ -729,6 +744,7 @@ const classOptionsData = [
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
     classEquivalent: "Thief",
+    levelProgression: deriveFromArchetype(thief, 14, 1200),
   },
   {
     name: "Assassin",
@@ -753,6 +769,7 @@ const classOptionsData = [
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
     classEquivalent: "Thief",
+    levelProgression: deriveFromArchetype(thief, 14, 1500),
   },
   {
     name: "Barbarian",
@@ -779,6 +796,7 @@ const classOptionsData = [
       { name: "Strike Invulnerable Monsters", minLevel: 4 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    levelProgression: deriveFromArchetype(fighter, 14, 2500),
   },
   {
     name: "Bard",
@@ -804,6 +822,7 @@ const classOptionsData = [
     spellListId: 'cleric',
     magicTypeId: 'divine',
     limitedSpellSelection: false,
+    levelProgression: deriveFromArchetype(cleric, 14, 2000, 'cleric'),
   },
   {
     name: "Drow",
@@ -832,6 +851,7 @@ const classOptionsData = [
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
     magicTypeId: 'divine',
     limitedSpellSelection: false,
+    levelProgression: deriveFromArchetype(cleric, 14, 4000, 'cleric'),
   },
   {
     name: "Druid",
@@ -859,6 +879,7 @@ const classOptionsData = [
     spellListId: 'druid',
     magicTypeId: 'divine',
     limitedSpellSelection: true,
+    levelProgression: deriveFromArchetype(cleric, 14, 2000, 'cleric'),
   },
   {
     name: "Duergar",
@@ -883,6 +904,7 @@ const classOptionsData = [
       { name: "Stealth" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    levelProgression: deriveFromArchetype(dwarf, 10, 2800),
   },
   {
     name: "Gnome",
@@ -911,6 +933,7 @@ const classOptionsData = [
     spellListId: 'magic-user',
     magicTypeId: 'arcane',
     limitedSpellSelection: true,
+    levelProgression: deriveFromArchetype(magicUser, 8, 3000, 'magic-user'),
   },
   {
     name: "Half-Elf",
@@ -931,6 +954,7 @@ const classOptionsData = [
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
     magicTypeId: 'arcane',
     limitedSpellSelection: false,
+    levelProgression: deriveFromArchetype(elf, 12, 2500, 'elf'),
   },
   {
     name: "Half-Orc",
@@ -953,6 +977,7 @@ const classOptionsData = [
       { name: "Thieving Skills (hide in shadows, move silently, pick pockets)" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    levelProgression: deriveFromArchetype(halfling, 8, 1800),
   },
   {
     name: "Illusionist",
@@ -973,6 +998,7 @@ const classOptionsData = [
     spellListId: 'illusionist',
     magicTypeId: 'arcane',
     limitedSpellSelection: true,
+    levelProgression: deriveFromArchetype(magicUser, 14, 2500, 'magic-user'),
   },
   {
     name: "Knight",
@@ -998,6 +1024,7 @@ const classOptionsData = [
       { name: "Flying Mounts", minLevel: 5 },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    levelProgression: deriveFromArchetype(fighter, 14, 2500),
   },
   {
     name: "Necromancer",
@@ -1018,6 +1045,7 @@ const classOptionsData = [
     spellListId: 'necromancer',
     magicTypeId: 'arcane',
     limitedSpellSelection: true,
+    levelProgression: deriveFromArchetype(magicUser, 14, 2500, 'magic-user'),
   },
   {
     name: "Paladin",
@@ -1044,6 +1072,7 @@ const classOptionsData = [
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
     magicTypeId: 'divine',
     limitedSpellSelection: false,
+    levelProgression: deriveFromArchetype(fighter, 14, 2750),
   },
   {
     name: "Ranger",
@@ -1070,6 +1099,7 @@ const classOptionsData = [
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
     magicTypeId: 'arcane',
     limitedSpellSelection: false,
+    levelProgression: deriveFromArchetype(fighter, 14, 2250),
   },
   {
     name: "Svirfneblin",
@@ -1098,6 +1128,7 @@ const classOptionsData = [
       { name: "Using Magic Items" },
     ],
     link: "https://oldschoolessentials.necroticgnome.com/srd/",
+    levelProgression: deriveFromArchetype(dwarf, 8, 2400),
   },
   {
     name: "Acolyte",
@@ -1124,6 +1155,7 @@ const classOptionsData = [
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
     magicTypeId: 'divine',
     limitedSpellSelection: false,
+    levelProgression: deriveFromArchetype(cleric, 14, 1500, 'cleric'),
   },
   {
     name: "Gargantua",
@@ -1142,6 +1174,24 @@ const classOptionsData = [
     nextLevel: 2500,
     abilities: [{ name: "Open Doors" }, { name: "Rock Throwing" }],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    levelProgression: (() => {
+      // d10, max 10, fighter saves/thac0 — custom HD values
+      const base = fighter.levels;
+      return {
+        levels: buildLevels([
+          { level:  1, xp:      0, hdDice: 1, hdBonus: 0, thac0: base[0].thac0, saves: base[0].saves },
+          { level:  2, xp:   2500, hdDice: 2, hdBonus: 0, thac0: base[1].thac0, saves: base[1].saves },
+          { level:  3, xp:   5000, hdDice: 3, hdBonus: 0, thac0: base[2].thac0, saves: base[2].saves },
+          { level:  4, xp:  10000, hdDice: 4, hdBonus: 0, thac0: base[3].thac0, saves: base[3].saves },
+          { level:  5, xp:  20000, hdDice: 5, hdBonus: 0, thac0: base[4].thac0, saves: base[4].saves },
+          { level:  6, xp:  40000, hdDice: 6, hdBonus: 0, thac0: base[5].thac0, saves: base[5].saves },
+          { level:  7, xp:  80000, hdDice: 7, hdBonus: 0, thac0: base[6].thac0, saves: base[6].saves },
+          { level:  8, xp: 150000, hdDice: 8, hdBonus: 0, thac0: base[7].thac0, saves: base[7].saves },
+          { level:  9, xp: 300000, hdDice: 9, hdBonus: 0, thac0: base[8].thac0, saves: base[8].saves },
+          { level: 10, xp: 450000, hdDice: 9, hdBonus: 2, thac0: base[9].thac0, saves: base[9].saves },
+        ]),
+      };
+    })(),
   },
   {
     name: "Goblin",
@@ -1166,6 +1216,7 @@ const classOptionsData = [
       { name: "Wolf Affinity" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    levelProgression: deriveFromArchetype(halfling, 8, 2000),
   },
   {
     name: "Hephaestan",
@@ -1188,6 +1239,7 @@ const classOptionsData = [
       { name: "Neuropressure" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    levelProgression: deriveFromArchetype(cleric, 10, 3000),
   },
   {
     name: "Kineticist",
@@ -1210,6 +1262,7 @@ const classOptionsData = [
       { name: "Neuropressure" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
+    levelProgression: deriveFromArchetype(cleric, 14, 2000),
   },
   {
     name: "Mage",
@@ -1240,6 +1293,7 @@ const classOptionsData = [
     link: "https://necroticgnome.com/products/carcass-crawler-issue-1",
     magicTypeId: 'arcane',
     limitedSpellSelection: false,
+    levelProgression: deriveFromArchetype(cleric, 14, 2800, 'magic-user'),
   },
   {
     name: "Phase Elf",
@@ -1267,6 +1321,7 @@ const classOptionsData = [
     spellListId: 'magic-user',
     magicTypeId: 'arcane',
     limitedSpellSelection: true,
+    levelProgression: deriveFromArchetype(elf, 10, 2800, 'elf'),
   },
   {
     name: "Wood Elf",
@@ -1297,6 +1352,7 @@ const classOptionsData = [
     spellListId: 'druid',
     magicTypeId: 'divine',
     limitedSpellSelection: true,
+    levelProgression: deriveFromArchetype(elf, 10, 3000, 'cleric'),
   },
   {
     name: "Beast Master",
@@ -1321,6 +1377,7 @@ const classOptionsData = [
       { name: "Speak with Animals" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    levelProgression: deriveFromArchetype(cleric, 14, 1800),
   },
   {
     name: "Dragonborn",
@@ -1345,6 +1402,7 @@ const classOptionsData = [
       { name: "Scales" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    levelProgression: deriveFromArchetype(fighter, 10, 3000),
   },
   {
     name: "Mutoid",
@@ -1366,6 +1424,7 @@ const classOptionsData = [
       { name: "Mutoid Skills (Hide in shadows, mimicry, move silently, pick pockets)" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    levelProgression: deriveFromArchetype(halfling, 8, 1750),
   },
   {
     name: "Mycelian",
@@ -1393,6 +1452,20 @@ const classOptionsData = [
       { name: "Fungal Reanimation", minLevel: 6 },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    levelProgression: (() => {
+      // d8, max 6, fighter saves/thac0
+      const base = fighter.levels;
+      return {
+        levels: buildLevels([
+          { level: 1, xp:     0, hdDice: 1, hdBonus: 0, thac0: base[0].thac0, saves: base[0].saves },
+          { level: 2, xp:  3000, hdDice: 2, hdBonus: 0, thac0: base[1].thac0, saves: base[1].saves },
+          { level: 3, xp:  6000, hdDice: 3, hdBonus: 0, thac0: base[2].thac0, saves: base[2].saves },
+          { level: 4, xp: 12000, hdDice: 4, hdBonus: 0, thac0: base[3].thac0, saves: base[3].saves },
+          { level: 5, xp: 24000, hdDice: 5, hdBonus: 0, thac0: base[4].thac0, saves: base[4].saves },
+          { level: 6, xp: 48000, hdDice: 6, hdBonus: 0, thac0: base[5].thac0, saves: base[5].saves },
+        ]),
+      };
+    })(),
   },
   {
     name: "Tiefling",
@@ -1416,6 +1489,7 @@ const classOptionsData = [
       { name: "Tiefling Skills (Beguile, hear noise, hide in shadows, move silently)" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-3",
+    levelProgression: deriveFromArchetype(cleric, 10, 2500),
   },
   {
     name: "Halfling Hearthsinger",
@@ -1441,6 +1515,7 @@ const classOptionsData = [
       { name: "Tavern" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-4",
+    levelProgression: deriveFromArchetype(halfling, 8, 2000),
   },
   {
     name: "Halfling Reeve",
@@ -1469,6 +1544,7 @@ const classOptionsData = [
     link: "https://necroticgnome.com/products/carcass-crawler-issue-4",
     magicTypeId: 'divine',
     limitedSpellSelection: false,
+    levelProgression: deriveFromArchetype(halfling, 8, 2500, 'cleric'),
   },
   {
     name: "Arcane Bard",
@@ -1494,6 +1570,7 @@ const classOptionsData = [
     link: "https://necroticgnome.com/products/carcass-crawler-issue-4",
     magicTypeId: 'arcane',
     limitedSpellSelection: false,
+    levelProgression: deriveFromArchetype(cleric, 14, 2000, 'magic-user'),
   },
   {
     name: "Ratling",
@@ -1517,6 +1594,7 @@ const classOptionsData = [
       { name: "Ratling Skills (climb sheer surfaces, detect poison, hear noise, hide in shadows, move silently)" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-5",
+    levelProgression: deriveFromArchetype(halfling, 8, 2000),
   },
   {
     name: "Changeling",
@@ -1539,6 +1617,7 @@ const classOptionsData = [
       { name: "Shape-Stealing" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-5",
+    levelProgression: deriveFromArchetype(cleric, 10, 2500),
   },
   {
     name: "Dwarf Brewmaster",
@@ -1563,6 +1642,7 @@ const classOptionsData = [
       { id: "listening_at_doors", name: "Listening at Doors" },
     ],
     link: "https://necroticgnome.com/products/carcass-crawler-issue-6",
+    levelProgression: deriveFromArchetype(dwarf, 10, 2500),
   },
   {
     name: "Dwarf Runesmith",
@@ -1588,8 +1668,9 @@ const classOptionsData = [
     spellListId: 'runesmith',
     magicTypeId: 'rune',
     limitedSpellSelection: true,
+    levelProgression: deriveFromArchetype(dwarf, 10, 2800, 'magic-user'),
   },
-].map((x) => new ClassOptions({ ...x, levelProgression: levelProgressionData[x.name] } as any));
+].map((x) => new ClassOptions(x as any));
 
 const emptyClassOptions = new ClassOptions({
   name: "",
