@@ -6,14 +6,14 @@ import {
   type ClassProgression,
   type SpellSlotTable,
   buildLevels,
-  deriveFromArchetype,
-  fighter,
   cleric,
-  magicUser,
-  thief,
+  deriveFromArchetype,
   dwarf,
   elf,
+  fighter,
   halfling,
+  magicUser,
+  thief,
 } from "./levelProgressionData";
 import weaponsData from "./weaponsData";
 
