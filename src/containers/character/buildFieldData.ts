@@ -1,15 +1,15 @@
 import armourData, { ARMOUR_ID } from '../../data/armourData'
 import { ABILITY_ID } from '../../data/classOptionsData'
-import { allSpellsById } from '../../data/spells'
+import { COMBAT_USE, allSpellsById } from '../../data/spells'
 import weaponsData from '../../data/weaponsData'
 import type {
-    AbilityScores,
-    Character,
-    CharacterEquipment,
-    CharacterModifiers,
-    CharacterStatistics,
-    ClassAbility,
-    ClassOptionsData,
+  AbilityScores,
+  Character,
+  CharacterEquipment,
+  CharacterModifiers,
+  CharacterStatistics,
+  ClassAbility,
+  ClassOptionsData,
 } from '../../types'
 import { allItemsById, dualListedWeaponIds } from '../../utilities/PackUtils'
 import { consolidateDuplicates } from '../../utilities/utilities'
@@ -90,15 +90,18 @@ export function buildFieldData(props: PDFExportProps): FieldData {
   })
 
   // Section 3: Combat spells with dice/save summaries
+  // Only show spells that are relevant both in and out of combat, or primarily combat-focused
+  // (combatUse >= BOTH === 3). Pure utility spells are omitted here.
   const combatSpellLines: string[] = []
   if (characterStatistics.hasSpells && characterStatistics.spells.length > 0) {
     for (const spellId of characterStatistics.spells) {
       const spellDef = allSpellsById[spellId]
       const spellName = spellDef?.name ?? spellId
-      const info = spellDef?.combatInfo
-      if (info) combatSpellLines.push(`${spellName}: ${info}`)
+      const info = spellDef?.shortDesc
+      const combatUse = spellDef?.combatUse ?? COMBAT_USE.BOTH
+      if (info && combatUse >= COMBAT_USE.BOTH) combatSpellLines.push(`${spellName}: ${info}`)
     }
-    // Fall back to listing all spell names if none match the combat list
+    // Fall back to listing all spell names if none match the combat threshold
     if (combatSpellLines.length === 0) {
       combatSpellLines.push(characterStatistics.spells.map(id => allSpellsById[id]?.name ?? id).join(', '))
     }

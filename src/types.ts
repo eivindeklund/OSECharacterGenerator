@@ -91,11 +91,20 @@ export interface SpellDefinition {
   /** Stable kebab-case identifier (e.g. "magic-missile"). Stored in saved character data. */
   id: string;
   name: string;
+  /** Compact at-the-table summary (damage, target, save, key effect). Present for all spells. */
+  shortDesc?: string;
+  /** Spell duration (e.g. "2 turns", "Permanent", "Concentration"). */
+  duration?: string;
+  /** Spell range (e.g. "120'", "Touch", "0 (self)"). */
+  range?: string;
   /**
-   * Compact at-the-table combat reference (damage dice, target, save, key effect).
-   * Absent for non-combat utility spells.
+   * How combat-relevant this spell is, on a 1–5 scale.
+   *   1 = out-of-combat only   2 = mostly out of combat
+   *   3 = both combat and out-of-combat   4 = mostly combat
+   *   5 = combat only
+   * Used to filter spell descriptions on cramped sheets and to generate playbooks.
    */
-  combatInfo?: string;
+  combatUse?: 1 | 2 | 3 | 4 | 5;
 }
 
 // ── Class Ability ─────────────────────────────────────────────────────────────
