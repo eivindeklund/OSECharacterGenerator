@@ -1,7 +1,8 @@
 import armourData from '../data/armourData'
+import { MAGIC_TYPE_REGISTRY } from '../data/classOptionsData'
 import equipmentData from '../data/equipmentData'
 import weaponsData from '../data/weaponsData'
-import type { ClassOptionsData } from '../types'
+import type { ClassOptionsData, MagicTypeEntry } from '../types'
 
 /**
  * Consolidates all item data into a single map for easy lookup.
@@ -196,11 +197,22 @@ const EXPANSION_GEAR_BASE = [
  *   function to get reproducible results; variety tests use distinct seeds.
  * @returns Array of { id, quantity } items representing the optimal loadout
  */
+
+/** Returns true when the given class requires a holy symbol based on its magic type. */
+function classRequiresHolySymbol(
+  cls: ClassOptionsData,
+  types: MagicTypeEntry[],
+): boolean {
+  if (!cls.magicTypeId) return false;
+  return types.some((t) => t.id === cls.magicTypeId && t.requiresHolySymbol === true);
+}
+
 export function getOptimalEquipmentPack(
   characterClass: ClassOptionsData | null,
   gold: number,
   bxOnly = true,
-  random: () => number = Math.random
+  random: () => number = Math.random,
+  availableMagicTypes: MagicTypeEntry[] = Object.values(MAGIC_TYPE_REGISTRY),
 ): Array<{ id: string; quantity: number }> {
   if (!characterClass) return [];
 
@@ -290,9 +302,10 @@ export function getOptimalEquipmentPack(
   //    are never crowded out: weapons may only use gold beyond
   //      class_item_cost + essentials_min_cost.
   const essentialsMinCost = ESSENTIAL_GEAR.reduce((s, g) => s + g.price, 0); // 15
+  const needsHolySymbol = classRequiresHolySymbol(characterClass, availableMagicTypes);
   const classItemCost =
-    (characterClass.magicTypeId === 'divine' && bxOnly) ? 25
-    : (characterClass.magicTypeId === 'divine' && !bxOnly) ? 1
+    (needsHolySymbol && bxOnly) ? 25
+    : (needsHolySymbol && !bxOnly) ? 1
     : (characterClass.canUseThiefTools ?? false) ? 25
     : 0;
   let meleeTwoHanded = false;
@@ -324,7 +337,7 @@ export function getOptimalEquipmentPack(
   //    Buy immediately after weapon selection (priority over essential gear).
   //    If unaffordable now, attempt again after essential gear in step 3b.
   {
-    if (characterClass.magicTypeId === 'divine') {
+    if (needsHolySymbol) {
       // BX only has holy_symbol_silver (25gp); non-BX can use the cheaper wooden (1gp).
       if (bxOnly) {
         buyGearItem('holy_symbol_silver', 25);
@@ -343,7 +356,7 @@ export function getOptimalEquipmentPack(
   }
 
   // ── 3b. Deferred class items (attempt again after essential gear) ──────────
-  if (characterClass.magicTypeId === 'divine' && bxOnly && !hasItemId('holy_symbol_silver')) {
+  if (needsHolySymbol && bxOnly && !hasItemId('holy_symbol_silver')) {
     buyGearItem('holy_symbol_silver', 25);
   }
   if ((characterClass.canUseThiefTools ?? false) && !hasItemId('thieves_tools')) {

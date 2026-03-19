@@ -70,7 +70,7 @@ describe('CampaignService.save', () => {
   it('appends a new campaign when it does not exist yet', () => {
     const before = CampaignService.loadAll().length;
     const now = new Date().toISOString();
-    const newCamp = { id: 'brand-new', name: 'New', notes: '', allowedClassNames: null, allowedEquipmentIds: null, allowedWeaponIds: null, allowedSpellIds: {}, allowAdvancedClasses: null, allowCarcassClasses: null, allowNonBxEquipment: null, customClasses: [], customSpellLists: [], customEquipment: [], customWeapons: [], customSpells: {}, createdAt: now, updatedAt: now };
+    const newCamp = { id: 'brand-new', name: 'New', notes: '', allowedClassNames: null, allowedEquipmentIds: null, allowedWeaponIds: null, allowedSpellIds: {}, allowAdvancedClasses: null, allowCarcassClasses: null, allowNonBxEquipment: null, customClasses: [], customSpellLists: [], customEquipment: [], customWeapons: [], customSpells: {}, customSpellSlotTables: [], customMagicTypes: [], createdAt: now, updatedAt: now };
     CampaignService.save(newCamp);
     expect(CampaignService.loadAll()).toHaveLength(before + 1);
   });

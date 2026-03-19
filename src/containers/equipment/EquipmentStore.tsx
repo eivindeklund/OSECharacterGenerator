@@ -6,6 +6,7 @@ import ArmourOptionsContainer from "../../containers/equipment/ArmourOptionsCont
 import GearOptionsContainer from "../../containers/equipment/GearOptionsContainer";
 import PackOptionsContainer from "../../containers/equipment/PackOptionsContainer";
 import WeaponOptionsContainer from "../../containers/equipment/WeaponOptionsContainer";
+import { useCampaign } from "../../contexts/CampaignContext";
 import { useCharacter } from "../../contexts/CharacterContext";
 import armourData from "../../data/armourData";
 import equipmentData from "../../data/equipmentData";
@@ -43,6 +44,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
 
   const navigate = useNavigate();
   const { character } = useCharacter();
+  const { availableMagicTypes } = useCampaign();
 
   const [gold, setGold] = useState<number | null>(characterEquipment.gold);
   const [rolledGold, setRolledGold] = useState<number | null>(characterEquipment.gold);
@@ -226,6 +228,7 @@ export default function EquipmentStore(props: EquipmentStoreProps) {
                 onBxOnlyChange={setBxOnly}
                 handleAddToLedger={handleBuyPack}
                 purchaseLedger={inventoryCounts}
+                availableMagicTypes={availableMagicTypes}
               />
             }
 

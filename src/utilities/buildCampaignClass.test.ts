@@ -160,6 +160,26 @@ describe('buildCampaignClass — type "new"', () => {
     // level 3: hdDice same as level 2 (both 2), hdBonus delta = 2 - 0 = 2
     expect(result.getHpBonusAtLevel(3)).toBe(2);
   });
+
+  it('inherits level progression from baseLevelProgressionId when levels is omitted', () => {
+    const { levels: _levels, ...defWithoutLevels } = baseNewClassDef;
+    const def: CampaignNewClass = { ...defWithoutLevels, baseLevelProgressionId: 'Fighter' };
+    const result = buildCampaignClass(def, baseClasses)!;
+    // Fighter level 1 saves: [12, 13, 14, 15, 16], thac0: 19
+    expect(result.getSavingThrowsAtLevel(1)).toEqual([12, 13, 14, 15, 16]);
+    expect(result.getThac0AtLevel(1)).toBe(19);
+    // Fighter level 4 saves: [10, 11, 12, 13, 14], thac0: 17
+    expect(result.getSavingThrowsAtLevel(4)).toEqual([10, 11, 12, 13, 14]);
+    expect(result.getThac0AtLevel(4)).toBe(17);
+  });
+
+  it('throws when neither levels nor baseLevelProgressionId is provided', () => {
+    const { levels: _levels, ...defWithoutLevels } = baseNewClassDef;
+    const def: CampaignNewClass = { ...defWithoutLevels };
+    expect(() => buildCampaignClass(def, baseClasses)).toThrow(
+      /must provide either levels or baseLevelProgressionId/,
+    );
+  });
 });
 
 // ── override path ───────────────────────────────────────────────────────────

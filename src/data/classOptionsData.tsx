@@ -49,7 +49,7 @@ export type MagicTypeId = typeof MAGIC_TYPE_IDS[number];
 
 export const MAGIC_TYPE_REGISTRY: Readonly<Record<string, MagicTypeEntry>> = {
   arcane: { id: 'arcane', name: 'Arcane', label: 'Arcane Magic' },
-  divine: { id: 'divine', name: 'Divine', label: 'Divine Magic' },
+  divine: { id: 'divine', name: 'Divine', label: 'Divine Magic', requiresHolySymbol: true },
   rune:   { id: 'rune',   name: 'Rune',   label: 'Rune Magic'   },
 };
 

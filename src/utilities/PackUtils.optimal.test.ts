@@ -7,10 +7,10 @@
  */
 
 import armourData from '../data/armourData';
-import classOptionsData from '../data/classOptionsData';
+import classOptionsData, { ClassOptions, type CharacterClassInput } from '../data/classOptionsData';
 import equipmentData from '../data/equipmentData';
 import weaponsData from '../data/weaponsData';
-import type { ClassOptionsData } from '../types';
+import type { ClassOptionsData, MagicTypeEntry } from '../types';
 import { getOptimalEquipmentPack } from './PackUtils';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -724,5 +724,60 @@ describe('getOptimalEquipmentPack — variety / randomisation', () => {
     // Both chainmail and leather should appear across 20 seeded runs
     expect(armours).toContain('chainmail');
     expect(armours).toContain('leather');
+  });
+});
+
+describe('getOptimalEquipmentPack — custom magic types', () => {
+  it('includes a holy symbol when the class has a custom magic type with requiresHolySymbol', () => {
+    const customType: MagicTypeEntry = {
+      id: 'custom-holy',
+      name: 'Custom Holy',
+      label: 'Custom Holy Magic',
+      requiresHolySymbol: true,
+    };
+    const baseCleric = getClass('Cleric');
+    const customHolyCaster = new ClassOptions({
+      ...(baseCleric as unknown as CharacterClassInput),
+      name: 'CustomHolyCaster',
+      magicTypeId: 'custom-holy',
+    });
+
+    const pack = getOptimalEquipmentPack(
+      customHolyCaster,
+      80,
+      true,
+      seededRandom(1),
+      [customType],
+    );
+
+    expect(
+      pack.some(i => ['holy_symbol_silver', 'holy_symbol_wooden', 'holy_symbol_gold'].includes(i.id)),
+    ).toBe(true);
+  });
+
+  it('does NOT include a holy symbol when the class magic type has requiresHolySymbol unset', () => {
+    const customType: MagicTypeEntry = {
+      id: 'custom-arcane',
+      name: 'Custom Arcane',
+      label: 'Custom Arcane Magic',
+    };
+    const baseMU = getClass('Magic-User');
+    const customArcaneCaster = new ClassOptions({
+      ...(baseMU as unknown as CharacterClassInput),
+      name: 'CustomArcaneCaster',
+      magicTypeId: 'custom-arcane',
+    });
+
+    const pack = getOptimalEquipmentPack(
+      customArcaneCaster,
+      80,
+      true,
+      seededRandom(1),
+      [customType],
+    );
+
+    expect(
+      pack.some(i => ['holy_symbol_silver', 'holy_symbol_wooden', 'holy_symbol_gold'].includes(i.id)),
+    ).toBe(false);
   });
 });

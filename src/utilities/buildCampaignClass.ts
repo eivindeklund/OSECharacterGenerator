@@ -2,63 +2,32 @@ import { ClassOptions, type CharacterClassInput } from "../data/classOptionsData
 import type { LevelEntry } from "../data/levelProgressionData";
 import type {
   CampaignClassDefinition,
-  CampaignClassOverride,
   CampaignNewClass,
-  ClassOptionsData,
+  ClassOptionsData
 } from "../types";
 
-// ── Subclass for entirely new campaign-defined classes ────────────────────────
+// ── Level resolution ──────────────────────────────────────────────────────────
 
-class CampaignNewClassOptions extends ClassOptions {
-  constructor(def: CampaignNewClass) {
-    super({
-      name: def.name,
-      category: def.category,
-      description: def.description,
-      armour: def.armour,
-      weapons: def.weapons,
-      hd: def.hd,
-      maxLevel: def.maxLevel,
-      requirements: def.requirements,
-      primeReqs: def.primeReqs,
-      xpBonusRule: def.xpBonusRule,
-      spellListId: def.spellListId,
-      magicTypeId: def.magicTypeId,
-      limitedSpellSelection: def.limitedSpellSelection,
-      spellSlotTableId: def.spellSlotTableId,
-      canUseThiefTools: def.canUseThiefTools,
-      abilities: def.abilities,
-      languages: def.languages,
-      link: "",
-      levelProgression: { levels: def.levels },
-    } as CharacterClassInput);
+/**
+ * Resolves the level progression entries for a new campaign class.
+ * Uses `def.levels` if provided, otherwise looks up the base class by
+ * `def.baseLevelProgressionId`. Throws if neither is set or the id is unknown.
+ */
+function resolveLevelsForNewClass(
+  def: CampaignNewClass,
+  baseClasses: ClassOptionsData[],
+): LevelEntry[] {
+  if (def.levels) return def.levels as LevelEntry[];
+  if (def.baseLevelProgressionId !== undefined) {
+    const base = baseClasses.find((c) => c.name === def.baseLevelProgressionId);
+    if (base) return base.levelProgression.levels;
+    throw new Error(
+      `baseLevelProgressionId "${def.baseLevelProgressionId}" not found in base classes`,
+    );
   }
-}
-
-// ── Override wrapper for existing campaign classes ────────────────────────────
-
-function buildOverrideClass(
-  base: ClassOptionsData,
-  def: CampaignClassOverride,
-): ClassOptionsData {
-  // Prototypally extend the base so all existing method implementations are
-  // inherited. Own instance properties (set by ClassOptions constructor) are
-  // looked up through the prototype chain before ClassOptions.prototype.
-  const obj = Object.create(base) as ClassOptionsData;
-
-  // Auto-spread all defined override fields (except structural keys) onto obj.
-  const { type: _type, baseName: _base, levels: _lvls, ...fields } = def;
-  const patch = Object.fromEntries(
-    Object.entries(fields).filter(([, v]) => v !== undefined),
+  throw new Error(
+    `CampaignNewClass "${def.name}" must provide either levels or baseLevelProgressionId`,
   );
-  Object.assign(obj, patch);
-
-  // Override the level progression when custom levels are provided.
-  if (def.levels !== undefined) {
-    obj.levelProgression = { ...base.levelProgression, levels: def.levels as LevelEntry[] };
-  }
-
-  return obj;
 }
 
 // ── Public factory ────────────────────────────────────────────────────────────
@@ -66,15 +35,14 @@ function buildOverrideClass(
 /**
  * Build a `ClassOptionsData`-compatible object from a campaign class definition.
  *
- * For `CampaignNewClass`: returns a fully functional subclass of `ClassOptions`
- * whose level-entry methods read from the inline `levels[]` array stored in
- * `levelProgression`. Spell slots are looked up at call time by passing
- * `spellSlotTables` to `getSpellSlotsAtLevel`.
+ * For `CampaignNewClass`: constructs a new `ClassOptions` instance using the
+ * supplied level table (`levels`) or the progression inherited from `baseLevelProgressionId`.
+ * Spell slots are looked up at call time by passing `spellSlotTables` to
+ * `getSpellSlotsAtLevel`.
  *
- * For `CampaignClassOverride`: returns an object that prototypally inherits
- * from the base class, with patched fields; if `spellSlotTableId` is given,
- * `levelProgression.spellSlotTableId` is updated so that callers who pass
- * `spellSlotTables` to `getSpellSlotsAtLevel` get the custom table.
+ * For `CampaignClassOverride`: constructs a new `ClassOptions` instance whose
+ * data fields are merged from the base class and the override patch. No mutable
+ * state is shared with the original base class or sibling overrides.
  *
  * Returns `null` when a `CampaignClassOverride` references an unknown base class.
  */
@@ -83,9 +51,26 @@ export function buildCampaignClass(
   baseClasses: ClassOptionsData[],
 ): ClassOptionsData | null {
   if (def.type === "new") {
-    return new CampaignNewClassOptions(def);
+    const { type: _type, levels: _levels, baseLevelProgressionId: _bId, ...defData } = def;
+    const resolvedLevels = resolveLevelsForNewClass(def, baseClasses);
+    return new ClassOptions({
+      ...defData,
+      link: "",
+      levelProgression: { levels: resolvedLevels },
+    } as CharacterClassInput);
   }
+
   const base = baseClasses.find((c) => c.name === def.baseName);
   if (!base) return null;
-  return buildOverrideClass(base, def);
+
+  const { type: _type, baseName: _base, levels, ...fields } = def;
+  const patch = Object.fromEntries(
+    Object.entries(fields).filter(([, v]) => v !== undefined),
+  );
+  const levelProgression =
+    levels !== undefined
+      ? { ...base.levelProgression, levels: levels as LevelEntry[] }
+      : base.levelProgression;
+
+  return new ClassOptions({ ...base, ...patch, levelProgression } as CharacterClassInput);
 }

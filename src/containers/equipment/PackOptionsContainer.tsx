@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import "../../css/PackOptions.css";
+import { MAGIC_TYPE_REGISTRY } from "../../data/classOptionsData";
 import { equipmentPacks } from "../../data/equipmentData";
-import type { ClassOptionsData } from "../../types";
+import type { ClassOptionsData, MagicTypeEntry } from "../../types";
 import {
-  calculatePackPrice,
-  getOptimalEquipmentPack,
-  resolvePackItems,
+    calculatePackPrice,
+    getOptimalEquipmentPack,
+    resolvePackItems,
 } from "../../utilities/PackUtils";
 
 const HOLY_SYMBOL_IDS = ["holy_symbol_silver", "holy_symbol_wooden", "holy_symbol_gold"];
@@ -30,6 +31,9 @@ interface PackOptionsContainerProps {
   /** Current inventory counts (keyed by display name). Used to suppress the
    *  holy symbol warning when the player has already purchased one separately. */
   purchaseLedger?: Record<string, number>;
+  /** Magic type definitions used to determine holy symbol requirements.
+   *  Defaults to the built-in MAGIC_TYPE_REGISTRY entries. */
+  availableMagicTypes?: MagicTypeEntry[];
 }
 
 const OPTIMAL_TAB_INDEX = 0;
@@ -49,6 +53,7 @@ const PackOptionsContainer: React.FC<PackOptionsContainerProps> = ({
   onBxOnlyChange,
   handleAddToLedger,
   purchaseLedger = {},
+  availableMagicTypes = Object.values(MAGIC_TYPE_REGISTRY),
 }) => {
   const [activeTab, setActiveTab] = useState<number>(OPTIMAL_TAB_INDEX);
   // Initialise with Math.random() so the visual regression tests (which replace
@@ -65,7 +70,7 @@ const PackOptionsContainer: React.FC<PackOptionsContainerProps> = ({
   const random = useMemo(() => makeSeededRandom(rollSeed), [rollSeed]);
 
   const optimalItems = isOptimalTab
-    ? getOptimalEquipmentPack(characterClass, gold ?? 0, bxOnly, random)
+    ? getOptimalEquipmentPack(characterClass, gold ?? 0, bxOnly, random, availableMagicTypes)
     : null;
 
   const activeStaticPack = !isOptimalTab
@@ -82,14 +87,17 @@ const PackOptionsContainer: React.FC<PackOptionsContainerProps> = ({
 
   const canShowOptimal = gold !== null && characterClass !== null;
 
-  // Warn when a divine-caster pack is missing a holy symbol — the character
+  // Warn when a class requiring a holy symbol is missing one — the character
   // can still adventure but cannot turn undead without one.
   const playerOwnsHolySymbol =
     HOLY_SYMBOL_NAMES.some((name) => (purchaseLedger[name] ?? 0) > 0);
+  const classNeedsHolySymbol =
+    !!(characterClass?.magicTypeId &&
+      availableMagicTypes.some((t) => t.id === characterClass.magicTypeId && t.requiresHolySymbol));
   const isMissingHolySymbol: boolean =
     isOptimalTab &&
     canShowOptimal &&
-    !!(characterClass?.magicTypeId === 'divine') &&
+    classNeedsHolySymbol &&
     !optimalItems?.some((item) => HOLY_SYMBOL_IDS.includes(item.id)) &&
     !playerOwnsHolySymbol;
 

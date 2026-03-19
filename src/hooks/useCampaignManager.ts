@@ -3,7 +3,7 @@ import { DEFAULT_CAMPAIGN_ID } from "../constants/constants";
 import classOptionsData, { MAGIC_TYPE_IDS, MAGIC_TYPE_REGISTRY, type MagicTypeId } from "../data/classOptionsData";
 import equipmentData from "../data/equipmentData";
 import { DEFAULT_SPELL_SLOT_TABLES } from "../data/levelProgressionData";
-import { getSpellListById } from "../data/spells";
+import { getSpellListById, SPELL_LIST_REGISTRY } from "../data/spells";
 import weaponsData from "../data/weaponsData";
 import type {
   Campaign,
@@ -13,6 +13,7 @@ import type {
   EquipmentItem,
   MagicTypeEntry,
   SpellDefinition,
+  SpellListSummary,
   SpellSlotTable,
   WeaponItem,
 } from "../types";
@@ -51,6 +52,7 @@ export function useCampaignManager() {
       customEquipment: [],
       customWeapons: [],
       customSpells: {},
+      customSpellSlotTables: [],
       customMagicTypes: [],
       createdAt: now,
       updatedAt: now,
@@ -87,7 +89,7 @@ export function useCampaignManager() {
    * Campaign tables replace the matching default table (by id); extra tables are appended.
    */
   const spellSlotTables: SpellSlotTable[] = (() => {
-    const customTables: SpellSlotTable[] = activeCampaign.customSpellSlotTables ?? [];
+    const customTables = activeCampaign.customSpellSlotTables;
     if (customTables.length === 0) return DEFAULT_SPELL_SLOT_TABLES;
     // TODO: This looks quite expensive, and we should consider memoizing it.
     return [
@@ -225,6 +227,22 @@ export function useCampaignManager() {
     return cls.getSpellSlotsAtLevel(charLevel, spellSlotTables);
   };
 
+  /**
+   * Returns summary metadata for every spell list available in the active
+   * campaign: all built-in lists from SPELL_LIST_REGISTRY plus any custom
+   * lists that don't shadow a built-in id.
+   */
+  const availableSpellLists = (): SpellListSummary[] => {
+    const builtIn = Object.values(SPELL_LIST_REGISTRY).map(
+      (entry): SpellListSummary => ({ id: entry.id, name: entry.name }),
+    );
+    const builtInIds = new Set(builtIn.map((e) => e.id));
+    const custom = activeCampaign.customSpellLists
+      .filter((l) => !builtInIds.has(l.id))
+      .map((l): SpellListSummary => ({ id: l.id, name: l.name }));
+    return [...builtIn, ...custom];
+  };
+
   // ── Active campaign convenience properties ─────────────────────────────────
 
   /** The ID to stamp on newly created characters. */
@@ -257,5 +275,6 @@ export function useCampaignManager() {
     getSpellListsForClass,
     getClassSpellSlots,
     availableMagicTypes,
+    availableSpellLists,
   };
 }

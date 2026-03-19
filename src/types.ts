@@ -237,8 +237,16 @@ export interface CampaignNewClass extends CharacterClass {
   type: 'new';
   /** Narrows CharacterClass.category to campaign-legal values. */
   category: 'basic' | 'advanced' | 'carcass' | 'custom';
-  /** Full level progression table (one entry per level, 1-indexed). */
-  levels: CampaignLevelEntry[];
+  /**
+   * Custom level progression table (one entry per level, 1-indexed).
+   * Exactly one of `levels` or `baseLevelProgressionId` must be provided.
+   */
+  levels?: CampaignLevelEntry[];
+  /**
+   * Name of an existing class whose level progression is inherited.
+   * Exactly one of `levels` or `baseLevelProgressionId` must be provided.
+   */
+  baseLevelProgressionId?: string;
 }
 
 export type CampaignClassDefinition = CampaignClassOverride | CampaignNewClass;
@@ -260,6 +268,13 @@ export interface MagicTypeEntry {
   name: string;
   /** Label shown on class detail sheets (e.g. "Arcane Magic"). */
   label: string;
+  /** If true, character creation auto-assigns a holy symbol to this magic type. */
+  requiresHolySymbol?: boolean;
+}
+
+export interface SpellListSummary {
+  id: string;
+  name: string;
 }
 
 export interface Campaign {
@@ -281,7 +296,7 @@ export interface Campaign {
   customWeapons: WeaponItem[];
   customSpells: CampaignCustomSpells;
   /** Custom spell slot tables that override or extend the built-in tables. */
-  customSpellSlotTables?: SpellSlotTable[];
+  customSpellSlotTables: SpellSlotTable[];
   /** Custom magic types added by this campaign (in addition to the built-in arcane/divine/rune). */
   customMagicTypes: MagicTypeEntry[];
   createdAt: string;
