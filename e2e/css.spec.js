@@ -236,6 +236,63 @@ test.describe('Isolated CSS rules — CampaignSettings.css', () => {
     expect(styles['display']).toBe('flex');
     expect(styles['flex-direction']).toBe('column');
   });
+
+  test('.campaign-level-table has display: table', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<table class="campaign-level-table"><tbody></tbody></table>',
+      '.campaign-level-table',
+      ['display'],
+    );
+    expect(styles['display']).toBe('table');
+  });
+
+  test('.campaign-level-table-input has box-sizing: border-box', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<table class="campaign-level-table"><tbody><tr>' +
+        '<td><input class="campaign-level-table-input" type="number" value="42" /></td>' +
+        '</tr></tbody></table>',
+      '.campaign-level-table-input',
+      ['box-sizing'],
+    );
+    expect(styles['box-sizing']).toBe('border-box');
+  });
+
+  test('.campaign-level-card has display: flex', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<div class="campaign-level-card"></div>',
+      '.campaign-level-card',
+      ['display'],
+    );
+    expect(styles['display']).toBe('flex');
+  });
+
+  test('.campaign-level-card-grid has display: grid', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<div class="campaign-level-card"><div class="campaign-level-card-grid"></div></div>',
+      '.campaign-level-card-grid',
+      ['display'],
+    );
+    expect(styles['display']).toBe('grid');
+  });
+
+  test('.campaign-level-view-toggle has display: flex', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<div class="campaign-level-view-toggle"></div>',
+      '.campaign-level-view-toggle',
+      ['display'],
+    );
+    expect(styles['display']).toBe('flex');
+  });
 });
 
 // ---------------------------------------------------------------------------

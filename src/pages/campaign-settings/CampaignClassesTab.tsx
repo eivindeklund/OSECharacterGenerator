@@ -9,6 +9,7 @@ import type {
     ClassAbility,
 } from "../../types";
 import { toggleAllowed } from "../../utilities/campaignFilterUtils";
+import LevelProgressionEditor, { type LevelRowState, levelEntryToRow, rowToLevelEntry } from "./LevelProgressionEditor";
 
 // ── Module-level constants ────────────────────────────────────────────────────
 
@@ -55,6 +56,8 @@ interface OverrideFormState {
   limitedSpellSelection: string;
   abilitiesOverrideEnabled: boolean;
   abilitiesRows: AbilityRowState[];
+  levelsOverrideEnabled: boolean;
+  levelRows: LevelRowState[];
 }
 
 const EMPTY_ABILITY_ROW: AbilityRowState = {
@@ -65,7 +68,7 @@ const EMPTY_ABILITY_ROW: AbilityRowState = {
   shownInList: '',
 };
 
-const EMPTY_OVERRIDE_FORM: OverrideFormState = {
+export const EMPTY_OVERRIDE_FORM: OverrideFormState = {
   baseName: ALL_CLASS_NAMES[0] ?? "",
   name: "",
   category: "",
@@ -85,9 +88,11 @@ const EMPTY_OVERRIDE_FORM: OverrideFormState = {
   limitedSpellSelection: "",
   abilitiesOverrideEnabled: false,
   abilitiesRows: [],
+  levelsOverrideEnabled: false,
+  levelRows: [],
 };
 
-function overrideToFormState(cls: CampaignClassOverride): OverrideFormState {
+export function overrideToFormState(cls: CampaignClassOverride): OverrideFormState {
   return {
     baseName: cls.baseName,
     name: cls.name ?? "",
@@ -118,6 +123,8 @@ function overrideToFormState(cls: CampaignClassOverride): OverrideFormState {
           : "false",
     abilitiesOverrideEnabled: cls.abilities !== undefined,
     abilitiesRows: cls.abilities !== undefined ? cls.abilities.map(abilityToRow) : [],
+    levelsOverrideEnabled: cls.levels !== undefined,
+    levelRows: cls.levels !== undefined ? cls.levels.map(levelEntryToRow) : [],
   };
 }
 
@@ -140,7 +147,7 @@ function rowToAbility(row: AbilityRowState): ClassAbility {
   return ability;
 }
 
-function formStateToOverride(form: OverrideFormState): CampaignClassOverride {
+export function formStateToOverride(form: OverrideFormState): CampaignClassOverride {
   const override: CampaignClassOverride = { type: "override", baseName: form.baseName };
   if (form.name) override.name = form.name;
   if (form.category) override.category = form.category as CampaignClassOverride["category"];
@@ -168,7 +175,113 @@ function formStateToOverride(form: OverrideFormState): CampaignClassOverride {
     override.abilities = form.abilitiesRows
       .filter((r) => r.name.trim() !== '')
       .map(rowToAbility);
+  if (form.levelsOverrideEnabled)
+    override.levels = form.levelRows.map(rowToLevelEntry);
   return override;
+}
+
+// ── New-class form state ──────────────────────────────────────────────────────
+
+export interface NewClassFormState {
+  name: string;
+  category: string;
+  description: string;
+  armour: string;
+  weapons: string;
+  languages: string;
+  requirements: string;
+  hd: string;
+  maxLevel: string;
+  primeReqsStr: string;
+  xpBonusRule: string;
+  spellListId: string;
+  magicTypeId: string;
+  spellSlotTableId: string;
+  canUseThiefTools: string;
+  limitedSpellSelection: string;
+  abilitiesRows: AbilityRowState[];
+  levelsMode: 'inherit' | 'custom';
+  inheritFromName: string;
+  levelRows: LevelRowState[];
+}
+
+export const EMPTY_NEW_CLASS_FORM: NewClassFormState = {
+  name: '',
+  category: 'custom',
+  description: '',
+  armour: '',
+  weapons: '',
+  languages: '',
+  requirements: '',
+  hd: '8',
+  maxLevel: '14',
+  primeReqsStr: '',
+  xpBonusRule: '',
+  spellListId: '',
+  magicTypeId: '',
+  spellSlotTableId: '',
+  canUseThiefTools: '',
+  limitedSpellSelection: '',
+  abilitiesRows: [],
+  levelsMode: 'inherit',
+  inheritFromName: ALL_CLASS_NAMES[0] ?? '',
+  levelRows: [],
+};
+
+export function newClassToFormState(cls: CampaignNewClass): NewClassFormState {
+  return {
+    name: cls.name,
+    category: cls.category,
+    description: cls.description,
+    armour: cls.armour,
+    weapons: cls.weapons,
+    languages: cls.languages,
+    requirements: cls.requirements ?? '',
+    hd: String(cls.hd),
+    maxLevel: String(cls.maxLevel),
+    primeReqsStr: cls.primeReqs.join(', '),
+    xpBonusRule: cls.xpBonusRule ?? '',
+    spellListId: cls.spellListId ?? '',
+    magicTypeId: cls.magicTypeId ?? '',
+    spellSlotTableId: cls.spellSlotTableId ?? '',
+    canUseThiefTools:
+      cls.canUseThiefTools === undefined ? '' : cls.canUseThiefTools ? 'true' : 'false',
+    limitedSpellSelection:
+      cls.limitedSpellSelection === undefined ? '' : cls.limitedSpellSelection ? 'true' : 'false',
+    abilitiesRows: cls.abilities.map(abilityToRow),
+    levelsMode: cls.levels !== undefined ? 'custom' : 'inherit',
+    inheritFromName: cls.baseLevelProgressionId ?? ALL_CLASS_NAMES[0] ?? '',
+    levelRows: cls.levels !== undefined ? cls.levels.map(levelEntryToRow) : [],
+  };
+}
+
+export function formStateToNewClass(form: NewClassFormState): CampaignNewClass {
+  const cls: CampaignNewClass = {
+    type: 'new',
+    name: form.name,
+    category: form.category as CampaignNewClass['category'],
+    description: form.description,
+    armour: form.armour,
+    weapons: form.weapons,
+    languages: form.languages,
+    hd: parseInt(form.hd, 10) || 0,
+    maxLevel: parseInt(form.maxLevel, 10) || 0,
+    requirements: form.requirements.trim() !== '' ? form.requirements : null,
+    primeReqs: form.primeReqsStr.split(',').map((s) => s.trim()).filter(Boolean),
+    abilities: form.abilitiesRows.filter((r) => r.name.trim() !== '').map(rowToAbility),
+  };
+  if (form.xpBonusRule) cls.xpBonusRule = form.xpBonusRule;
+  if (form.spellListId) cls.spellListId = form.spellListId;
+  if (form.magicTypeId) cls.magicTypeId = form.magicTypeId;
+  if (form.spellSlotTableId) cls.spellSlotTableId = form.spellSlotTableId;
+  if (form.canUseThiefTools) cls.canUseThiefTools = form.canUseThiefTools === 'true';
+  if (form.limitedSpellSelection) cls.limitedSpellSelection = form.limitedSpellSelection === 'true';
+  if (form.levelsMode === 'inherit') {
+    cls.baseLevelProgressionId = form.inheritFromName;
+  } else {
+    cls.levels = form.levelRows.map(rowToLevelEntry);
+  }
+  return cls;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -182,6 +295,10 @@ export default function CampaignClassesTab({ draft, patch }: Props) {
   // null = not editing; <index> = editing customClasses[index]; length = adding new
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [overrideForm, setOverrideForm] = useState<OverrideFormState>(EMPTY_OVERRIDE_FORM);
+
+  // New-class form (separate state so override and new-class forms don't conflict)
+  const [newClassEditingIndex, setNewClassEditingIndex] = useState<number | null>(null);
+  const [newClassForm, setNewClassForm] = useState<NewClassFormState>(EMPTY_NEW_CLASS_FORM);
 
   const allAllowed = draft.allowedClassNames === null;
 
@@ -245,7 +362,40 @@ export default function CampaignClassesTab({ draft, patch }: Props) {
   const handleRemoveCustomClass = (index: number) => {
     const next = draft.customClasses.filter((_, i) => i !== index);
     if (editingIndex === index) setEditingIndex(null);
+    if (newClassEditingIndex === index) setNewClassEditingIndex(null);
     patch({ customClasses: next });
+  };
+
+  const patchNewClassForm = (p: Partial<NewClassFormState>) =>
+    setNewClassForm((prev) => ({ ...prev, ...p }));
+
+  const handleAddNewClass = () => {
+    setNewClassForm({ ...EMPTY_NEW_CLASS_FORM });
+    setNewClassEditingIndex(draft.customClasses.length);
+    // Close override form if open
+    setEditingIndex(null);
+  };
+
+  const handleEditNewClass = (index: number) => {
+    const cls = draft.customClasses[index];
+    if (cls.type !== 'new') return;
+    setNewClassForm(newClassToFormState(cls));
+    setNewClassEditingIndex(index);
+    // Close override form if open
+    setEditingIndex(null);
+  };
+
+  const handleSaveNewClass = () => {
+    if (newClassEditingIndex === null) return;
+    const cls = formStateToNewClass(newClassForm);
+    const next = [...draft.customClasses];
+    if (newClassEditingIndex >= next.length) {
+      next.push(cls);
+    } else {
+      next[newClassEditingIndex] = cls;
+    }
+    patch({ customClasses: next });
+    setNewClassEditingIndex(null);
   };
 
   const overrides = draft.customClasses.filter(
@@ -671,6 +821,29 @@ export default function CampaignClassesTab({ draft, patch }: Props) {
               )}
             </div>
 
+            {/* Level progression override */}
+            <div className="campaign-override-form-field campaign-override-form-field--full">
+              <label className="campaign-override-form-label">
+                <input
+                  type="checkbox"
+                  aria-label="Override level progression"
+                  checked={overrideForm.levelsOverrideEnabled}
+                  onChange={(e) => patchForm({ levelsOverrideEnabled: e.target.checked })}
+                />
+                {" "}Override level progression
+              </label>
+              {overrideForm.levelsOverrideEnabled && (
+                <LevelProgressionEditor
+                  rows={overrideForm.levelRows}
+                  onRowsChange={(rows) => patchForm({ levelRows: rows })}
+                  baseLevels={
+                    classOptionsData.find((c) => c.name === overrideForm.baseName)
+                      ?.levelProgression?.levels
+                  }
+                />
+              )}
+            </div>
+
             {/* Boolean flags */}
             <div className="campaign-override-form-field">
               <label className="campaign-override-form-label" htmlFor="override-canUseThiefTools">
@@ -733,29 +906,377 @@ export default function CampaignClassesTab({ draft, patch }: Props) {
         </button>
       )}
 
-      {/* ── New Classes (listed, creation deferred) ───────────────────────── */}
-      {newClasses.length > 0 && (
-        <>
-          <h4 className="campaign-section-heading">Custom Classes</h4>
-          <ul className="campaign-override-list">
-            {newClasses.map((cls) => {
-              const realIndex = draft.customClasses.indexOf(cls);
-              return (
-                <li key={realIndex} className="campaign-override-item">
-                  <span className="campaign-override-item-label">
-                    New Class: {cls.name}
-                  </span>
-                  <button
-                    className="button button--sm button--danger"
-                    onClick={() => handleRemoveCustomClass(realIndex)}
-                  >
-                    Remove
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </>
+      {/* ── Custom New Classes ────────────────────────────────────────────── */}
+      <h4 className="campaign-section-heading">Custom Classes</h4>
+
+      {newClasses.length === 0 && newClassEditingIndex === null ? (
+        <p className="campaign-empty-note">No custom classes defined yet.</p>
+      ) : (
+        <ul className="campaign-override-list">
+          {draft.customClasses.map((cls, i) => {
+            if (cls.type !== 'new') return null;
+            return (
+              <li key={i} className="campaign-override-item">
+                <span className="campaign-override-item-label">
+                  {cls.name}
+                </span>
+                <button
+                  className="button button--sm"
+                  onClick={() => handleEditNewClass(i)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="button button--sm button--danger"
+                  onClick={() => handleRemoveCustomClass(i)}
+                >
+                  Remove
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {newClassEditingIndex !== null && (
+        <div className="campaign-override-form">
+          <h5 className="campaign-override-form-title">
+            {newClassEditingIndex >= draft.customClasses.length
+              ? "Add Custom Class"
+              : "Edit Custom Class"}
+          </h5>
+
+          <div className="campaign-override-form-grid">
+            {/* Name */}
+            <div className="campaign-override-form-field">
+              <label className="campaign-override-form-label" htmlFor="newclass-name">
+                Class Name
+              </label>
+              <input
+                id="newclass-name"
+                type="text"
+                className="campaign-override-form-input"
+                placeholder="e.g. Warlord"
+                value={newClassForm.name}
+                onChange={(e) => patchNewClassForm({ name: e.target.value })}
+              />
+            </div>
+
+            {/* Category */}
+            <div className="campaign-override-form-field">
+              <label className="campaign-override-form-label" htmlFor="newclass-category">
+                Category
+              </label>
+              <select
+                id="newclass-category"
+                className="campaign-override-form-input"
+                value={newClassForm.category}
+                onChange={(e) => patchNewClassForm({ category: e.target.value })}
+              >
+                <option value="basic">Basic</option>
+                <option value="advanced">Advanced</option>
+                <option value="carcass">Carcass</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            {/* HD */}
+            <div className="campaign-override-form-field">
+              <label className="campaign-override-form-label" htmlFor="newclass-hd">
+                Hit Die (d__)
+              </label>
+              <input
+                id="newclass-hd"
+                type="number"
+                className="campaign-override-form-input"
+                min={4}
+                max={12}
+                placeholder="e.g. 8"
+                value={newClassForm.hd}
+                onChange={(e) => patchNewClassForm({ hd: e.target.value })}
+              />
+            </div>
+
+            {/* Max level */}
+            <div className="campaign-override-form-field">
+              <label className="campaign-override-form-label" htmlFor="newclass-maxLevel">
+                Max Level
+              </label>
+              <input
+                id="newclass-maxLevel"
+                type="number"
+                className="campaign-override-form-input"
+                min={1}
+                max={36}
+                placeholder="e.g. 14"
+                value={newClassForm.maxLevel}
+                onChange={(e) => patchNewClassForm({ maxLevel: e.target.value })}
+              />
+            </div>
+
+            {/* Spell list */}
+            <div className="campaign-override-form-field">
+              <label className="campaign-override-form-label" htmlFor="newclass-spellListId">
+                Spell List
+              </label>
+              <select
+                id="newclass-spellListId"
+                className="campaign-override-form-input"
+                value={newClassForm.spellListId}
+                onChange={(e) => patchNewClassForm({ spellListId: e.target.value })}
+              >
+                <option value="">— none —</option>
+                {ALL_SPELL_LIST_IDS.map((id) => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Magic type */}
+            <div className="campaign-override-form-field">
+              <label className="campaign-override-form-label" htmlFor="newclass-magicTypeId">
+                Magic Type
+              </label>
+              <select
+                id="newclass-magicTypeId"
+                className="campaign-override-form-input"
+                value={newClassForm.magicTypeId}
+                onChange={(e) => patchNewClassForm({ magicTypeId: e.target.value })}
+              >
+                <option value="">— none —</option>
+                {MAGIC_TYPE_IDS.map((id) => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Spell slot table */}
+            <div className="campaign-override-form-field">
+              <label className="campaign-override-form-label" htmlFor="newclass-spellSlotTableId">
+                Spell Slot Table
+              </label>
+              <select
+                id="newclass-spellSlotTableId"
+                className="campaign-override-form-input"
+                value={newClassForm.spellSlotTableId}
+                onChange={(e) => patchNewClassForm({ spellSlotTableId: e.target.value })}
+              >
+                <option value="">— none —</option>
+                {ALL_SPELL_SLOT_TABLE_IDS.map((id) => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Armour */}
+            <div className="campaign-override-form-field campaign-override-form-field--full">
+              <label className="campaign-override-form-label" htmlFor="newclass-armour">
+                Armour
+              </label>
+              <input
+                id="newclass-armour"
+                type="text"
+                className="campaign-override-form-input"
+                placeholder="e.g. Any armour + shield"
+                value={newClassForm.armour}
+                onChange={(e) => patchNewClassForm({ armour: e.target.value })}
+              />
+            </div>
+
+            {/* Weapons */}
+            <div className="campaign-override-form-field campaign-override-form-field--full">
+              <label className="campaign-override-form-label" htmlFor="newclass-weapons">
+                Weapons
+              </label>
+              <input
+                id="newclass-weapons"
+                type="text"
+                className="campaign-override-form-input"
+                placeholder="e.g. Any"
+                value={newClassForm.weapons}
+                onChange={(e) => patchNewClassForm({ weapons: e.target.value })}
+              />
+            </div>
+
+            {/* Requirements */}
+            <div className="campaign-override-form-field campaign-override-form-field--full">
+              <label className="campaign-override-form-label" htmlFor="newclass-requirements">
+                Requirements
+              </label>
+              <input
+                id="newclass-requirements"
+                type="text"
+                className="campaign-override-form-input"
+                placeholder="e.g. STR 9+"
+                value={newClassForm.requirements}
+                onChange={(e) => patchNewClassForm({ requirements: e.target.value })}
+              />
+            </div>
+
+            {/* Prime requisites */}
+            <div className="campaign-override-form-field campaign-override-form-field--full">
+              <label className="campaign-override-form-label" htmlFor="newclass-primeReqs">
+                Prime Requisites (comma-separated)
+              </label>
+              <input
+                id="newclass-primeReqs"
+                type="text"
+                className="campaign-override-form-input"
+                placeholder="e.g. strength, dexterity"
+                value={newClassForm.primeReqsStr}
+                onChange={(e) => patchNewClassForm({ primeReqsStr: e.target.value })}
+              />
+            </div>
+
+            {/* XP bonus rule */}
+            <div className="campaign-override-form-field campaign-override-form-field--full">
+              <label className="campaign-override-form-label" htmlFor="newclass-xpBonusRule">
+                XP Bonus Rule
+              </label>
+              <input
+                id="newclass-xpBonusRule"
+                type="text"
+                className="campaign-override-form-input"
+                placeholder="e.g. str>=13: +5%, str>=16: +10%"
+                value={newClassForm.xpBonusRule}
+                onChange={(e) => patchNewClassForm({ xpBonusRule: e.target.value })}
+              />
+            </div>
+
+            {/* Description */}
+            <div className="campaign-override-form-field campaign-override-form-field--full">
+              <label className="campaign-override-form-label" htmlFor="newclass-description">
+                Description
+              </label>
+              <textarea
+                id="newclass-description"
+                className="campaign-override-form-input"
+                rows={3}
+                value={newClassForm.description}
+                onChange={(e) => patchNewClassForm({ description: e.target.value })}
+              />
+            </div>
+
+            {/* Boolean flags */}
+            <div className="campaign-override-form-field">
+              <label className="campaign-override-form-label" htmlFor="newclass-canUseThiefTools">
+                Can Use Thief Tools
+              </label>
+              <select
+                id="newclass-canUseThiefTools"
+                className="campaign-override-form-input"
+                value={newClassForm.canUseThiefTools}
+                onChange={(e) => patchNewClassForm({ canUseThiefTools: e.target.value })}
+              >
+                <option value="">No</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+
+            <div className="campaign-override-form-field">
+              <label className="campaign-override-form-label" htmlFor="newclass-limitedSpellSelection">
+                Limited Spell Selection
+              </label>
+              <select
+                id="newclass-limitedSpellSelection"
+                className="campaign-override-form-input"
+                value={newClassForm.limitedSpellSelection}
+                onChange={(e) => patchNewClassForm({ limitedSpellSelection: e.target.value })}
+              >
+                <option value="">No</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+
+            {/* Level progression */}
+            <div className="campaign-override-form-field campaign-override-form-field--full">
+              <fieldset className="campaign-override-form-fieldset">
+                <legend className="campaign-override-form-label">Level Progression</legend>
+                <label className="campaign-override-form-radio">
+                  <input
+                    type="radio"
+                    name="newclass-levelsMode"
+                    value="inherit"
+                    checked={newClassForm.levelsMode === 'inherit'}
+                    onChange={() => patchNewClassForm({ levelsMode: 'inherit' })}
+                  />
+                  {" "}Inherit from existing class
+                </label>
+                {newClassForm.levelsMode === 'inherit' && (
+                  <div className="campaign-override-form-field">
+                    <label className="campaign-override-form-label" htmlFor="newclass-inheritFromName">
+                      Base Class
+                    </label>
+                    <select
+                      id="newclass-inheritFromName"
+                      className="campaign-override-form-input"
+                      value={newClassForm.inheritFromName}
+                      onChange={(e) => patchNewClassForm({ inheritFromName: e.target.value })}
+                    >
+                      {classOptionsData.map((c) => (
+                        <option key={c.name} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                <label className="campaign-override-form-radio">
+                  <input
+                    type="radio"
+                    name="newclass-levelsMode"
+                    value="custom"
+                    checked={newClassForm.levelsMode === 'custom'}
+                    onChange={() => patchNewClassForm({ levelsMode: 'custom' })}
+                  />
+                  {" "}Custom level progression
+                </label>
+                {newClassForm.levelsMode === 'custom' && (
+                  <LevelProgressionEditor
+                    rows={newClassForm.levelRows}
+                    onRowsChange={(rows) => patchNewClassForm({ levelRows: rows })}
+                    baseLevels={
+                      classOptionsData.find((c) => c.name === newClassForm.inheritFromName)
+                        ?.levelProgression?.levels
+                    }
+                  />
+                )}
+              </fieldset>
+            </div>
+          </div>
+
+          <div className="campaign-override-form-actions">
+            <button
+              className="button button-primary button--sm"
+              onClick={handleSaveNewClass}
+            >
+              Save Class
+            </button>
+            <button
+              className="button button--sm"
+              onClick={() => setNewClassEditingIndex(null)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {newClassEditingIndex === null && (
+        <button
+          className="button button-primary button--sm"
+          onClick={handleAddNewClass}
+        >
+          Add Custom Class
+        </button>
       )}
     </div>
   );

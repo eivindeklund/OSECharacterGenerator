@@ -271,4 +271,45 @@ test.describe('Visual regression — campaign settings', () => {
 
     await snap(page, 'campaign-override-abilities-form');
   });
+
+  test('Campaign override form — level progression editor open (table view)', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: /manage campaigns/i }).click();
+    await page.getByPlaceholder(/campaign name/i).fill('Level Editor Visual Test');
+    await page.getByRole('button', { name: /create/i }).click();
+
+    await page.getByRole('button', { name: /^classes$/i }).click();
+    await page.getByRole('button', { name: /add override/i }).click();
+    await page.getByRole('combobox', { name: /base class/i }).selectOption('Fighter');
+
+    // Enable level progression override and copy from base
+    await page.getByRole('checkbox', { name: /override level progression/i }).check();
+    await page.getByRole('button', { name: /copy from base class/i }).click();
+
+    // Wait for 14 rows to appear
+    await expect(page.locator('.campaign-level-table tbody tr')).toHaveCount(14);
+
+    await snap(page, 'campaign-override-level-editor-table');
+  });
+
+  test('Campaign override form — level progression editor (card view)', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: /manage campaigns/i }).click();
+    await page.getByPlaceholder(/campaign name/i).fill('Level Card Visual Test');
+    await page.getByRole('button', { name: /create/i }).click();
+
+    await page.getByRole('button', { name: /^classes$/i }).click();
+    await page.getByRole('button', { name: /add override/i }).click();
+    await page.getByRole('combobox', { name: /base class/i }).selectOption('Fighter');
+
+    await page.getByRole('checkbox', { name: /override level progression/i }).check();
+    await page.getByRole('button', { name: /copy from base class/i }).click();
+    await expect(page.locator('.campaign-level-table tbody tr')).toHaveCount(14);
+
+    // Switch to card view
+    await page.getByRole('button', { name: /cards/i }).click();
+    await expect(page.locator('.campaign-level-card').first()).toBeVisible();
+
+    await snap(page, 'campaign-override-level-editor-cards');
+  });
 });

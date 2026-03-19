@@ -472,3 +472,140 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ── Level progression editor ─────────────────────────────────────────────────── */
+
+.campaign-level-editor {
+  margin-top: 10px;
+}
+
+.campaign-level-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.campaign-level-view-toggle {
+  display: flex;
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.campaign-level-view-toggle .button {
+  border-radius: 0;
+  border: none;
+}
+
+.campaign-level-view-toggle--active {
+  background-color: var(--badge-bg);
+  color: var(--badge-text-color);
+}
+
+.campaign-level-table-wrapper {
+  overflow-x: auto;
+}
+
+.campaign-level-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.82em;
+}
+
+.campaign-level-table th {
+  font-size: 0.9em;
+  text-transform: small-caps;
+  color: var(--secondary-text-color);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.campaign-level-table td,
+.campaign-level-table th {
+  padding: 3px 4px;
+  border-bottom: 1px solid var(--chip-bg);
+  vertical-align: middle;
+}
+
+.campaign-level-table-input {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 40px;
+}
+
+.campaign-level-table-input--wide {
+  min-width: 70px;
+}
+
+.campaign-level-table-remove {
+  white-space: nowrap;
+}
+
+.campaign-level-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.campaign-level-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-sm);
+  padding: 10px;
+}
+
+.campaign-level-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.campaign-level-card-title {
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.campaign-level-card-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px 8px;
+}
+
+.campaign-level-card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.campaign-level-card-label {
+  font-size: 0.75em;
+  color: var(--secondary-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.campaign-level-card-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.campaign-override-form-fieldset {
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-sm);
+  padding: 10px 12px;
+  margin: 0;
+}
+
+.campaign-override-form-radio {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0;
+  cursor: pointer;
+}
+
