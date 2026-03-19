@@ -3,9 +3,9 @@ import classOptionsData, { MAGIC_TYPE_IDS } from "../../data/classOptionsData";
 import { DEFAULT_SPELL_SLOT_TABLES } from "../../data/levelProgressionData";
 import { SPELL_LIST_REGISTRY } from "../../data/spells";
 import type {
-  Campaign,
-  CampaignClassOverride,
-  CampaignNewClass,
+    Campaign,
+    CampaignClassOverride,
+    CampaignNewClass,
 } from "../../types";
 import { toggleAllowed } from "../../utilities/campaignFilterUtils";
 
