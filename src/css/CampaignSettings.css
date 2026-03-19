@@ -206,6 +206,58 @@
   margin-top: 12px;
 }
 
+/* ── Abilities override sub-section ─────────────────────────────────────────── */
+
+.campaign-ability-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px 0;
+}
+
+.campaign-ability-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--chip-bg);
+}
+
+.campaign-ability-row-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.campaign-ability-row-name,
+.campaign-ability-row-desc {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.campaign-ability-row-advanced {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.campaign-ability-row-id {
+  flex: 1 1 120px;
+  min-width: 80px;
+  box-sizing: border-box;
+}
+
+.campaign-ability-row-minlevel {
+  flex: 0 0 80px;
+  box-sizing: border-box;
+}
+
+.campaign-ability-row-shown {
+  flex: 0 0 130px;
+  box-sizing: border-box;
+}
+
 /* ── Custom item lists (equipment / weapon) ──────────────────────────────────── */
 
 .campaign-custom-item-list,

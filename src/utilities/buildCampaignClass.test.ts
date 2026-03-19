@@ -345,4 +345,55 @@ describe('buildCampaignClass — type "override"', () => {
     buildCampaignClass(def, baseClasses);
     expect(fighter.getSavingThrowsAtLevel(1)).toEqual(originalSaves);
   });
+
+  it('applies abilities override — replaces base class abilities entirely', () => {
+    const def: CampaignClassOverride = {
+      type: 'override',
+      baseName: 'Fighter',
+      abilities: [{ name: 'Berserker Rage', description: 'Double damage when enraged.' }],
+    };
+    const result = buildCampaignClass(def, baseClasses)!;
+    expect(result.abilities).toHaveLength(1);
+    expect(result.abilities[0].name).toBe('Berserker Rage');
+    expect(result.abilities[0].description).toBe('Double damage when enraged.');
+  });
+
+  it('abilities override with all serializable fields round-trips correctly', () => {
+    const def: CampaignClassOverride = {
+      type: 'override',
+      baseName: 'Thief',
+      abilities: [
+        { id: 'sneak_attack', name: 'Sneak Attack', description: '+4 to hit.', minLevel: 2, shownInList: false },
+        { name: 'Shadow Step' },
+      ],
+    };
+    const result = buildCampaignClass(def, baseClasses)!;
+    expect(result.abilities).toHaveLength(2);
+    expect(result.abilities[0].id).toBe('sneak_attack');
+    expect(result.abilities[0].minLevel).toBe(2);
+    expect(result.abilities[0].shownInList).toBe(false);
+    expect(result.abilities[1].name).toBe('Shadow Step');
+  });
+
+  it('abilities override with empty array gives class no abilities', () => {
+    const def: CampaignClassOverride = {
+      type: 'override',
+      baseName: 'Fighter',
+      abilities: [],
+    };
+    const result = buildCampaignClass(def, baseClasses)!;
+    expect(result.abilities).toHaveLength(0);
+  });
+
+  it('abilities override does not affect the base Fighter abilities', () => {
+    const fighter = baseClasses.find((c) => c.name === 'Fighter')!;
+    const originalCount = fighter.abilities.length;
+    const def: CampaignClassOverride = {
+      type: 'override',
+      baseName: 'Fighter',
+      abilities: [{ name: 'Custom Ability' }],
+    };
+    buildCampaignClass(def, baseClasses);
+    expect(fighter.abilities).toHaveLength(originalCount);
+  });
 });

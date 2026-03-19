@@ -241,3 +241,34 @@ test.describe('Visual regression — tavern / storage', () => {
     await snap(page, 'tavern-empty');
   });
 });
+
+test.describe('Visual regression — campaign settings', () => {
+  test.beforeEach(async ({ page }) => {
+    await setupDeterministicPage(page);
+  });
+
+  test('Campaign override form — abilities section open with one ability', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: /manage campaigns/i }).click();
+    await page.getByPlaceholder(/campaign name/i).fill('Visual Test Campaign');
+    await page.getByRole('button', { name: /create/i }).click();
+
+    // Navigate to Classes tab
+    await page.getByRole('button', { name: /^classes$/i }).click();
+
+    // Open Add Override form
+    await page.getByRole('button', { name: /add override/i }).click();
+    await page.getByRole('combobox', { name: /base class/i }).selectOption('Fighter');
+
+    // Enable and populate abilities override
+    await page.getByRole('checkbox', { name: /override abilities/i }).check();
+    await page.getByRole('button', { name: /add ability/i }).click();
+    await page.locator('.campaign-ability-row-name').fill('Berserker Rage');
+    await page.locator('.campaign-ability-row-desc').fill('Double damage when enraged.');
+
+    // Wait for stable state before snapping
+    await expect(page.locator('.campaign-ability-row-name')).toHaveValue('Berserker Rage');
+
+    await snap(page, 'campaign-override-abilities-form');
+  });
+});

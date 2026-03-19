@@ -213,6 +213,29 @@ test.describe('Isolated CSS rules — CampaignSettings.css', () => {
     // button--sm sets height: 28px
     expect(styles['height']).toBe('28px');
   });
+
+  test('.campaign-ability-row has display: flex', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<ul><li class="campaign-ability-row"><div class="campaign-ability-row-fields"></div></li></ul>',
+      '.campaign-ability-row',
+      ['display'],
+    );
+    expect(styles['display']).toBe('flex');
+  });
+
+  test('.campaign-ability-row-fields has display: flex and column direction', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<ul><li class="campaign-ability-row"><div class="campaign-ability-row-fields"></div></li></ul>',
+      '.campaign-ability-row-fields',
+      ['display', 'flex-direction'],
+    );
+    expect(styles['display']).toBe('flex');
+    expect(styles['flex-direction']).toBe('column');
+  });
 });
 
 // ---------------------------------------------------------------------------

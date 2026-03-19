@@ -6,6 +6,7 @@ import type {
     Campaign,
     CampaignClassOverride,
     CampaignNewClass,
+    ClassAbility,
 } from "../../types";
 import { toggleAllowed } from "../../utilities/campaignFilterUtils";
 
@@ -26,6 +27,14 @@ const ALL_SPELL_SLOT_TABLE_IDS = DEFAULT_SPELL_SLOT_TABLES.map((t) => t.id);
 
 // ── Override form state ───────────────────────────────────────────────────────
 
+interface AbilityRowState {
+  name: string;
+  description: string;
+  id: string;
+  minLevel: string;    // number as string, or '' for unset
+  shownInList: string; // '' = shown (default), 'false' = hidden
+}
+
 interface OverrideFormState {
   baseName: string;
   name: string;
@@ -44,7 +53,17 @@ interface OverrideFormState {
   spellSlotTableId: string;
   canUseThiefTools: string;
   limitedSpellSelection: string;
+  abilitiesOverrideEnabled: boolean;
+  abilitiesRows: AbilityRowState[];
 }
+
+const EMPTY_ABILITY_ROW: AbilityRowState = {
+  name: '',
+  description: '',
+  id: '',
+  minLevel: '',
+  shownInList: '',
+};
 
 const EMPTY_OVERRIDE_FORM: OverrideFormState = {
   baseName: ALL_CLASS_NAMES[0] ?? "",
@@ -64,6 +83,8 @@ const EMPTY_OVERRIDE_FORM: OverrideFormState = {
   spellSlotTableId: "",
   canUseThiefTools: "",
   limitedSpellSelection: "",
+  abilitiesOverrideEnabled: false,
+  abilitiesRows: [],
 };
 
 function overrideToFormState(cls: CampaignClassOverride): OverrideFormState {
@@ -95,7 +116,28 @@ function overrideToFormState(cls: CampaignClassOverride): OverrideFormState {
         : cls.limitedSpellSelection
           ? "true"
           : "false",
+    abilitiesOverrideEnabled: cls.abilities !== undefined,
+    abilitiesRows: cls.abilities !== undefined ? cls.abilities.map(abilityToRow) : [],
   };
+}
+
+function abilityToRow(a: ClassAbility): AbilityRowState {
+  return {
+    name: a.name,
+    description: a.description ?? '',
+    id: a.id ?? '',
+    minLevel: a.minLevel !== undefined ? String(a.minLevel) : '',
+    shownInList: a.shownInList === false ? 'false' : '',
+  };
+}
+
+function rowToAbility(row: AbilityRowState): ClassAbility {
+  const ability: ClassAbility = { name: row.name };
+  if (row.description) ability.description = row.description;
+  if (row.id) ability.id = row.id;
+  if (row.minLevel) ability.minLevel = parseInt(row.minLevel, 10);
+  if (row.shownInList === 'false') ability.shownInList = false;
+  return ability;
 }
 
 function formStateToOverride(form: OverrideFormState): CampaignClassOverride {
@@ -122,6 +164,10 @@ function formStateToOverride(form: OverrideFormState): CampaignClassOverride {
     override.canUseThiefTools = form.canUseThiefTools === "true";
   if (form.limitedSpellSelection)
     override.limitedSpellSelection = form.limitedSpellSelection === "true";
+  if (form.abilitiesOverrideEnabled)
+    override.abilities = form.abilitiesRows
+      .filter((r) => r.name.trim() !== '')
+      .map(rowToAbility);
   return override;
 }
 
@@ -152,6 +198,24 @@ export default function CampaignClassesTab({ draft, patch }: Props) {
 
   const patchForm = (p: Partial<OverrideFormState>) =>
     setOverrideForm((prev) => ({ ...prev, ...p }));
+
+  const patchAbilityRow = (i: number, p: Partial<AbilityRowState>) =>
+    setOverrideForm((prev) => {
+      const rows = prev.abilitiesRows.map((r, idx) => idx === i ? { ...r, ...p } : r);
+      return { ...prev, abilitiesRows: rows };
+    });
+
+  const addAbilityRow = () =>
+    setOverrideForm((prev) => ({
+      ...prev,
+      abilitiesRows: [...prev.abilitiesRows, { ...EMPTY_ABILITY_ROW }],
+    }));
+
+  const removeAbilityRow = (i: number) =>
+    setOverrideForm((prev) => ({
+      ...prev,
+      abilitiesRows: prev.abilitiesRows.filter((_, idx) => idx !== i),
+    }));
 
   const handleAddOverride = () => {
     setOverrideForm({ ...EMPTY_OVERRIDE_FORM, baseName: ALL_CLASS_NAMES[0] ?? "" });
@@ -518,6 +582,93 @@ export default function CampaignClassesTab({ draft, patch }: Props) {
                 value={overrideForm.description}
                 onChange={(e) => patchForm({ description: e.target.value })}
               />
+            </div>
+
+            {/* Abilities override */}
+            <div className="campaign-override-form-field campaign-override-form-field--full">
+              <label className="campaign-override-form-label">
+                <input
+                  type="checkbox"
+                  aria-label="Override abilities"
+                  checked={overrideForm.abilitiesOverrideEnabled}
+                  onChange={(e) =>
+                    patchForm({ abilitiesOverrideEnabled: e.target.checked })
+                  }
+                />
+                {" "}Override class abilities
+              </label>
+              {overrideForm.abilitiesOverrideEnabled && (
+                <>
+                  {overrideForm.abilitiesRows.length === 0 ? (
+                    <p className="campaign-empty-note">No abilities. Class will have none.</p>
+                  ) : (
+                    <ul className="campaign-ability-list">
+                      {overrideForm.abilitiesRows.map((row, i) => (
+                        <li key={i} className="campaign-ability-row">
+                          <div className="campaign-ability-row-fields">
+                            <input
+                              type="text"
+                              className="campaign-ability-row-name"
+                              placeholder="Ability name (required)"
+                              aria-label={`Ability ${i + 1} name`}
+                              value={row.name}
+                              onChange={(e) => patchAbilityRow(i, { name: e.target.value })}
+                            />
+                            <input
+                              type="text"
+                              className="campaign-ability-row-desc"
+                              placeholder="Description"
+                              aria-label={`Ability ${i + 1} description`}
+                              value={row.description}
+                              onChange={(e) => patchAbilityRow(i, { description: e.target.value })}
+                            />
+                            <div className="campaign-ability-row-advanced">
+                              <input
+                                type="text"
+                                className="campaign-ability-row-id"
+                                placeholder="ID (optional)"
+                                aria-label={`Ability ${i + 1} id`}
+                                value={row.id}
+                                onChange={(e) => patchAbilityRow(i, { id: e.target.value })}
+                              />
+                              <input
+                                type="number"
+                                className="campaign-ability-row-minlevel"
+                                placeholder="Min level"
+                                aria-label={`Ability ${i + 1} min level`}
+                                min={1}
+                                value={row.minLevel}
+                                onChange={(e) => patchAbilityRow(i, { minLevel: e.target.value })}
+                              />
+                              <select
+                                className="campaign-ability-row-shown"
+                                aria-label={`Ability ${i + 1} shown in list`}
+                                value={row.shownInList}
+                                onChange={(e) => patchAbilityRow(i, { shownInList: e.target.value })}
+                              >
+                                <option value="">Shown in list</option>
+                                <option value="false">Hidden</option>
+                              </select>
+                            </div>
+                          </div>
+                          <button
+                            className="button button--sm button--danger"
+                            onClick={() => removeAbilityRow(i)}
+                          >
+                            Remove
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <button
+                    className="button button-primary button--sm"
+                    onClick={addAbilityRow}
+                  >
+                    Add Ability
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Boolean flags */}

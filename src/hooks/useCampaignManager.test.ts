@@ -164,6 +164,26 @@ describe('useCampaignManager — availableClasses', () => {
     expect(classes.some((c) => c.name === 'Warrior')).toBe(true);
     expect(classes.some((c) => c.name === 'Fighter')).toBe(false);
   });
+
+  it('applies abilities override from customClasses', () => {
+    const camp = makeCampaign({
+      id: 'camp-1',
+      name: 'Custom Abilities',
+      customClasses: [{
+        type: 'override',
+        baseName: 'Fighter',
+        abilities: [{ name: 'Berserker Rage', description: 'Double damage when enraged.' }],
+      }],
+    });
+    seedStorage([camp]);
+    const { result } = renderHook(() => useCampaignManager());
+    act(() => { result.current.setActiveCampaign('camp-1'); });
+    const classes = result.current.availableClasses();
+    const fighter = classes.find((c) => c.name === 'Fighter');
+    expect(fighter).toBeDefined();
+    expect(fighter!.abilities).toHaveLength(1);
+    expect(fighter!.abilities[0].name).toBe('Berserker Rage');
+  });
 });
 
 // ── availableEquipment ────────────────────────────────────────────────────────

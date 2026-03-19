@@ -308,3 +308,65 @@ test('Campaigns: can delete a non-default campaign with confirmation', async ({ 
   await page.getByRole('button', { name: /confirm delete/i }).click();
   await expect(page.getByText('To Be Deleted')).not.toBeVisible();
 });
+
+// ── Class override abilities ───────────────────────────────────────────────────
+
+test('Campaign settings: can add and save abilities in a class override', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Abilities Override Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^classes$/i }).click();
+
+  // Open the override form
+  await page.getByRole('button', { name: /add override/i }).click();
+  await page.getByRole('combobox', { name: /base class/i }).selectOption('Fighter');
+
+  // Enable abilities override
+  await page.getByRole('checkbox', { name: /override abilities/i }).check();
+
+  // Add an ability
+  await page.getByRole('button', { name: /add ability/i }).click();
+  await page.locator('.campaign-ability-row-name').fill('Berserker Rage');
+  await page.locator('.campaign-ability-row-desc').fill('Double damage when enraged.');
+
+  // Save the override
+  await page.getByRole('button', { name: /save override/i }).click();
+  await expect(page.locator('.campaign-override-list')).toContainText('Override: Fighter');
+
+  // Re-open to verify persistence
+  await page.getByRole('button', { name: /edit/i }).click();
+  await expect(page.getByRole('checkbox', { name: /override abilities/i })).toBeChecked();
+  await expect(page.locator('.campaign-ability-row-name')).toHaveValue('Berserker Rage');
+  await expect(page.locator('.campaign-ability-row-desc')).toHaveValue('Double damage when enraged.');
+
+  // Remove the ability
+  await page.locator('.campaign-ability-row').getByRole('button', { name: /remove/i }).click();
+  await expect(page.locator('.campaign-ability-row')).not.toBeVisible();
+
+  // Cancel the override form
+  await page.locator('.campaign-override-form-actions').getByRole('button', { name: /cancel/i }).click();
+});
+
+test('Campaign settings: ability override persists through save & back', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Ability Persist Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^classes$/i }).click();
+
+  // Add override with abilities
+  await page.getByRole('button', { name: /add override/i }).click();
+  await page.getByRole('combobox', { name: /base class/i }).selectOption('Thief');
+  await page.getByRole('checkbox', { name: /override abilities/i }).check();
+  await page.getByRole('button', { name: /add ability/i }).click();
+  await page.locator('.campaign-ability-row-name').fill('Shadow Strike');
+  await page.getByRole('button', { name: /save override/i }).click();
+
+  // Save & Back then re-open
+  await page.getByRole('button', { name: /save.*back/i }).click();
+  await page.getByRole('button', { name: /settings/i }).last().click();
+  await page.getByRole('button', { name: /^classes$/i }).click();
+  await page.getByRole('button', { name: /edit/i }).click();
+
+  await expect(page.getByRole('checkbox', { name: /override abilities/i })).toBeChecked();
+  await expect(page.locator('.campaign-ability-row-name')).toHaveValue('Shadow Strike');
+});
