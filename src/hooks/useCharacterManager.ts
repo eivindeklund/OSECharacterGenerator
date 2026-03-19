@@ -247,57 +247,62 @@ export const useCharacterManager = (
 
   const handleRollComplete = useCallback(
     (rollResults) => {
-      if (pendingRoll === "all") {
-        setAbilityScores((prev) => {
-          const newAbilityScores = { ...prev };
-          abilityScoreNames.forEach((attr, i) => {
-            newAbilityScores[attr] = rollResults[i]?.value;
+      switch (pendingRoll) {
+        case "all":
+          setAbilityScores((prev) => {
+            const newAbilityScores = { ...prev };
+            abilityScoreNames.forEach((attr, i) => {
+              newAbilityScores[attr] = rollResults[i]?.value;
+            });
+            return newAbilityScores;
           });
-          return newAbilityScores;
-        });
-        setOriginalAbilityScores((prev) => {
-          const newOriginalAbilityScores = { ...prev };
-          abilityScoreNames.forEach((attr, i) => {
-            newOriginalAbilityScores[attr] = rollResults[i]?.value;
+          setOriginalAbilityScores((prev) => {
+            const newOriginalAbilityScores = { ...prev };
+            abilityScoreNames.forEach((attr, i) => {
+              newOriginalAbilityScores[attr] = rollResults[i]?.value;
+            });
+            return newOriginalAbilityScores;
           });
-          return newOriginalAbilityScores;
-        });
-        setPointBuy(0);
-      } else if (pendingRoll === "hp") {
-        const hpResult = rollResults[0].value;
-        const seed = hpRollToSeed(hpResult, characterClass.hd);
-        const totalHP = Math.max(
-          1,
-          hpResult + parseInt(characterModifiers.constitutionMod)
-        );
-        const newHpRolls = characterStatistics.hpRolls + 1;
-        setCharacterStatistics((prev) => ({
-          ...prev,
-          hitPoints: totalHP,
-          hpRolls: newHpRolls,
-          hpResult: hpResult,
-          hpSeed: seed,
-        }));
-      } else if (pendingRoll === "gold") {
-        let goldResult = 0;
-        rollResults.forEach((dieResult) => {
-          goldResult += dieResult.value;
-        });
-        const totalGold = goldResult * 10;
-        setCharacterEquipment((prev) => ({
-          ...prev,
-          gold: totalGold,
-        }));
-      } else if (pendingRoll) {
-        setAbilityScores((prev) => ({
-          ...prev,
-          [pendingRoll]: rollResults[0].value,
-        }));
-        setOriginalAbilityScores((prev) => ({
-          ...prev,
-          [pendingRoll]: rollResults[0].value,
-        }));
-        setPointBuy(0);
+          setPointBuy(0);
+          break;
+        case "hp": {
+          const hpResult = rollResults[0].value;
+          const seed = hpRollToSeed(hpResult, characterClass.hd);
+          const totalHP = Math.max(
+            1,
+            hpResult + parseInt(characterModifiers.constitutionMod)
+          );
+          const newHpRolls = characterStatistics.hpRolls + 1;
+          setCharacterStatistics((prev) => ({
+            ...prev,
+            hitPoints: totalHP,
+            hpRolls: newHpRolls,
+            hpResult: hpResult,
+            hpSeed: seed,
+          }));
+          break;
+        }
+        case "gold": {
+          const totalGold = rollResults.reduce((sum, die) => sum + die.value, 0) * 10;
+          setCharacterEquipment((prev) => ({
+            ...prev,
+            gold: totalGold,
+          }));
+          break;
+        }
+        default:
+          // Single attribute roll: pendingRoll is the attribute name
+          if (pendingRoll) {
+            setAbilityScores((prev) => ({
+              ...prev,
+              [pendingRoll]: rollResults[0].value,
+            }));
+            setOriginalAbilityScores((prev) => ({
+              ...prev,
+              [pendingRoll]: rollResults[0].value,
+            }));
+            setPointBuy(0);
+          }
       }
 
       setPendingRoll(null);

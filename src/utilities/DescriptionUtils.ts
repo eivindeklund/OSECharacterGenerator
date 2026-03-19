@@ -153,11 +153,12 @@ export class CharacterRef {
  * human classes share the "human" category.
  */
 export function raceCategory(className: string): string {
-  const lower = className.toLowerCase();
-  if (lower === "dwarf")    return "dwarf";
-  if (lower === "elf")      return "elf";
-  if (lower === "halfling") return "halfling";
-  return "human";
+  switch (className.toLowerCase()) {
+    case "dwarf":    return "dwarf";
+    case "elf":      return "elf";
+    case "halfling": return "halfling";
+    default:         return "human";
+  }
 }
 
 // ── Height Formatting ─────────────────────────────────────────────────────────

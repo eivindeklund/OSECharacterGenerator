@@ -103,42 +103,33 @@ export const getWeightedValue = (weightedList: Record<number, string>, diceResul
 
 export const consolidateDuplicates = (array: string[]): { id: string; count: number }[] => {
   const itemCounts: Record<string, number> = {}
-  for (let i = 0; i < array.length; i++) {
-    if (Object.prototype.hasOwnProperty.call(itemCounts, array[i])) {
-      itemCounts[array[i]] += 1
-    } else {
-      itemCounts[array[i]] = 1
-    }
+  for (const item of array) {
+    itemCounts[item] = (itemCounts[item] || 0) + 1
   }
   return Object.entries(itemCounts).map(([id, count]) => ({ id, count }))
 }
 
 // TODO: The types passed to this should be cleaned up.
 export const calculateArmourClass = (dexMod: string, armour: string | string[]) => {
-  let baseArmour = 10
-  let armourClass = baseArmour
-
-  if (dexMod.startsWith('+')) {
-    dexMod = dexMod.substring(1)
-  }
-  baseArmour += parseInt(dexMod)
+  // parseInt handles a leading '+' natively, so no stripping is needed.
+  const unarmouredAC = 10 + parseInt(dexMod)
+  let armourClass = unarmouredAC
 
   if (!armour) {
-    return [baseArmour, armourClass]
+    return [unarmouredAC, armourClass]
   }
 
-  if (armour.includes(ARMOUR_ID.leather)) {
-    armourClass = baseArmour + 2
-  }
-  if (armour.includes(ARMOUR_ID.chainmail)) {
-    armourClass = baseArmour + 4
-  }
+  // Only one main armour type is worn at a time; highest bonus wins.
   if (armour.includes(ARMOUR_ID.plateMail)) {
-    armourClass = baseArmour + 6
+    armourClass = unarmouredAC + 6
+  } else if (armour.includes(ARMOUR_ID.chainmail)) {
+    armourClass = unarmouredAC + 4
+  } else if (armour.includes(ARMOUR_ID.leather)) {
+    armourClass = unarmouredAC + 2
   }
   if (armour.includes(ARMOUR_ID.shield)) {
     armourClass += 1
   }
 
-  return [baseArmour, armourClass]
+  return [unarmouredAC, armourClass]
 }

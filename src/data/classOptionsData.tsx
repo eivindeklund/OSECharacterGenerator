@@ -316,21 +316,15 @@ class ClassOptions implements ClassOptionsData {
       const ids: string[] = [];
       let lastIndex = -1;
       for (const raw of tokens) {
-        let found = false;
-        for (let i = 0; i < allowedTokens.length; ++i) {
-          if (allowedTokens[i].names.includes(raw.toLowerCase())) {
-            if (i < lastIndex) {
-              throw new Error(`Armour components out of order: "${list}"`);
-            }
-            lastIndex = i;
-            ids.push(allowedTokens[i].id);
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
+        const idx = allowedTokens.findIndex(t => t.names.includes(raw.toLowerCase()));
+        if (idx === -1) {
           throw new Error(`Unknown armour token "${raw}" in armour string "${list}"`);
         }
+        if (idx < lastIndex) {
+          throw new Error(`Armour components out of order: "${list}"`);
+        }
+        lastIndex = idx;
+        ids.push(allowedTokens[idx].id);
       }
       return ids;
     }
@@ -436,21 +430,27 @@ class ClassOptions implements ClassOptionsData {
      of the first matching clause, or 0 if none match. */
   static evaluateXpClauses(clauses: XpClause[], scores: AbilityScores): number {
     for (const { percent, condition } of clauses) {
-      let met = false;
-      if (condition.type === 'either') {
-        met = (scores[condition.ability1] ?? 0) >= condition.threshold
-           || (scores[condition.ability2] ?? 0) >= condition.threshold;
-      } else if (condition.type === 'both') {
-        met = (scores[condition.ability1] ?? 0) >= condition.threshold
-           && (scores[condition.ability2] ?? 0) >= condition.threshold;
-      } else if (condition.type === 'pair') {
-        met = (scores[condition.ability1] ?? 0) >= condition.threshold1
-           && (scores[condition.ability2] ?? 0) >= condition.threshold2;
-      } else if (condition.type === 'symmetric') {
-        const a = scores[condition.ability1] ?? 0;
-        const b = scores[condition.ability2] ?? 0;
-        met = (a >= condition.threshold1 && b >= condition.threshold2)
-           || (a >= condition.threshold2 && b >= condition.threshold1);
+      let met: boolean;
+      switch (condition.type) {
+        case 'either':
+          met = (scores[condition.ability1] ?? 0) >= condition.threshold
+             || (scores[condition.ability2] ?? 0) >= condition.threshold;
+          break;
+        case 'both':
+          met = (scores[condition.ability1] ?? 0) >= condition.threshold
+             && (scores[condition.ability2] ?? 0) >= condition.threshold;
+          break;
+        case 'pair':
+          met = (scores[condition.ability1] ?? 0) >= condition.threshold1
+             && (scores[condition.ability2] ?? 0) >= condition.threshold2;
+          break;
+        case 'symmetric': {
+          const a = scores[condition.ability1] ?? 0;
+          const b = scores[condition.ability2] ?? 0;
+          met = (a >= condition.threshold1 && b >= condition.threshold2)
+             || (a >= condition.threshold2 && b >= condition.threshold1);
+          break;
+        }
       }
       if (met) return percent;
     }
@@ -459,23 +459,22 @@ class ClassOptions implements ClassOptionsData {
 
   /* Calculate the XP modifier percentage from prime requisites for the given ability scores. */
   xpModifierPercentage(abilityScoreValues: AbilityScores): string {
-    if (this.primeReqs.length === 0) {
-      return '0%';
+    switch (this.primeReqs.length) {
+      case 0:
+        return '0%';
+      case 1: {
+        const firstAbilityScoreValue = abilityScoreValues[this.primeReqs[0]] ?? 0;
+        const primeReqValue = primeRequisiteModifiers[firstAbilityScoreValue];
+        return `${primeReqValue ?? 0}%`;
+      }
+      case 2: {
+        const clauses = ClassOptions.parseXpBonusRule(this.xpBonusRule ?? null);
+        return ClassOptions.evaluateXpClauses(clauses, abilityScoreValues) + '%';
+      }
+      default:
+        console.error(`Error: Class ${this.name} has more than 2 prime requisites, which is not currently supported.`);
+        return 'unknown%';
     }
-
-    if (this.primeReqs.length === 1) {
-      const firstAbilityScoreValue = abilityScoreValues[this.primeReqs[0]] ?? 0;
-      const primeReqValue = primeRequisiteModifiers[firstAbilityScoreValue];
-      return `${primeReqValue ?? 0}%`;
-    }
-
-    if (this.primeReqs.length === 2) {
-      const clauses = ClassOptions.parseXpBonusRule(this.xpBonusRule ?? null);
-      return ClassOptions.evaluateXpClauses(clauses, abilityScoreValues) + '%';
-    }
-
-    console.error(`Error: Class ${this.name} has more than 2 prime requisites, which is not currently supported.`);
-    return 'unknown%';
   }
 
   /* Check if ability scores meet the requirements for this class. */

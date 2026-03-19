@@ -48,7 +48,7 @@ export const dualListedWeaponIds: Set<string> = new Set(
 export const resolvePackItems = (packItems, characterClass) => {
         return packItems.map((itemRef) => {
                 let resolvedId = itemRef.id
-                let quantity = itemRef.quantity
+                const quantity = itemRef.quantity
 
                 // Handle conditional items
                 if (resolvedId === 'special_class_item' && itemRef.options) {

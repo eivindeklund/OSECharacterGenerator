@@ -52,12 +52,9 @@ export function checkWeaponQuality(weapon, wantedQuality) {
     `Invalid wanted quality: ${wantedQuality}`
   );
 
-  let checker;
-  if (isSpecial) {
-    checker = specialCheckers[wantedQuality];
-  } else {
-    checker = (quality) => quality === wantedQuality;
-  }
+  const checker = isSpecial
+    ? specialCheckers[wantedQuality]
+    : (quality: string) => quality === wantedQuality;
 
   return weapon.qualities.some(q => checker(q));
 }

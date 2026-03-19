@@ -81,7 +81,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
         setHasLanguages(false);
       }
     } else {
-      // first two langauges are not class-specific languages
+      // first two languages are not class-specific languages
       const classLanguageNumber = languagesArr.length - 2;
       setClassLanguageCount(classLanguageNumber);
       setLanguages(languagesArr);
@@ -132,9 +132,8 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
 
   const rollAppearance = () => {
     let appearanceArray = [...appearances];
-    const num = 2;
     const selectedAppearances = [];
-    for (let i = 0; i < num; i++) {
+    for (let i = 0; i < 2; i++) {
       const randomAppearance = chooseRandomItem(appearanceArray);
       selectedAppearances.push(randomAppearance);
       appearanceArray = appearanceArray.filter((k) => k !== randomAppearance);
@@ -184,9 +183,7 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
           );
           setBackground(newBackground);
         });
-    }
-
-    if (background.includes("Roll for two skills")) {
+    } else {
       diceService
         .show()
         .roll(["1d100", "1d100"])
@@ -208,9 +205,8 @@ export default function CharacterDetails(props: CharacterDetailsProps) {
   };
 
   const rollPersonality = () => {
-    const num = 2;
     const selectedPersonalities = [];
-    for (let i = 0; i < num; i++) {
+    for (let i = 0; i < 2; i++) {
       const randomTrait = chooseRandomItem(traits);
       selectedPersonalities.push(randomTrait);
     }

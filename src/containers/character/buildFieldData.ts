@@ -155,30 +155,29 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     ? `Spells: ${characterStatistics.spells.map(id => allSpellsById[id]?.name ?? id).join(', ')}`
     : ''
 
-  const baseMovement = (() => {
-    const armour = characterEquipment.armour
-    if (armour.some(a => a === ARMOUR_ID.plateMail || a === ARMOUR_ID.chainmail)) return 60
-    if (armour.some(a => a === ARMOUR_ID.leather)) return 90
-    return 120
-  })()
+  const armour = characterEquipment.armour
+  const baseMovement =
+    armour.some(a => a === ARMOUR_ID.plateMail || a === ARMOUR_ID.chainmail) ? 60 :
+    armour.some(a => a === ARMOUR_ID.leather) ? 90 :
+    120
 
   const listenAtDoor = characterClass.abilities.some((a) => a.id === ABILITY_ID.listeningAtDoors) ? '2-in-6' : '1-in-6'
   const findSecretDoor = characterClass.abilities.some((a) => a.id === ABILITY_ID.detectSecretDoors) ? '2-in-6' : '1-in-6'
   const findRoomTrap = characterClass.abilities.some((a) => a.id === ABILITY_ID.detectRoomTraps) ? '2-in-6' : '1-in-6'
 
-  const equipmentEncumbrance = (() => {
-    // TODO: This does not check for missing ids; missing ids are errors.
-    const armourWeight = characterEquipment.armour.reduce((sum, id) => {
-      const entry = armourData.find(a => a.id === id)
-      return sum + (entry?.weight ?? 0)
-    }, 0)
-    // TODO: This does not check for missing ids; missing ids are errors.
-    const weaponWeight = consolidateDuplicates(characterEquipment.weapons).reduce((sum, { id, count }) => {
-      const entry = weaponsData.find(w => w.id === id)
-      return sum + (entry?.weight ?? 0) * count
-    }, 0)
-    return armourWeight + weaponWeight + MISC_GEAR_WEIGHT_GP
-  })()
+  // TODO: This does not check for missing ids; missing ids are errors.
+  const armourWeight = characterEquipment.armour.reduce((sum, id) => {
+    const entry = armourData.find(a => a.id === id)
+    return sum + (entry?.weight ?? 0)
+  }, 0)
+  // TODO: This does not check for missing ids; missing ids are errors.
+  const weaponWeight = consolidateDuplicates(characterEquipment.weapons).reduce((sum, { id, count }) => {
+    const entry = weaponsData.find(w => w.id === id)
+    return sum + (entry?.weight ?? 0) * count
+  }, 0)
+  const equipmentEncumbrance = armourWeight + weaponWeight + MISC_GEAR_WEIGHT_GP
+
+  const savingThrows = characterClass.getSavingThrowsAtLevel(level)
 
   const descriptionInfo = `
     ${character.description && `${character.description}`}
@@ -203,11 +202,11 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     'CON': abilityScores.constitution,
     'CHA': abilityScores.charisma,
 
-    'Death Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[0],
-    'Wands Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[1],
-    'Paralysis Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[2],
-    'Breath Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[3],
-    'Spells Save': characterClass.getSavingThrowsAtLevel(characterStatistics.level ?? 1)[4],
+    'Death Save': savingThrows[0],
+    'Wands Save': savingThrows[1],
+    'Paralysis Save': savingThrows[2],
+    'Breath Save': savingThrows[3],
+    'Spells Save': savingThrows[4],
 
     'Magic Save Mod': characterModifiers.wisdomMod,
     'HP': characterStatistics.hitPoints,

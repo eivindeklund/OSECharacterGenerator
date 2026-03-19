@@ -29,12 +29,7 @@ export function applyFieldData(
   for (const field of pdfFields) {
     const pdfName = field.getName()
 
-    let dataKey: string | null
-    if (pdfName in aliases) {
-      dataKey = aliases[pdfName]
-    } else {
-      dataKey = pdfName
-    }
+    const dataKey: string | null = pdfName in aliases ? aliases[pdfName] : pdfName
 
     if (dataKey === null) continue
 

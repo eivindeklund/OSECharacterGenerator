@@ -1,6 +1,6 @@
+import { DEFAULT_CAMPAIGN_ID } from "../constants/constants";
 import { spellNameToId } from "../data/spells";
 import type { CharacterStatistics, StoredCharacterData } from "../types";
-import { DEFAULT_CAMPAIGN_ID } from "../constants/constants";
 
 /**
  * Converts a spell string that may be either a spell name (legacy) or a spell id (current)
@@ -9,12 +9,14 @@ import { DEFAULT_CAMPAIGN_ID } from "../constants/constants";
  * returned as-is so that unknown/custom values are not silently discarded.
  */
 function toSpellId(value: string): string {
-  // Already an id (all lowercase, no spaces) that exists in our id map
-  // — check via the inverse name map to avoid importing allSpellsById separately.
+  // If the value is NOT a known spell name AND already looks like a canonical id
+  // (lowercase letters, digits, hyphens only), treat it as an id and return it
+  // unchanged.  This avoids importing allSpellsById for an existence check.
   if (spellNameToId[value] === undefined && /^[a-z0-9-]+$/.test(value)) {
-    // Looks like an id already; keep it.
     return value;
   }
+  // Either a known spell name (look up its id) or an unknown/custom string
+  // (fall back to the original value so nothing is silently discarded).
   return spellNameToId[value] ?? value;
 }
 
