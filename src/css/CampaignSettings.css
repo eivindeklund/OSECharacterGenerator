@@ -1,0 +1,422 @@
+/* ── Campaign Settings Screen ─────────────────────────────────────────────────
+ * Styles for src/pages/CampaignSettingsScreen.tsx and its sub-components.
+ * All colours use var() tokens from tokens.css.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── Header row ─────────────────────────────────────────────────────────────── */
+
+.campaign-settings-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.campaign-settings-header-title {
+  margin: 0;
+}
+
+/* ── Tab bar ─────────────────────────────────────────────────────────────────── */
+
+.campaign-settings-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--chip-bg);
+}
+
+.campaign-settings-tab {
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px; /* overlap tab-bar border so active border shows on top */
+}
+
+.campaign-settings-tab--active {
+  border-bottom: 3px solid var(--main-bg-color);
+  font-weight: bold;
+}
+
+/* ── Form fields ─────────────────────────────────────────────────────────────── */
+
+.campaign-field {
+  margin-bottom: 12px;
+}
+
+.campaign-field-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.campaign-field-input {
+  width: 100%;
+  max-width: 360px;
+}
+
+.campaign-field-textarea {
+  width: 100%;
+  max-width: 560px;
+}
+
+/* ── Section headings ────────────────────────────────────────────────────────── */
+
+.campaign-section-heading {
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+/* ── Three-state toggle (radio group) ────────────────────────────────────────── */
+
+/* Reset browser default fieldset chrome */
+.campaign-toggle-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+}
+
+.campaign-toggle-legend {
+  font-weight: bold;
+  margin-bottom: 4px;
+  padding: 0;
+}
+
+.campaign-toggle-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 16px;
+  cursor: pointer;
+}
+
+/* ── Checkbox checklist (class / equipment / weapon filter) ──────────────────── */
+
+.campaign-checklist {
+  margin-top: 16px;
+}
+
+.campaign-checklist-heading {
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.campaign-checklist-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 16px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.campaign-checklist-category {
+  margin-top: 12px;
+}
+
+.campaign-checklist-category-name {
+  font-variant: small-caps;
+  font-size: 0.85em;
+  color: var(--secondary-text-color);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.campaign-checklist-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.campaign-checklist-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+/* ── Class override list & form ──────────────────────────────────────────────── */
+
+.campaign-override-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+}
+
+.campaign-override-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--chip-bg);
+}
+
+.campaign-override-item-label {
+  flex: 1;
+}
+
+.campaign-override-form {
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-md);
+  padding: 12px 16px;
+  margin: 8px 0 16px 0;
+  background-color: var(--main-bg-white);
+}
+
+.campaign-override-form-title {
+  margin: 0 0 12px 0;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.campaign-override-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+
+.campaign-override-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.campaign-override-form-field--full {
+  grid-column: 1 / -1;
+}
+
+.campaign-override-form-label {
+  font-weight: bold;
+  font-size: 0.82em;
+  color: var(--secondary-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.campaign-override-form-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.campaign-override-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* ── Custom item lists (equipment / weapon) ──────────────────────────────────── */
+
+.campaign-custom-item-list,
+.campaign-custom-weapon-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px 0;
+}
+
+.campaign-custom-item-row,
+.campaign-custom-weapon-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--chip-bg);
+}
+
+.campaign-custom-item-row-label {
+  flex: 1;
+}
+
+/* ── Custom item add-form ────────────────────────────────────────────────────── */
+
+.campaign-custom-item-form {
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-sm);
+  padding: 10px 12px;
+  margin-top: 8px;
+  background-color: var(--main-bg-white);
+}
+
+.campaign-custom-item-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px 12px;
+  align-items: end;
+  margin-bottom: 8px;
+}
+
+.campaign-custom-item-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.campaign-custom-item-form-label {
+  font-weight: bold;
+  font-size: 0.82em;
+  color: var(--secondary-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.campaign-custom-item-form-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Spell filter sections ───────────────────────────────────────────────────── */
+
+.campaign-spell-section {
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.campaign-spell-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--light-bg-color);
+  cursor: pointer;
+  user-select: none;
+}
+
+.campaign-spell-section-header-label {
+  font-weight: bold;
+  flex: 1;
+}
+
+.campaign-spell-section-toggle {
+  font-size: 0.85em;
+  color: var(--secondary-text-color);
+}
+
+.campaign-spell-section-body {
+  padding: 8px 12px;
+}
+
+.campaign-spell-level {
+  margin-bottom: 10px;
+}
+
+.campaign-spell-level-heading {
+  font-weight: bold;
+  font-size: 0.85em;
+  color: var(--secondary-text-color);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.campaign-spell-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+}
+
+.campaign-spell-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  min-width: 140px;
+  font-size: 0.95em;
+}
+
+/* ── Custom spells section ───────────────────────────────────────────────────── */
+
+.campaign-custom-spells-section {
+  margin-top: 16px;
+}
+
+.campaign-custom-spell-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px 0;
+}
+
+.campaign-custom-spell-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--chip-bg);
+}
+
+.campaign-custom-spell-row-label {
+  flex: 1;
+  font-size: 0.95em;
+}
+
+.campaign-custom-spell-form {
+  border: 1px solid var(--chip-bg);
+  border-radius: var(--border-radius-sm);
+  padding: 10px 12px;
+  margin-top: 8px;
+  background-color: var(--main-bg-white);
+}
+
+.campaign-custom-spell-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr 1fr 1fr;
+  gap: 8px 12px;
+  align-items: end;
+  margin-bottom: 8px;
+}
+
+.campaign-custom-spell-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.campaign-custom-spell-form-label {
+  font-weight: bold;
+  font-size: 0.82em;
+  color: var(--secondary-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.campaign-custom-spell-form-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Status notes ────────────────────────────────────────────────────────────── */
+
+.campaign-empty-note {
+  color: var(--secondary-text-color);
+  font-style: italic;
+  margin: 4px 0;
+}
+
+.campaign-stub-note {
+  color: var(--secondary-text-color);
+  font-size: 0.9em;
+  margin-top: 12px;
+  font-style: italic;
+}
+
+/* ── Responsive adjustments ──────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .campaign-override-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .campaign-override-form-field--full {
+    grid-column: 1;
+  }
+
+  .campaign-custom-item-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .campaign-custom-spell-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

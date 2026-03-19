@@ -537,6 +537,25 @@ a {
   margin: 0;
 }
 
+/* Small-size button modifier — use for compact action buttons in lists and forms. */
+.button--sm {
+  height: 28px;
+  line-height: 28px;
+  padding: 0 12px;
+}
+
+/* Danger / destructive action button modifier. */
+.button--danger {
+  color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.button--danger:hover {
+  color: var(--main-bg-white);
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
 .advanced-classes-container,
 .basic-classes-header {
   font-size: 1.8rem;

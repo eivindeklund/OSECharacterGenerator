@@ -39,6 +39,9 @@ export const appCSS = readFileSync(join(ROOT, 'src/css/App.css'), 'utf8');
 /** Raw text of src/css/PackOptions.css — equipment pack selector styles. */
 export const packOptionsCSS = readFileSync(join(ROOT, 'src/css/PackOptions.css'), 'utf8');
 
+/** Raw text of src/css/CampaignSettings.css — campaign settings screen styles. */
+export const campaignSettingsCSS = readFileSync(join(ROOT, 'src/css/CampaignSettings.css'), 'utf8');
+
 // ---------------------------------------------------------------------------
 // Isolated fixture helpers (Quixote)
 // ---------------------------------------------------------------------------

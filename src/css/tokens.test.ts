@@ -244,3 +244,19 @@ describe('PuristWebSheet.css — no bare hex/rgb colour values', () => {
     ).toHaveLength(0);
   });
 });
+
+describe('CampaignSettings.css — no bare hex/rgb colour values', () => {
+  it('every colour value is either a var(), in a custom-property def, or marked /* one-off: */', () => {
+    const content = readCss('CampaignSettings.css');
+    const violations = findBareColorViolations(content);
+
+    const messages = violations.map(
+      (v) => `  Line ${v.lineNumber}: ${v.text.trim()}`,
+    );
+    expect(
+      violations,
+      `Bare colour values found in CampaignSettings.css:\n${messages.join('\n')}\n` +
+        'Fix: use var(--token) or add /* one-off: <reason> */ on the same line.',
+    ).toHaveLength(0);
+  });
+});

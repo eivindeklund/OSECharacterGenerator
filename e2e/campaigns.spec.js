@@ -118,6 +118,175 @@ test('Campaign landing: /campaign/:id activates the campaign and shows name', as
   await expect(page.getByRole('button', { name: /view characters/i })).toBeVisible();
 });
 
+// ── Campaign Settings — General tab reorganisation ────────────────────────────
+
+test('Campaign settings: General tab does NOT show class checklist items', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Layout Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await expect(page).toHaveURL(/\/campaigns\/.+\/settings/);
+
+  // General tab is active by default — class checklist should NOT be present
+  await expect(page.locator('.campaign-checklist-item').first()).not.toBeVisible();
+});
+
+// ── Campaign Settings — Classes tab ───────────────────────────────────────────
+
+test('Campaign settings: Classes tab has class filter grouped by category', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Class Filter Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^classes$/i }).click();
+
+  // "All classes" checkbox is present
+  await expect(page.getByRole('checkbox', { name: /all classes/i })).toBeVisible();
+
+  // Category headings from classOptionsData
+  await expect(page.getByText(/\bbasic\b/i)).toBeVisible();
+  await expect(page.getByText(/\badvanced\b/i)).toBeVisible();
+});
+
+test('Campaign settings: class filter persists — unchecking a class restricts it', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Restrict Fighter Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^classes$/i }).click();
+
+  // Uncheck Fighter
+  await page.getByRole('checkbox', { name: /^Fighter$/i }).uncheck();
+  await page.getByRole('button', { name: /save & back/i }).click();
+
+  // Re-open settings
+  await page.getByRole('button', { name: /settings/i }).last().click();
+  await page.getByRole('button', { name: /^classes$/i }).click();
+
+  // Fighter should remain unchecked after saving
+  await expect(page.getByRole('checkbox', { name: /^Fighter$/i })).not.toBeChecked();
+});
+
+test('Campaign settings: can add and remove a class override', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Override Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^classes$/i }).click();
+
+  // Open the override form
+  await page.getByRole('button', { name: /add override/i }).click();
+
+  // Select a base class and give it a new name
+  await page.getByRole('combobox', { name: /base class/i }).selectOption('Fighter');
+  await page.getByRole('textbox', { name: /name.*override/i }).fill('Warrior');
+
+  await page.getByRole('button', { name: /save override/i }).click();
+
+  // Override appears in the list
+  await expect(page.locator('.campaign-override-list')).toContainText('Override: Fighter');
+  await expect(page.locator('.campaign-override-list')).toContainText('"Warrior"');
+
+  // Remove it
+  await page.getByRole('button', { name: /remove/i }).last().click();
+  await expect(page.locator('.campaign-override-list')).not.toBeVisible();
+});
+
+// ── Campaign Settings — Equipment tab ─────────────────────────────────────────
+
+test('Campaign settings: Equipment tab has NonBxEquipment toggle', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Equipment Toggle Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^equipment$/i }).click();
+
+  // NonBxEquipment three-state toggle is now in Equipment tab (not General)
+  await expect(page.getByText(/non-b\/x equipment/i)).toBeVisible();
+});
+
+test('Campaign settings: Equipment tab shows equipment and weapon filter checkboxes', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Equipment Filter Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^equipment$/i }).click();
+
+  // Equipment filter section
+  await expect(page.getByText(/allowed equipment/i)).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: /all items/i })).toBeVisible();
+
+  // Weapon filter section
+  await expect(page.getByText(/allowed weapons/i)).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: /all weapons/i })).toBeVisible();
+});
+
+test('Campaign settings: can add and remove custom equipment', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Custom Equipment Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^equipment$/i }).click();
+
+  // Open add form
+  await page.getByRole('button', { name: /add equipment/i }).click();
+  await page.getByRole('textbox', { name: /item name/i }).fill('Magic Stone');
+  await page.getByRole('spinbutton', { name: /price.*gp/i }).fill('50');
+  await page.getByRole('textbox', { name: /category/i }).fill('Magical');
+  await page.getByRole('button', { name: /save equipment/i }).click();
+
+  // Item appears in list
+  await expect(page.locator('.campaign-custom-item-list')).toContainText('Magic Stone');
+
+  // Remove it
+  await page.locator('.campaign-custom-item-list').getByRole('button', { name: /remove/i }).click();
+  await expect(page.locator('.campaign-custom-item-list')).not.toContainText('Magic Stone');
+});
+
+test('Campaign settings: can add and remove custom weapons', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Custom Weapon Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^equipment$/i }).click();
+
+  await page.getByRole('button', { name: /add weapon/i }).click();
+  await page.getByRole('textbox', { name: /weapon name/i }).fill('Vorpal Blade');
+  await page.getByRole('spinbutton', { name: /price.*gp/i }).fill('100');
+  await page.getByRole('textbox', { name: /damage/i }).fill('1d8');
+  await page.getByRole('combobox', { name: /category/i }).selectOption('Melee');
+  await page.getByRole('button', { name: /save weapon/i }).click();
+
+  await expect(page.locator('.campaign-custom-weapon-list')).toContainText('Vorpal Blade');
+
+  await page.locator('.campaign-custom-weapon-list').getByRole('button', { name: /remove/i }).click();
+  await expect(page.locator('.campaign-custom-weapon-list')).not.toContainText('Vorpal Blade');
+});
+
+// ── Campaign Settings — Spells tab ────────────────────────────────────────────
+
+test('Campaign settings: Spells tab shows spell filter sections for built-in lists', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Spell Filter Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^spells$/i }).click();
+
+  // Built-in spell list names should appear as section headers
+  await expect(page.getByText(/magic-user/i)).toBeVisible();
+  await expect(page.getByText(/^cleric$/i)).toBeVisible();
+});
+
+test('Campaign settings: can add a custom spell to a spell list', async ({ page }) => {
+  await goToCampaigns(page);
+  await page.getByPlaceholder(/campaign name/i).fill('Custom Spell Test');
+  await page.getByRole('button', { name: /create/i }).click();
+  await page.getByRole('button', { name: /^spells$/i }).click();
+
+  await page.getByRole('button', { name: /add custom spell/i }).click();
+  await page.getByRole('combobox', { name: /spell list/i }).selectOption('magic-user');
+  await page.getByRole('spinbutton', { name: /spell level/i }).fill('1');
+  await page.getByRole('textbox', { name: /spell name/i }).fill('Arcane Bolt');
+  await page.getByRole('button', { name: /save spell/i }).click();
+
+  await expect(page.locator('.campaign-custom-spells-section')).toContainText('Arcane Bolt');
+
+  // Remove the custom spell
+  await page.locator('.campaign-custom-spells-section').getByRole('button', { name: /remove/i }).click();
+  await expect(page.locator('.campaign-custom-spells-section')).not.toContainText('Arcane Bolt');
+});
+
 // ── Campaign delete ────────────────────────────────────────────────────────────
 
 test('Campaigns: can delete a non-default campaign with confirmation', async ({ page }) => {

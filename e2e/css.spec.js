@@ -20,6 +20,7 @@
 import { expect, test } from '@playwright/test';
 import {
     appCSS,
+    campaignSettingsCSS,
     getIsolatedStyles,
     injectQuixote,
     packOptionsCSS,
@@ -144,6 +145,73 @@ test.describe('Isolated CSS rules — PackOptions.css', () => {
 
     // bold / 700 — browsers may normalise to the numeric value
     expect(['bold', '700']).toContain(styles['font-weight']);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Isolated CSS rules — CampaignSettings.css
+// ---------------------------------------------------------------------------
+
+test.describe('Isolated CSS rules — CampaignSettings.css', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await injectQuixote(page);
+  });
+
+  test('.campaign-settings-header has display: flex', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<div class="campaign-settings-header"></div>',
+      '.campaign-settings-header',
+      ['display'],
+    );
+    expect(styles['display']).toBe('flex');
+  });
+
+  test('.campaign-toggle-fieldset has no visible border', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<fieldset class="campaign-toggle-fieldset"></fieldset>',
+      '.campaign-toggle-fieldset',
+      ['border-top-style'],
+    );
+    expect(styles['border-top-style']).toBe('none');
+  });
+
+  test('.campaign-checklist-items has display: flex', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<div class="campaign-checklist-items"></div>',
+      '.campaign-checklist-items',
+      ['display'],
+    );
+    expect(styles['display']).toBe('flex');
+  });
+
+  test('.campaign-override-form-grid has display: grid', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + campaignSettingsCSS,
+      '<div class="campaign-override-form-grid"></div>',
+      '.campaign-override-form-grid',
+      ['display'],
+    );
+    expect(styles['display']).toBe('grid');
+  });
+
+  test('.button--sm has reduced height compared to base button', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + appCSS,
+      '<button class="button button--sm">Label</button>',
+      '.button--sm',
+      ['height'],
+    );
+    // button--sm sets height: 28px
+    expect(styles['height']).toBe('28px');
   });
 });
 
