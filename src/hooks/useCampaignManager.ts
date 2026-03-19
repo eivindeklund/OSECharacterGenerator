@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DEFAULT_CAMPAIGN_ID } from "../constants/constants";
-import classOptionsData from "../data/classOptionsData";
+import classOptionsData, { MAGIC_TYPE_IDS, MAGIC_TYPE_REGISTRY, type MagicTypeId } from "../data/classOptionsData";
 import equipmentData from "../data/equipmentData";
 import { DEFAULT_SPELL_SLOT_TABLES } from "../data/levelProgressionData";
 import { getSpellListById } from "../data/spells";
@@ -11,6 +11,7 @@ import type {
   CampaignNewClass,
   ClassOptionsData,
   EquipmentItem,
+  MagicTypeEntry,
   SpellDefinition,
   SpellSlotTable,
   WeaponItem,
@@ -50,6 +51,7 @@ export function useCampaignManager() {
       customEquipment: [],
       customWeapons: [],
       customSpells: {},
+      customMagicTypes: [],
       createdAt: now,
       updatedAt: now,
     };
@@ -228,6 +230,17 @@ export function useCampaignManager() {
   /** The ID to stamp on newly created characters. */
   const activeCharacterCampaignId = activeCampaign.id;
 
+  /**
+   * Returns the magic types available in the active campaign: all built-in
+   * types plus any custom types that don't shadow a built-in id.
+   */
+  const availableMagicTypes: MagicTypeEntry[] = [
+    ...Object.values(MAGIC_TYPE_REGISTRY),
+    ...activeCampaign.customMagicTypes.filter(
+      (t) => !MAGIC_TYPE_IDS.includes(t.id as MagicTypeId),
+    ),
+  ];
+
   return {
     campaigns,
     activeCampaign,
@@ -243,5 +256,6 @@ export function useCampaignManager() {
     availableWeapons,
     getSpellListsForClass,
     getClassSpellSlots,
+    availableMagicTypes,
   };
 }

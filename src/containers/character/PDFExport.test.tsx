@@ -47,8 +47,6 @@ const baseProps: PDFExportProps = {
     allowedArmour: [],
     languages: '',
     description: '',
-    savingThrows: [12, 13, 14, 15, 16],
-    nextLevel: 2000,
     abilities: [],
     link: '',
     xpModifierPercentage: () => '0%',

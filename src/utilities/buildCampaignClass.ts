@@ -1,4 +1,5 @@
 import { ClassOptions, type CharacterClassInput } from "../data/classOptionsData";
+import type { LevelEntry } from "../data/levelProgressionData";
 import type {
   CampaignClassDefinition,
   CampaignClassOverride,
@@ -24,12 +25,12 @@ class CampaignNewClassOptions extends ClassOptions {
       spellListId: def.spellListId,
       magicTypeId: def.magicTypeId,
       limitedSpellSelection: def.limitedSpellSelection,
+      spellSlotTableId: def.spellSlotTableId,
+      canUseThiefTools: def.canUseThiefTools,
       abilities: def.abilities,
-      languages: "",
-      savingThrows: (def.levels[0]?.saves ?? [15, 16, 17, 18, 19]) as number[],
-      nextLevel: def.levels[1]?.xp ?? 2000,
+      languages: def.languages,
       link: "",
-      levelProgression: { levels: def.levels, spellSlotTableId: def.spellSlotTableId },
+      levelProgression: { levels: def.levels },
     } as CharacterClassInput);
   }
 }
@@ -45,27 +46,16 @@ function buildOverrideClass(
   // looked up through the prototype chain before ClassOptions.prototype.
   const obj = Object.create(base) as ClassOptionsData;
 
-  // Apply plain-data overrides as own properties on obj.
-  const patch: Partial<ClassOptionsData> = {};
-  if (def.name !== undefined) patch.name = def.name;
-  if (def.category !== undefined) patch.category = def.category;
-  if (def.description !== undefined) patch.description = def.description;
-  if (def.armour !== undefined) patch.armour = def.armour;
-  if (def.weapons !== undefined) patch.weapons = def.weapons;
-  if (def.hd !== undefined) patch.hd = def.hd;
-  if (def.maxLevel !== undefined) patch.maxLevel = def.maxLevel;
-  if (def.requirements !== undefined) patch.requirements = def.requirements;
-  if (def.primeReqs !== undefined) patch.primeReqs = def.primeReqs;
-  if (def.xpBonusRule !== undefined) patch.xpBonusRule = def.xpBonusRule;
-  if (def.spellListId !== undefined) patch.spellListId = def.spellListId;
-  if (def.magicTypeId !== undefined) patch.magicTypeId = def.magicTypeId;
-  if (def.limitedSpellSelection !== undefined) patch.limitedSpellSelection = def.limitedSpellSelection;
-  if (def.abilities !== undefined) patch.abilities = def.abilities;
+  // Auto-spread all defined override fields (except structural keys) onto obj.
+  const { type: _type, baseName: _base, levels: _lvls, ...fields } = def;
+  const patch = Object.fromEntries(
+    Object.entries(fields).filter(([, v]) => v !== undefined),
+  );
   Object.assign(obj, patch);
 
-  // Override the spell slot table ID if a custom table is requested.
-  if (def.spellSlotTableId !== undefined) {
-    obj.levelProgression = { ...base.levelProgression, spellSlotTableId: def.spellSlotTableId };
+  // Override the level progression when custom levels are provided.
+  if (def.levels !== undefined) {
+    obj.levelProgression = { ...base.levelProgression, levels: def.levels as LevelEntry[] };
   }
 
   return obj;

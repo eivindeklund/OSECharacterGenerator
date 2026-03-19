@@ -133,11 +133,13 @@ export interface CharacterClass {
   description: string;
   armour: string;
   weapons: string;
+  languages: string;
   hd: number;
   maxLevel: number;
   requirements: string | null;
   primeReqs: string[];
   abilities: ClassAbility[];
+  canUseThiefTools?: boolean;
   xpBonusRule?: string;
   spellListId?: string;
   magicTypeId?: string;
@@ -149,20 +151,11 @@ export interface CharacterClass {
 // ── Class Options ─────────────────────────────────────────────────────────────
 
 export interface ClassOptionsData extends CharacterClass {
-  // TODO: Move to CharacterClass, since these should be customizable by
-  // campaigns too.
-  canUseThiefTools?: boolean;
-  languages: string;
   link: string;
   // TODO: These should possibly be extracted to be a separate table with an id,
   // but that's a crappy source code representation when we have a series of
   // constant tables that are used only once per class.
   levelProgression: ClassProgression;
-
-  // TODO: Remove.  These are legacy values that are now stored in the
-  // progression tables.
-  savingThrows: number[];
-  nextLevel: number;
 
   // This is also method, deriving the information from the "armour" field.  It
   // is structured this way for historical reasons.
@@ -236,6 +229,8 @@ export interface CampaignClassOverride extends Partial<CharacterClass> {
   type: 'override';
   /** Exact name of the existing class to override. */
   baseName: string;
+  /** Optional full level progression to replace the base class levels. */
+  levels?: CampaignLevelEntry[];
 }
 
 export interface CampaignNewClass extends CharacterClass {
@@ -258,6 +253,15 @@ export interface CampaignCustomSpells {
   [spellListId: string]: { [spellLevel: number]: SpellDefinition[] } | undefined;
 }
 
+// ── Magic Type ────────────────────────────────────────────────────────────────
+
+export interface MagicTypeEntry {
+  id: string;
+  name: string;
+  /** Label shown on class detail sheets (e.g. "Arcane Magic"). */
+  label: string;
+}
+
 export interface Campaign {
   id: string;
   name: string;
@@ -278,6 +282,8 @@ export interface Campaign {
   customSpells: CampaignCustomSpells;
   /** Custom spell slot tables that override or extend the built-in tables. */
   customSpellSlotTables?: SpellSlotTable[];
+  /** Custom magic types added by this campaign (in addition to the built-in arcane/divine/rune). */
+  customMagicTypes: MagicTypeEntry[];
   createdAt: string;
   updatedAt: string;
 }

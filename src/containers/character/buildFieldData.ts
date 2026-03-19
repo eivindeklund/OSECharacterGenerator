@@ -223,7 +223,7 @@ export function buildFieldData(props: PDFExportProps): FieldData {
     'Weapons and Armour': weaponsInfo,
     'GP': characterEquipment.gold,
     'Description': descriptionInfo,
-    'XP for Next Level': characterClass.nextLevel,
+    'XP for Next Level': characterClass.levelProgression?.levels[level]?.xp ?? 0,
     'PR XP Bonus': characterModifiers.primeReqMod,
     'Attack Bonus': INITIAL_ATTACK_BONUS,
     'Notes': spellText,

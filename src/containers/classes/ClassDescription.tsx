@@ -20,6 +20,7 @@ export default function ClassDescription(props: ClassDescriptionProps) {
 
   const primeReqString = characterClass.primeReqs.join(', ')
   const langString = ['Alignment', 'Common'].concat(characterClass.languages).join(', ');
+  const saves = characterClass.getSavingThrowsAtLevel(1)
   const classDescriptionValues = {
     'Prime Requisites': primeReqString,
     'Hit Dice': `d${characterClass.hd}`,
@@ -27,11 +28,11 @@ export default function ClassDescription(props: ClassDescriptionProps) {
     Weapons: characterClass.weapons,
     'Special Abilities': characterClass.abilities.map((a) => a.name).join(', '),
     Languages: langString,
-    'XP to level 2': characterClass.nextLevel,
+    'XP to level 2': characterClass.levelProgression?.levels[1]?.xp ?? 0,
     'Maximum Level': characterClass.maxLevel,
-    'Saving Throws': `Death ${characterClass.savingThrows[0]}, 
-    Wands ${characterClass.savingThrows[1]}, Paralysis ${characterClass.savingThrows[2]}, 
-    Breath Attacks ${characterClass.savingThrows[3]}, Spells ${characterClass.savingThrows[4]}`
+    'Saving Throws': `Death ${saves[0]}, 
+    Wands ${saves[1]}, Paralysis ${saves[2]}, 
+    Breath Attacks ${saves[3]}, Spells ${saves[4]}`
   }
 
   return (

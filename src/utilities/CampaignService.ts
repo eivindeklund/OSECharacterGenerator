@@ -19,6 +19,7 @@ function createDefaultCampaign(): Campaign {
     customEquipment: [],
     customWeapons: [],
     customSpells: {},
+    customMagicTypes: [],
     createdAt: now,
     updatedAt: now,
   };
@@ -59,6 +60,7 @@ function normalizeCampaign(raw: Campaign): Campaign {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const out = { ...raw } as any;
   out.customClasses = (out.customClasses ?? []).map(normalizeClassDef);
+  out.customMagicTypes ??= [];
   if (out.allowedSpellIds && 'magicUser' in out.allowedSpellIds) {
     out.allowedSpellIds = { ...out.allowedSpellIds, 'magic-user': out.allowedSpellIds.magicUser };
     delete out.allowedSpellIds.magicUser;
@@ -130,6 +132,7 @@ export const CampaignService = {
       customEquipment: [],
       customWeapons: [],
       customSpells: {},
+      customMagicTypes: [],
       createdAt: now,
       updatedAt: now,
     };

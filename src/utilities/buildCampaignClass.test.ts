@@ -36,6 +36,7 @@ const baseNewClassDef: CampaignNewClass = {
   primeReqs: ['dexterity'],
   xpBonusRule: 'primeReq:dexterity:13:5%:16:10%',
   abilities: [{ name: 'Bonus to hit from behind' }],
+  languages: '',
   levels: makeLevels(10),
 };
 
@@ -291,5 +292,37 @@ describe('buildCampaignClass — type "override"', () => {
     expect(r2.name).toBe('Knight');
     // Both should still read the Fighter progression:
     expect(r1.getSavingThrowsAtLevel(1)).toEqual(r2.getSavingThrowsAtLevel(1));
+  });
+
+  it('replaces the level progression table when levels[] is provided', () => {
+    const customLevels: CampaignLevelEntry[] = [
+      { level: 1, xp:     0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [10, 11, 12, 13, 14] },
+      { level: 2, xp:  1000, hdDice: 2, hdBonus: 0, thac0: 17, saves: [9, 10, 11, 12, 13] },
+      { level: 3, xp:  2000, hdDice: 3, hdBonus: 0, thac0: 15, saves: [8,  9, 10, 11, 12] },
+    ];
+    const def: CampaignClassOverride = {
+      type: 'override',
+      baseName: 'Fighter',
+      levels: customLevels,
+    };
+    const result = buildCampaignClass(def, baseClasses)!;
+    expect(result.getSavingThrowsAtLevel(1)).toEqual([10, 11, 12, 13, 14]);
+    expect(result.getSavingThrowsAtLevel(2)).toEqual([9, 10, 11, 12, 13]);
+    expect(result.getThac0AtLevel(3)).toBe(15);
+  });
+
+  it('level override does not mutate the base class progression', () => {
+    const customLevels: CampaignLevelEntry[] = [
+      { level: 1, xp: 0, hdDice: 1, hdBonus: 0, thac0: 19, saves: [5, 6, 7, 8, 9] },
+    ];
+    const def: CampaignClassOverride = {
+      type: 'override',
+      baseName: 'Fighter',
+      levels: customLevels,
+    };
+    const fighter = baseClasses.find((c) => c.name === 'Fighter')!;
+    const originalSaves = fighter.getSavingThrowsAtLevel(1);
+    buildCampaignClass(def, baseClasses);
+    expect(fighter.getSavingThrowsAtLevel(1)).toEqual(originalSaves);
   });
 });
