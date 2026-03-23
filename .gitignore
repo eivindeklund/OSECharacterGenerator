@@ -1,3 +1,10 @@
+# For clone-local ignores, put them in .git/info/exclude
+# That's effectively a .gitignore that do not get checked in.
+#
+# For global ignores, use
+#  git config --global core.excludesfile ~/.gitignore_global
+# and edit ~/.gitignore_global
+
 # Logs
 logs
 *.log
