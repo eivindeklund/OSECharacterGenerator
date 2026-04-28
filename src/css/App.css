@@ -1563,6 +1563,11 @@ div > .button-class-option {
   background-color: pink;
 }
 
+.header > .button--quick-generate {
+  background-color: var(--secondary-bg-color);
+  margin-bottom: 0.5rem;
+}
+
 .header > .button {
   font-size: 1.5rem;
 }

@@ -95,6 +95,22 @@ test.describe('Isolated CSS rules — App.css', () => {
     expect(styles['display']).toBe('flex');
     expect(styles['flex-direction']).toBe('row');
   });
+
+  test('.button--quick-generate inside .header is visible and wide enough for its label', async ({
+    page,
+  }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + appCSS,
+      '<header class="header"><button class="button--roll button--quick-generate button-primary">Quick Generate</button></header>',
+      '.button--quick-generate',
+      ['width', 'height'],
+    );
+
+    // Width and height come from .header > .button--roll (10rem × 4rem)
+    expect(styles['width']).not.toBe('0px');
+    expect(styles['height']).not.toBe('0px');
+  });
 });
 
 // ---------------------------------------------------------------------------

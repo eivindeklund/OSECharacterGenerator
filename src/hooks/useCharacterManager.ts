@@ -7,9 +7,10 @@ import {
     defaultAbilityScoresState
 } from "../constants/constants";
 import classOptionsData, { emptyClassOptions } from "../data/classOptionsData";
-import { CharacterModifiers, ClassOptionsData, StoredCharacterData } from "../types";
+import { CharacterModifiers, ClassOptionsData, SpellDefinition, StoredCharacterData } from "../types";
 import { DeviceService as DefaultDeviceService } from "../utilities/DeviceService";
 import { StorageService as DefaultStorageService } from "../utilities/StorageService";
+import { autoGenerateCharacter } from "../utilities/autoGenerateCharacter";
 import {
     d,
     deriveCharacterModifiers,
@@ -474,6 +475,25 @@ export const useCharacterManager = (
   };
 
   /**
+   * Generates a complete character in one step and loads it directly to the sheet.
+   * Uses the best basic class for the rolled stats, a random name, optimal equipment,
+   * and (if applicable) a random starting spell.
+   */
+  const autoGenerateAndLoad = (
+    availableClasses: ClassOptionsData[],
+    getSpellListsForClass: (cls: ClassOptionsData) => SpellDefinition[][],
+    getClassSpellSlots: (cls: ClassOptionsData, level: number) => number[],
+  ) => {
+    const data = autoGenerateCharacter(availableClasses, {
+      getSpellListsForClass,
+      getClassSpellSlots,
+      campaignId: characterCampaignId,
+    });
+    applyCharacterData(data);
+    navigate(characterRoute(data.character.id, '/sheet'));
+  };
+
+  /**
    * Level up the current character.
    * @param hpGained  HP gained from the level-up roll (minimum 1).
    * @param newSpells Spells selected during this level-up (arcane casters only).
@@ -546,6 +566,7 @@ export const useCharacterManager = (
     importCharacter,
     loadCharacter,
     loadCharacterWithoutNavigate,
+    autoGenerateAndLoad,
     levelUp,
     storedCharacters,
     isMobile,

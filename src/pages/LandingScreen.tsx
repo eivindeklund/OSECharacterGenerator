@@ -32,9 +32,10 @@ export default function LandingScreen(props: LandingScreenProps) {
     discardPartialCharacter,
     loadCharacter,
     setCharacterCampaignId,
+    autoGenerateAndLoad,
   } = useCharacter();
 
-  const { campaigns, activeCampaignId, activeCampaign, setActiveCampaign } = useCampaign();
+  const { campaigns, activeCampaignId, activeCampaign, setActiveCampaign, availableClasses, getSpellListsForClass, getClassSpellSlots } = useCampaign();
   const isNonDefaultCampaign = activeCampaignId != null && activeCampaignId !== DEFAULT_CAMPAIGN_ID;
 
   // Sync the active campaign ID into the character manager so new characters
@@ -80,6 +81,16 @@ export default function LandingScreen(props: LandingScreenProps) {
           <div>
             <Trans i18nKey="start">Start</Trans>
           </div>
+        </button>
+      )}
+      {isInitialLanding && !partialCharacter && (
+        <button
+          className="button--roll button--quick-generate button-primary"
+          onClick={() => autoGenerateAndLoad(availableClasses(), getSpellListsForClass, getClassSpellSlots)}
+          onMouseEnter={() => setRollButtonHover(true)}
+          onMouseLeave={() => setRollButtonHover(false)}
+        >
+          Quick Generate
         </button>
       )}
 

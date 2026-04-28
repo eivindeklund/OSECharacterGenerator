@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { StoredCharacterData } from "../types";
+import classOptionsData from "../data/classOptionsData";
+import type { ClassOptionsData, SpellDefinition, StoredCharacterData } from "../types";
 import { hpSeedToRoll } from "../utilities/utilities";
 import { useCharacterManager } from "./useCharacterManager";
 
@@ -475,6 +476,90 @@ describe("useCharacterManager", () => {
 
       expect(result.current.characterStatistics.level).toBe(1);
       expect(result.current.characterStatistics.spells).toEqual(["sleep"]);
+    });
+  });
+
+  describe("autoGenerateAndLoad", () => {
+    const basicClasses = classOptionsData.filter((c) => c.category === "basic");
+    const mockSpellLists = (cls: ClassOptionsData): SpellDefinition[][] => {
+      if (!cls.spellListId) return [];
+      return [[
+        { id: "charm-person", name: "Charm Person" },
+        { id: "magic-missile", name: "Magic Missile" },
+        { id: "sleep", name: "Sleep" },
+      ]];
+    };
+    const mockSpellSlots = (_cls: ClassOptionsData, _level: number): number[] => [2, 0, 0, 0, 0];
+
+    it("exposes an autoGenerateAndLoad function", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+      expect(typeof result.current.autoGenerateAndLoad).toBe("function");
+    });
+
+    it("sets characterRolled to true", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.autoGenerateAndLoad(basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      expect(result.current.characterRolled).toBe(true);
+    });
+
+    it("navigates to the character sheet", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.autoGenerateAndLoad(basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringMatching(/^\/character\/.+\/sheet$/)
+      );
+    });
+
+    it("populates character name", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.autoGenerateAndLoad(basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      expect(result.current.character.name).toBeTruthy();
+    });
+
+    it("selects a basic class", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.autoGenerateAndLoad(basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      expect(result.current.characterClass.category).toBe("basic");
+    });
+
+    it("uses the active campaignId", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.setCharacterCampaignId("my-campaign");
+        result.current.autoGenerateAndLoad(basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      // The character equipment gold should be set (proxy for a complete generation)
+      expect(result.current.characterEquipment.gold).toBeGreaterThan(0);
     });
   });
 });
