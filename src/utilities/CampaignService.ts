@@ -61,6 +61,11 @@ function normalizeCampaign(raw: Campaign): Campaign {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const out = { ...raw } as any;
   out.customClasses = (out.customClasses ?? []).map(normalizeClassDef);
+  out.customSpellLists ??= [];
+  out.customEquipment ??= [];
+  out.customWeapons ??= [];
+  out.customSpells ??= {};
+  out.customSpellSlotTables ??= [];
   out.customMagicTypes ??= [];
   if (out.allowedSpellIds && 'magicUser' in out.allowedSpellIds) {
     out.allowedSpellIds = { ...out.allowedSpellIds, 'magic-user': out.allowedSpellIds.magicUser };
