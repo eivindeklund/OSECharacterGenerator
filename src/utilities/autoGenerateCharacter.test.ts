@@ -3,6 +3,7 @@ import classOptionsData from '../data/classOptionsData';
 import type { ClassOptionsData, SpellDefinition } from '../types';
 import {
   autoGenerateCharacter,
+  classSelectionWeight,
   parseXpBonus,
   rollAlignment,
   selectBestClass,
@@ -96,16 +97,40 @@ describe('selectBestClass', () => {
     expect(cls.checkAbilityScoreRequirements(allScores)).toBe(true);
   });
 
-  it('prefers the class with the highest XP bonus', () => {
-    const rng = makeLCG(0);
-    // High STR, low everything else → Fighter should win (or Dwarf)
-    const highStrScores = { strength: 16, intelligence: 3, wisdom: 3, dexterity: 3, constitution: 3, charisma: 3 };
-    const cls = selectBestClass(basicClasses, highStrScores, rng);
-    const bonuses = basicClasses
-      .filter((c) => c.checkAbilityScoreRequirements(highStrScores))
-      .map((c) => parseXpBonus(c.xpModifierPercentage(highStrScores)));
-    const maxBonus = Math.max(...bonuses);
-    expect(parseXpBonus(cls.xpModifierPercentage(highStrScores))).toBe(maxBonus);
+  it('gives higher weight to a class whose prime req matches a high score', () => {
+    const allTen = { strength: 10, intelligence: 10, wisdom: 10, dexterity: 10, constitution: 10, charisma: 10 };
+    const highStr = { strength: 16, intelligence: 10, wisdom: 10, dexterity: 10, constitution: 10, charisma: 10 };
+    const fighter = basicClasses.find((c) => c.name === 'Fighter')!;
+    const cleric = basicClasses.find((c) => c.name === 'Cleric')!;
+    expect(classSelectionWeight(fighter, highStr)).toBeGreaterThan(classSelectionWeight(cleric, highStr));
+    expect(classSelectionWeight(fighter, allTen)).toBeCloseTo(classSelectionWeight(cleric, allTen), 3);
+  });
+
+  it('produces a roughly equal class distribution across many seeded rolls', () => {
+    const N = 3000;
+    const counts: Record<string, number> = {};
+    for (let seed = 1; seed <= N; seed++) {
+      const rng = makeLCG(seed);
+      // Roll ability scores as 3d6 — matching actual gameplay distribution
+      const d6 = () => Math.floor(rng() * 6) + 1;
+      const roll3d6 = () => d6() + d6() + d6();
+      const scores = {
+        strength:     roll3d6(),
+        intelligence: roll3d6(),
+        wisdom:       roll3d6(),
+        dexterity:    roll3d6(),
+        constitution: roll3d6(),
+        charisma:     roll3d6(),
+      };
+      const cls = selectBestClass(basicClasses, scores, rng);
+      counts[cls.name] = (counts[cls.name] ?? 0) + 1;
+    }
+    for (const [name, count] of Object.entries(counts)) {
+      const pct = count / N;
+      // Each basic class should appear at least 6% and no more than 28% of the time
+      expect(pct).toBeGreaterThanOrEqual(0.06);
+      expect(pct).toBeLessThanOrEqual(0.28);
+    }
   });
 
   it('only selects basic classes even when given a full list including advanced classes', () => {
