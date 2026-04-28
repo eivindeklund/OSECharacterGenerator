@@ -40,3 +40,7 @@ test-results
 
 # Temp files when editing PDFs
 public/*.qdf
+
+# AI support directories
+.serena
+janitor
