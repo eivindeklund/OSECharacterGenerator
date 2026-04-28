@@ -7,6 +7,7 @@ import {
   rollAlignment,
   selectBestClass,
 } from './autoGenerateCharacter';
+import { allItemsById } from './PackUtils';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -153,11 +154,33 @@ describe('autoGenerateCharacter', () => {
     }
   });
 
-  it('gold is in [30, 180]', () => {
+  it('rolled gold (remaining + equipment cost) is in [30, 180]', () => {
     for (let seed = 1; seed <= 30; seed++) {
       const char = makeChar(seed);
-      expect(char.characterEquipment.gold).toBeGreaterThanOrEqual(30);
-      expect(char.characterEquipment.gold).toBeLessThanOrEqual(180);
+      const equipCost = [
+        ...char.characterEquipment.armour,
+        ...char.characterEquipment.weapons,
+        ...char.characterEquipment.adventuringGear,
+      ].reduce((sum, id) => sum + (allItemsById[id]?.price ?? 0), 0);
+      const originalRoll = (char.characterEquipment.gold ?? 0) + equipCost;
+      expect(originalRoll).toBeGreaterThanOrEqual(30);
+      expect(originalRoll).toBeLessThanOrEqual(180);
+    }
+  });
+
+  it('gold field stores remaining gold after equipment purchase, not original roll', () => {
+    for (let seed = 1; seed <= 30; seed++) {
+      const char = makeChar(seed);
+      const equipCost = [
+        ...char.characterEquipment.armour,
+        ...char.characterEquipment.weapons,
+        ...char.characterEquipment.adventuringGear,
+      ].reduce((sum, id) => sum + (allItemsById[id]?.price ?? 0), 0);
+      expect(equipCost).toBeGreaterThan(0);
+      // remaining gold must be less than the minimum possible original roll (30 gp),
+      // because the equipment algorithm exhausts nearly all gold
+      expect(char.characterEquipment.gold).toBeGreaterThanOrEqual(0);
+      expect(char.characterEquipment.gold).toBeLessThan(30);
     }
   });
 

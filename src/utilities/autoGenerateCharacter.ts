@@ -115,12 +115,17 @@ export function autoGenerateCharacter(
   const armour: string[] = [];
   const weapons: string[] = [];
   const adventuringGear: string[] = [];
+  let equipmentCost = 0;
 
   for (const { id, quantity } of equipPack) {
-    const category = allItemsById[id]?.category ?? 'gear';
+    const item = allItemsById[id];
+    const category = item?.category ?? 'gear';
     const target = category === 'armour' ? armour : category === 'weapon' ? weapons : adventuringGear;
     for (let i = 0; i < quantity; i++) target.push(id);
+    equipmentCost += (item?.price ?? 0) * quantity;
   }
+
+  const remainingGold = gold - equipmentCost;
 
   // 7. Compute AC
   const dexModAC = characterModifiers.dexterityModAC ?? '0';
@@ -203,7 +208,7 @@ export function autoGenerateCharacter(
       armour,
       weapons,
       adventuringGear,
-      gold,
+      gold: remainingGold,
     },
     campaignId,
   };

@@ -558,8 +558,8 @@ describe("useCharacterManager", () => {
         result.current.autoGenerateAndLoad(basicClasses, mockSpellLists, mockSpellSlots);
       });
 
-      // The character equipment gold should be set (proxy for a complete generation)
-      expect(result.current.characterEquipment.gold).toBeGreaterThan(0);
+      expect(result.current.characterCampaignId).toBe("my-campaign");
+      expect(result.current.characterClass.category).toBe("basic");
     });
   });
 });
