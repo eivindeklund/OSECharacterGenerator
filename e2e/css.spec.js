@@ -96,20 +96,19 @@ test.describe('Isolated CSS rules — App.css', () => {
     expect(styles['flex-direction']).toBe('row');
   });
 
-  test('.button--quick-generate inside .header is visible and wide enough for its label', async ({
+  test('.button--quick-generate inside .header is wide enough for its label', async ({
     page,
   }) => {
-    const styles = await getIsolatedStyles(
-      page,
-      tokensCSS + '\n' + appCSS,
-      '<header class="header"><button class="button--roll button--quick-generate button-primary">Quick Generate</button></header>',
-      '.button--quick-generate',
-      ['width', 'height'],
-    );
-
-    // Width and height come from .header > .button--roll (10rem × 4rem)
-    expect(styles['width']).not.toBe('0px');
-    expect(styles['height']).not.toBe('0px');
+    // Uses a live DOM measurement so that Chromium performs real text layout.
+    // The button must not clip or scroll its text (scrollWidth <= offsetWidth).
+    const overflow = await page.evaluate(() => {
+      const btn = document.querySelector('.button--quick-generate');
+      if (!btn) return 'element not found';
+      return btn.scrollWidth > btn.offsetWidth
+        ? `button scrollWidth ${btn.scrollWidth} > offsetWidth ${btn.offsetWidth}`
+        : 'ok';
+    });
+    expect(overflow).toBe('ok');
   });
 });
 
@@ -315,6 +314,18 @@ test.describe('Isolated CSS rules — CampaignSettings.css', () => {
 // Live rendered styles — full CSS pipeline verification
 // ---------------------------------------------------------------------------
 
+/**
+ * Returns the text content of every button whose rendered width is too narrow
+ * to contain its text (scrollWidth > offsetWidth).
+ */
+async function overflowingButtons(page) {
+  return page.evaluate(() =>
+    Array.from(document.querySelectorAll('button'))
+      .filter((btn) => btn.scrollWidth > btn.offsetWidth)
+      .map((btn) => btn.textContent?.trim()),
+  );
+}
+
 test.describe('Live rendered styles', () => {
   test('--main-bg-color token is resolved at the expected value', async ({ page }) => {
     await page.goto('/');
@@ -332,5 +343,18 @@ test.describe('Live rendered styles', () => {
     await page.goto('/');
     const value = await tokenValue(page, '--danger-color');
     expect(value).toBe('#b10909');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Button text-overflow regression tests
+// These prevent the recurring "button too narrow for its label" bug.
+// ---------------------------------------------------------------------------
+
+test.describe('Button text overflow — no button may be narrower than its label', () => {
+  test('landing screen has no overflowing buttons', async ({ page }) => {
+    await page.goto('/');
+    const overflow = await overflowingButtons(page);
+    expect(overflow).toEqual([]);
   });
 });

@@ -55,6 +55,11 @@ a {
   text-decoration: none;
 }
 
+.modal-content a {
+  color: #0066cc; /* one-off: standard link blue for links rendered on white modal backgrounds */
+  text-decoration: underline;
+}
+
 .fade {
   animation: opacity-fadeOut 0.2s linear;
   opacity: 0;
@@ -661,8 +666,8 @@ a {
 
 .button-container > button {
   margin-left: 10px;
-  width: 120px;
-  padding: 0;
+  min-width: fit-content;
+  padding: 0 10px;
 }
 
 .button-container > .header-pdf {
@@ -1451,6 +1456,7 @@ div > .button-class-option {
     ),
     url(../img/header.svg);
     background-size: cover;
+    background-attachment: fixed;
     background-position: 50% 25%;
     min-height: 1100px;
 }
@@ -1458,9 +1464,7 @@ div > .button-class-option {
 
 .wrapper-alt.wrapper {
   width: 100vw;
-  min-height: 1400px;
   display: flex;
-  transition: all 1s ease;
   background-color: var(--light-bg-color);
   background-image: linear-gradient(
       to right bottom,
@@ -1497,21 +1501,23 @@ div > .button-class-option {
 }
 
 .header > .button--roll {
-  background-color: black;
+  background-color: var(--main-bg-color);
   margin-top: 40px;
   margin-bottom: 0.5rem;
   border: none;
-  width: 10rem;
+  min-width: 10rem;
+  width: auto;
   height: 4rem;
-  padding: 0;
+  padding: 0 1rem;
 }
 
 .header > .button--storage {
-  background-color: black;
+  background-color: var(--main-bg-color);
   border: none;
-  width: 10rem;
+  min-width: 10rem;
+  width: auto;
   text-align: center;
-  padding: 0;
+  padding: 0 1rem;
   margin-top: 1rem;
   height: 4rem;
 }
@@ -1564,12 +1570,20 @@ div > .button-class-option {
 }
 
 .header > .button--quick-generate {
-  background-color: var(--secondary-bg-color);
+  background-color: var(--main-bg-color);
   margin-bottom: 0.5rem;
 }
 
 .header > .button {
   font-size: 1.5rem;
+}
+
+.campaign-selector {
+  color: var(--main-text-color);
+}
+
+.details-screen-container {
+  width: 100%;
 }
 
 .character-menu > div > .hp-container {

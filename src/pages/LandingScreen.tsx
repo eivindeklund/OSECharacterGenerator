@@ -85,7 +85,7 @@ export default function LandingScreen(props: LandingScreenProps) {
       )}
       {isInitialLanding && !partialCharacter && (
         <button
-          className="button--roll button--quick-generate button-primary"
+          className={`button--roll button--quick-generate button-primary${rollButtonHover ? " fade" : ""}`}
           onClick={() => autoGenerateAndLoad(availableClasses(), getSpellListsForClass, getClassSpellSlots)}
           onMouseEnter={() => setRollButtonHover(true)}
           onMouseLeave={() => setRollButtonHover(false)}
