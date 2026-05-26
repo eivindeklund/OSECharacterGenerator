@@ -4,6 +4,7 @@ import {
   CHARACTER_SHEET_PURIST_URL,
   CHARACTER_SHEET_UNDERGROUND_URL,
 } from '../constants/constants'
+import classOptionsData from '../data/classOptionsData'
 import { applyFieldData } from '../containers/character/PDFExport'
 import { buildFieldData } from '../containers/character/buildFieldData'
 import type { StoredCharacterData } from '../types'
@@ -76,7 +77,13 @@ export async function exportPartyAsPDF(
   const mergedPdf = await PDFDocument.create()
 
   for (const storedChar of characters) {
-    const fieldData = buildFieldData(storedChar)
+    // Re-hydrate characterClass: JSON deserialization strips methods from the
+    // stored plain object. Look up the live ClassOptions instance by name,
+    // falling back to the stored value if no match is found (e.g. campaign class).
+    const liveClass = classOptionsData.find(c => c.name === storedChar.characterClass.name)
+      ?? storedChar.characterClass
+    const charWithLiveClass: StoredCharacterData = { ...storedChar, characterClass: liveClass }
+    const fieldData = buildFieldData(charWithLiveClass)
 
     const pdfDoc = await PDFDocument.load(templateBytes)
     const form = pdfDoc.getForm()

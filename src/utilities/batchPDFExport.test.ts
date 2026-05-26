@@ -75,6 +75,77 @@ vi.stubGlobal('window', { open: mockOpen })
 
 // ── Fixture ───────────────────────────────────────────────────────────────────
 
+/**
+ * Simulates a character whose `characterClass` arrived from localStorage and
+ * was JSON-deserialized — methods are absent, only plain data fields survive.
+ */
+function makeDeserializedCharacter(id: string, name: string): StoredCharacterData {
+  return {
+    character: {
+      id,
+      name,
+      languages: [],
+      hasLanguages: false,
+      personality: null,
+      misfortune: null,
+      appearance: null,
+      backgroundSkill: null,
+      alignment: 'neutral',
+    },
+    characterStatistics: {
+      hitPoints: 8,
+      hpRolls: 1,
+      hpResult: 8,
+      hpSeed: 1,
+      armourClass: 10,
+      hasSpells: false,
+      unarmouredAC: 10,
+      level: 1,
+      spells: [],
+    },
+    // Plain object — no methods (as if JSON.parse'd from localStorage)
+    characterClass: {
+      name: 'Fighter',
+      category: 'basic',
+      description: '',
+      armour: 'Any',
+      weapons: 'Any',
+      languages: '',
+      hd: 8,
+      maxLevel: 14,
+      requirements: null,
+      primeReqs: ['strength'],
+      abilities: [],
+      link: '',
+      allowedArmour: [],
+      levelProgression: null as any,
+    } as any,
+    characterEquipment: { armour: [], weapons: [], adventuringGear: [], gold: 50 },
+    characterModifiers: {
+      xpModifierPercentage: '0%',
+      strengthModMelee: '+0',
+      strengthModDoors: '1-in-6',
+      intelligenceModLanguages: '0',
+      intelligenceModLiteracy: '',
+      intelligenceModExtraLanguageCount: '0',
+      wisdomMod: '+0',
+      dexterityModAC: '+0',
+      dexterityModMissiles: '+0',
+      dexterityModInitiative: '+0',
+      constitutionMod: '+0',
+      charismaModNPCReactions: '+0',
+      charismaModRetainersMax: '4',
+      charismaModLoyalty: '7',
+      primeReqMod: '0%',
+    },
+    abilityScores: {
+      strength: 10, intelligence: 10, wisdom: 10,
+      dexterity: 10, constitution: 10, charisma: 10,
+    },
+    campaignId: 'default',
+  }
+}
+
 function makeCharacter(id: string, name: string): StoredCharacterData {
   return {
     character: {
@@ -227,5 +298,15 @@ describe('exportPartyAsPDF', () => {
       '_blank',
       'noopener,noreferrer'
     )
+  })
+
+  it('re-hydrates a deserialized characterClass (no methods) before calling buildFieldData', async () => {
+    // Simulate a character loaded from localStorage whose characterClass is a
+    // plain object with no methods (as produced by JSON.parse).
+    const char = makeDeserializedCharacter('1', 'Thorin')
+    await exportPartyAsPDF([char], SheetFormat.PuristAAC)
+    expect(mocks.buildFieldDataFn).toHaveBeenCalledTimes(1)
+    const passedArg: StoredCharacterData = mocks.buildFieldDataFn.mock.calls[0][0]
+    expect(typeof passedArg.characterClass.getSavingThrowsAtLevel).toBe('function')
   })
 })
