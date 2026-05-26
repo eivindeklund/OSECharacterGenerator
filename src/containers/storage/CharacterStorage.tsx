@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Modal from '../../components/general/Modal';
 import share_icon from '../../img/share.svg';
 import type { StoredCharacterData } from '../../types';
+import { exportPartyAsPDF, SHEET_FORMAT_LABELS, SheetFormat } from '../../utilities/batchPDFExport';
 import ShareService from '../../utilities/ShareService';
 
 interface CharacterStorageProps {
@@ -22,6 +23,25 @@ export default function CharacterStorage(props: CharacterStorageProps) {
   } = props
 
   const [pendingLoad, setPendingLoad] = useState<StoredCharacterData | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [sheetFormat, setSheetFormat] = useState<SheetFormat>(SheetFormat.PuristAAC);
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const handleExportParty = async () => {
+    const selected = storedCharacters.filter(c => c.character.id != null && selectedIds.has(c.character.id));
+    await exportPartyAsPDF(selected, sheetFormat);
+  };
 
   const handleCharacter = (e, index, action) => {
     e.stopPropagation()
@@ -57,6 +77,9 @@ export default function CharacterStorage(props: CharacterStorageProps) {
     const label = characterStorageName
       || (char.characterClass?.name ? char.characterClass.name : 'Unnamed')
 
+    const charId = char.character.id
+    const isSelected = charId != null && selectedIds.has(charId)
+
     return (
         <div
           key={isPartial ? 'partial' : index}
@@ -73,6 +96,16 @@ export default function CharacterStorage(props: CharacterStorageProps) {
         >
           {isPartial && (
             <span className='character-button--partial-badge'>In Progress</span>
+          )}
+          {!isPartial && charId != null && (
+            <input
+              type='checkbox'
+              className='character-button--select'
+              checked={isSelected}
+              aria-label={`Select ${label}`}
+              onClick={(e) => e.stopPropagation()}
+              onChange={() => toggleSelection(charId)}
+            />
           )}
           <div className='character-button--name'>
             {label}
@@ -115,6 +148,31 @@ export default function CharacterStorage(props: CharacterStorageProps) {
           ? storedCharacters.map((item, index) => characterButton(item, index))
           : ''}
       </div>
+      {storedCharacters.length > 0 && (
+        <fieldset className='print-party'>
+          <legend className='print-party--legend'>Print Party</legend>
+          <label className='print-party--format-label' htmlFor='print-party-format'>
+            Sheet Format
+          </label>
+          <select
+            id='print-party-format'
+            className='print-party--format-select'
+            value={sheetFormat}
+            onChange={(e) => setSheetFormat(e.target.value as SheetFormat)}
+          >
+            {(Object.values(SheetFormat) as SheetFormat[]).map(fmt => (
+              <option key={fmt} value={fmt}>{SHEET_FORMAT_LABELS[fmt]}</option>
+            ))}
+          </select>
+          <button
+            className='print-party--export-button'
+            disabled={selectedIds.size === 0}
+            onClick={handleExportParty}
+          >
+            Export as PDF
+          </button>
+        </fieldset>
+      )}
       <Modal
         isOpen={pendingLoad !== null}
         onClose={() => setPendingLoad(null)}

@@ -11,6 +11,25 @@ vi.mock('../../utilities/ShareService', () => ({
   }
 }));
 
+// Mock batchPDFExport (hoisted to avoid TDZ issues)
+const batchMocks = vi.hoisted(() => ({
+  exportPartyAsPDF: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('../../utilities/batchPDFExport', () => ({
+  exportPartyAsPDF: batchMocks.exportPartyAsPDF,
+  SheetFormat: {
+    PuristAAC: 'purist-aac',
+    PuristDAC: 'purist-dac',
+    UndergroundAAC: 'underground-aac',
+  },
+  SHEET_FORMAT_LABELS: {
+    'purist-aac': 'Purist (AAC)',
+    'purist-dac': 'Purist (DAC)',
+    'underground-aac': 'Underground (AAC)',
+  },
+}));
+
 describe('CharacterStorage', () => {
   const mockCharacters = [
     { 
@@ -175,5 +194,106 @@ describe('CharacterStorage — confirmation modal when partial is in progress', 
     fireEvent.click(partialCard);
     expect(propsWithPartial.loadCharacter).toHaveBeenCalledWith(partialInProgress);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+});
+
+// ── Print Party (multi-select + batch PDF export) ─────────────────────────────
+
+const twoCharacters = [
+  {
+    character: { id: '1', name: 'Aragorn', languages: [], hasLanguages: false, personality: null, misfortune: null, appearance: null, backgroundSkill: null, alignment: 'lawful' },
+    characterClass: { name: 'Fighter' },
+    characterStatistics: { hitPoints: 8, level: 1 },
+    characterEquipment: { armour: [], weapons: [], adventuringGear: [], gold: 50 },
+    characterModifiers: {},
+    abilityScores: {},
+    campaignId: 'default',
+  },
+  {
+    character: { id: '2', name: 'Legolas', languages: [], hasLanguages: false, personality: null, misfortune: null, appearance: null, backgroundSkill: null, alignment: 'neutral' },
+    characterClass: { name: 'Elf' },
+    characterStatistics: { hitPoints: 6, level: 1 },
+    characterEquipment: { armour: [], weapons: [], adventuringGear: [], gold: 30 },
+    characterModifiers: {},
+    abilityScores: {},
+    campaignId: 'default',
+  },
+] as any[];
+
+const printPartyProps = {
+  loadCharacter: vi.fn(),
+  storedCharacters: twoCharacters,
+  deleteStoredCharacter: vi.fn(),
+};
+
+describe('CharacterStorage — Print Party', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('renders a checkbox for each stored character', () => {
+    render(<CharacterStorage {...printPartyProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    expect(checkboxes.length).toBe(2);
+  });
+
+  it('renders the Print Party section when characters are present', () => {
+    render(<CharacterStorage {...printPartyProps} />);
+    expect(screen.getByText(/Print Party/i)).toBeInTheDocument();
+  });
+
+  it('Export PDF button is disabled when no characters are selected', () => {
+    render(<CharacterStorage {...printPartyProps} />);
+    const exportBtn = screen.getByRole('button', { name: /Export as PDF/i });
+    expect(exportBtn).toBeDisabled();
+  });
+
+  it('selecting a checkbox enables the Export PDF button', () => {
+    render(<CharacterStorage {...printPartyProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+    const exportBtn = screen.getByRole('button', { name: /Export as PDF/i });
+    expect(exportBtn).not.toBeDisabled();
+  });
+
+  it('deselecting all checkboxes disables the Export PDF button again', () => {
+    render(<CharacterStorage {...printPartyProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+    fireEvent.click(checkboxes[0]);
+    const exportBtn = screen.getByRole('button', { name: /Export as PDF/i });
+    expect(exportBtn).toBeDisabled();
+  });
+
+  it('clicking Export PDF calls exportPartyAsPDF with the selected characters', async () => {
+    render(<CharacterStorage {...printPartyProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+    fireEvent.click(screen.getByRole('button', { name: /Export as PDF/i }));
+    await waitFor(() => {
+      expect(batchMocks.exportPartyAsPDF).toHaveBeenCalledTimes(1);
+    });
+    const [calledChars] = batchMocks.exportPartyAsPDF.mock.calls[0];
+    expect(calledChars).toHaveLength(1);
+    expect(calledChars[0].character.id).toBe('1');
+  });
+
+  it('clicking Export PDF passes the selected format to exportPartyAsPDF', async () => {
+    render(<CharacterStorage {...printPartyProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+    // Change format to Purist (DAC)
+    const formatSelect = screen.getByRole('combobox', { name: /Sheet Format/i });
+    fireEvent.change(formatSelect, { target: { value: 'purist-dac' } });
+    fireEvent.click(screen.getByRole('button', { name: /Export as PDF/i }));
+    await waitFor(() => {
+      expect(batchMocks.exportPartyAsPDF).toHaveBeenCalledWith(
+        expect.any(Array),
+        'purist-dac'
+      );
+    });
+  });
+
+  it('does not render the Print Party section when there are no characters', () => {
+    render(<CharacterStorage {...{ ...printPartyProps, storedCharacters: [] }} />);
+    expect(screen.queryByText(/Print Party/i)).not.toBeInTheDocument();
   });
 });

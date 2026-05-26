@@ -358,3 +358,36 @@ test.describe('Button text overflow — no button may be narrower than its label
     expect(overflow).toEqual([]);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Print Party section
+// ---------------------------------------------------------------------------
+
+test.describe('Isolated CSS rules — Print Party', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await injectQuixote(page);
+  });
+
+  test('.print-party fieldset has positive dimensions', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + appCSS,
+      '<fieldset class="print-party"><legend class="print-party--legend">Print Party</legend><button class="print-party--export-button">Export as PDF</button></fieldset>',
+      '.print-party',
+      ['display', 'padding-top', 'padding-bottom'],
+    );
+    expect(styles['display']).toBe('flex');
+  });
+
+  test('.print-party--export-button has pointer cursor', async ({ page }) => {
+    const styles = await getIsolatedStyles(
+      page,
+      tokensCSS + '\n' + appCSS,
+      '<fieldset class="print-party"><button class="print-party--export-button">Export as PDF</button></fieldset>',
+      '.print-party--export-button',
+      ['cursor'],
+    );
+    expect(styles['cursor']).toBe('pointer');
+  });
+});
