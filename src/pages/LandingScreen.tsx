@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import CheckBox from "../components/general/Checkbox";
@@ -33,6 +33,7 @@ export default function LandingScreen(props: LandingScreenProps) {
     loadCharacter,
     setCharacterCampaignId,
     autoGenerateAndLoad,
+    batchGenerateAndSave,
   } = useCharacter();
 
   const { campaigns, activeCampaignId, activeCampaign, setActiveCampaign, availableClasses, getSpellListsForClass, getClassSpellSlots } = useCampaign();
@@ -54,6 +55,7 @@ export default function LandingScreen(props: LandingScreenProps) {
   const isPartialLanding = isAtLanding && !!partialCharacter;
   const isInitialLanding = isAtLanding && !characterRolled;
 
+  const [batchCount, setBatchCount] = useState(5);
   const myCharacters = storedCharacters;
 
   return (
@@ -92,6 +94,27 @@ export default function LandingScreen(props: LandingScreenProps) {
         >
           Quick Generate
         </button>
+      )}
+      {isInitialLanding && !partialCharacter && (
+        <div className={`batch-generate-row${rollButtonHover ? " fade" : ""}`}>
+          <input
+            type="number"
+            className="batch-generate-count"
+            min={1}
+            max={20}
+            value={batchCount}
+            onChange={(e) => setBatchCount(Math.min(20, Math.max(1, parseInt(e.target.value) || 1)))}
+            aria-label="Number of characters to batch generate"
+          />
+          <button
+            className="button--roll button--batch-generate button-primary"
+            onClick={() => batchGenerateAndSave(batchCount, availableClasses(), getSpellListsForClass, getClassSpellSlots)}
+            onMouseEnter={() => setRollButtonHover(true)}
+            onMouseLeave={() => setRollButtonHover(false)}
+          >
+            Batch Generate
+          </button>
+        </div>
       )}
 
       {isAtLanding && partialCharacter && (

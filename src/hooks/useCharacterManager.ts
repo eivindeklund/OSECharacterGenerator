@@ -494,6 +494,37 @@ export const useCharacterManager = (
   };
 
   /**
+   * Generates a batch of N complete characters and saves them all to storage,
+   * then navigates to the Tavern screen.
+   */
+  const batchGenerateAndSave = (
+    count: number,
+    availableClasses: ClassOptionsData[],
+    getSpellListsForClass: (cls: ClassOptionsData) => SpellDefinition[][],
+    getClassSpellSlots: (cls: ClassOptionsData, level: number) => number[],
+  ) => {
+    const existing = storageService.loadCharacters();
+    const existingIds = new Set(existing.map((c) => c.character.id));
+    const generated = [];
+    for (let i = 0; i < count; i++) {
+      const data = autoGenerateCharacter(availableClasses, {
+        getSpellListsForClass,
+        getClassSpellSlots,
+        campaignId: characterCampaignId,
+      });
+      if (!existingIds.has(data.character.id)) {
+        generated.push(data);
+        existingIds.add(data.character.id);
+      }
+    }
+    const updated = [...existing, ...generated];
+    storageService.saveCharacters(updated);
+    setStoredCharacters(updated);
+    setCharacterRolled(true);
+    navigate('/tavern');
+  };
+
+  /**
    * Level up the current character.
    * @param hpGained  HP gained from the level-up roll (minimum 1).
    * @param newSpells Spells selected during this level-up (arcane casters only).
@@ -567,6 +598,7 @@ export const useCharacterManager = (
     loadCharacter,
     loadCharacterWithoutNavigate,
     autoGenerateAndLoad,
+    batchGenerateAndSave,
     levelUp,
     storedCharacters,
     isMobile,

@@ -23,6 +23,7 @@ describe("useCharacterManager", () => {
   const mockStorageService = {
     loadCharacters: vi.fn().mockReturnValue([]),
     saveCharacter: vi.fn(),
+    saveCharacters: vi.fn(),
     deleteCharacter: vi.fn(),
     loadPartialCharacter: vi.fn().mockReturnValue(null),
     savePartialCharacter: vi.fn(),
@@ -560,6 +561,120 @@ describe("useCharacterManager", () => {
 
       expect(result.current.characterCampaignId).toBe("my-campaign");
       expect(result.current.characterClass.category).toBe("basic");
+    });
+  });
+
+  describe("batchGenerateAndSave", () => {
+    const basicClasses = classOptionsData.filter((c) => c.category === "basic");
+    const mockSpellLists = (cls: ClassOptionsData): SpellDefinition[][] => {
+      if (!cls.spellListId) return [];
+      return [[
+        { id: "charm-person", name: "Charm Person" },
+        { id: "magic-missile", name: "Magic Missile" },
+        { id: "sleep", name: "Sleep" },
+      ]];
+    };
+    const mockSpellSlots = (_cls: ClassOptionsData, _level: number): number[] => [2, 0, 0, 0, 0];
+
+    it("exposes a batchGenerateAndSave function", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+      expect(typeof result.current.batchGenerateAndSave).toBe("function");
+    });
+
+    it("saves exactly N characters to storage", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.batchGenerateAndSave(3, basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      expect(mockStorageService.saveCharacters).toHaveBeenCalledOnce();
+      const saved = mockStorageService.saveCharacters.mock.calls[0][0];
+      expect(saved).toHaveLength(3);
+    });
+
+    it("updates storedCharacters state with the generated characters", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.batchGenerateAndSave(4, basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      expect(result.current.storedCharacters).toHaveLength(4);
+    });
+
+    it("navigates to /tavern", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.batchGenerateAndSave(2, basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      expect(mockNavigate).toHaveBeenCalledWith("/tavern");
+    });
+
+    it("appends to existing stored characters without duplicates", () => {
+      const existingCharacter = {
+        character: { id: "existing-id", name: "Existing" },
+        abilityScores: {},
+        characterModifiers: {},
+        characterStatistics: {},
+        characterClass: { name: "Fighter" },
+        characterEquipment: {},
+        campaignId: "default",
+      };
+      // Two Once calls: first for the init useEffect, second for batchGenerateAndSave.
+      mockStorageService.loadCharacters.mockReturnValueOnce([existingCharacter]);
+      mockStorageService.loadCharacters.mockReturnValueOnce([existingCharacter]);
+
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.batchGenerateAndSave(3, basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      const saved = mockStorageService.saveCharacters.mock.calls[0][0];
+      expect(saved).toHaveLength(4); // 1 existing + 3 new
+    });
+
+    it("sets characterRolled to true", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      act(() => {
+        result.current.batchGenerateAndSave(1, basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      expect(result.current.characterRolled).toBe(true);
+    });
+
+    it("stamps each character with the active campaignId", () => {
+      const { result } = renderHook(() =>
+        useCharacterManager(mockDiceService, mockStorageService, mockDeviceService)
+      );
+
+      // Set campaignId in a separate act so the state is committed before the batch call.
+      act(() => {
+        result.current.setCharacterCampaignId("campaign-x");
+      });
+
+      act(() => {
+        result.current.batchGenerateAndSave(2, basicClasses, mockSpellLists, mockSpellSlots);
+      });
+
+      const saved = mockStorageService.saveCharacters.mock.calls[0][0];
+      expect(saved.every((c) => c.campaignId === "campaign-x")).toBe(true);
     });
   });
 });
