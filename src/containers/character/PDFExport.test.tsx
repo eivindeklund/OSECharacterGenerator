@@ -616,6 +616,42 @@ describe('buildFieldData', () => {
   })
 })
 
+  // ── Description field ─────────────────────────────────────────────────────────
+
+describe('buildFieldData Description field', () => {
+  it('does not include "null" or "undefined" in Description when character fields are null', () => {
+    const data = buildFieldData(baseProps)
+    const description = String(data['Description'] ?? '')
+    expect(description).not.toContain('null')
+    expect(description).not.toContain('undefined')
+  })
+
+  it('includes only the description text when only description is set', () => {
+    const props = { ...baseProps, character: { ...baseProps.character, description: 'A tall warrior.' } }
+    const description = String(buildFieldData(props)['Description'] ?? '')
+    expect(description).toBe('A tall warrior.')
+    expect(description).not.toContain('null')
+  })
+
+  it('combines all populated description fields separated by newlines', () => {
+    const props = {
+      ...baseProps,
+      character: {
+        ...baseProps.character,
+        description: 'A tall warrior.',
+        appearance: 'Scarred face',
+        background: 'Blacksmith',
+        personality: 'Stubborn',
+        misfortune: 'Lost an eye',
+      },
+    }
+    const description = String(buildFieldData(props)['Description'] ?? '')
+    expect(description).toBe(
+      'A tall warrior.\nAppearance: Scarred face\nBackground: Blacksmith\nPersonality: Stubborn\nMisfortune: Lost an eye'
+    )
+  })
+})
+
 // ── dualListedWeaponIds ────────────────────────────────────────────────────────────
 
 describe('dualListedWeaponIds', () => {

@@ -179,13 +179,13 @@ export function buildFieldData(props: PDFExportProps): FieldData {
 
   const savingThrows = characterClass.getSavingThrowsAtLevel(level)
 
-  const descriptionInfo = `
-    ${character.description && `${character.description}`}
-    ${character.appearance && `Appearance: ${character.appearance}`}
-    ${character.background && `Background: ${character.background}`}
-    ${character.personality && `Personality: ${character.personality}`}
-    ${character.misfortune && `Misfortune: ${character.misfortune}`}
-    `
+  const descriptionParts: string[] = [];
+  if (character.description)  descriptionParts.push(character.description);
+  if (character.appearance)   descriptionParts.push(`Appearance: ${character.appearance}`);
+  if (character.background)   descriptionParts.push(`Background: ${character.background}`);
+  if (character.personality)  descriptionParts.push(`Personality: ${character.personality}`);
+  if (character.misfortune)   descriptionParts.push(`Misfortune: ${character.misfortune}`);
+  const descriptionInfo = descriptionParts.join('\n');
 
   // Central field data shared by all page builders.
   // Keys match the canonical PDF field names used by the purist sheets.
